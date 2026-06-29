@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【動詞時態 - 過去簡單式 was 與 were】大電視互動學習單</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+        
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
+            margin: 0;
+            user-select: none; /* 防止手寫時誤選到文字 */
+        }
+
+        /* 核心紙張設定：寬度嚴格限定為 A4 210mm，但長度不限以容納展開的詳解 */
+        .paper {
+            width: 210mm;
+            min-height: 297mm;
+            background-color: white;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+            display: flex;
+            flex-direction: column;
+            padding: 12mm 16mm; 
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* 互動卡片插槽 */
+        .card-slot {
+            border: 2px dashed #cbd5e1;
+            background-color: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 105px;
+            height: 34px;
+            border-radius: 6px;
+            vertical-align: middle;
+            margin: 0 4px;
+        }
+        .card-slot:hover {
+            border-color: #64748b;
+            background-color: #f1f5f9;
+        }
+
+        /* 手寫畫布層 */
+        #drawing-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 30;
+            pointer-events: none; /* 預設游標模式下不阻擋網頁按鈕點擊 */
+        }
+        .drawing-active #drawing-canvas {
+            pointer-events: auto; /* 畫筆或橡皮擦模式下啟用畫布觸控 */
+            cursor: crosshair;
+        }
+
+        /* 大電視防滾動手勢優化 */
+        .drawing-active {
+            touch-action: none;
+            overflow: hidden;
+        }
+
+        @media print {
+            body { background-color: white; padding: 0; }
+            .paper { 
+                box-shadow: none; margin: 0; width: 210mm; min-height: 100%; border-radius: 0; padding: 12mm 16mm;
+            }
+            .no-print { display: none !important; }
+            .print-text {
+                border: none !important; background: transparent !important; box-shadow: none !important;
+                padding: 0 !important; font-weight: bold !important; color: #000 !important; display: inline !important;
+            }
+            /* 控制列印時強制顯示或隱藏特定區塊 */
+            .print-hidden-answers .answer-text,
+            .print-hidden-answers .hint-card,
+            .print-hidden-answers .slot-interactive { display: none !important; }
+            
+            .print-hidden-answers .print-blank-line { display: inline !important; }
+
+            .print-show-answers .print-blank-line { display: none !important; }
+            .print-show-answers .answer-text { display: inline !important; color: #dc2626 !important; }
+        }
+        section { break-inside: avoid; }
+    </style>
+</head>
+<body>
+
+    <!-- 頂部扁平化控制面板 (列印隱藏) -->
+    <div class="no-print w-full max-w-[210mm] bg-white rounded-xl shadow-sm p-3 mb-4 flex items-center justify-between border border-slate-200">
+        <div class="flex gap-2">
+            <!-- 畫筆切換開關 -->
+            <button onclick="togglePenPanel()" id="btn-pen-toggle" class="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold text-[14px] transition shadow-sm">✏️ 開啟手寫畫筆</button>
+            <button onclick="resetWorksheet()" class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 font-bold text-[14px] transition">🔄 重設講義</button>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="printWorksheet(false)" class="px-3 py-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-900 font-bold text-[14px] transition shadow-sm">🖨️ 列印空白講義</button>
+            <button onclick="printWorksheet(true)" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-bold text-[14px] transition shadow-sm">🔑 列印解答版</button>
+        </div>
+    </div>
+
+    <!-- 左側手寫小工具面板 (預設隱藏，由頂部按鈕開啟，防止干擾電視畫面) -->
+    <div id="pen-panel" class="no-print hidden fixed left-4 top-24 bg-white/90 backdrop-blur shadow-lg border border-slate-200 rounded-xl p-2 flex flex-col gap-2 z-50">
+        <div class="text-[11px] text-slate-400 font-bold text-center border-b border-slate-100 pb-1 mb-1">畫筆工具</div>
+        <button onclick="setDrawMode('mouse')" id="tool-mouse" class="p-2.5 rounded-lg bg-blue-50 text-blue-600 flex flex-col items-center gap-1 transition-all" title="游標模式（操作網頁按鈕與字卡）">
+            <span class="text-lg">🖱️</span><span class="text-[11px] font-bold">游標</span>
+        </button>
+        <button onclick="setDrawMode('pen')" id="tool-pen" class="p-2.5 rounded-lg text-slate-600 hover:bg-slate-50 flex flex-col items-center gap-1 transition-all" title="紅筆劃記">
+            <span class="text-lg">✏️</span><span class="text-[11px] font-bold">紅筆</span>
+        </button>
+        <button onclick="setDrawMode('eraser')" id="tool-eraser" class="p-2.5 rounded-lg text-slate-600 hover:bg-slate-50 flex flex-col items-center gap-1 transition-all" title="滑動擦除部分筆跡">
+            <span class="text-lg">🧽</span><span class="text-[11px] font-bold">橡皮擦</span>
+        </button>
+        <button onclick="clearCanvas()" class="p-2.5 rounded-lg text-rose-600 hover:bg-rose-50 flex flex-col items-center gap-1 transition-all border-t border-slate-100 mt-1" title="一鍵清除全部筆跡">
+            <span class="text-lg">🗑️</span><span class="text-[11px] font-bold">全清</span>
+        </button>
+    </div>
+
+    <!-- 自訂提示視窗 -->
+    <div id="custom-modal" class="no-print fixed inset-0 bg-slate-900/40 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl text-center">
+            <div id="modal-icon" class="text-4xl mb-2">🎉</div>
+            <h3 id="modal-title" class="text-xl font-bold text-slate-800 mb-1">批改完成！</h3>
+            <p id="modal-message" class="text-slate-500 mb-4 text-[15px]"></p>
+            <button onclick="closeModal()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition shadow-md">確認</button>
+        </div>
+    </div>
+
+    <!-- A4 學習單主體 -->
+    <div id="printable-paper" class="paper print-hidden-answers">
+        
+        <!-- 手寫畫布 -->
+        <canvas id="drawing-canvas"></canvas>
+
+        <!-- 表頭區塊 -->
+        <header class="border-b border-slate-200 pb-1 mb-2 relative z-10">
+            <div class="flex justify-between items-end">
+                <h1 class="text-[24px] font-bold text-slate-800 tracking-tight">【動詞時態 - 過去簡單式 was 與 were】</h1>
+                <div class="text-[14px] text-slate-400">班級：__________ 姓名：__________</div>
+            </div>
+        </header>
+
+        <!-- 文法提示框 -->
+        <div class="bg-blue-50 border border-blue-200 p-2.5 mb-3 rounded-lg relative z-10">
+            <div class="flex items-center gap-1.5 mb-1">
+                <h2 class="text-[20px] font-bold text-slate-800">💡 重點提示：過去簡單式 be 動詞，要看主詞是「單數」還是「複數」</h2>
+                <button onclick="speakGrammarTip()" class="no-print p-1 text-slate-400 hover:text-blue-600 transition" title="朗讀文法重點">🔊</button>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 text-center text-[16px]">
+                <div class="bg-white border border-blue-100 rounded p-1.5">
+                    <span class="text-amber-700 font-bold block border-b border-slate-100 pb-0.5 mb-1">單數主詞 ➔ 配 was (過去是)</span>
+                    <p class="font-medium text-slate-700 text-[18px]">I / He / She / It / 單數人事物</p>
+                    <p class="text-[13px] text-slate-400">例如：I was happy. (我昨天很開心。)</p>
+                </div>
+                <div class="bg-white border border-blue-100 rounded p-1.5">
+                    <span class="text-emerald-700 font-bold block border-b border-slate-100 pb-0.5 mb-1">複數主詞 ➔ 配 were (過去是)</span>
+                    <p class="font-medium text-slate-700 text-[18px]">We / You / They / 複數人事物</p>
+                    <p class="text-[13px] text-slate-400">例如：They were busy. (他們昨晚很忙。)</p>
+                </div>
+            </div>
+            <div class="text-center text-[13px] text-slate-500 mt-1 font-bold">
+                ⚠️ 常見過去時間提示字：yesterday (昨天), last night (昨晚), three days ago (三天前), in the past (在過去)
+            </div>
+        </div>
+
+        <!-- Level 1 -->
+        <section class="mb-4 relative z-10">
+            <div class="flex items-center mb-1">
+                <span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-1.5 py-0.5 rounded mr-2 border border-emerald-200 uppercase">LEVEL 1</span>
+                <span class="text-[18px] font-bold text-slate-700">暖身判讀：配對正確嗎？ (正確選 ◯，錯誤選 ✕)</span>
+            </div>
+            
+            <div class="space-y-1.5 text-[18px]">
+                <!-- Q1 -->
+                <div class="flex items-center justify-between px-3 py-1 bg-slate-50/50 rounded leading-tight">
+                    <div class="flex items-center">
+                        <!-- 列印時強制顯示的 (  ) 括號區 -->
+                        <span class="hidden print:inline font-bold mr-4 text-black l1-print-bracket" data-id="1">( &nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                        
+                        <!-- 網頁互動時顯示的 O/X 按鈕 -->
+                        <div class="no-print flex gap-1 mr-3">
+                            <button onclick="selectL1(1, '◯')" id="l1-opt-1-O" class="w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-emerald-600 hover:bg-emerald-50 transition">◯</button>
+                            <button onclick="selectL1(1, '✕')" id="l1-opt-1-X" class="w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-rose-600 hover:bg-rose-50 transition">✕</button>
+                        </div>
+                        <span>1. <b class="text-blue-600">I</b> <b class="text-rose-600">were</b> sick yesterday.</span>
+                    </div>
+                    <button onclick="speakL1(1)" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l1-1" class="hint-card hidden mx-3"></div>
+
+                <!-- Q2 -->
+                <div class="flex items-center justify-between px-3 py-1 rounded leading-tight">
+                    <div class="flex items-center">
+                        <span class="hidden print:inline font-bold mr-4 text-black l1-print-bracket" data-id="2">( &nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                        <div class="no-print flex gap-1 mr-3">
+                            <button onclick="selectL1(2, '◯')" id="l1-opt-2-O" class="w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-emerald-600 hover:bg-emerald-50 transition">◯</button>
+                            <button onclick="selectL1(2, '✕')" id="l1-opt-2-X" class="w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-rose-600 hover:bg-rose-50 transition">✕</button>
+                        </div>
+                        <span>2. <b class="text-blue-600">We</b> <b class="text-emerald-600">were</b> at school last Monday.</span>
+                    </div>
+                    <button onclick="speakL1(2)" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l1-2" class="hint-card hidden mx-3"></div>
+
+                <!-- Q3 -->
+                <div class="flex items-center justify-between px-3 py-1 bg-slate-50/50 rounded leading-tight">
+                    <div class="flex items-center">
+                        <span class="hidden print:inline font-bold mr-4 text-black l1-print-bracket" data-id="3">( &nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                        <div class="no-print flex gap-1 mr-3">
+                            <button onclick="selectL1(3, '◯')" id="l1-opt-3-O" class="w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-emerald-600 hover:bg-emerald-50 transition">◯</button>
+                            <button onclick="selectL1(3, '✕')" id="l1-opt-3-X" class="w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-rose-600 hover:bg-rose-50 transition">✕</button>
+                        </div>
+                        <span>3. <b class="text-blue-600">He</b> <b class="text-emerald-600">was</b> tired this morning.</span>
+                    </div>
+                    <button onclick="speakL1(3)" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l1-3" class="hint-card hidden mx-3"></div>
+            </div>
+            
+            <!-- 區塊獨立批改按鈕 -->
+            <div class="no-print flex justify-end mt-2">
+                <button onclick="checkLevel(1)" class="px-4 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-bold text-[13px] shadow-sm transition">✅ 批改 Level 1</button>
+            </div>
+        </section>
+
+        <!-- Level 2 -->
+        <section class="mb-4 relative z-10">
+            <div class="flex items-center mb-1">
+                <span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-1.5 py-0.5 rounded mr-2 border border-amber-200 uppercase">LEVEL 2</span>
+                <span class="text-[18px] font-bold text-slate-700">進階挑戰：字卡免打字配對槽</span>
+            </div>
+
+            <!-- 字卡庫 -->
+            <div class="no-print flex items-center justify-center gap-3 bg-slate-50 border border-slate-200 p-1.5 rounded-md mb-2">
+                <span class="text-[14px] font-bold text-slate-500">🖐️ 請先選取下方字卡，再點擊題目空格：</span>
+                <button onclick="selectWord('was')" id="card-was" class="px-3 py-0.5 bg-white border border-slate-300 text-slate-700 font-bold text-[16px] rounded shadow-sm transition-all">was</button>
+                <button onclick="selectWord('were')" id="card-were" class="px-3 py-0.5 bg-white border border-slate-300 text-slate-700 font-bold text-[16px] rounded shadow-sm transition-all">were</button>
+            </div>
+            
+            <div class="space-y-1.5 text-[18px]">
+                <!-- Q1 -->
+                <div class="px-3 py-1 bg-slate-50/30 border-l-4 border-slate-300 leading-tight flex justify-between items-center">
+                    <div>
+                        <p>
+                            1. She 
+                            <button onclick="fillSlot(1)" id="l2-slot-1" class="slot-interactive card-slot text-blue-600 font-bold text-[18px]">點此置入</button>
+                            <span id="l2-print-1" class="print-text hidden border-b border-black px-4">________</span>
+                            very happy yesterday.
+                        </p>
+                        <p class="text-[14px] text-slate-400 mt-0.5 ml-6">她昨天非常開心。</p>
+                    </div>
+                    <button onclick="speakL2(1)" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l2-1" class="hint-card hidden mx-3"></div>
+
+                <!-- Q2 -->
+                <div class="px-3 py-1 border-l-4 border-slate-300 leading-tight flex justify-between items-center">
+                    <div>
+                        <p>
+                            2. They 
+                            <button onclick="fillSlot(2)" id="l2-slot-2" class="slot-interactive card-slot text-blue-600 font-bold text-[18px]">點此置入</button>
+                            <span id="l2-print-2" class="print-text hidden border-b border-black px-4">________</span>
+                            at home last night.
+                        </p>
+                        <p class="text-[14px] text-slate-400 mt-0.5 ml-6">他們昨晚在家。</p>
+                    </div>
+                    <button onclick="speakL2(2)" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l2-2" class="hint-card hidden mx-3"></div>
+
+                <!-- Q3 -->
+                <div class="px-3 py-1 bg-slate-50/30 border-l-4 border-slate-300 leading-tight flex justify-between items-center">
+                    <div>
+                        <p>
+                            3. It 
+                            <button onclick="fillSlot(3)" id="l2-slot-3" class="slot-interactive card-slot text-blue-600 font-bold text-[18px]">點此置入</button>
+                            <span id="l2-print-3" class="print-text hidden border-b border-black px-4">________</span>
+                            cold two days ago.
+                        </p>
+                        <p class="text-[14px] text-slate-400 mt-0.5 ml-6">兩天前天氣很冷。</p>
+                    </div>
+                    <button onclick="speakL2(3)" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l2-3" class="hint-card hidden mx-3"></div>
+            </div>
+
+            <!-- 區塊獨立批改按鈕 -->
+            <div class="no-print flex justify-end mt-2">
+                <button onclick="checkLevel(2)" class="px-4 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-bold text-[13px] shadow-sm transition">✅ 批改 Level 2</button>
+            </div>
+        </section>
+
+        <!-- Level 3 -->
+        <section class="mb-4 relative z-10">
+            <div class="flex items-center mb-1">
+                <span class="bg-rose-100 text-rose-800 text-[11px] font-bold px-1.5 py-0.5 rounded mr-2 border border-rose-200 uppercase">LEVEL 3</span>
+                <span class="text-[18px] font-bold text-slate-700">綜合選擇題：選出最正確的答案</span>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-1.5 text-[18px]">
+                <!-- Q1 -->
+                <div class="p-2 border border-slate-100 rounded bg-white flex justify-between items-start">
+                    <div class="w-full">
+                        <p class="font-medium mb-1">1. ( &nbsp;<span id="l3-bracket-1" class="print-text font-bold text-blue-600">&nbsp;&nbsp;</span>&nbsp; ) The dogs ______ in the garden ten minutes ago.</p>
+                        <div class="flex gap-6 text-slate-500 ml-10 mt-1">
+                            <button onclick="selectL3(1, 'A')" id="l3-opt-1-A" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(A)</b> was</button>
+                            <button onclick="selectL3(1, 'B')" id="l3-opt-1-B" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(B)</b> is</button>
+                            <button onclick="selectL3(1, 'C')" id="l3-opt-1-C" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(C)</b> were</button>
+                        </div>
+                    </div>
+                    <button onclick="speakL3(1, 'The dogs were in the garden ten minutes ago.')" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l3-1" class="hint-card hidden mx-3"></div>
+
+                <!-- Q2 -->
+                <div class="p-2 border border-slate-100 rounded bg-slate-50/50 flex justify-between items-start">
+                    <div class="w-full">
+                        <p class="font-medium mb-1">2. ( &nbsp;<span id="l3-bracket-2" class="print-text font-bold text-blue-600">&nbsp;&nbsp;</span>&nbsp; ) Where ______ you yesterday morning?</p>
+                        <div class="flex gap-6 text-slate-500 ml-10 mt-1">
+                            <button onclick="selectL3(2, 'A')" id="l3-opt-2-A" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-white transition"><b>(A)</b> are</button>
+                            <button onclick="selectL3(2, 'B')" id="l3-opt-2-B" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-white transition"><b>(B)</b> were</button>
+                            <button onclick="selectL3(2, 'C')" id="l3-opt-2-C" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-white transition"><b>(C)</b> was</button>
+                        </div>
+                    </div>
+                    <button onclick="speakL3(2, 'Where were you yesterday morning?')" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l3-2" class="hint-card hidden mx-3"></div>
+
+                <!-- Q3 -->
+                <div class="p-2 border border-slate-100 rounded bg-white flex justify-between items-start">
+                    <div class="w-full">
+                        <p class="font-medium mb-1">3. ( &nbsp;<span id="l3-bracket-3" class="print-text font-bold text-blue-600">&nbsp;&nbsp;</span>&nbsp; ) My mom ______ a nurse in the past.</p>
+                        <div class="flex gap-6 text-slate-500 ml-10 mt-1">
+                            <button onclick="selectL3(3, 'A')" id="l3-opt-3-A" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(A)</b> were</button>
+                            <button onclick="selectL3(3, 'B')" id="l3-opt-3-B" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(B)</b> is</button>
+                            <button onclick="selectL3(3, 'C')" id="l3-opt-3-C" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(C)</b> was</button>
+                        </div>
+                    </div>
+                    <button onclick="speakL3(3, 'My mom was a nurse in the past.')" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l3-3" class="hint-card hidden mx-3"></div>
+            </div>
+
+            <!-- 區塊獨立批改按鈕 -->
+            <div class="no-print flex justify-end mt-2">
+                <button onclick="checkLevel(3)" class="px-4 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-bold text-[13px] shadow-sm transition">✅ 批改 Level 3</button>
+            </div>
+        </section>
+
+        <!-- 解答輔助列印區 (列印解答版時顯示，平時隱藏) -->
+        <div class="answer-text hidden text-[15px] text-red-600 font-bold border-t border-dashed border-red-300 pt-2 mt-2">
+            🔑 本講義教師解答：【Level 1】1. ✕ &nbsp; 2. ◯ &nbsp; 3. ◯ &nbsp;&nbsp;【Level 2】1. was &nbsp; 2. were &nbsp; 3. was &nbsp;&nbsp;【Level 3】1. (C) &nbsp; 2. (B) &nbsp; 3. (C)
+        </div>
+
+        <!-- 頁尾 -->
+        <footer class="mt-auto pt-2 border-t border-slate-100 flex justify-between items-end relative z-10">
+            <div>
+                <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Scaffolded Interactive Worksheet</p>
+                <p class="text-[14px] text-slate-500 font-medium">✨ 記得：單數主詞用 was，複數主詞用 were，時間注意過去式！</p>
+            </div>
+            <div class="no-print bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg flex items-center gap-2">
+                <span class="text-[16px]">🏆</span>
+                <p class="text-[16px] font-bold text-slate-700"><span id="score-display">0</span> / 100</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 腳本邏輯控制 -->
+    <script>
+        // 設定正確解答與多隨機解析
+        const ANSWERS = {
+            level1: { 1: "✕", 2: "◯", 3: "◯" },
+            level2: { 1: "was", 2: "were", 3: "was" },
+            level3: { 1: "C", 2: "B", 3: "C" }
+        };
+
+        const EXPLANATIONS = {
+            l1: {
+                1: "主詞是 I (我，單數)，過去動詞要用 was，而不是 were。",
+                2: "主詞是 We (我們，複數)，過去動詞用 were，用法正確！",
+                3: "主詞是 He (他，單數)，過去動詞用 was，用法正確！"
+            },
+            l2: {
+                1: "主詞 She 是單數，過去式配 was。",
+                2: "主詞 They 是複數，過去式配 were。",
+                3: "主詞 It 指天氣是單數，過去式配 was。"
+            },
+            l3: {
+                1: "名詞 The dogs 是複數，時間是 ten minutes ago，因此選複數過去式 (C) were。",
+                2: "問句主詞是 you，無論單複數，be動詞皆使用 (B) were。",
+                3: "主詞 My mom 是單數，時間為 in the past 表示過去，因此選 (C) was。"
+            }
+        };
+
+        let userState = {
+            level1: { 1: "", 2: "", 3: "" },
+            level2: { 1: "", 2: "", 3: "" },
+            level3: { 1: "", 2: "", 3: "" }
+        };
+
+        let currentlySelectedWord = null;
+
+        // ================= 1. 手寫畫布與收折系統 =================
+        const canvas = document.getElementById("drawing-canvas");
+        const ctx = canvas.getContext("2d");
+        let isDrawing = false;
+        let drawMode = 'mouse'; // mouse, pen, eraser
+        let lastX = 0;
+        let lastY = 0;
+
+        function togglePenPanel() {
+            const panel = document.getElementById("pen-panel");
+            const btn = document.getElementById("btn-pen-toggle");
+            
+            if (panel.classList.contains("hidden")) {
+                panel.classList.remove("hidden");
+                btn.innerText = "✏️ 關閉手寫畫筆";
+                btn.className = "px-4 py-1.5 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-bold text-[14px] transition shadow-sm";
+                // 預設切換為紅筆模式
+                setDrawMode('pen');
+            } else {
+                panel.classList.add("hidden");
+                btn.innerText = "✏️ 開啟手寫畫筆";
+                btn.className = "px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold text-[14px] transition shadow-sm";
+                setDrawMode('mouse');
+            }
+        }
+
+        // 當調整視窗大小時，在不破壞手寫筆跡的情況下調整 Canvas
+        function resizeCanvas() {
+            const paper = document.getElementById("printable-paper");
+            if (!paper) return;
+
+            const targetWidth = paper.clientWidth;
+            const targetHeight = paper.clientHeight;
+
+            // 確保目標寬高不為 0，避免在未完成網頁渲染排版時設定 Canvas
+            if (targetWidth === 0 || targetHeight === 0) return;
+            
+            if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+                let tempCanvas = null;
+                
+                // 僅在當前畫布寬高均大於 0 時，才執行備份，避免 drawImage 報錯
+                if (canvas.width > 0 && canvas.height > 0) {
+                    tempCanvas = document.createElement("canvas");
+                    tempCanvas.width = canvas.width;
+                    tempCanvas.height = canvas.height;
+                    const tempCtx = tempCanvas.getContext("2d");
+                    try {
+                        tempCtx.drawImage(canvas, 0, 0);
+                    } catch (e) {
+                        tempCanvas = null; // 出現例外時捨棄備份
+                    }
+                }
+
+                // 安全地重新設定畫布寬高
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+
+                // 若有成功備份的畫面，則將其還原回畫布上
+                if (tempCanvas && tempCanvas.width > 0 && tempCanvas.height > 0) {
+                    try {
+                        ctx.drawImage(tempCanvas, 0, 0);
+                    } catch (e) {
+                        console.warn("Failed to restore canvas backup:", e);
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // 監聽畫布的觸控與滑鼠事件
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e.touches[0]); });
+            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); });
+            canvas.addEventListener('touchend', stopDrawing);
+        });
+
+        function setDrawMode(mode) {
+            drawMode = mode;
+            document.querySelectorAll('[id^="tool-"]').forEach(btn => btn.className = "p-2.5 rounded-lg text-slate-600 hover:bg-slate-50 flex flex-col items-center gap-1 transition-all");
+            
+            const activeBtn = document.getElementById(`tool-${mode}`);
+            if (activeBtn) activeBtn.className = "p-2.5 rounded-lg bg-blue-50 text-blue-600 flex flex-col items-center gap-1 transition-all font-bold shadow-sm";
+            
+            if (mode === 'mouse') {
+                document.body.classList.remove("drawing-active");
+            } else {
+                document.body.classList.add("drawing-active");
+            }
+        }
+
+        function startDrawing(e) {
+            if (drawMode === 'mouse') return;
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            lastX = e.clientX - rect.left;
+            lastY = e.clientY - rect.top;
+        }
+
+        function draw(e) {
+            if (!isDrawing || drawMode === 'mouse') return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+
+            if (drawMode === 'pen') {
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.strokeStyle = '#dc2626'; // 教學紅
+                ctx.lineWidth = 3;
+            } else if (drawMode === 'eraser') {
+                ctx.globalCompositeOperation = 'destination-out'; // 橡皮擦
+                ctx.lineWidth = 24;
+            }
+
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            lastX = x;
+            lastY = y;
+        }
+
+        function stopDrawing() { isDrawing = false; }
+        function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+        // ================= 2. 核心互動設計 =================
+        
+        // Level 1: 獨立按鈕選擇
+        function selectL1(id, choice) {
+            userState.level1[id] = choice;
+            
+            const btnO = document.getElementById(`l1-opt-${id}-O`);
+            const btnX = document.getElementById(`l1-opt-${id}-X`);
+            
+            // 重設樣式
+            btnO.className = "w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-emerald-600 hover:bg-emerald-50 transition";
+            btnX.className = "w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-rose-600 hover:bg-rose-50 transition";
+            
+            // 高亮選取樣式
+            if (choice === '◯') {
+                btnO.className = "w-8 h-8 rounded-full border-2 border-emerald-500 bg-emerald-500 text-white font-bold transition shadow-sm";
+            } else if (choice === '✕') {
+                btnX.className = "w-8 h-8 rounded-full border-2 border-rose-500 bg-rose-500 text-white font-bold transition shadow-sm";
+            }
+            speakText(choice === '◯' ? "圈" : "叉");
+        }
+
+        // Level 2: 字卡選取與置入
+        function selectWord(word) {
+            currentlySelectedWord = word;
+            ['was', 'were'].forEach(w => {
+                document.getElementById(`card-${w}`).className = "px-3 py-0.5 bg-white border border-slate-300 text-slate-700 font-bold text-[16px] rounded shadow-sm transition-all";
+            });
+            document.getElementById(`card-${word}`).className = "px-3 py-0.5 bg-blue-50 border-2 border-blue-500 text-blue-600 font-bold text-[16px] rounded shadow-sm scale-105 transition-all";
+        }
+
+        function fillSlot(slotId) {
+            const slot = document.getElementById(`l2-slot-${slotId}`);
+            
+            if (userState.level2[slotId] && !currentlySelectedWord) {
+                userState.level2[slotId] = "";
+                slot.innerText = "點此置入";
+                slot.className = "slot-interactive card-slot text-blue-600 font-bold text-[18px]";
+                speakText("已清除");
+                return;
+            }
+
+            if (!currentlySelectedWord) {
+                speakText("請先點擊上方字卡！");
+                return;
+            }
+
+            userState.level2[slotId] = currentlySelectedWord;
+            slot.innerText = currentlySelectedWord;
+            slot.className = "slot-interactive card-slot text-slate-800 bg-slate-100 border border-slate-400 font-extrabold text-[18px] px-3";
+            speakText(`置入 ${currentlySelectedWord}`);
+        }
+
+        // Level 3: 選擇題操作
+        function selectL3(qNum, option) {
+            ['A', 'B', 'C'].forEach(opt => {
+                document.getElementById(`l3-opt-${qNum}-${opt}`).className = "px-2.5 py-0.5 rounded border border-slate-200 text-[16px] text-slate-500 transition";
+            });
+            document.getElementById(`l3-opt-${qNum}-${option}`).className = "px-2.5 py-0.5 rounded border-2 border-blue-500 bg-blue-50 text-blue-600 font-bold text-[16px] transition";
+            document.getElementById(`l3-bracket-${qNum}`).innerText = option;
+            userState.level3[qNum] = option;
+            speakText(`選擇 ${option}`);
+        }
+
+        // ================= 3. 智慧型分段批改與解析卡 =================
+        function checkLevel(levelNum) {
+            let correctInLevel = 0;
+            
+            if (levelNum === 1) {
+                for (let i = 1; i <= 3; i++) {
+                    const isCorrect = userState.level1[i] === ANSWERS.level1[i];
+                    const hintCard = document.getElementById(`hint-l1-${i}`);
+                    
+                    hintCard.classList.remove("hidden");
+                    
+                    if (userState.level1[i] === "") {
+                        hintCard.className = "hint-card mx-3 p-2 bg-slate-50 text-slate-700 text-[14px] font-medium rounded border border-slate-200 mt-1.5 transition-all";
+                        hintCard.innerHTML = `⚠️ <b>尚未作答：</b> ${EXPLANATIONS.l1[i]} <span class="text-rose-600 font-bold">(應選: ${ANSWERS.level1[i]})</span>`;
+                    } else if (isCorrect) {
+                        correctInLevel++;
+                        hintCard.className = "hint-card mx-3 p-2 bg-emerald-50 text-emerald-800 text-[14px] font-medium rounded border border-emerald-100 mt-1.5 transition-all shadow-sm";
+                        hintCard.innerHTML = `🎉 <b>答對了！</b> ${EXPLANATIONS.l1[i]}`;
+                    } else {
+                        hintCard.className = "hint-card mx-3 p-2 bg-rose-50 text-rose-800 text-[14px] font-medium rounded border border-rose-100 mt-1.5 transition-all shadow-sm";
+                        hintCard.innerHTML = `⚠️ <b>再想想看：</b> ${EXPLANATIONS.l1[i]} <span class="text-rose-900 font-bold">(正確答案：${ANSWERS.level1[i]})</span>`;
+                    }
+                }
+                showFeedbackModal(1, correctInLevel);
+            }
+            
+            if (levelNum === 2) {
+                for (let i = 1; i <= 3; i++) {
+                    const isCorrect = userState.level2[i] === ANSWERS.level2[i];
+                    const slot = document.getElementById(`l2-slot-${i}`);
+                    const hintCard = document.getElementById(`hint-l2-${i}`);
+                    
+                    hintCard.classList.remove("hidden");
+                    
+                    if (userState.level2[i] === "") {
+                        slot.className = "slot-interactive card-slot text-rose-600 bg-rose-50 border-2 border-dashed border-rose-300 font-bold text-[18px]";
+                        hintCard.className = "hint-card mx-3 p-2 bg-slate-50 text-slate-700 text-[14px] font-medium rounded border border-slate-200 mt-1.5 transition-all";
+                        hintCard.innerHTML = `⚠️ <b>尚未作答：</b> ${EXPLANATIONS.l2[i]} <span class="text-rose-600 font-bold">(應選: ${ANSWERS.level2[i]})</span>`;
+                    } else if (isCorrect) {
+                        correctInLevel++;
+                        slot.className = "slot-interactive card-slot text-emerald-800 bg-emerald-50 border-2 border-emerald-500 font-extrabold text-[18px] px-3 ring-2 ring-emerald-100";
+                        hintCard.className = "hint-card mx-3 p-2 bg-emerald-50 text-emerald-800 text-[14px] font-medium rounded border border-emerald-100 mt-1.5 transition-all shadow-sm";
+                        hintCard.innerHTML = `🎉 <b>答對了！</b> ${EXPLANATIONS.l2[i]}`;
+                    } else {
+                        slot.className = "slot-interactive card-slot text-rose-800 bg-rose-50 border-2 border-rose-500 font-extrabold text-[18px] px-3 ring-2 ring-rose-100";
+                        hintCard.className = "hint-card mx-3 p-2 bg-rose-50 text-rose-800 text-[14px] font-medium rounded border border-rose-100 mt-1.5 transition-all shadow-sm";
+                        hintCard.innerHTML = `⚠️ <b>再想想看：</b> ${EXPLANATIONS.l2[i]} <span class="text-rose-900 font-bold">(正確答案：${ANSWERS.level2[i]})</span>`;
+                    }
+                }
+                showFeedbackModal(2, correctInLevel);
+            }
+            
+            if (levelNum === 3) {
+                for (let i = 1; i <= 3; i++) {
+                    const isCorrect = userState.level3[i] === ANSWERS.level3[i];
+                    const bracket = document.getElementById(`l3-bracket-${i}`);
+                    const hintCard = document.getElementById(`hint-l3-${i}`);
+                    
+                    hintCard.classList.remove("hidden");
+                    
+                    // 重設按鈕
+                    ['A', 'B', 'C'].forEach(opt => {
+                        document.getElementById(`l3-opt-${i}-${opt}`).className = "px-2.5 py-0.5 rounded border border-slate-200 text-[16px] text-slate-500 transition";
+                    });
+
+                    if (userState.level3[i] === "") {
+                        bracket.className = "print-text font-bold text-rose-600 bg-rose-50 px-1.5 rounded border border-rose-300";
+                        hintCard.className = "hint-card mx-3 p-2 bg-slate-50 text-slate-700 text-[14px] font-medium rounded border border-slate-200 mt-1.5 transition-all";
+                        hintCard.innerHTML = `⚠️ <b>尚未作答：</b> ${EXPLANATIONS.l3[i]} <span class="text-rose-600 font-bold">(正確答案: (${ANSWERS.level3[i]}))</span>`;
+                    } else if (isCorrect) {
+                        correctInLevel++;
+                        bracket.className = "print-text font-bold text-emerald-700 bg-emerald-50 px-1.5 rounded border border-emerald-300 ring-2 ring-emerald-100";
+                        document.getElementById(`l3-opt-${i}-${userState.level3[i]}`).className = "px-2.5 py-0.5 rounded border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-bold text-[16px] transition ring-2 ring-emerald-100";
+                        
+                        hintCard.className = "hint-card mx-3 p-2 bg-emerald-50 text-emerald-800 text-[14px] font-medium rounded border border-emerald-100 mt-1.5 transition-all shadow-sm";
+                        hintCard.innerHTML = `🎉 <b>答對了！</b> ${EXPLANATIONS.l3[i]}`;
+                    } else {
+                        bracket.className = "print-text font-bold text-rose-700 bg-rose-50 px-1.5 rounded border border-rose-300 ring-2 ring-rose-100";
+                        document.getElementById(`l3-opt-${i}-${userState.level3[i]}`).className = "px-2.5 py-0.5 rounded border-2 border-rose-500 bg-rose-50 text-rose-800 font-bold text-[16px] transition ring-2 ring-rose-100";
+                        
+                        const correctBtn = document.getElementById(`l3-opt-${i}-${ANSWERS.level3[i]}`);
+                        correctBtn.className = "px-2.5 py-0.5 rounded border-2 border-dashed border-emerald-400 text-emerald-600 font-bold text-[16px] transition bg-emerald-50/30";
+                        
+                        hintCard.className = "hint-card mx-3 p-2 bg-rose-50 text-rose-800 text-[14px] font-medium rounded border border-rose-100 mt-1.5 transition-all shadow-sm";
+                        hintCard.innerHTML = `⚠️ <b>再想想看：</b> ${EXPLANATIONS.l3[i]} <span class="text-rose-900 font-bold">(正確答案：(${ANSWERS.level3[i]}))</span>`;
+                    }
+                }
+                showFeedbackModal(3, correctInLevel);
+            }
+            
+            updateTotalScore();
+        }
+
+        function updateTotalScore() {
+            let totalCorrect = 0;
+            // 累加所有對題
+            for(let i=1; i<=3; i++) {
+                if(userState.level1[i] === ANSWERS.level1[i]) totalCorrect++;
+                if(userState.level2[i] === ANSWERS.level2[i]) totalCorrect++;
+                if(userState.level3[i] === ANSWERS.level3[i]) totalCorrect++;
+            }
+            const finalScore = Math.round((totalCorrect / 9) * 100);
+            document.getElementById("score-display").innerText = finalScore;
+        }
+
+        function resetWorksheet() {
+            userState = { level1: { 1: "", 2: "", 3: "" }, level2: { 1: "", 2: "", 3: "" }, level3: { 1: "", 2: "", 3: "" } };
+            currentlySelectedWord = null;
+            document.getElementById("score-display").innerText = "0";
+            document.querySelectorAll(".hint-card").forEach(card => {
+                card.classList.add("hidden");
+                card.innerHTML = "";
+            });
+            
+            for(let i=1; i<=3; i++) {
+                // 重置 L1
+                const btnO = document.getElementById(`l1-opt-${i}-O`);
+                const btnX = document.getElementById(`l1-opt-${i}-X`);
+                btnO.className = "w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-emerald-600 hover:bg-emerald-50 transition";
+                btnX.className = "w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-rose-600 hover:bg-rose-50 transition";
+                
+                // 重置 L2
+                document.getElementById(`l2-slot-${i}`).innerText = "點此置入";
+                document.getElementById(`l2-slot-${i}`).className = "slot-interactive card-slot text-blue-600 font-bold text-[18px]";
+                
+                // 重置 L3
+                document.getElementById(`l3-bracket-${i}`).innerText = "  ";
+                ['A','B','C'].forEach(opt => {
+                    document.getElementById(`l3-opt-${i}-${opt}`).className = "px-2.5 py-0.5 rounded border border-slate-200 text-[16px] text-slate-500 transition";
+                });
+            }
+            ['was', 'were'].forEach(w => document.getElementById(`card-${w}`).className = "px-3 py-0.5 bg-white border border-slate-300 text-slate-700 font-bold text-[16px] rounded shadow-sm");
+            clearCanvas();
+            speakText("重設完成");
+        }
+
+        // ================= 4. 語音系統 =================
+        function speakSequence(sequence) {
+            window.speechSynthesis.cancel();
+            let index = 0;
+            function playNext() {
+                if (index >= sequence.length) return;
+                const item = sequence[index];
+                const ut = new SpeechSynthesisUtterance(item.text);
+                ut.lang = item.lang;
+                ut.rate = item.lang.startsWith('en') ? 0.82 : 0.95; // 學生補救英文慢速為 0.82
+                ut.onend = () => { index++; playNext(); };
+                window.speechSynthesis.speak(ut);
+            }
+            playNext();
+        }
+
+        function speakGrammarTip() {
+            speakSequence([
+                { text: "過去簡單式 be 動詞，要看主詞是單數還是複數。", lang: "zh-TW" },
+                { text: "Singular subject was. Plural subject were.", lang: "en-US" }
+            ]);
+        }
+
+        function speakL1(id) {
+            if(id === 1) speakSequence([{ text: "I were sick yesterday.", lang: "en-US" }]);
+            if(id === 2) speakSequence([{ text: "We were at school last Monday.", lang: "en-US" }]);
+            if(id === 3) speakSequence([{ text: "He was tired this morning.", lang: "en-US" }]);
+        }
+
+        function speakL2(id) {
+            if(id === 1) speakSequence([{ text: "She was very happy yesterday.", lang: "en-US" }]);
+            if(id === 2) speakSequence([{ text: "They were at home last night.", lang: "en-US" }]);
+            if(id === 3) speakSequence([{ text: "It was cold two days ago.", lang: "en-US" }]);
+        }
+
+        function speakL3(id, text) { speakSequence([{ text: text, lang: "en-US" }]); }
+        function speakText(text) { speakSequence([{ text: text, lang: "zh-TW" }]); }
+
+        // ================= 5. 雙獨立列印功能處理 =================
+        function printWorksheet(isAnswerVersion) {
+            const paper = document.getElementById("printable-paper");
+            
+            // 同步 Level 1 (  ) 的括號純文字與正確答案
+            const brackets = document.querySelectorAll('.l1-print-bracket');
+            brackets.forEach(span => {
+                const id = span.getAttribute('data-id');
+                if (isAnswerVersion) {
+                    // 解答版：括號內顯示紅色的正確答案
+                    span.innerHTML = `( &nbsp;<span class="text-rose-600 font-extrabold">${ANSWERS.level1[id]}</span>&nbsp; )`;
+                } else {
+                    // 空白/學生版：若學生有作答則顯示學生答案，無則顯示空白 (    )
+                    const userAns = userState.level1[id];
+                    const displayVal = (userAns && userAns !== "-") ? userAns : "&nbsp;&nbsp;";
+                    span.innerHTML = `( &nbsp;${displayVal}&nbsp; )`;
+                }
+            });
+
+            // 同步 Level 2 狀態到列印純文字
+            for(let i=1; i<=3; i++) {
+                const ans = isAnswerVersion ? ANSWERS.level2[i] : (userState.level2[i] !== "" ? userState.level2[i] : "________");
+                document.getElementById(`l2-print-${i}`).innerText = ans;
+            }
+
+            // 同步 Level 3 狀態到列印純文字
+            for(let i=1; i<=3; i++) {
+                const ans = isAnswerVersion ? ANSWERS.level3[i] : (userState.level3[i] !== "" ? userState.level3[i] : "&nbsp;&nbsp;");
+                document.getElementById(`l3-bracket-${i}`).innerHTML = ans;
+            }
+
+            if (isAnswerVersion) {
+                paper.className = "paper print-show-answers";
+            } else {
+                paper.className = "paper print-hidden-answers";
+            }
+
+            setTimeout(() => { window.print(); }, 120);
+        }
+
+        window.onafterprint = function() {
+            const paper = document.getElementById("printable-paper");
+            paper.className = "paper print-hidden-answers";
+            // 還原等級三括號裡的螢幕顯示文字
+            for(let i=1; i<=3; i++) {
+                const val = userState.level3[i] !== "" ? userState.level3[i] : "  ";
+                document.getElementById(`l3-bracket-${i}`).innerText = val;
+            }
+        };
+
+        function showFeedbackModal(level, correctCount) {
+            const m = document.getElementById("custom-modal");
+            let icon = "🎉";
+            if (correctCount === 3) icon = "🏆";
+            else if (correctCount === 0) icon = "💡";
+            
+            document.getElementById("modal-icon").innerText = icon;
+            document.getElementById("modal-title").innerText = `Level ${level} 批改完成！`;
+            document.getElementById("modal-message").innerText = `此關卡答對了 ${correctCount} / 3 題！下方的動態解析已展開，歡迎對照與學習。`;
+            m.classList.remove("hidden"); m.classList.add("flex");
+            speakText(`批改完成。答對${correctCount}題。`);
+        }
+        
+        function closeModal() { 
+            document.getElementById("custom-modal").className = "no-print fixed inset-0 bg-slate-900/40 hidden items-center justify-center z-50"; 
+        }
+    </script>
+</body>
+</html>
