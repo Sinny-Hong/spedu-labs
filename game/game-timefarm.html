@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chirpy's Time Farm - 小啾的時空冒險</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@300;500;700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --farm-green: #a5d6a7; --sky-blue: #e1f5fe; --barn-red: #ef5350;
+            --chick-yellow: #fff59d; --text-brown: #5d4037; --shadow-soft: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        * { box-sizing: border-box; user-select: none; }
+        body { margin: 0; font-family: 'Comic Sans MS', sans-serif; background: var(--sky-blue); height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+
+        /* 主容器與側邊欄 */
+        #game-container { width: 100vw; max-width: 1200px; height: 100vh; max-height: 900px; background: var(--farm-green); border: 8px solid white; border-radius: 40px; box-shadow: var(--shadow-soft); display: flex; position: relative; overflow: hidden; }
+        .sidebar { width: 250px; background: white; display: flex; flex-direction: column; align-items: center; padding: 20px; border-right: 4px solid #e0e0e0; z-index: 100; transition: left 0.3s ease; }
+        .chick-profile { width: 100px; height: 100px; background: var(--chick-yellow); border-radius: 50%; border: 3px solid #fbc02d; display: flex; justify-content: center; align-items: center; font-size: 3rem; margin-bottom: 10px; }
+        .player-info { text-align: center; color: var(--text-brown); margin-bottom: 10px; width: 100%; }
+        .coin-display { background: #fff9c4; padding: 10px; border-radius: 20px; font-weight: bold; color: #fbc02d; border: 2px solid #fff176; display: flex; justify-content: center; gap: 10px; font-size: 1.2rem;}
+        .nav-menu { width: 100%; margin-top: 10px; flex: 1; }
+        .nav-item { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 15px; cursor: pointer; text-align: center; font-weight: bold; color: #9e9e9e; transition: 0.3s; border: 2px solid transparent; }
+        .nav-item.active { background: var(--sky-blue); color: #0288d1; border-color: #81d4fa; }
+
+        .main-content { flex: 1; position: relative; padding: 10px; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; }
+        .hidden { display: none !important; }
+
+        /* 手機版適應 */
+        #mobile-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 90; }
+        .hamburger-btn { display: none; font-size: 2rem; background: white; border: 2px solid #ddd; border-radius: 10px; padding: 5px 15px; cursor: pointer; position: absolute; top: 15px; left: 15px; z-index: 101; color: var(--text-brown); box-shadow: 0 4px 0 #ddd; }
+        @media (max-width: 1000px) {
+            #game-container { width: 100vw; height: 100vh; border: none; border-radius: 0; max-height: none; }
+            .sidebar { position: absolute; left: -260px; height: 100%; box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
+            .sidebar.mobile-open { left: 0; }
+            .hamburger-btn { display: block; }
+            .main-content { padding-top: 70px; }
+        }
+
+        /* ===== 地圖與測驗區 ===== */
+        #screen-map { width: 100%; }
+        .map-grid-wrapper { width: 100%; overflow-x: auto; padding-bottom: 20px; }
+        .map-grid { display: grid; grid-template-columns: repeat(5, 120px); gap: 20px; justify-content: start; min-width: max-content; padding: 0 20px; }
+        .stage-section { width: calc(100% - 40px); padding: 10px; margin: 20px; background: rgba(255,255,255,0.4); border-radius: 20px; color: var(--text-brown); font-weight: bold; }
+        .coop-container { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; position: relative; }
+        .coop-container:hover:not(.locked) { transform: scale(1.1); }
+        .coop-container.locked { filter: grayscale(1); opacity: 0.7; cursor: not-allowed; }
+        .coop-house { font-size: 4rem; position: relative; line-height: 1; }
+        .lock-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; }
+        .coop-label { margin-top: 5px; background: white; padding: 2px 10px; border-radius: 10px; font-size: 0.9rem; font-weight: bold; color: var(--text-brown); }
+        .unlocked-label { border: 2px solid #81c784; color: #388e3c; }
+
+        .quiz-view { width: 90%; max-width: 600px; margin: 20px auto; background: white; border-radius: 30px; padding: 30px; text-align: center; box-shadow: var(--shadow-soft); }
+        .question-box { font-size: 2.5rem; color: var(--text-brown); margin: 20px 0; font-weight: bold; }
+        .voice-btn { font-size: 3rem; cursor: pointer; background: #fff9c4; border: none; border-radius: 50%; width: 70px; height: 70px; box-shadow: 0 4px 0 #fbc02d; margin-bottom: 20px; transition: 0.2s;}
+        .voice-btn:active { transform: translateY(4px); box-shadow: none; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .opt-btn { background: #f5f5f5; border: 3px solid #eee; padding: 15px 10px; border-radius: 15px; font-size: 1.2rem; cursor: pointer; font-weight: bold; color: var(--text-brown); box-shadow: 0 4px 0 #ddd; transition: 0.2s;}
+        .opt-btn:active { transform: translateY(4px); box-shadow: none; }
+        .opt-btn.correct { background: #c8e6c9; border-color: #4caf50; }
+        .opt-btn.wrong { background: #ffcdd2; border-color: #f44336; }
+
+        /* ===== 扭蛋商城 UI ===== */
+        .gacha-machine { width: 90%; max-width: 500px; margin: 20px auto; background: white; border-radius: 30px; padding: 30px; text-align: center; border: 6px solid #ffcc80; box-shadow: var(--shadow-soft); }
+        .machine-icon { font-size: 6rem; margin: 10px 0; display: inline-block; }
+        .shaking { animation: shake 0.5s infinite; }
+        @keyframes shake { 0%, 50%, 100% { transform: rotate(0deg); } 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } }
+        .draw-btn { background: var(--barn-red); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.2rem; cursor: pointer; font-weight: bold; box-shadow: 0 6px 0 #b71c1c; }
+        .draw-btn:active { transform: translateY(6px); box-shadow: none; }
+        .draw-btn:disabled { background: #ccc; box-shadow: 0 6px 0 #999; cursor: not-allowed; }
+        .progress-bar-container { background: #eee; border-radius: 20px; width: 80%; height: 15px; margin: 10px auto; overflow: hidden; position: relative;}
+        .progress-bar-fill { background: #ff9800; height: 100%; width: 0%; transition: width 0.5s; }
+
+        /* ===== 小啾的家 (極致精簡版 10物件) ===== */
+        .pet-room { width: 95%; max-width: 800px; aspect-ratio: 16 / 10; margin: 0 auto; background: #ffe082; border-radius: 30px; border: 8px solid #ffb300; position: relative; overflow: hidden; box-shadow: inset 0 -30px 30px rgba(0,0,0,0.05); }
+        .room-floor { position: absolute; bottom: 0; width: 100%; height: 30%; background: #ffca28; z-index: 1; border-top: 4px solid #ffc107; }
+        
+        .exp-container { position: absolute; top: 5%; left: 5%; background: rgba(255,255,255,0.9); padding: 5px 15px; border-radius: 15px; z-index: 20; font-weight: bold; color: var(--text-brown); text-align: center; font-size: clamp(0.8rem, 2vw, 1rem); }
+        .exp-bar-bg { width: 10vw; max-width: 100px; height: 8px; background: #ddd; border-radius: 5px; margin-top: 5px; overflow: hidden; }
+        .exp-bar-fill { height: 100%; background: #4caf50; width: 0%; transition: 0.3s; }
+        
+        .feed-area { position: absolute; bottom: 5%; right: 5%; z-index: 20; text-align: center; }
+        .food-bowl { font-size: clamp(2.5rem, 6vw, 4rem); cursor: pointer; transition: 0.2s; filter: drop-shadow(0 4px 2px rgba(0,0,0,0.2));}
+        .food-bowl:active { transform: scale(0.9); }
+        .food-count-badge { background: var(--barn-red); color: white; border-radius: 10px; padding: 2px 8px; font-weight: bold; position: absolute; top: -10px; right: -10px; z-index: 21; font-size: clamp(0.7rem, 1.5vw, 1rem); }
+
+        /* 寵物本體 */
+        #pet-character { position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); z-index: 10; transition: all 0.5s ease; line-height: 1; display: flex; justify-content: center; align-items: center; }
+        .pet-bounce { animation: bounce 0.3s; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0) translateX(-50%); } 50% { transform: translateY(-20px) translateX(-50%); } }
+
+        /* 裝飾品坑位 (保證不擁擠) */
+        .deco-slot { position: absolute; opacity: 0; transition: opacity 0.5s; z-index: 5; filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.15)); }
+        
+        /* 天空區 (3件) */
+        #slot-cloud { top: 15%; left: 20%; font-size: clamp(3rem, 6vw, 5rem); animation: float 3s infinite ease-in-out; }
+        #slot-star { top: 5%; left: 50%; transform: translateX(-50%); font-size: clamp(2.5rem, 5vw, 4rem); }
+        #slot-butterfly { top: 20%; right: 20%; font-size: clamp(2.5rem, 5vw, 4rem); animation: float 2.5s infinite ease-in-out reverse; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* 牆面區 (3件) */
+        #slot-window { top: 30%; left: 5%; font-size: clamp(4rem, 9vw, 7rem); z-index: 2; }
+        #slot-painting { top: 30%; right: 5%; font-size: clamp(4rem, 9vw, 7rem); z-index: 2; }
+        #slot-clock { top: 25%; left: 50%; transform: translateX(-50%); font-size: clamp(3rem, 7vw, 5.5rem); z-index: 2; }
+
+        /* 地板角落區 (2件) */
+        #slot-tree { bottom: 10%; left: 8%; font-size: clamp(5rem, 12vw, 9rem); z-index: 4; }
+        #slot-pumpkin { bottom: 10%; right: 35%; font-size: clamp(3rem, 7vw, 5rem); z-index: 6; }
+
+        /* 可愛小圓桌與桌上物 (2件) */
+        .table-container { position: absolute; bottom: 10%; right: 8%; width: 22%; height: 25%; z-index: 4; display: flex; justify-content: center; }
+        .table-top { width: 100%; height: 35%; background: #d7ccc8; border: 4px solid #8d6e63; border-radius: 50%; position: absolute; bottom: 35%; z-index: 2; }
+        .table-leg { width: 15%; height: 40%; background: #8d6e63; position: absolute; bottom: 5%; z-index: 1; border-radius: 5px;}
+        #slot-apple { position: absolute; bottom: 60%; left: 20%; z-index: 3; font-size: clamp(2rem, 5vw, 3.5rem); }
+        #slot-cocoa { position: absolute; bottom: 60%; right: 20%; z-index: 3; font-size: clamp(2rem, 5vw, 3.5rem); }
+
+        /* 遮罩 */
+        .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 500; display: flex; justify-content: center; align-items: center; }
+        .result-card { background: white; padding: 30px; border-radius: 30px; text-align: center; border: 5px solid var(--chick-yellow); width: 80%; max-width: 400px; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    
+    <div id="login-screen" class="modal-overlay">
+        <div class="result-card">
+            <div style="font-size: 4rem;">🥚</div>
+            <h2 style="color: var(--text-brown);">小啾的時空冒險</h2>
+            <p style="color: #666; font-size: 0.9rem;">請輸入你的名字來載入或建立存檔</p>
+            <input type="text" id="name-input" placeholder="你的名字是？" style="width: 100%; padding: 10px; border-radius: 10px; border: 2px solid #ccc; margin-bottom: 20px; font-size: 1.2rem; text-align: center; outline: none;">
+            <button class="draw-btn" onclick="startGame()">進入農場</button>
+        </div>
+    </div>
+
+    <button class="hamburger-btn" onclick="toggleMobileMenu()">☰</button>
+    <div id="mobile-overlay" onclick="toggleMobileMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="chick-profile" id="sidebar-pet-icon">🥚</div>
+        <div class="player-info">
+            <h3 id="display-name" style="margin: 5px 0;">---</h3>
+            <div class="coin-display"><span>🪙</span> <span id="coin-count">0</span></div>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item active" onclick="showScreen('map')">🗺️ 地圖冒險</div>
+            <div class="nav-item" onclick="showScreen('shop')">🥚 時空彩蛋</div>
+            <div class="nav-item" onclick="showScreen('pet')">🏠 小啾的家</div>
+        </div>
+        
+        <button onclick="logout()" style="margin-top:auto; padding:12px; background:#e0e0e0; border:none; border-radius:10px; color:#555; font-weight:bold; cursor:pointer; width: 100%; box-shadow: 0 4px 0 #bdbdbd;">🚪 登出 / 換人玩</button>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="screen-map" class="screen-area" style="width: 100%;">
+            <div id="map-container-dynamic"></div>
+        </div>
+
+        <div id="screen-quiz" class="screen-area hidden" style="width: 100%;">
+            <div class="quiz-view">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span id="quiz-title" style="font-weight: bold; color: #aaa; font-size: 1.2rem;">LEVEL A1</span>
+                    <button onclick="showScreen('map')" style="background:none; border:none; cursor:pointer; font-size:1.8rem;">❌</button>
+                </div>
+                <div class="question-box" id="q-text">Question</div>
+                <button class="voice-btn" onclick="speakCurrentQ()">🔊</button>
+                <div class="options-grid" id="options-list"></div>
+            </div>
+        </div>
+
+        <div id="screen-shop" class="screen-area hidden" style="width: 100%;">
+            <div class="gacha-machine">
+                <h2 style="color: var(--text-brown); margin:0;">時空彩蛋機</h2>
+                <p style="color: #888; font-size: 0.9rem;">50 金幣抽一次，收集 10 個經典家具！</p>
+                <div id="machine-egg" class="machine-icon">🥚</div>
+                <p style="color: var(--barn-red); font-weight: bold; font-size: 0.85rem; margin-bottom: 5px;">(每 5 抽必出裝飾)</p>
+                
+                <div class="progress-bar-container">
+                    <div id="deco-progress-bar" class="progress-bar-fill"></div>
+                </div>
+                <p style="margin-top: 0; color: #666; font-size: 0.85rem;">收集進度：<span id="deco-progress-text">0/10</span></p>
+                
+                <button id="draw-btn" class="draw-btn" onclick="startGacha()">打開彩蛋 (50🪙)</button>
+            </div>
+        </div>
+
+        <div id="screen-pet" class="screen-area hidden" style="width: 100%;">
+            <h2 style="text-align: center; color: var(--text-brown); margin: 0 0 10px 0;">小啾的寬敞小窩</h2>
+            <div class="pet-room">
+                <div id="slot-window" class="deco-slot">🪟</div>
+                <div id="slot-painting" class="deco-slot">🖼️</div>
+                <div id="slot-clock" class="deco-slot">🕰️</div>
+                
+                <div class="room-floor"></div>
+
+                <div id="slot-cloud" class="deco-slot">☁️</div>
+                <div id="slot-star" class="deco-slot">🌟</div>
+                <div id="slot-butterfly" class="deco-slot">🦋</div>
+
+                <div id="slot-tree" class="deco-slot">🎄</div>
+                <div id="slot-pumpkin" class="deco-slot">🎃</div>
+
+                <div class="table-container">
+                    <div class="table-top"></div>
+                    <div class="table-leg"></div>
+                    <div id="slot-apple" class="deco-slot">🍎</div>
+                    <div id="slot-cocoa" class="deco-slot">☕</div>
+                </div>
+
+                <div class="exp-container">
+                    <div id="pet-stage-name">時空小蛋</div>
+                    <div class="exp-bar-bg"><div id="exp-bar" class="exp-bar-fill"></div></div>
+                </div>
+
+                <div id="pet-character">
+                    <span id="pet-emoji">🥚</span>
+                </div>
+
+                <div class="feed-area">
+                    <div class="food-count-badge" id="food-badge">0</div>
+                    <div class="food-bowl" onclick="feedPet()">🥣</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="result-modal" class="modal-overlay hidden">
+        <div class="result-card">
+            <div id="result-icon" style="font-size: 4rem;">✨</div>
+            <h2 id="result-title" style="color: var(--text-brown); margin-top: 10px;">恭喜獲得！</h2>
+            <p id="result-desc" style="color: #666;">道具說明</p>
+            <button style="background: #4caf50; color: white; border: none; padding: 10px 30px; border-radius: 20px; font-size: 1.1rem; cursor: pointer; font-weight: bold; box-shadow: 0 4px 0 #388e3c;" onclick="document.getElementById('result-modal').classList.add('hidden')">收下</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 1. 完整遊戲資料庫 (137題 A1~E5 完整載入) ---
+    const gameDatabase = {
+        "A1": [
+            { q: "Year", options: ["年", "月", "日", "秒"], a: "年" }, { q: "Month", options: ["月", "年", "日", "時"], a: "月" }, { q: "Day", options: ["日", "週", "月", "分"], a: "日" }, { q: "Week", options: ["週", "年", "日", "秒"], a: "週" }, { q: "Hour", options: ["時", "秒", "分", "天"], a: "時" }, { q: "Minute", options: ["分", "時", "秒", "月"], a: "分" }, { q: "Second", options: ["秒", "時", "分", "年"], a: "秒" }
+        ],
+        "A2": [
+            { q: "Jan.", options: ["January", "June", "July", "February"], a: "January" }, { q: "Mon.", options: ["Monday", "May", "March", "Sunday"], a: "Monday" }, { q: "hr.", options: ["Hour", "He", "Half", "Hand"], a: "Hour" }, { q: "min.", options: ["minute", "month", "may", "money"], a: "minute" }, { q: "sec.", options: ["second", "sun", "september", "seven"], a: "second" }
+        ],
+        "A3": [
+            { q: "1 + 2 = ?", options: ["Three", "One", "Two", "Four"], a: "Three" }, { q: "10 + 20 = ?", options: ["Thirty", "Thirteen", "Three", "Forty"], a: "Thirty" }, { q: "5 + 8 = ?", options: ["Thirteen", "Three", "Thirty", "Eight"], a: "Thirteen" }, { q: "4 + 5 = ?", options: ["Nine", "Eight", "Ten", "Seven"], a: "Nine" }, { q: "7 + 4 = ?", options: ["Eleven", "Seven", "Four", "One"], a: "Eleven" }
+        ],
+        "A4": [
+            { q: "One + Two = ?", options: ["3", "1", "2", "4"], a: "3" }, { q: "Five + Five = ?", options: ["10", "5", "15", "20"], a: "10" }, { q: "Six + Zero = ?", options: ["6", "0", "12", "60"], a: "6" }, { q: "Eight + Two = ?", options: ["10", "8", "2", "16"], a: "10" }, { q: "Nine + One = ?", options: ["10", "9", "1", "11"], a: "10" }
+        ],
+        "A5": [
+            { q: "十", options: ["Ten", "Two", "Twelve", "Twenty"], a: "Ten" }, { q: "十二", options: ["Twelve", "Twenty", "Two", "Ten"], a: "Twelve" }, { q: "十五", options: ["Fifteen", "Five", "Fifty", "Fourteen"], a: "Fifteen" }, { q: "三十", options: ["Thirty", "Three", "Thirteen", "Twenty"], a: "Thirty" }, { q: "五十", options: ["Fifty", "Five", "Fifteen", "Forty"], a: "Fifty" }
+        ],
+        "B1": [
+            { q: "Monday", options: ["星期一", "星期二", "星期三", "星期日"], a: "星期一" }, { q: "Tuesday", options: ["星期二", "星期四", "星期三", "星期五"], a: "星期二" }, { q: "Wednesday", options: ["星期三", "星期一", "星期四", "星期五"], a: "星期三" }, { q: "Thursday", options: ["星期四", "星期二", "星期三", "星期五"], a: "星期四" }, { q: "Friday", options: ["星期五", "星期四", "星期六", "星期一"], a: "星期五" }
+        ],
+        "B2": [
+            { q: "星期六", options: ["Saturday", "Sunday", "Thursday", "Monday"], a: "Saturday" }, { q: "星期日", options: ["Sunday", "Saturday", "Friday", "Monday"], a: "Sunday" }, { q: "星期一", options: ["Monday", "Tuesday", "Sunday", "Friday"], a: "Monday" }, { q: "星期三", options: ["Wednesday", "Tuesday", "Thursday", "Friday"], a: "Wednesday" }, { q: "星期五", options: ["Friday", "Thursday", "Saturday", "Monday"], a: "Friday" }
+        ],
+        "B3": [
+            { q: "January", options: ["一月", "二月", "六月", "十二月"], a: "一月" }, { q: "March", options: ["三月", "五月", "四月", "二月"], a: "三月" }, { q: "May", options: ["五月", "三月", "四月", "六月"], a: "五月" }, { q: "July", options: ["七月", "六月", "八月", "九月"], a: "七月" }, { q: "August", options: ["八月", "九月", "七月", "十月"], a: "八月" }
+        ],
+        "B4": [
+            { q: "十月", options: ["October", "September", "November", "December"], a: "October" }, { q: "十一月", options: ["November", "December", "October", "January"], a: "November" }, { q: "十二月", options: ["December", "November", "October", "January"], a: "December" }, { q: "二月", options: ["February", "January", "March", "April"], a: "February" }, { q: "四月", options: ["April", "August", "March", "May"], a: "April" }
+        ],
+        "B5": [
+            { q: "September", options: ["9", "7", "8", "10"], a: "9" }, { q: "June", options: ["6", "5", "7", "8"], a: "6" }, { q: "December", options: ["12", "10", "11", "1"], a: "12" }, { q: "May", options: ["5", "3", "4", "6"], a: "5" }, { q: "October", options: ["10", "8", "9", "11"], a: "10" }
+        ],
+        "C1": [
+            { q: "1月1號", options: ["January First", "February First", "January Second", "January One"], a: "January First" }, { q: "5月2號", options: ["May Second", "March Second", "May First", "April Second"], a: "May Second" }, { q: "10月10號", options: ["October Tenth", "October Ten", "September Tenth", "November Tenth"], a: "October Tenth" }, { q: "12月25號", options: ["December Twenty-Fifth", "December Fifth", "December Fifty", "November Twenty-Fifth"], a: "December Twenty-Fifth" }
+        ],
+        "C2": [
+            { q: "April Third", options: ["4月3號", "3月4號", "4月13號", "3月14號"], a: "4月3號" }, { q: "August Eighth", options: ["8月8號", "8月18號", "9月8號", "8月1號"], a: "8月8號" }, { q: "September Ninth", options: ["9月9號", "10月9號", "9月19號", "8月9號"], a: "9月9號" }, { q: "March First", options: ["3月1號", "5月1號", "3月2號", "4月1號"], a: "3月1號" }
+        ],
+        "C3": [
+            { q: "聖誕節", options: ["Christmas", "Halloween", "Easter", "New Year"], a: "Christmas" }, { q: "萬聖節", options: ["Halloween", "Christmas", "Teacher's Day", "Mother's Day"], a: "Halloween" }, { q: "新年", options: ["New Year", "Christmas", "Easter", "Halloween"], a: "New Year" }, { q: "教師節", options: ["Teacher's Day", "Mother's Day", "Father's Day", "Children's Day"], a: "Teacher's Day" }
+        ],
+        "C4": [
+            { q: "Mother's Day", options: ["母親節", "父親節", "教師節", "兒童節"], a: "母親節" }, { q: "Father's Day", options: ["父親節", "母親節", "教師節", "聖誕節"], a: "父親節" }, { q: "Christmas", options: ["聖誕節", "萬聖節", "新年", "復活節"], a: "聖誕節" }, { q: "Halloween", options: ["萬聖節", "聖誕節", "新年", "兒童節"], a: "萬聖節" }
+        ],
+        "C5": [
+            { q: "Christmas is in...", options: ["December", "October", "January", "May"], a: "December" }, { q: "Halloween is in...", options: ["October", "November", "December", "September"], a: "October" }, { q: "Mother's Day is in...", options: ["May", "April", "March", "June"], a: "May" }, { q: "Father's Day is in... (Taiwan)", options: ["August", "July", "June", "September"], a: "August" }
+        ],
+        "D1": [
+            { q: "Quarter", options: ["15 分鐘", "30 分鐘", "45 分鐘", "5 分鐘"], a: "15 分鐘" }, { q: "Half", options: ["30 分鐘", "15 分鐘", "45 分鐘", "50 分鐘"], a: "30 分鐘" }, { q: "O'clock", options: ["點鐘(整點)", "分鐘", "秒鐘", "小時"], a: "點鐘(整點)" }, { q: "Past", options: ["過(了)", "差(幾分)", "整點", "一半"], a: "過(了)" }
+        ],
+        "D2": [
+            { q: "15 分鐘", options: ["a quarter", "a half", "an hour", "a past"], a: "a quarter" }, { q: "30 分鐘", options: ["a half", "a quarter", "an hour", "a second"], a: "a half" }, { q: "差(幾分)", options: ["to", "past", "half", "quarter"], a: "to" }, { q: "整點", options: ["o'clock", "half", "to", "past"], a: "o'clock" }
+        ],
+        "D3": [
+            { q: "9:00", options: ["Nine o'clock", "Nine past", "Nine half", "Nine to"], a: "Nine o'clock" }, { q: "12:00", options: ["Twelve o'clock", "Two o'clock", "Ten o'clock", "Twenty o'clock"], a: "Twelve o'clock" }, { q: "5:00", options: ["Five o'clock", "Fifteen o'clock", "Four o'clock", "Fifty o'clock"], a: "Five o'clock" }, { q: "3:00", options: ["Three o'clock", "Thirteen o'clock", "Thirty o'clock", "Two o'clock"], a: "Three o'clock" }
+        ],
+        "D4": [
+            { q: "Nine fifteen", options: ["9:15", "9:50", "9:05", "9:30"], a: "9:15" }, { q: "Ten thirty", options: ["10:30", "10:13", "10:03", "10:00"], a: "10:30" }, { q: "Two forty-five", options: ["2:45", "2:15", "2:05", "2:54"], a: "2:45" }, { q: "Seven twenty", options: ["7:20", "7:12", "7:02", "7:22"], a: "7:20" }
+        ],
+        "D5": [
+            { q: "6:15", options: ["Six fifteen", "Six fifty", "Six five", "Six o'clock"], a: "Six fifteen" }, { q: "8:30", options: ["Eight thirty", "Eight thirteen", "Eight three", "Eight o'clock"], a: "Eight thirty" }, { q: "11:45", options: ["Eleven forty-five", "Eleven fifteen", "Eleven fifty", "Eleven four"], a: "Eleven forty-five" }, { q: "1:10", options: ["One ten", "One twelve", "One two", "One o'clock"], a: "One ten" }
+        ],
+        "E1": [
+            { q: "Ten past Ten", options: ["10 點 10 分", "10 點整", "9 點 50 分", "11 點 10 分"], a: "10 點 10 分" }, { q: "Half past Four", options: ["4 點 30 分", "4 點 15 分", "3 點 30 分", "4 點 13 分"], a: "4 點 30 分" }, { q: "A quarter past One", options: ["1 點 15 分", "1 點 30 分", "1 點 45 分", "1 點整"], a: "1 點 15 分" }, { q: "Twenty past Six", options: ["6 點 20 分", "6 點 12 分", "6 點 30 分", "6 點 40 分"], a: "6 點 20 分" }
+        ],
+        "E2": [
+            { q: "Ten to Ten", options: ["9 點 50 分", "10 點 10 分", "10 點整", "9 點 10 分"], a: "9 點 50 分" }, { q: "A quarter to Four", options: ["3 點 45 分", "4 點 15 分", "4 點 45 分", "3 點 15 分"], a: "3 點 45 分" }, { q: "Five to Eight", options: ["7 點 55 分", "8 點 05 分", "8 點 55 分", "7 點 05 分"], a: "7 點 55 分" }, { q: "Twenty to Two", options: ["1 點 40 分", "2 點 20 分", "2 點 40 分", "1 點 20 分"], a: "1 點 40 分" }
+        ],
+        "E3": [
+            { q: "早上", options: ["Morning", "Afternoon", "Evening", "Night"], a: "Morning" }, { q: "下午", options: ["Afternoon", "Morning", "Evening", "Night"], a: "Afternoon" }, { q: "晚上", options: ["Evening", "Morning", "Afternoon", "Night"], a: "Evening" }, { q: "午夜", options: ["Night", "Evening", "Morning", "Afternoon"], a: "Night" }
+        ],
+        "E4": [
+            { q: "Wake up", options: ["起床", "睡覺", "吃早餐", "去學校"], a: "起床" }, { q: "Go to school", options: ["去學校", "回家", "吃午餐", "洗澡"], a: "去學校" }, { q: "Have lunch", options: ["吃午餐", "吃早餐", "吃晚餐", "吃點心"], a: "吃午餐" }, { q: "Go to bed", options: ["睡覺", "起床", "看電視", "寫功課"], a: "睡覺" }
+        ],
+        "E5": [
+            { q: "I wake up at 7 o'clock.", options: ["我七點起床。", "我七點睡覺。", "我七點去學校。", "我七點吃早餐。"], a: "我七點起床。" }, { q: "I have lunch at twelve.", options: ["我十二點吃午餐。", "我十二點回家。", "我十二點睡覺。", "我十二點起床。"], a: "我十二點吃午餐。" }, { q: "I go to bed at ten.", options: ["我十點睡覺。", "我十點起床。", "我十點回家。", "我十點看電視。"], a: "我十點睡覺。" }, { q: "I go to school at eight.", options: ["我八點去學校。", "我八點回家。", "我八點吃早餐。", "我八點睡覺。"], a: "我八點去學校。" }
+        ]
+    };
+
+    const stageNames = { "A": "STAGE A：基礎數感農場", "B": "STAGE B：週期認知農場", "C": "STAGE C：節慶日期農場", "D": "STAGE D：時鐘指針農場", "E": "STAGE E：生活時刻農場" };
+    const stageLetters = ['A', 'B', 'C', 'D', 'E'];
+    const allLevelKeys = [];
+    stageLetters.forEach(l => { for(let i=1; i<=5; i++) allLevelKeys.push(l+i); });
+
+    // --- 2. 10 件完美精簡版裝飾品 ---
+    const decoPool = [
+        { id: "window", icon: "🪟", name: "陽光木窗", slot: "slot-window" },
+        { id: "apple", icon: "🍎", name: "單顆紅蘋果", slot: "slot-apple" },
+        { id: "cloud", icon: "☁️", name: "漂浮小雨雲", slot: "slot-cloud" },
+        { id: "star", icon: "🌟", name: "星星夜燈", slot: "slot-star" },
+        { id: "tree", icon: "🎄", name: "溫馨聖誕樹", slot: "slot-tree" },
+        { id: "pumpkin", icon: "🎃", name: "萬聖南瓜燈", slot: "slot-pumpkin" },
+        { id: "clock", icon: "🕰️", name: "復古咕咕鐘", slot: "slot-clock" },
+        { id: "butterfly", icon: "🦋", name: "時光小蝴蝶", slot: "slot-butterfly" },
+        { id: "cocoa", icon: "☕", name: "熱可可馬克杯", slot: "slot-cocoa" },
+        { id: "painting", icon: "🖼️", name: "冒險紀念畫", slot: "slot-painting" }
+    ];
+
+    // --- 3. 專屬姓名存檔系統 ---
+    const defaultState = { coins: 0, food: 0, exp: 0, drawCount: 0, ownedDecos: [], unlockedLevelIndex: 0 };
+    let gameState = {};
+    let currentPlayer = "";
+    
+    let currentQuizPool = []; let currentQIndex = 0; let currentLevelKey = "";
+
+    function shuffleArray(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    // 每次進入網頁，一定會顯示登入畫面
+    document.getElementById('login-screen').classList.remove('hidden');
+
+    function startGame() {
+        const input = document.getElementById('name-input').value.trim();
+        if (!input) return alert("請輸入名字喔！");
+        
+        currentPlayer = input;
+        
+        // 使用專屬的名字來尋找存檔 (例如：chirpySave_Release_王小明)
+        const saved = localStorage.getItem('chirpySave_Release_' + currentPlayer);
+        
+        if (saved) {
+            // 如果有存檔，載入進度
+            gameState = JSON.parse(saved);
+        } else {
+            // 如果是新名字，給予全新進度
+            gameState = JSON.parse(JSON.stringify(defaultState)); 
+            gameState.name = currentPlayer;
+        }
+
+        document.getElementById('login-screen').classList.add('hidden');
+        updateUI(); 
+        updateRoom(); 
+        renderMap();
+    }
+
+    function saveProgress() { 
+        if (currentPlayer) {
+            localStorage.setItem('chirpySave_Release_' + currentPlayer, JSON.stringify(gameState)); 
+        }
+    }
+
+    // 登出 / 換人玩 (直接重整網頁回到首頁)
+    function logout() { 
+        if(confirm("確定要登出讓下一位同學玩嗎？\n(您的進度已經自動儲存了！)")) { 
+            location.reload(); 
+        } 
+    }
+
+    // --- 4. 畫面切換與 UI 更新 ---
+    function toggleMobileMenu(forceClose = false) {
+        const sb = document.getElementById('sidebar');
+        const ov = document.getElementById('mobile-overlay');
+        if (forceClose || sb.classList.contains('mobile-open')) {
+            sb.classList.remove('mobile-open'); ov.style.display = 'none';
+        } else {
+            sb.classList.add('mobile-open'); ov.style.display = 'block';
+        }
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen-area').forEach(s => s.classList.add('hidden'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('screen-' + screenId).classList.remove('hidden');
+        if(event && event.currentTarget) event.currentTarget.classList.add('active');
+        if (window.innerWidth <= 1000) toggleMobileMenu(true);
+        if (screenId === 'pet') updateRoom();
+        if (screenId === 'map') renderMap();
+    }
+
+    function updateUI() {
+        document.getElementById('display-name').innerText = gameState.name;
+        document.getElementById('coin-count').innerText = gameState.coins;
+        document.getElementById('food-badge').innerText = gameState.food;
+        
+        const progress = gameState.ownedDecos.length;
+        document.getElementById('deco-progress-text').innerText = `${progress}/10`;
+        document.getElementById('deco-progress-bar').style.width = `${(progress / 10) * 100}%`;
+
+        let stageInfo = getPetStage(gameState.exp);
+        document.getElementById('sidebar-pet-icon').innerText = stageInfo.icon;
+        document.getElementById('pet-emoji').innerText = stageInfo.icon;
+        document.getElementById('pet-character').style.fontSize = stageInfo.size;
+        document.getElementById('pet-stage-name').innerText = `Lv.${Math.floor(gameState.exp/20)+1} ${stageInfo.name}`;
+        document.getElementById('exp-bar').style.width = `${(gameState.exp % 100)}%`;
+    }
+
+    // --- 5. 寵物成長與餵食 (靜音版) ---
+    function getPetStage(exp) {
+        if (exp < 30) return { icon: "🥚", size: "clamp(4rem, 10vw, 5.5rem)", name: "時空小蛋" };
+        if (exp < 80) return { icon: "🐣", size: "clamp(5rem, 12vw, 7rem)", name: "破殼小啾" };
+        if (exp < 150) return { icon: "🐥", size: "clamp(6rem, 14vw, 8.5rem)", name: "活力小雞" };
+        return { icon: "🐓", size: "clamp(7.5rem, 18vw, 11rem)", name: "成年公雞" };
+    }
+
+    function feedPet() {
+        if (gameState.food <= 0) return alert("飼料盆空了！快去扭蛋機補充飼料吧！");
+        gameState.food--; gameState.exp += 10;
+        
+        const pet = document.getElementById('pet-character');
+        pet.classList.add('pet-bounce');
+        
+        setTimeout(() => pet.classList.remove('pet-bounce'), 300);
+        saveProgress(); updateUI(); updateRoom();
+    }
+
+    function updateRoom() {
+        decoPool.forEach(item => {
+            const slot = document.getElementById(item.slot);
+            if (slot) slot.style.opacity = gameState.ownedDecos.includes(item.id) ? "1" : "0";
+        });
+    }
+
+    // --- 6. 地圖與測驗邏輯 ---
+    function renderMap() {
+        const container = document.getElementById('map-container-dynamic');
+        container.innerHTML = '';
+
+        stageLetters.forEach(letter => {
+            const title = document.createElement('div');
+            title.className = 'stage-section'; title.innerText = stageNames[letter];
+            container.appendChild(title);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'map-grid-wrapper';
+            const grid = document.createElement('div');
+            grid.className = 'map-grid';
+
+            for (let i = 1; i <= 5; i++) {
+                const levelId = letter + i;
+                const levelIndex = allLevelKeys.indexOf(levelId);
+                const isUnlocked = levelIndex <= gameState.unlockedLevelIndex;
+                
+                const coop = document.createElement('div');
+                coop.className = `coop-container ${isUnlocked ? '' : 'locked'}`;
+                if (isUnlocked) coop.onclick = () => startLevel(levelId);
+                
+                coop.innerHTML = `<div class="coop-house">🏠${!isUnlocked ? '<span class="lock-icon">🔒</span>' : ''}</div><div class="coop-label ${isUnlocked ? 'unlocked-label' : ''}">${levelId}</div>`;
+                grid.appendChild(coop);
+            }
+            wrapper.appendChild(grid); container.appendChild(wrapper);
+        });
+    }
+
+    function startLevel(levelId) {
+        currentLevelKey = levelId;
+        let originalPool = gameDatabase[levelId] || gameDatabase["A1"]; 
+        currentQuizPool = shuffleArray([...originalPool]); // 打亂題目
+        if(currentQuizPool.length > 5) currentQuizPool = currentQuizPool.slice(0, 5); // 取5題
+
+        currentQIndex = 0;
+        document.getElementById('quiz-title').innerText = "LEVEL " + levelId;
+        showScreen('quiz');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const qObj = currentQuizPool[currentQIndex];
+        document.getElementById('q-text').innerText = qObj.q;
+        const list = document.getElementById('options-list');
+        list.innerHTML = '';
+        
+        // 打亂選項
+        const shuffledOptions = shuffleArray([...qObj.options]);
+
+        shuffledOptions.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn'; btn.innerText = opt;
+            btn.onclick = () => checkAnswer(opt, qObj.a, btn);
+            list.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(picked, correct, btnDOM) {
+        const allBtns = document.querySelectorAll('.opt-btn');
+        allBtns.forEach(b => b.style.pointerEvents = 'none');
+
+        if (picked === correct) {
+            btnDOM.classList.add('correct');
+            gameState.coins += 10; updateUI();
+            setTimeout(() => {
+                currentQIndex++;
+                if (currentQIndex < currentQuizPool.length) loadQuestion();
+                else levelComplete();
+            }, 1000);
+        } else {
+            btnDOM.classList.add('wrong'); speakText("Try again");
+            setTimeout(() => {
+                btnDOM.classList.remove('wrong');
+                allBtns.forEach(b => b.style.pointerEvents = 'auto');
+            }, 1000);
+        }
+    }
+
+    function levelComplete() {
+        alert(`恭喜通關 ${currentLevelKey}！獲得金幣 💰`);
+        const currentIndex = allLevelKeys.indexOf(currentLevelKey);
+        if (currentIndex === gameState.unlockedLevelIndex) gameState.unlockedLevelIndex++;
+        saveProgress(); showScreen('map');
+    }
+
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = /[\u4e00-\u9fa5]/.test(text) ? 'zh-TW' : 'en-US'; msg.rate = 0.8;
+            window.speechSynthesis.speak(msg);
+        }
+    }
+    function speakCurrentQ() { speakText(document.getElementById('q-text').innerText); }
+
+    // --- 7. 扭蛋商城 ---
+    function startGacha() {
+        if (gameState.coins < 50) return alert("金幣不夠囉！去地圖答題賺金幣吧！");
+        if (gameState.ownedDecos.length >= 10) return alert("太強了！您已經收集完全部 10 個經典家具！");
+
+        gameState.coins -= 50; gameState.drawCount++; updateUI();
+        const egg = document.getElementById('machine-egg');
+        const btn = document.getElementById('draw-btn');
+        btn.disabled = true; egg.classList.add('shaking');
+
+        setTimeout(() => {
+            egg.classList.remove('shaking'); btn.disabled = false;
+            determinePrize();
+        }, 1200);
+    }
+
+    function determinePrize() {
+        const available = decoPool.filter(d => !gameState.ownedDecos.includes(d.id));
+        if (available.length === 0) {
+            gameState.food++; showResult("🛍️", "美味飼料 x1", "獲得一包飼料！快去家裡餵小啾吧！");
+        } else {
+            let isDeco = (gameState.drawCount % 5 === 0) || (Math.random() > 0.75);
+            if (isDeco) {
+                const prize = available[Math.floor(Math.random() * available.length)];
+                gameState.ownedDecos.push(prize.id);
+                showResult(prize.icon, "解鎖新裝飾！", `獲得【${prize.name}】，已自動佈置到小啾的家！`);
+            } else {
+                gameState.food++;
+                showResult("🛍️", "美味飼料 x1", "獲得一包飼料！快去家裡餵小啾吧！");
+            }
+        }
+        saveProgress(); updateUI();
+    }
+
+    function showResult(icon, title, desc) {
+        document.getElementById('result-icon').innerText = icon;
+        document.getElementById('result-title').innerText = title;
+        document.getElementById('result-desc').innerText = desc;
+        document.getElementById('result-modal').classList.remove('hidden');
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文科講義—家庭樹教學遊戲</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .bubble-font {
+            font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
+        }
+        
+        /* 螢幕上隱藏列印專用表頭 */
+        .print-only-header {
+            display: none;
+        }
+
+        /* 答對答錯亮燈與網頁邊框樣式 */
+        .glow-correct {
+            border-color: #22c55e !important;
+            background-color: #f0fdf4 !important;
+        }
+        .glow-incorrect {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+        }
+
+        /* ------------------ 列印樣式 (A4 雙欄左右並排，一頁兩關) ------------------ */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0.8cm 1cm;
+            }
+            body {
+                background-color: white !important;
+                color: black !important;
+                font-size: 11pt;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only-header {
+                display: block !important;
+            }
+            .level-card {
+                box-shadow: none !important;
+                border: none !important;
+                background: transparent !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                page-break-inside: avoid !important;
+            }
+            /* 強制雙欄絕對左右並排 (左邊 32% 圖片，右邊 68% 題目) */
+            .grid-cols-custom {
+                display: grid !important;
+                grid-template-columns: 32% 68% !important;
+                gap: 1.5rem !important;
+                align-items: center !important;
+            }
+            /* 每兩關強迫換一頁 */
+            .print-page-wrapper {
+                page-break-after: always !important;
+                display: block !important;
+            }
+            svg {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+            /* 列印底槓樣式 */
+            .print-underline-short {
+                border-bottom: 2px solid #000000 !important;
+                width: 2.2rem !important;
+                display: inline-block !important;
+                height: 1.2rem;
+                text-align: center;
+                font-weight: bold;
+            }
+            .print-underline-long {
+                border-bottom: 2px solid #000000 !important;
+                width: 10rem !important;
+                display: inline-block !important;
+                height: 1.2rem;
+                text-align: center;
+                font-weight: bold;
+            }
+            .print-note {
+                display: block !important;
+                color: #334155 !important;
+                font-size: 9.5pt !important;
+                margin-top: 2px !important;
+                padding-left: 2.5rem !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-20">
+
+    <!-- ================= 頂端極簡控制列 (不佔手機空間) ================= -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto px-3 py-1.5 flex flex-row items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5">
+                <div class="bg-indigo-600 text-white p-1 rounded-lg">
+                    <i class="fa-solid fa-sitemap text-xs"></i>
+                </div>
+                <h1 class="text-xs sm:text-sm font-bold tracking-wide">家庭樹教學遊戲</h1>
+            </div>
+
+            <!-- 三大核心模式切換 -->
+            <div class="flex bg-slate-800 p-0.5 rounded-lg border border-slate-700/50">
+                <button onclick="switchMode('tf')" id="btn-mode-tf" class="mode-btn px-3 py-1 rounded-md font-bold transition-all text-[11px] sm:text-xs flex items-center gap-1 bg-indigo-600 text-white">
+                    是非
+                </button>
+                <button onclick="switchMode('mcq')" id="btn-mode-mcq" class="mode-btn px-3 py-1 rounded-md font-bold transition-all text-[11px] sm:text-xs flex items-center gap-1 text-slate-400 hover:text-white">
+                    選擇
+                </button>
+                <button onclick="switchMode('fill')" id="btn-mode-fill" class="mode-btn px-3 py-1 rounded-md font-bold transition-all text-[11px] sm:text-xs flex items-center gap-1 text-slate-400 hover:text-white">
+                    填空
+                </button>
+            </div>
+
+            <!-- 學生版 / 教師解答版 一鍵切換列印 -->
+            <div class="flex items-center gap-1.5">
+                <button onclick="toggleTeacherVersionGlobal()" id="btn-teacher-global" class="bg-slate-700 hover:bg-slate-600 text-amber-400 font-bold px-2 py-1 rounded-lg text-[11px] sm:text-xs flex items-center gap-1 border border-amber-400/30">
+                    <i class="fa-solid fa-graduation-cap"></i> <span>切換解答版</span>
+                </button>
+                <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-2.5 py-1 rounded-lg text-[11px] sm:text-xs flex items-center gap-1">
+                    <i class="fa-solid fa-print"></i> 列印
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= 大電視畫面：淨空表頭與個人資訊欄 ================= -->
+    <main class="max-w-7xl mx-auto px-2 sm:px-4 mt-4 print:mt-0 print-container">
+        <!-- 關卡容器 (由 JavaScript 自動抽換數據渲染) -->
+        <div id="levels-container" class="space-y-6 print:space-y-0"></div>
+    </main>
+
+    <!-- ================= 填空配對題：純小寫懸浮字彙池 (網頁專用) ================= -->
+    <div id="fill-word-pool" class="fixed bottom-0 left-0 w-full bg-slate-900 border-t-2 border-slate-950 py-2 px-3 shadow-2xl z-40 hidden no-print">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span class="text-[10px] text-slate-400 font-bold flex items-center gap-1 shrink-0">
+                <i class="fa-solid fa-hand-pointer text-amber-400"></i> 先點題目句尾底線，再點下方小寫單字：
+            </span>
+            <div class="flex flex-wrap gap-1.5 justify-center" id="vocab-buttons"></div>
+            <button onclick="clearSelectedBlank()" class="text-[10px] text-rose-400 hover:text-rose-300 font-bold shrink-0">
+                清除選取
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= 自訂彈出訊息視窗 ================= -->
+    <div id="custom-modal" class="fixed inset-0 bg-slate-950/70 flex items-center justify-center z-50 hidden no-print">
+        <div class="bg-white rounded-2xl p-5 max-w-sm w-full mx-4 shadow-2xl border-4 border-slate-900 text-center transform scale-95 transition-all duration-300" id="modal-content">
+            <div id="modal-icon" class="text-4xl mb-2"></div>
+            <h3 id="modal-title" class="text-base font-extrabold text-slate-900 mb-1"></h3>
+            <p id="modal-text" class="text-xs text-slate-600 mb-4 leading-relaxed"></p>
+            <button onclick="closeModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 rounded-xl border-2 border-slate-950 transition-all text-xs">確認</button>
+        </div>
+    </div>
+
+    <script>
+        // 12 關卡完整寫死題庫資料庫 (精簡兩碼制：A-1 至 C-4)
+        const levelsData = {
+            "A-1": { id: "A-1", name: "A-1：核心家庭（一）", model: "A", roles: { father: "Tom", mother: "Mary", son: "Ben", daughter: "Amy" },
+                questions: {
+                    tf: [
+                        { q: "Mary is Ben's mother.", a: "O", note: "Mary 是 Ben 的媽媽 (mother)。" },
+                        { q: "Ben is Amy's sister.", a: "X", note: "Ben 是男生，所以是 Amy 的 brother（兄弟）。" },
+                        { q: "Tom is Amy's father.", a: "O", note: "Tom 是 Amy 的爸爸 (father)。" },
+                        { q: "Amy is Mary's son.", a: "X", note: "Amy 是女生，所以是 Mary 的 daughter（女兒）。" },
+                        { q: "Tom and Mary are parents.", a: "O", note: "是的，Tom 和 Mary 是父母親 (parents)。" }
+                    ],
+                    mcq: [
+                        { q: "Mary is Ben's _______.", a: "A", options: ["mother", "father", "sister"], note: "Mary 是 Ben 的媽媽 (mother)。" },
+                        { q: "Ben is Amy's _______.", a: "B", options: ["sister", "brother", "mother"], note: "Ben 是男生，他是 Amy 的 brother。" },
+                        { q: "Tom is Amy's _______.", a: "B", options: ["mother", "father", "brother"], note: "Tom 是 Amy 的爸爸 (father)。" },
+                        { q: "Amy is Mary's _______.", a: "A", options: ["daughter", "son", "husband"], note: "Amy 是 Mary 的女兒 (daughter)。" },
+                        { q: "Tom and Mary are Ben's _______.", a: "C", options: ["brothers", "sisters", "parents"], note: "Tom 和 Mary 是父母 (parents)。" }
+                    ],
+                    fill: [
+                        { q: "Mary is Ben's _______.", a: "mother" },
+                        { q: "Ben is Amy's _______.", a: "brother" },
+                        { q: "Tom is Amy's _______.", a: "father" },
+                        { q: "Amy is Mary's _______.", a: "daughter" },
+                        { q: "Tom is Mary's _______.", a: "husband" }
+                    ]
+                }
+            },
+            "A-2": { id: "A-2", name: "A-2：核心家庭（二）", model: "A", roles: { father: "Ben", mother: "Amy", son: "Tom", daughter: "Mary" },
+                questions: {
+                    tf: [
+                        { q: "Mary is Ben's mother.", a: "X", note: "在這一關，Mary 是女兒，Amy 裝才是媽媽。" },
+                        { q: "Tom is Mary's brother.", a: "O", note: "Tom 和 Mary 是手足，Tom 是 brother（兄弟）。" },
+                        { q: "Amy is Tom's mother.", a: "O", note: "Amy 是 Tom 的媽媽 (mother)。" },
+                        { q: "Ben is Amy's daughter.", a: "X", note: "Ben 是男生，他是 Amy 的 husband（丈夫）。" },
+                        { q: "Tom is Ben's son.", a: "O", note: "Ben 是爸爸，所以 Tom 是他的 son（兒子）。" }
+                    ],
+                    mcq: [
+                        { q: "Mary is Ben's _______.", a: "B", options: ["mother", "daughter", "sister"], note: "在這一關，Mary 是女兒 (daughter)。" },
+                        { q: "Tom is Mary's _______.", a: "A", options: ["brother", "father", "son"], note: "Tom 和 Mary 是手足，Tom 是 brother。" },
+                        { q: "Amy is Tom's _______.", a: "C", options: ["father", "sister", "mother"], note: "Amy 是 Tom 的媽媽 (mother)。" },
+                        { q: "Ben is Amy's _______.", a: "A", options: ["husband", "daughter", "son"], note: "Ben 是 Amy 的丈夫 (husband)。" },
+                        { q: "Tom is Ben's _______.", a: "B", options: ["father", "son", "brother"], note: "Ben 是爸爸，Tom 是他的 son（兒子）。" }
+                    ],
+                    fill: [
+                        { q: "Tom is Ben's _______.", a: "son" },
+                        { q: "Ben is Amy's _______.", a: "husband" },
+                        { q: "Mary is Tom's _______.", a: "sister" },
+                        { q: "Amy is Mary's _______.", a: "mother" },
+                        { q: "Tom is Mary's _______.", a: "brother" }
+                    ]
+                }
+            },
+            "A-3": { id: "A-3", name: "A-3：核心家庭（三）", model: "A", roles: { father: "Sam", mother: "Lisa", son: "Jack", daughter: "Lily" },
+                questions: {
+                    tf: [
+                        { q: "Jack is Sam's son.", a: "O", note: "Sam 是爸爸，Jack 是他的兒子 (son)。" },
+                        { q: "Lisa is Lily's mother.", a: "O", note: "Lisa 是 Lily 的媽媽 (mother)。" },
+                        { q: "Lily is Jack's brother.", a: "X", note: "Lily 是女生，所以是 Jack 的 sister（姊妹）。" },
+                        { q: "Sam is Lisa's husband.", a: "O", note: "Sam 和 Lisa 結婚了，Sam 是丈夫 (husband)。" },
+                        { q: "Jack and Lily are parents.", a: "X", note: "Jack 和 Lily 是孩子，不是父母 (parents)。" }
+                    ],
+                    mcq: [
+                        { q: "Jack is Sam's _______.", a: "B", options: ["father", "son", "daughter"], note: "Jack 是 Sam 的兒子 (son)。" },
+                        { q: "Lisa is Lily's _______.", a: "A", options: ["mother", "sister", "wife"], note: "Lisa 是 Lily 的媽媽 (mother)。" },
+                        { q: "Lily is Jack's _______.", a: "B", options: ["brother", "sister", "father"], note: "Lily 是 Jack 的姊妹 (sister)。" },
+                        { q: "Sam is Lisa's _______.", a: "A", options: ["husband", "wife", "son"], note: "Sam 是 Lisa 的丈夫 (husband)。" },
+                        { q: "Jack and Lily are Lisa's _______.", a: "C", options: ["parents", "sisters", "children"], note: "Jack 和 Lily 是 Lisa 的孩子 (children)。" }
+                    ],
+                    fill: [
+                        { q: "Lily is Jack's _______.", a: "sister" },
+                        { q: "Sam is Lisa's _______.", a: "husband" },
+                        { q: "Jack is Lisa's _______.", a: "son" },
+                        { q: "Lisa is Sam's _______.", a: "wife" },
+                        { q: "Jack is Lily's _______.", a: "brother" }
+                    ]
+                }
+            },
+            "A-4": { id: "A-4", name: "A-4：核心家庭（四）", model: "A", roles: { father: "Jack", mother: "Lily", son: "Sam", daughter: "Lisa" },
+                questions: {
+                    tf: [
+                        { q: "Lisa is Lily's mother.", a: "X", note: "在這一關，Lisa 是女兒，Lily 裝才是媽媽。" },
+                        { q: "Sam is Lisa's brother.", a: "O", note: "Sam 和 Lisa 是手足，Sam 是 brother（兄弟）。" },
+                        { q: "Jack is Sam's father.", a: "O", note: "Jack 是 Sam 的爸爸 (father)。" },
+                        { q: "Lily is Jack's wife.", a: "O", note: "Jack 是丈夫，Lily 是他的妻子 (wife)。" },
+                        { q: "Lily is Sam's daughter.", a: "X", note: "Lily 是媽媽，Sam 才是她的兒子。" }
+                    ],
+                    mcq: [
+                        { q: "Lisa is Lily's _______.", a: "B", options: ["mother", "daughter", "husband"], note: "Lisa 是 Lily 的女兒 (daughter)。" },
+                        { q: "Lily is Jack's _______.", a: "C", options: ["husband", "father", "wife"], note: "Lily 是 Jack 的妻子 (wife)。" },
+                        { q: "Sam is Lisa's _______.", a: "A", options: ["brother", "sister", "father"], note: "Sam 是 Lisa 的兄弟 (brother)。" },
+                        { q: "Jack is Lisa's _______.", a: "B", options: ["mother", "father", "son"], note: "Jack 是 Lisa 的爸爸 (father)。" },
+                        { q: "Sam is Lily's _______.", a: "A", options: ["son", "daughter", "husband"], note: "Sam 是 Lily 的兒子 (son)。" }
+                    ],
+                    fill: [
+                        { q: "Lisa is Lily's _______.", a: "daughter" },
+                        { q: "Lily is Jack's _______.", a: "wife" },
+                        { q: "Sam is Lisa's _______.", a: "brother" },
+                        { q: "Jack is Lisa's _______.", a: "father" },
+                        { q: "Sam is Lily's _______.", a: "son" }
+                    ]
+                }
+            },
+            "B-1": { id: "B-1", name: "B-1：直系三代（一）", model: "B", roles: { grandfather: "John", grandmother: "Rose", father: "Tom", mother: "Mary", son: "Ben" },
+                questions: {
+                    tf: [
+                        { q: "John is Tom's father.", a: "O", note: "John 是最上層的祖父，他也是 Tom 的爸爸。" },
+                        { q: "Rose is Ben's mother.", a: "X", note: "Rose 是阿公阿媽輩，她是 Ben 的祖母 (grandmother)。" },
+                        { q: "Ben is John's grandson.", a: "O", note: "是的，Ben 是 John 的孫子 (grandson)。" },
+                        { q: "Mary is Rose's daughter.", a: "X", note: "Mary 與 Tom 結婚，她是 Rose 的媳婦 (daughter-in-law)。" },
+                        { q: "John and Rose are grandparents.", a: "O", note: "是的，他們是祖父母 (grandparents)。" }
+                    ],
+                    mcq: [
+                        { q: "John is Ben's _______.", a: "B", options: ["father", "grandfather", "brother"], note: "John 是 Ben 的祖父 (grandfather)。" },
+                        { q: "Ben is Tom's _______.", a: "A", options: ["son", "daughter", "father"], note: "Ben 是 Tom 的兒子 (son)。" },
+                        { q: "Rose is Tom's _______.", a: "C", options: ["wife", "daughter", "mother"], note: "Rose 是 Tom 的媽媽 (mother)。" },
+                        { q: "Mary is Ben's _______.", a: "B", options: ["grandmother", "mother", "sister"], note: "Mary 是 Ben 的媽媽 (mother)。" },
+                        { q: "Rose is Ben's _______.", a: "C", options: ["mother", "sister", "grandmother"], note: "Rose 是 Ben 的祖母 (grandmother)。" }
+                    ],
+                    fill: [
+                        { q: "John is Ben's _______.", a: "grandfather" },
+                        { q: "Ben is Tom's _______.", a: "son" },
+                        { q: "Rose is Tom's _______.", a: "mother" },
+                        { q: "Mary is Ben's _______.", a: "mother" },
+                        { q: "Rose is Ben's _______.", a: "grandmother" }
+                    ]
+                }
+            },
+            "B-2": { id: "B-2", name: "B-2：直系三代（二）", model: "B", roles: { grandfather: "Ben", grandmother: "Mary", father: "John", mother: "Rose", son: "Tom" },
+                questions: {
+                    tf: [
+                        { q: "John is Tom's father.", a: "O", note: "在此關卡，John 是中間層的爸爸，Tom 是兒子。" },
+                        { q: "Rose is Ben's mother.", a: "X", note: "Rose 是媽媽，Ben 裝長輩。Ben 是祖父。" },
+                        { q: "Ben is Tom's grandfather.", a: "O", note: "Ben 在最上層，是 Tom 的祖父 (grandfather)。" },
+                        { q: "Tom is Mary's grandson.", a: "O", note: "Mary 是祖母，所以 Tom 是她的孫子 (grandson)。" },
+                        { q: "John is Ben's father.", a: "X", note: "Ben 是 John 的父親。John 是 Ben 的兒子才對。" }
+                    ],
+                    mcq: [
+                        { q: "Ben is Tom's _______.", a: "B", options: ["father", "grandfather", "brother"], note: "Ben 是 Tom 的祖父 (grandfather)。" },
+                        { q: "Tom is John's _______.", a: "A", options: ["son", "father", "brother"], note: "Tom 是 John 的兒子 (son)。" },
+                        { q: "Mary is John's _______.", a: "C", options: ["wife", "daughter", "mother"], note: "Mary 是祖母，她是 John 的媽媽。" },
+                        { q: "Rose is Tom's _______.", a: "B", options: ["grandmother", "mother", "sister"], note: "Rose 是 Tom 的媽媽 (mother)。" },
+                        { q: "Mary is Tom's _______.", a: "C", options: ["mother", "sister", "grandmother"], note: "Mary 是 Tom 的祖母 (grandmother)。" }
+                    ],
+                    fill: [
+                        { q: "Ben is Tom's _______.", a: "grandfather" },
+                        { q: "Tom is John's _______.", a: "son" },
+                        { q: "Mary is John's _______.", a: "mother" },
+                        { q: "Rose is Tom's _______.", a: "mother" },
+                        { q: "Mary is Tom's _______.", a: "grandmother" }
+                    ]
+                }
+            },
+            "B-3": { id: "B-3", name: "B-3：直系三代（三）", model: "B", roles: { grandfather: "Charles", grandmother: "Helen", father: "David", mother: "Emma", son: "Lucy" },
+                questions: {
+                    tf: [
+                        { q: "Charles is Lucy's grandfather.", a: "O", note: "Charles 是 Lucy 的祖父 (grandfather)。" },
+                        { q: "Emma is Helen's daughter.", a: "X", note: "Emma 是與 David 結婚的媽媽，Helen 是婆婆。" },
+                        { q: "Lucy is David's daughter.", a: "O", note: "David 是父親，Lucy 是他的女兒 (daughter)。" },
+                        { q: "Helen is Charles's wife.", a: "O", note: "Charles 與 Helen 是祖父母夫妻，Helen 是妻子。" },
+                        { q: "Lucy is Helen's granddaughter.", a: "O", note: "是的，Lucy 是 Helen 的孫女 (granddaughter)。" }
+                    ],
+                    mcq: [
+                        { q: "Lucy is Charles's _______.", a: "B", options: ["grandson", "granddaughter", "daughter"], note: "Lucy 是 Charles 的孫女 (granddaughter)。" },
+                        { q: "Charles is David's _______.", a: "C", options: ["son", "brother", "father"], note: "Charles 是 David 的父親 (father)。" },
+                        { q: "Emma is Lucy's _______.", a: "A", options: ["mother", "grandmother", "sister"], note: "Emma 是 Lucy 的媽媽 (mother)。" },
+                        { q: "David is Emma's _______.", a: "B", options: ["father", "husband", "brother"], note: "David 是 Emma 的丈夫 (husband)。" },
+                        { q: "Helen is Lucy's _______.", a: "C", options: ["mother", "sister", "grandmother"], note: "Helen 是 Lucy 的祖母 (grandmother)。" }
+                    ],
+                    fill: [
+                        { q: "Lucy is Charles's _______.", a: "granddaughter" },
+                        { q: "Charles is David's _______.", a: "father" },
+                        { q: "Emma is Lucy's _______.", a: "mother" },
+                        { q: "David is Emma's _______.", a: "husband" },
+                        { q: "Helen is Lucy's _______.", a: "grandmother" }
+                    ]
+                }
+            },
+            "B-4": { id: "B-4", name: "B-4：直系三代（四）", model: "B", roles: { grandfather: "David", grandmother: "Emma", father: "Charles", mother: "Helen", son: "Lucy" },
+                questions: {
+                    tf: [
+                        { q: "Charles is Lucy's grandfather.", a: "X", note: "在此關卡，Charles 是爸爸，David 裝長輩。David 才是祖父。" },
+                        { q: "Emma is Lucy's grandmother.", a: "O", note: "Emma 是最上層的祖母 (grandmother)。" },
+                        { q: "Helen is David's daughter.", a: "X", note: "Helen 是媽媽，David 是祖父。Helen 是媳婦。" },
+                        { q: "Lucy is Emma's granddaughter.", a: "O", note: "Emma 是祖母，Lucy 是她的孫女 (granddaughter)。" },
+                        { q: "David is Helen's father.", a: "X", note: "David 是 Charles 的父親，所以他是 Helen 的公公。" }
+                    ],
+                    mcq: [
+                        { q: "David is Lucy's _______.", a: "C", options: ["father", "brother", "grandfather"], note: "David 是 Lucy 的祖父 (grandfather)。" },
+                        { q: "Lucy is Charles's _______.", a: "B", options: ["son", "daughter", "mother"], note: "Lucy 是 Charles 的女兒 (daughter)。" },
+                        { q: "Emma is Helen's _______.", a: "C", options: ["mother", "daughter", "mother-in-law"], note: "Emma 是婆婆 (mother-in-law)。" },
+                        { q: "Helen is Lucy's _______.", a: "A", options: ["mother", "grandmother", "sister"], note: "Helen 是 Lucy 的媽媽 (mother)。" },
+                        { q: "Charles is Emma's _______.", a: "B", options: ["husband", "son", "father"], note: "Charles 是 Emma 的兒子 (son)。" }
+                    ],
+                    fill: [
+                        { q: "David is Lucy's _______.", a: "grandfather" },
+                        { q: "Lucy is Charles's _______.", a: "daughter" },
+                        { q: "Helen is Lucy's _______.", a: "mother" },
+                        { q: "Charles is Emma's _______.", a: "son" },
+                        { q: "Emma is Lucy's _______.", a: "grandmother" }
+                    ]
+                }
+            },
+            "C-1": { id: "C-1", name: "C-1：大魔王家族（一）", model: "C", roles: { grandfather: "John", grandmother: "Rose", father: "Tom", mother: "Mary", son: "Ben", daughter: "Amy", uncle: "Sam", cousin: "Jack" },
+                questions: {
+                    tf: [
+                        { q: "Sam is Rose's son.", a: "O", note: "Rose 是祖母，Sam 是叔叔，Sam 確實是 Rose 的兒子。" },
+                        { q: "Jack is John's grandson.", a: "O", note: "John 是祖父，Jack 是堂哥，所以 Jack 也是 John 的孫子。" },
+                        { q: "Sam is Ben's uncle.", a: "O", note: "Sam 是爸爸 Tom 的弟弟，所以是 Ben 的叔叔 (uncle)。" },
+                        { q: "Mary is Jack's aunt.", a: "O", note: "Mary 與 Tom 結婚，Tom 是 Jack 的伯伯，Mary 即是嬸嬸 (aunt)。" },
+                        { q: "Ben and Jack are brothers.", a: "X", note: "他們是堂兄弟 (cousins)，而不是親兄弟。" }
+                    ],
+                    mcq: [
+                        { q: "Sam is Ben's _______.", a: "B", options: ["father", "uncle", "cousin"], note: "Sam 是爸爸的兄弟，所以是 Ben 的叔叔 (uncle)。" },
+                        { q: "Jack is Amy's _______.", a: "C", options: ["brother", "uncle", "cousin"], note: "Jack 是叔叔的兒子，他是 Amy 的堂兄弟 (cousin)。" },
+                        { q: "Rose is Amy's _______.", a: "A", options: ["grandmother", "mother", "aunt"], note: "Rose 在最上層，是 Amy 的祖母 (grandmother)。" },
+                        { q: "John is Jack's _______.", a: "B", options: ["father", "grandfather", "uncle"], note: "John 是 Jack 的祖父 (grandfather)。" },
+                        { q: "Sam is Rose's _______.", a: "C", options: ["husband", "brother", "son"], note: "Rose 是祖母，Sam 是她的兒子。" }
+                    ],
+                    fill: [
+                        { q: "Sam is Ben's _______.", a: "uncle" },
+                        { q: "Jack is Amy's _______.", a: "cousin" },
+                        { q: "Rose is Amy's _______.", a: "grandmother" },
+                        { q: "Sam is Tom's _______.", a: "brother" },
+                        { q: "John is Jack's _______.", a: "grandfather" }
+                    ]
+                }
+            },
+            "C-2": { id: "C-2", name: "C-2：大魔王家族（二）", model: "C", roles: { grandfather: "Ben", grandmother: "Mary", father: "Sam", mother: "Jack", son: "Tom", daughter: "Amy", uncle: "John", cousin: "Rose" },
+                questions: {
+                    tf: [
+                        { q: "John is Mary's son.", a: "O", note: "Mary 是最頂層的祖母，John 是叔叔，John 是 Mary 的兒子。" },
+                        { q: "Rose is Ben's grandson.", a: "O", note: "Ben 是祖父，Rose 在最下層，是他的孫輩。" },
+                        { q: "Tom is John's nephew.", a: "O", note: "John 是叔叔，Tom 是侄子 (nephew) 的關係。" },
+                        { q: "Amy is Rose's cousin.", a: "O", note: "Amy 與 Rose 在最下層，她們是堂姊妹 (cousins)。" },
+                        { q: "Sam is Tom's grandfather.", a: "X", note: "Sam 是 Tom 的爸爸。Ben 裝長輩。Ben 才是 Tom 的祖父。" }
+                    ],
+                    mcq: [
+                        { q: "John is Tom's _______.", a: "C", options: ["father", "grandfather", "uncle"], note: "John 是 Tom 的叔叔 (uncle)。" },
+                        { q: "Rose is Amy's _______.", a: "C", options: ["sister", "uncle", "cousin"], note: "Rose 是 Amy 的堂兄弟 (cousin)。" },
+                        { q: "Mary is Amy's _______.", a: "A", options: ["grandmother", "mother", "aunt"], note: "Mary 在最上層，是 Amy 的祖母 (grandmother)。" },
+                        { q: "John is Sam's _______.", a: "B", options: ["father", "brother", "cousin"], note: "John 和 Sam 在此關卡中是兄弟 (brothers)。" },
+                        { q: "Ben is Rose's _______.", a: "B", options: ["father", "grandfather", "uncle"], note: "Ben 在最上層，是 Rose 的祖父 (grandfather)。" }
+                    ],
+                    fill: [
+                        { q: "John is Tom's _______.", a: "uncle" },
+                        { q: "Rose is Amy's _______.", a: "cousin" },
+                        { q: "Mary is Amy's _______.", a: "grandmother" },
+                        { q: "John is Sam's _______.", a: "brother" },
+                        { q: "Ben is Rose's _______.", a: "grandfather" }
+                    ]
+                }
+            },
+            "C-3": { id: "C-3", name: "C-3：大魔王家族（三）", model: "C", roles: { grandfather: "Charles", grandmother: "Helen", father: "David", mother: "Lily", son: "Gary", daughter: "Heather", uncle: "Judith", cousin: "Lisa" },
+                questions: {
+                    tf: [
+                        { q: "Judith is Helen's daughter.", a: "O", note: "Helen 是祖母，Judith 是阿姨，她確實是 Helen 的女兒。" },
+                        { q: "Lisa is Charles's granddaughter.", a: "O", note: "Charles 是祖父，Lisa 是表姊，所以也是 Charles 的外孫女。" },
+                        { q: "Judith is Gary's aunt.", a: "O", note: "Judith 是媽媽的姊妹，所以是 Gary 的阿姨 (aunt)。" },
+                        { q: "Lisa is Heather's sister.", a: "X", note: "Lisa 是表姊妹 (cousin)，Heather 的親兄弟是 Gary。" },
+                        { q: "David is Helen's husband.", a: "X", note: "Charles 才是 Helen 的丈夫。David 是女婿。" }
+                    ],
+                    mcq: [
+                        { q: "Judith is Gary's _______.", a: "A", options: ["aunt", "mother", "sister"], note: "Judith 是媽媽的姊妹，她是 Gary 的阿姨 (aunt)。" },
+                        { q: "Lisa is Heather's _______.", a: "C", options: ["sister", "uncle", "cousin"], note: "Lisa 是 Heather 的表姊妹 (cousin)。" },
+                        { q: "Helen is Heather's _______.", a: "A", options: ["grandmother", "mother", "aunt"], note: "Helen 是 Heather 的祖母 (grandmother)。" },
+                        { q: "Judith is Lily's _______.", a: "B", options: ["mother", "sister", "husband"], note: "Judith 是 Lily 的姊妹 (sister)。" },
+                        { q: "Charles is Lisa's _______.", a: "B", options: ["father", "grandfather", "uncle"], note: "Charles 是 Lisa 的外祖父 (grandfather)。" }
+                    ],
+                    fill: [
+                        { q: "Judith is Gary's _______.", a: "aunt" },
+                        { q: "Lisa is Heather's _______.", a: "cousin" },
+                        { q: "Helen is Heather's _______.", a: "grandmother" },
+                        { q: "Judith is Lily's _______.", a: "sister" },
+                        { q: "Charles is Lisa's _______.", a: "grandfather" }
+                    ]
+                }
+            },
+            "C-4": { id: "C-4", name: "C-4：大魔王家族（四）", model: "C", roles: { grandfather: "David", grandmother: "Helen", father: "Charles", mother: "Judith", son: "Gary", daughter: "Lisa", uncle: "Lily", cousin: "Heather" },
+                questions: {
+                    tf: [
+                        { q: "Lily is Helen's daughter.", a: "O", note: "Helen 是祖母，Lily 是阿姨，她是 Helen 的女兒。" },
+                        { q: "Heather is David's granddaughter.", a: "O", note: "David 是外祖父，Heather 是他的外孫女 (granddaughter)。" },
+                        { q: "Lily is Gary's aunt.", a: "O", note: "Lily 是媽媽 Judith 的姊妹，所以是 Gary 的阿姨 (aunt)。" },
+                        { q: "Lisa and Heather are cousins.", a: "O", note: "她們是表姊妹關係，所以是 cousins。" },
+                        { q: "Charles is Lily's brother.", a: "X", note: "Charles 娶了 Judith，所以是 Lily 的姐夫/妹夫。" }
+                    ],
+                    mcq: [
+                        { q: "Lily is Gary's _______.", a: "A", options: ["aunt", "mother", "sister"], note: "Lily 是媽媽的姊妹，她是 Gary 的阿姨 (aunt)。" },
+                        { q: "Heather is Lisa's _______.", a: "C", options: ["sister", "uncle", "cousin"], note: "Heather 是 Lisa 的表姊妹 (cousin)。" },
+                        { q: "Helen is Lisa's _______.", a: "A", options: ["grandmother", "mother", "aunt"], note: "Helen 是 Lisa 的祖母 (grandmother)。" },
+                        { q: "Lily is Judith's _______.", a: "B", options: ["mother", "sister", "husband"], note: "Lily 是 Judith 的姊妹 (sister)。" },
+                        { q: "David is Heather's _______.", a: "B", options: ["father", "grandfather", "uncle"], note: "David 是 Heather 的外祖父 (grandfather)。" }
+                    ],
+                    fill: [
+                        { q: "Lily is Gary's _______.", a: "aunt" },
+                        { q: "Heather is Lisa's _______.", a: "cousin" },
+                        { q: "Helen is Lisa's _______.", a: "grandmother" },
+                        { q: "Lily is Judith's _______.", a: "sister" },
+                        { q: "David is Heather's _______.", a: "grandfather" }
+                    ]
+                }
+            }
+        };
+
+        let currentMode = 'tf';
+        let userAnswers = {};
+        let selectedBlankKey = null; // 綁定 "關卡編號-題目索引"
+        let globalTeacherAnswerMode = false; // 是否一鍵開啟教師版列印解答
+
+        // 監聽鍵盤快捷，避免誤觸
+        window.onload = function() {
+            initAnswersState();
+            renderAllLevels();
+            renderVocabPool();
+        };
+
+        function initAnswersState() {
+            Object.keys(levelsData).forEach(lvlId => {
+                userAnswers[lvlId] = { tf: Array(5).fill(null), mcq: Array(5).fill(null), fill: Array(5).fill("") };
+            });
+        }
+
+        // 一鍵切換全域教師版解答列印
+        function toggleTeacherVersionGlobal() {
+            globalTeacherAnswerMode = !globalTeacherAnswerMode;
+            const btn = document.getElementById('btn-teacher-global');
+            
+            if (globalTeacherAnswerMode) {
+                btn.className = "bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-2 py-1 rounded-lg text-[11px] sm:text-xs flex items-center gap-1 border-2 border-slate-950 shadow-md";
+                btn.querySelector('span').innerText = "解答版已開啟";
+                
+                // 強制將所有後台真實答案填入網頁顯示
+                Object.keys(levelsData).forEach(lvlId => {
+                    const data = levelsData[lvlId];
+                    data.questions[currentMode].forEach((q, idx) => {
+                        userAnswers[lvlId][currentMode][idx] = q.a;
+                    });
+                });
+            } else {
+                btn.className = "bg-slate-700 hover:bg-slate-600 text-amber-400 font-bold px-2 py-1 rounded-lg text-[11px] sm:text-xs flex items-center gap-1 border border-amber-400/30";
+                btn.querySelector('span').innerText = "切換解答版";
+                initAnswersState();
+            }
+            renderAllLevels();
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            selectedBlankKey = null;
+            if (globalTeacherAnswerMode) {
+                // 如果開啟了解答版，切換模式時也要自動填滿答案
+                Object.keys(levelsData).forEach(lvlId => {
+                    levelsData[lvlId].questions[currentMode].forEach((q, idx) => {
+                        userAnswers[lvlId][currentMode][idx] = q.a;
+                    });
+                });
+            }
+            
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.className = "mode-btn px-3 py-1 rounded-md font-bold transition-all text-[11px] sm:text-xs flex items-center gap-1 text-slate-400 hover:text-white";
+            });
+            document.getElementById(`btn-mode-${mode}`).className = "mode-btn px-3 py-1 rounded-md font-bold transition-all text-[11px] sm:text-xs flex items-center gap-1 bg-indigo-600 text-white";
+
+            renderAllLevels();
+            document.getElementById('fill-word-pool').className = (mode === 'fill') ? "fixed bottom-0 left-0 w-full bg-slate-900 border-t-2 border-slate-950 py-2.5 px-3 shadow-2xl z-40 no-print" : "hidden";
+        }
+
+        function renderAllLevels() {
+            const container = document.getElementById('levels-container');
+            container.innerHTML = '';
+            const levelKeys = Object.keys(levelsData);
+            
+            for (let i = 0; i < levelKeys.length; i += 2) {
+                const pageWrapper = document.createElement('div');
+                pageWrapper.className = "print-page-wrapper space-y-6 print:space-y-0 print:py-2";
+                
+                const titleText = currentMode === 'tf' ? '（是非題篇）' : currentMode === 'mcq' ? '（選擇題篇）' : '（填空配對篇）';
+                pageWrapper.innerHTML = `
+                    <div class="print-only-header w-full border-b-4 border-slate-900 pb-1.5 mb-4">
+                        <div class="flex justify-between items-end">
+                            <span class="text-xl font-black text-slate-900 tracking-wide">英文科講義—家庭樹${titleText}${globalTeacherAnswerMode ? ' <教師解答版>' : ''}</span>
+                            <div class="flex gap-6 text-sm font-extrabold text-slate-900">
+                                <div>班級：<span class="border-b-2 border-slate-900 w-24 inline-block"></span></div>
+                                <div>姓名：<span class="border-b-2 border-slate-900 w-32 inline-block"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                pageWrapper.appendChild(createLevelCard(levelKeys[i]));
+                if (i + 1 < levelKeys.length) {
+                    pageWrapper.appendChild(createLevelCard(levelKeys[i + 1]));
+                }
+                container.appendChild(pageWrapper);
+            }
+
+            levelKeys.forEach(lvlId => { drawFamilyTree(lvlId); });
+        }
+
+        function createLevelCard(lvlId) {
+            const data = levelsData[lvlId];
+            const card = document.createElement('div');
+            card.className = "level-card bg-white rounded-2xl border-2 border-slate-200 shadow-sm p-4 print:p-0 print:my-2 transition-all duration-300";
+            
+            // 是否處於單獨開啟解答狀態
+            const isLocalAnsRevealed = document.getElementById(`btn-ans-${lvlId}`)?.classList.contains('bg-rose-600') || globalTeacherAnswerMode;
+
+            card.innerHTML = `
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-1.5 mb-3 print:pb-1 print:mb-1.5">
+                    <span class="bubble-font text-xs sm:text-sm font-black text-slate-900 print:text-black">${data.name}</span>
+                    <div class="flex items-center gap-1.5 no-print">
+                        <button onclick="checkAnswers('${lvlId}')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-2 py-0.5 rounded-lg text-[10px] sm:text-xs flex items-center gap-0.5">批改</button>
+                        <button onclick="toggleAnswerKey('${lvlId}')" id="btn-ans-${lvlId}" class="${isLocalAnsRevealed ? 'bg-rose-600 border-rose-700 text-white' : 'bg-slate-100 border-slate-300 text-slate-700'} border font-bold px-2 py-0.5 rounded-lg text-[10px] sm:text-xs flex items-center gap-0.5">
+                            ${isLocalAnsRevealed ? '隱藏' : '解答'}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-custom gap-4 items-center">
+                    <div class="flex justify-center bg-slate-50/50 print:bg-transparent rounded-xl p-2 print:p-0">
+                        <div id="tree-svg-container-${lvlId}" class="w-full max-w-[280px] print:max-w-[170px]"></div>
+                    </div>
+                    <div class="space-y-2 print:space-y-1" id="questions-list-${lvlId}">
+                        ${renderQuestionsHTML(lvlId, isLocalAnsRevealed)}
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function renderQuestionsHTML(lvlId, isAnsRevealed) {
+            const data = levelsData[lvlId];
+            const qList = data.questions[currentMode];
+            let html = '';
+
+            qList.forEach((qObj, idx) => {
+                const qNum = idx + 1;
+                const savedAns = userAnswers[lvlId][currentMode][idx];
+
+                let frontUnderlineHTML = ''; // 前方極短作答底槓
+                let interactiveControlHTML = ''; // 網頁版並排按鈕區
+                let printOptionsSuffixHTML = ''; // 選擇題句尾列印選項
+
+                if (currentMode === 'tf') {
+                    // 是非題：列印版前方留一格填入正解
+                    const tfPrintText = globalTeacherAnswerMode ? qObj.a : "";
+                    frontUnderlineHTML = `<div class="print-underline-short print-only-blank mr-2">${tfPrintText}</div>`;
+                    interactiveControlHTML = `
+                        <div class="flex gap-1 mr-3 no-print shrink-0">
+                            <button onclick="selectAnswer('${lvlId}', ${idx}, 'O')" class="w-8 h-7 rounded-md font-bold border-2 ${savedAns === 'O' ? 'bg-emerald-500 border-slate-900 text-white scale-105' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'}" id="opt-${lvlId}-${idx}-O">O</button>
+                            <button onclick="selectAnswer('${lvlId}', ${idx}, 'X')" class="w-8 h-7 rounded-md font-bold border-2 ${savedAns === 'X' ? 'bg-rose-500 border-slate-900 text-white scale-105' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'}" id="opt-${lvlId}-${idx}-X">X</button>
+                        </div>
+                    `;
+                } else if (currentMode === 'mcq') {
+                    // 選擇題：列印版前方留一格填入正解
+                    const mcqPrintText = globalTeacherAnswerMode ? qObj.a : "";
+                    frontUnderlineHTML = `<div class="print-underline-short print-only-blank mr-2">${mcqPrintText}</div>`;
+                    
+                    // 下置選項在同一行水平橫向排開
+                    interactiveControlHTML = `
+                        <div class="flex gap-1.5 mr-3 no-print shrink-0">
+                            ${['A', 'B', 'C'].map(letter => `
+                                <button onclick="selectAnswer('${lvlId}', ${idx}, '${letter}')" class="w-7 h-7 rounded-md font-bold border-2 text-[11px] ${savedAns === letter ? 'bg-indigo-600 border-slate-900 text-white scale-105' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'}">
+                                    ${letter}
+                                </button>
+                            `).join('')}
+                        </div>
+                    `;
+                    printOptionsSuffixHTML = `<span class="print-only-blank text-[10px] font-bold text-slate-800 ml-3">(A) ${qObj.options[0]} &nbsp; (B) ${qObj.options[1]} &nbsp; (C) ${qObj.options[2]}</span>`;
+                }
+
+                let finalQuestionHTML = '';
+                if (currentMode === 'fill') {
+                    // 填空配對：前方不加框，句尾長實線填詞
+                    const isSelected = selectedBlankKey === `${lvlId}-${idx}`;
+                    const displayText = savedAns ? savedAns : "__________________";
+                    const fillPrintText = globalTeacherAnswerMode ? qObj.a : "";
+
+                    finalQuestionHTML = `
+                        <span onclick="speakText('${qObj.q}')" class="cursor-pointer hover:text-indigo-600 transition-colors">
+                            ${qNum}. ${qObj.q.replace(/_______/g, "").replace(/______/g, "")}
+                        </span>
+                        <button onclick="highlightBlank('${lvlId}', ${idx})" class="border-b-2 border-slate-900 font-extrabold px-3 min-w-[6.5rem] text-xs text-center ${isSelected ? 'border-amber-500 text-amber-600 bg-amber-50 rounded' : savedAns ? 'text-indigo-700' : 'text-slate-300'} no-print">
+                            ${savedAns ? savedAns : "點我填空"}
+                        </button>
+                        <div class="print-underline-long print-only-blank ml-1">${fillPrintText}</div>
+                    `;
+                } else {
+                    finalQuestionHTML = `
+                        <span onclick="speakText('${qObj.q}')" class="cursor-pointer hover:text-indigo-600 transition-colors">
+                            ${qNum}. ${qObj.q}
+                        </span>
+                        ${printOptionsSuffixHTML}
+                    `;
+                }
+
+                // 當點擊解答或開啟解答版時，解析會一併彈出
+                const noteHTML = (qObj.note && isAnsRevealed) ? `
+                    <div id="note-${lvlId}-${idx}" class="text-[10px] text-slate-500 bg-slate-50 p-1 rounded-md mt-0.5 print-note">
+                        <span class="font-bold text-slate-800">解析：</span>${qObj.note}
+                    </div>
+                ` : '';
+
+                html += `
+                    <div class="flex flex-col border-b border-slate-100/60 pb-1 last:border-none" id="qrow-${lvlId}-${idx}">
+                        <div class="flex items-center">
+                            ${frontUnderlineHTML}
+                            ${interactiveControlHTML}
+                            <div class="text-xs sm:text-sm font-bold text-slate-700 leading-normal print:text-black">
+                                ${finalQuestionHTML}
+                            </div>
+                        </div>
+                        ${noteHTML}
+                    </div>
+                `;
+            });
+
+            return html;
+        }
+
+        function getGender(name, relation) {
+            const femaleKeywords = ["Mother", "Grandmother", "Daughter", "Aunt", "Sister", "Wife", "Girl"];
+            if (femaleKeywords.some(kw => relation.includes(kw))) return "female";
+            return ["Mary", "Amy", "Lisa", "Lily", "Rose", "Helen", "Emma", "Lucy", "Judith", "Heather"].includes(name) ? "female" : "male";
+        }
+
+        // 渲染男女廁所幾何反白圖像 (大裙子 △ vs 大褲子 ▽)
+        function drawFamilyTree(lvlId) {
+            const data = levelsData[lvlId];
+            const container = document.getElementById(`tree-svg-container-${lvlId}`);
+            if (!container) return;
+
+            let svgHTML = '';
+            if (data.model === "A") {
+                svgHTML = `
+                    <svg viewBox="0 0 400 240" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 120 60 L 280 60" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 200 60 L 200 125" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 120 125 L 280 125" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 120 125 L 120 170" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 280 125 L 280 170" stroke="#94A3B8" stroke-width="2.5" />
+                        ${renderNodeSVG(120, 60, data.roles.father, "Father", lvlId)}
+                        ${renderNodeSVG(280, 60, data.roles.mother, "Mother", lvlId)}
+                        ${renderNodeSVG(120, 180, data.roles.son, "Son", lvlId)}
+                        ${renderNodeSVG(280, 180, data.roles.daughter, "Daughter", lvlId)}
+                    </svg>
+                `;
+            } else if (data.model === "B") {
+                svgHTML = `
+                    <svg viewBox="0 0 400 320" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 120 50 L 280 50" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 200 50 L 200 110" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 120 110 L 200 110" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 120 110 L 120 150" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 120 160 L 280 160" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 200 160 L 200 250" stroke="#94A3B8" stroke-width="2.5" />
+                        ${renderNodeSVG(120, 50, data.roles.grandfather, "Grandfather", lvlId)}
+                        ${renderNodeSVG(280, 50, data.roles.grandmother, "Grandmother", lvlId)}
+                        ${renderNodeSVG(120, 160, data.roles.father, "Father", lvlId)}
+                        ${renderNodeSVG(280, 160, data.roles.mother, "Mother", lvlId)}
+                        ${renderNodeSVG(200, 260, data.roles.son, "Son", lvlId)}
+                    </svg>
+                `;
+            } else if (data.model === "C") {
+                svgHTML = `
+                    <svg viewBox="0 0 460 330" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 180 45 L 300 45" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 240 45 L 240 95" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 120 95 L 360 95" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 120 95 L 120 145" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 360 95 L 360 145" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 120 145 L 220 145" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 170 145 L 170 210" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 90 210 L 250 210" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 90 210 L 90 250" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 250 210 L 250 250" stroke="#94A3B8" stroke-width="2.5" />
+                        <path d="M 360 145 L 360 250" stroke="#94A3B8" stroke-width="2.5" />
+                        ${renderNodeSVG(180, 45, data.roles.grandfather, "Grandfather", lvlId)}
+                        ${renderNodeSVG(300, 45, data.roles.grandmother, "Grandmother", lvlId)}
+                        ${renderNodeSVG(120, 145, data.roles.father, "Father", lvlId)}
+                        ${renderNodeSVG(220, 145, data.roles.mother, "Mother", lvlId)}
+                        ${renderNodeSVG(360, 145, data.roles.uncle, "Uncle", lvlId)}
+                        ${renderNodeSVG(90, 260, data.roles.son, "Son", lvlId)}
+                        ${renderNodeSVG(250, 260, data.roles.daughter, "Daughter", lvlId)}
+                        ${renderNodeSVG(360, 260, data.roles.cousin, "Cousin", lvlId)}
+                    </svg>
+                `;
+            }
+            container.innerHTML = svgHTML;
+        }
+
+        function renderNodeSVG(cx, cy, name, relation, lvlId) {
+            const gender = getGender(name, relation);
+            const bgFill = (gender === "female") ? "#F97316" : "#8B5CF6"; 
+            
+            let frameSVG = '';
+            let toiletFigureSVG = '';
+
+            if (gender === "female") {
+                // 女生：正圓形外框 + 圓形頭與大正三角形 △ 身體反白
+                frameSVG = `<circle cx="${cx}" cy="${cy}" r="21" fill="${bgFill}" stroke="#000000" stroke-width="2" />`;
+                toiletFigureSVG = `
+                    <circle cx="${cx}" cy="${cy - 8}" r="4.5" fill="white" />
+                    <polygon points="${cx},${cy-2.5} ${cx-8.5},${cy+11} ${cx+8.5},${cy+11}" fill="white" />
+                `;
+            } else {
+                // 男生：圓角正方形外框 + 圓形頭與大倒三角形 ▽ 身體反白
+                frameSVG = `<rect x="${cx - 21}" y="${cy - 21}" width="42" height="42" rx="6" fill="${bgFill}" stroke="#000000" stroke-width="2" />`;
+                toiletFigureSVG = `
+                    <circle cx="${cx}" cy="${cy - 8}" r="4.5" fill="white" />
+                    <polygon points="${cx-8},${cy-2} ${cx+8},${cy-2} ${cx},${cy+11.5}" fill="white" />
+                `;
+            }
+
+            return `
+                <g id="node-${lvlId}-${name}">
+                    ${frameSVG}
+                    ${toiletFigureSVG}
+                    <!-- 名字改為白底黑字加外框、字體加粗放大 -->
+                    <rect x="${cx - 28}" y="${cy + 25}" width="56" height="17" rx="3" fill="#FFFFFF" stroke="#000000" stroke-width="2" />
+                    <text x="${cx}" y="${cy + 37}" font-family="Noto Sans TC" font-size="10.5" font-weight="900" fill="#000000" text-anchor="middle">
+                        ${name}
+                    </text>
+                </g>
+            `;
+        }
+
+        // 點英文任何地方即可觸發極速讀報 (TTS)
+        function speakText(text) {
+            let cleanText = text.replace(/_______/g, "blank").replace(/______/g, "blank");
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.75; // 放慢語速輔助資源班聆聽
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function selectAnswer(lvlId, qIdx, value) {
+            userAnswers[lvlId][currentMode][qIdx] = value;
+            const qListContainer = document.getElementById(`questions-list-${lvlId}`);
+            qListContainer.innerHTML = renderQuestionsHTML(lvlId, document.getElementById(`btn-ans-${lvlId}`)?.classList.contains('bg-rose-600') || globalTeacherAnswerMode);
+        }
+
+        function highlightBlank(lvlId, qIdx) {
+            selectedBlankKey = `${lvlId}-${qIdx}`;
+            const qListContainer = document.getElementById(`questions-list-${lvlId}`);
+            qListContainer.innerHTML = renderQuestionsHTML(lvlId, document.getElementById(`btn-ans-${lvlId}`)?.classList.contains('bg-rose-600') || globalTeacherAnswerMode);
+            renderVocabPool();
+        }
+
+        function renderVocabPool() {
+            const container = document.getElementById('vocab-buttons');
+            if (!container) return;
+            const words = ["father", "mother", "brother", "sister", "son", "daughter", "husband", "wife", "grandfather", "grandmother", "grandson", "granddaughter", "uncle", "aunt", "cousin"];
+            container.innerHTML = words.map(word => `<button onclick="fillWordToSelected('${word}')" class="bg-slate-800 hover:bg-slate-700 active:bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-lg border border-slate-700 text-xs sm:text-sm tracking-wide lowercase">${word}</button>`).join('');
+        }
+
+        function fillWordToSelected(word) {
+            if (!selectedBlankKey) return;
+            const [lvlId, qIdxStr] = selectedBlankKey.split('-');
+            userAnswers[lvlId]['fill'][parseInt(qIdxStr)] = word;
+            selectedBlankKey = null;
+            renderAllLevels();
+            renderVocabPool();
+        }
+
+        function clearSelectedBlank() { selectedBlankKey = null; renderAllLevels(); }
+
+        function checkAnswers(lvlId) {
+            const qList = levelsData[lvlId].questions[currentMode];
+            const answers = userAnswers[lvlId][currentMode];
+            let correctCount = 0;
+
+            qList.forEach((qObj, idx) => {
+                const userAns = answers[idx];
+                const rowElement = document.getElementById(`qrow-${lvlId}-${idx}`);
+                if (userAns && userAns.toLowerCase().trim() === qObj.a.toLowerCase().trim()) {
+                    correctCount++;
+                    rowElement.className = "flex flex-col border p-1.5 rounded-xl mb-0.5 glow-correct";
+                } else if (userAns) {
+                    rowElement.className = "flex flex-col border p-1.5 rounded-xl mb-0.5 glow-incorrect";
+                }
+            });
+
+            if (correctCount === 5) showModal("🏆 太完美了！", "本關 5 題全對！這組同學獲得 100 分滿分！", "🎉");
+            else showModal("📢 批改完畢", `這關共答對了 ${correctCount} 題，加油！`, "💪");
+        }
+
+        // 獨立解答按鈕：一鍵填入真實解答並浮現中文解析
+        function toggleAnswerKey(lvlId) {
+            if (globalTeacherAnswerMode) return; // 全域模式下鎖定獨立按鈕
+            
+            const btn = document.getElementById(`btn-ans-${lvlId}`);
+            const isRevealed = btn.classList.contains('bg-rose-600');
+            
+            if (!isRevealed) {
+                // 填入寫死的正確答案
+                levelsData[lvlId].questions[currentMode].forEach((q, idx) => {
+                    userAnswers[lvlId][currentMode][idx] = q.a;
+                });
+                btn.className = "bg-rose-600 border-rose-700 text-white font-bold px-2 py-0.5 rounded-lg text-[10px] sm:text-xs flex items-center gap-0.5";
+                btn.innerText = "隱藏";
+            } else {
+                // 淨空答案
+                levelsData[lvlId].questions[currentMode].forEach((q, idx) => {
+                    userAnswers[lvlId][currentMode][idx] = null;
+                });
+                btn.className = "bg-slate-100 border-slate-300 text-slate-700 font-bold px-2 py-0.5 rounded-lg text-[10px] sm:text-xs flex items-center gap-0.5";
+                btn.innerText = "解答";
+            }
+            renderAllLevels();
+        }
+
+        function showModal(title, text, iconEmoji) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-text').innerHTML = text;
+            document.getElementById('modal-icon').innerText = iconEmoji;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+        function closeModal() { document.getElementById('custom-modal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
