@@ -1,599 +1,346 @@
 <!DOCTYPE html>
-<html lang="zh-Hant-TW" class="scroll-smooth">
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spedu Labs - 教材管理工作台</title>
-  <!-- Tailwind CSS CDN -->
+  <title>Spedu Labs | Grammar Workspace</title>
+  <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
-            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
-          }
-        }
-      }
-    }
-  </script>
   <style>
-    /* 隱藏滾動條但保持滾動 */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    .transition-all-300 {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    /* 實驗室六角星圖背景 (高質感 2% 科技藍圖微光) */
+    /* 太空幾何星空格線背景 (NASA 藍圖風格) */
     .labs-grid-bg {
       background-color: #F4F7FB;
       background-image: 
-        /* 品牌橘與科技藍微弱星空閃爍 */
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M20 20 L20 20 M80 30 L80 30 M110 10 L110 10 M40 90 L40 90 M90 110 L90 110' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-opacity='0.22'/%3E%3Cpath d='M15 75 L15 75 M70 85 L70 85 M100 70 L100 70 M5 45 L5 45 M95 45 L95 45' stroke='%23f59e0b' stroke-width='2.2' stroke-linecap='round' stroke-opacity='0.28'/%3E%3C/svg%3E"),
-        /* 超細緻六角形幾何藍圖格線 */
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='86.6' height='150' viewBox='0 0 86.6 150'%3E%3Cpath d='M0 0 L43.3 25 L43.3 75 L0 100 L-43.3 75 L-43.3 25 Z M43.3 75 L86.6 100 L86.6 150 L43.3 175 L0 150 L0 100 Z' stroke='%2394a3b8' stroke-width='0.5' stroke-opacity='0.16' fill='none'/%3E%3C/svg%3E");
-      background-attachment: local;
+        linear-gradient(rgba(15, 23, 42, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px),
+        radial-gradient(circle, rgba(245, 158, 11, 0.04) 1px, transparent 1px),
+        radial-gradient(circle, rgba(59, 130, 246, 0.04) 2px, transparent 2px);
+      background-size: 40px 40px, 40px 40px, 80px 80px, 120px 120px;
+      background-position: 0 0, 0 0, 20px 20px, 40px 40px;
     }
+    /* 隱藏滾動條但保持滾動功能 */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-[#FFFDF8] text-slate-900 font-sans h-screen flex flex-col overflow-hidden select-none">
+<body class="h-screen flex flex-col overflow-hidden font-sans text-slate-900 bg-slate-50">
 
-  <!-- ========================================== -->
-  <!-- 1. Header (64px) - 全站共用、高雅黑白底色 -->
-  <!-- ========================================== -->
-  <header class="h-16 bg-[#FFFDF8] border-b border-slate-200 px-4 flex items-center justify-between z-40 shrink-0 relative select-none">
-    <!-- 頂部 4px 品牌橘定位細線 -->
-    <div class="absolute top-0 left-0 right-0 h-1 bg-[#F59E0B]"></div>
-
-    <div class="flex items-center gap-3">
-      <!-- 側邊欄開關 (VSCode 體驗) -->
-      <button id="sidebar-toggle" class="p-1.5 hover:bg-slate-100 rounded-md text-slate-500 transition-colors focus:outline-none" title="展開/收折側邊欄">
-        <i class="fa-solid fa-bars text-lg"></i>
+  <!-- 頂部 Header -->
+  <header class="h-16 border-t-[4px] border-[#F59E0B] bg-[#FFFDF8] border-b border-slate-200 flex items-center justify-between px-4 z-40 shrink-0">
+    <div class="flex items-center space-x-3">
+      <!-- 漢堡選單 (手機與桌機版開關) -->
+      <button id="menu-toggle" class="p-2 rounded-lg hover:bg-slate-100 focus:outline-none">
+        <i class="fa-solid fa-bars text-xl text-slate-600"></i>
       </button>
-      
-      <!-- 橫式 Logo (拉大尺寸、精準對齊) -->
-      <div class="flex items-center gap-2">
-        <div class="h-12 w-44 overflow-hidden flex items-center justify-start relative">
-          <!-- 放大高度至 24 且調整比例 scale-120 使品牌字體清晰醒目 -->
-          <img src="line-qrcode.png" alt="Spedu Labs Logo" class="h-24 -my-6 max-w-none object-contain scale-120 origin-left transition-transform duration-200 hover:scale-125">
-        </div>
-        
-        <!-- Breadcrumb 導航條 -->
-        <div class="flex items-center gap-1.5 text-sm font-semibold tracking-tight">
-          <span class="text-slate-400">/</span>
-          <span class="text-slate-900">Grammar Workspace</span>
-        </div>
-      </div>
+      <!-- Logo 放大至 46px 飽滿尺寸 -->
+      <img src="line-qrcode.png" alt="Spedu Labs Logo" class="h-[46px] object-contain scale-110 origin-left" onerror="this.src='https://placehold.co/180x46/FFFDF8/F59E0B?text=SINNY+SPEDU+LABS'">
+      <span class="text-slate-400 font-light">/</span>
+      <span class="text-sm font-semibold tracking-wider text-slate-500 uppercase">Grammar Workspace</span>
     </div>
-
-    <!-- 右側極簡控制 (全站一體，移除多餘按鈕) -->
-    <div class="flex items-center gap-4">
-      <div class="text-[11px] text-slate-400 font-medium tracking-wider uppercase hidden sm:block">
-        <i class="fa-solid fa-flask-bubble text-amber-500 mr-1"></i>Workspace v1.0
-      </div>
-    </div>
+    <div class="text-xs text-slate-400 font-mono tracking-widest hidden sm:block">WORKSPACE V1.1</div>
   </header>
 
-  <!-- 主框架結構：雙欄獨立滾動設計 -->
-  <div class="flex-1 flex relative overflow-hidden">
-    
-    <!-- ========================================== -->
-    <!-- 2. Sidebar (240px / 64px) - 搜尋與導航核心 -->
-    <!-- ========================================== -->
-    <aside id="sidebar" class="w-60 bg-[#F8FAFC] border-r border-slate-200 h-full flex flex-col transition-all-300 z-30 shrink-0">
+  <!-- 主區塊 -->
+  <div class="flex flex-1 overflow-hidden relative">
+
+    <!-- 手機版懸浮抽屜黑色半透明遮罩 (Overlay) -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-20 hidden lg:hidden transition-opacity duration-300 opacity-0"></div>
+
+    <!-- 左側 Sidebar (手機與桌機分離滑動，已修復手機排版擠壓 Bug) -->
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 w-[240px] bg-[#F7F8FA] border-r border-slate-200 z-30 flex flex-col transition-all duration-300 -translate-x-full lg:translate-x-0">
       
-      <!-- 搜尋框區 (放置在左側，搜尋即導航，點選橘色品牌高亮) -->
-      <div class="p-3 border-b border-slate-200/60" id="sidebar-search-container">
+      <!-- 搜尋欄 -->
+      <div class="p-4 border-b border-slate-200">
         <div class="relative">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400 pointer-events-none">
-            <i class="fa-solid fa-magnifying-glass text-xs"></i>
-          </span>
-          <input type="text" id="search-input" 
-                 placeholder="搜尋教材、說明或檔名..." 
-                 class="w-full pl-7 pr-7 py-1.5 text-xs bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all text-slate-700 placeholder-slate-400" />
-          <button id="clear-search" class="absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400 hover:text-slate-600 hidden">
-            <i class="fa-solid fa-circle-xmark text-xs"></i>
-          </button>
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-400"></i>
+          <input type="text" id="search-input" placeholder="搜尋教材或檔名..." class="w-full pl-8 pr-3 py-1.5 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-[#F59E0B] transition-colors">
         </div>
       </div>
 
-      <!-- 快捷過濾區 (圖示已修復，絕不重疊) -->
-      <div class="p-1 border-b border-slate-200/40 space-y-0.5">
-        <button id="btn-show-all" class="filter-tab active w-full flex items-center justify-between p-2 rounded text-xs text-slate-700 hover:bg-slate-200/50 transition-colors font-medium">
-          <span class="flex items-center gap-2">
-            <i class="fa-solid fa-folder-open text-slate-400 w-4 text-center"></i>
-            <span class="sidebar-text">📂 全部教材</span>
-          </span>
-          <span class="bg-slate-200 text-slate-600 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-all-badge">0</span>
+      <!-- 選單按鈕區 -->
+      <div class="flex-1 overflow-y-auto no-scrollbar p-3 space-y-1">
+        <button onclick="filterCategory('all')" id="btn-all" class="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg bg-slate-200/80 text-slate-900 transition-colors">
+          <div class="flex items-center space-x-2.5">
+            <i class="fa-solid fa-folder-open text-amber-500 text-base"></i>
+            <span>全部文法教材</span>
+          </div>
+          <span id="count-all" class="text-xs px-2 py-0.5 rounded-full bg-slate-300 text-slate-700 font-mono">29</span>
         </button>
-        
-        <button id="btn-show-starred" class="filter-tab w-full flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-slate-200/50 transition-colors font-medium">
-          <span class="flex items-center gap-2">
-            <i class="fa-solid fa-star text-amber-500 w-4 text-center"></i>
-            <span class="sidebar-text">⭐ 我的收藏</span>
-          </span>
-          <span class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-starred-badge">0</span>
+
+        <button onclick="filterCategory('fav')" id="btn-fav" class="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+          <div class="flex items-center space-x-2.5">
+            <i class="fa-solid fa-star text-amber-500 text-base"></i>
+            <span>我的收藏</span>
+          </div>
+          <span id="count-fav" class="text-xs px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 font-mono">0</span>
         </button>
-      </div>
 
-      <!-- 動態大類目錄區 (由 JS 自動產生與計算數量) -->
-      <div class="p-2 border-b border-slate-100 flex items-center justify-between sidebar-text-block">
-        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400"><i class="fa-solid fa-signs-post mr-1"></i>快捷文法大類</span>
-      </div>
-      
-      <!-- 獨立滾動容器 -->
-      <nav id="sidebar-nav" class="flex-1 overflow-y-auto p-1 space-y-0.5 no-scrollbar">
-        <!-- JS 動態生成快捷連結 -->
-      </nav>
+        <div class="pt-4 pb-1 px-3 text-[11px] font-bold tracking-wider text-slate-400 uppercase">快捷文法大類</div>
 
+        <!-- 動態文法分類按鈕區 -->
+        <div id="category-list" class="space-y-1">
+          <!-- JS 會自動產生 -->
+        </div>
+      </div>
     </aside>
 
-    <!-- 遮罩 (小螢幕相容) -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/20 z-20 hidden"></div>
-
-    <!-- ========================================== -->
-    <!-- 3. Main Canvas (右側內容區) - 暖灰藍點陣實驗室背景 -->
-    <!-- ========================================== -->
-    <main class="flex-1 labs-grid-bg overflow-y-auto p-6 space-y-8 no-scrollbar relative z-10">
+    <!-- 右側主內容 canvas -->
+    <main id="main-content" class="flex-1 overflow-y-auto labs-grid-bg p-4 md:p-6 relative no-scrollbar">
       
-      <!-- 太空人去背 Logo 4.5% 透明度浮水印 (右下角定位，尺寸放大至 w-72 h-72 更加和諧大氣) -->
-      <div class="fixed bottom-8 right-8 w-72 h-72 pointer-events-none opacity-[0.045] z-0 select-none">
-        <img src="spe-icon2.png" alt="Spedu Labs Watermark" class="w-full h-full object-contain">
+      <!-- 卡片渲染區 -->
+      <div id="cards-container" class="space-y-8 max-w-7xl mx-auto pb-24">
+        <!-- JS 動態產生 -->
       </div>
 
-      <div id="no-results" class="hidden py-16 text-center max-w-sm mx-auto bg-white/80 border border-slate-200 rounded-lg shadow-sm backdrop-blur-sm relative z-10">
-        <div class="text-slate-300 text-4xl mb-2"><i class="fa-regular fa-folder-open"></i></div>
-        <h3 class="text-sm font-bold text-slate-700">找不到相符的文法教材</h3>
-        <p class="text-[11px] text-slate-400 mt-1">請試試其他搜尋關鍵字（例如「過去」、「apple」）</p>
+      <!-- 右下角 Spedu Labs 太空人燈泡 w-72 巨型浮水印 -->
+      <div class="fixed bottom-4 right-4 w-64 h-64 pointer-events-none opacity-[0.045] select-none z-0">
+        <img src="spe-icon2.png" alt="Watermark" class="w-full h-full object-contain" onerror="this.style.display='none'">
       </div>
-
-      <!-- 動態分類網格區 (由 JS 自動載入與繪製) -->
-      <div id="main-content-canvas" class="space-y-6 relative z-10">
-        <!-- JS 將自動生成分類標題、折疊鈕與白底卡片 -->
-      </div>
-
     </main>
+
   </div>
 
-  <!-- ========================================== -->
-  <!-- 4. 智慧彈窗通知元件 (取代 Alert，符合 Design System) -->
-  <!-- ========================================== -->
-  <div id="custom-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-lg z-50 transform translate-y-16 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2">
-    <i class="fa-solid fa-circle-info text-amber-400"></i>
-    <span id="toast-msg">通知內容</span>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- 5. JavaScript 數據與動態核心邏輯 (輕量、安全) -->
-  <!-- ========================================== -->
+  <!-- JavaScript 資料庫與互動邏輯 -->
   <script>
-    // ==========================================
-    // 🎨 設計規範分類色調與 3% 極淡背景色 (Design System)
-    // ==========================================
-    const categoriesMeta = {
-      "基礎代名詞與常用語": { color: "#3B82F6", icon: "fa-user-astronaut", code: "pronouns", bgTint: "rgba(59, 130, 246, 0.03)" },
-      "名詞與單複數": { color: "#10B981", icon: "fa-apple-whole", code: "nouns", bgTint: "rgba(16, 185, 129, 0.03)" },
-      "基礎數字與應用": { color: "#8B5CF6", icon: "fa-hashtag", code: "numbers", bgTint: "rgba(139, 92, 246, 0.03)" },
-      "Be 動詞與現在簡單式": { color: "#F59E0B", icon: "fa-clock", code: "present", bgTint: "rgba(245, 158, 11, 0.03)" },
-      "空間、時間與存在句": { color: "#6366F1", icon: "fa-map-location-dot", code: "space", bgTint: "rgba(99, 102, 241, 0.03)" },
-      "過去式表達": { color: "#F43F5E", icon: "fa-history", code: "past", bgTint: "rgba(244, 63, 94, 0.03)" },
-      "形容詞比較與生活進階": { color: "#0EA5E9", icon: "fa-scale-balanced", code: "adj", bgTint: "rgba(14, 165, 233, 0.03)" }
-    };
-
-    // ==========================================
-    // 📂 完美 JSON 數據結構 - 教材資料庫 (29個文法單元)
-    // ==========================================
+    // 文法完整 29 題資料庫 (JSON 數據驅動)
     const grammarData = [
-      // 基礎代名詞與常用語
-      { category: "基礎代名詞與常用語", title: "我、你、他 (主格)", desc: "我是...，自我介紹與主詞用法 (I / You / He)", filename: "grammer_I.html" },
-      { category: "基礎代名詞與常用語", title: "我、你、他 (受格)", desc: "動作的接受者 (Give me / Look at him)", filename: "grammer_me.html" },
-      { category: "基礎代名詞與常用語", title: "我的、他的 (所有格)", desc: "這是我的狗，標示擁有權 (my / your / his)", filename: "grammer_my.html" },
-      { category: "基礎代名詞與常用語", title: "請與祈使句", desc: "禮貌請求與動作命令 (Please sit down.)", filename: "grammer_please.html" },
-      { category: "基礎代名詞與常用語", title: "我會、我不能", desc: "表達能力或許可 (I can swim. / I can't go.)", filename: "grammer_can_can_t.html" },
-      { category: "基礎代名詞與常用語", title: "這個與那個 (指示)", desc: "遠近與單複數指示 (This is... / Those are...)", filename: "grammer_this_that_these_those.html" },
-
-      // 名詞與單複數
-      { category: "名詞與單複數", title: "蘋果與複數名詞", desc: "基本名詞複數與計數 (I eat two apples.)", filename: "grammer_apples.html" },
-      { category: "名詞與單複數", title: "可數與不可數名詞", desc: "區分固體液體與數量計數 (water / bread)", filename: "grammer_n_countable.html" },
-      { category: "名詞與單複數", title: "男孩們與複數變化", desc: "字尾規律變化複數 (boys / babies / boxes)", filename: "grammer_boys_.html" },
-
-      // 基礎數字與應用
-      { category: "基礎數字與應用", title: "基礎數字 1-10", desc: "數量與基本物件點數 (one, two, ten)", filename: "grammer_1_10.html" },
-      { category: "基礎數字與應用", title: "數字 11-19", desc: "十幾的數字與青少年年齡 (eleven, thirteen)", filename: "grammer_11_19.html" },
-      { category: "基礎數字與應用", title: "雙位數 21-99", desc: "價格、年齡、讀頁碼 (twenty-one, ninety-nine)", filename: "grammer_21_99.html" },
-      { category: "基礎數字與應用", title: "整十與百進位", desc: "整十、整百與發音聽辨差異 (twenty, one hundred)", filename: "grammer_10_20_100.html" },
-      { category: "基礎數字與應用", title: "大數字與百萬", desc: "大數量到百萬位數規律 (thousand, million)", filename: "grammer_1_1000000.html" },
-
-      // Be 動詞與現在簡單式
-      { category: "Be 動詞與現在簡單式", title: "Be動詞 (am, are, is)", desc: "人稱與當前狀態搭配 (I am / You are / She is)", filename: "grammer_be_am_are_is.html" },
-      { category: "Be 動詞與現在簡單式", title: "現在簡單式 (觀念)", desc: "日常習性與常理事實觀念說明", filename: "grammar_present_simple_intro.html" },
-      { category: "Be 動詞與現在簡單式", title: "現在簡單式 (動詞)", desc: "三單動詞加s變化 (eat / plays / goes)", filename: "grammar_present_simple_verbs.html" },
-      { category: "Be 動詞與現在簡單式", title: "總是與頻率 (always)", desc: "動作發生頻率說明 (I always drink water.)", filename: "garmmer_always.html" },
-
-      // 空間、時間與存在句
-      { category: "空間、時間與存在句", title: "東西在哪裡 (空間)", desc: "在...裡面/上面/地方 (in / on / at)", filename: "grammer_in_on_at_space.html" },
-      { category: "空間、時間與存在句", title: "時間與日子 (介系詞)", desc: "時間、特定日子與點鐘 (in / on / at)", filename: "grammer_in_on_at_time.html" },
-      { category: "空間、時間與存在句", title: "這裡有、那裡有 (存在)", desc: "某處存在人事物 (There is a cup of water.)", filename: "grammer_there_is_there_are.html" },
-
-      // 過去式表達
-      { category: "過去式表達", title: "過去的狀態 (was, were)", desc: "過去狀態與位置 (I was busy yesterday.)", filename: "grammar_was_were.html" },
-      { category: "過去式表達", title: "過去做過嗎 (did, didn't)", desc: "問過去有無做某事 (I didn't play baseball.)", filename: "grammar_did_didn_t.html" },
-      { category: "過去式表達", title: "規則動作過去式", desc: "動作的過去表達 (-ed 字尾變化)", filename: "grammar_Ved.html" },
-      { category: "過去式表達", title: "去過與看過 (不規則)", desc: "不規則動詞過去式 (went / saw)", filename: "grammer_went_saw.html" },
-
-      // 形容詞比較與生活進階
-      { category: "形容詞比較與生活進階", title: "A比B還要... (比較級)", desc: "形容詞比較級兩者對比 (-er + than)", filename: "grammer_adj_er.html" },
-      { category: "形容詞比較與生活進階", title: "最...的那一個 (最高級)", desc: "三者以上之最 (the + -est)", filename: "grammer_adj_est.html" },
-      { category: "形容詞比較與生活進階", title: "比較級與最高級綜合", desc: "多種物體比較與程度差異對比", filename: "grammer_adj_er_est.html" },
-      { category: "形容詞比較與生活進階", title: "花時間與花錢", desc: "生活花費區別 (spend / cost / take)", filename: "grammer_spend_cost_take.html" }
+      { id: "g1", category: "基礎代名詞與常用語", title: "我、你、他 (主格)", desc: "我是...，自我介紹與主詞用法", filename: "grammer_I.html", themeColor: "#3B82F6" },
+      { id: "g2", category: "基礎代名詞與常用語", title: "我、你、他 (受格)", desc: "動作的接受者 (love me, love him)", filename: "grammer_me.html", themeColor: "#3B82F6" },
+      { id: "g3", category: "基礎代名詞與常用語", title: "我的、你的、他的 (所有格)", desc: "物品的主人 (my book, your dog)", filename: "grammer_my.html", themeColor: "#3B82F6" },
+      { id: "g4", category: "基礎代名詞與常用語", title: "請給我... (禮貌句型)", desc: "Please give me... 的日常應用", filename: "grammer_please.html", themeColor: "#3B82F6" },
+      { id: "g5", category: "基礎代名詞與常用語", title: "我會... (can/can't)", desc: "能力表達與日常簡答", filename: "grammer_can_cant.html", themeColor: "#3B82F6" },
+      { id: "g6", category: "基礎代名詞與常用語", title: "你想要...嗎? (Would you like)", desc: "客氣的詢問與主動提議", filename: "grammer_would_you.html", themeColor: "#3B82F6" },
+      
+      { id: "g7", category: "名詞與單複數", title: "蘋果與複數名詞", desc: "名詞複數加 s 與計數 (two apples)", filename: "grammer_apples.html", themeColor: "#10B981" },
+      { id: "g8", category: "名詞與單複數", title: "三明治與 es 結尾", desc: "字尾 ch, sh, s 加 es 的規則", filename: "grammer_sandwiches.html", themeColor: "#10B981" },
+      { id: "g9", category: "名詞與單複數", title: "可數與不可數名詞", desc: "水、麵包與蘋果的本質區別", filename: "grammer_countable.html", themeColor: "#10B981" },
+      
+      { id: "g10", category: "基礎數字與應用", title: "數字 1-10 與小動物", desc: "基數 1-10 與量詞的結合", filename: "grammer_1_10.html", themeColor: "#8B5CF6" },
+      { id: "g11", category: "基礎數字與應用", title: "數字 11-19 與年齡", desc: "十幾的數字與青少年年齡表達", filename: "grammer_11_19.html", themeColor: "#8B5CF6" },
+      { id: "g12", category: "基礎數字與應用", title: "整十數字 (20, 30, 40...90)", desc: "幾十的數字與百位數基本念法", filename: "grammer_20_90.html", themeColor: "#8B5CF6" },
+      { id: "g13", category: "基礎數字與應用", title: "第1、第2、第3 (序號)", desc: "序數用法與日期表達基礎", filename: "grammer_ordinal.html", themeColor: "#8B5CF6" },
+      { id: "g14", category: "基礎數字與應用", title: "現在幾點鐘? (時間)", desc: "整點與幾點幾分的日常表達", filename: "grammer_time.html", themeColor: "#8B5CF6" },
+      
+      { id: "g15", category: "Be 動詞與現在簡單式", title: "我是、你是、他是 (am, are, is)", desc: "Be動詞的主詞搭配規律", filename: "grammar_be.html", themeColor: "#F59E0B" },
+      { id: "g16", category: "Be 動詞與現在簡單式", title: "我不是、你不是 (否定句)", desc: "am not, aren't, isn't 縮寫", filename: "grammar_be_not.html", themeColor: "#F59E0B" },
+      { id: "g17", category: "Be 動詞與現在簡單式", title: "你是嗎? (Be動詞問句)", desc: "Be動詞疑問句與簡答 (Are you...?)", filename: "grammar_be_ask.html", themeColor: "#F59E0B" },
+      { id: "g18", category: "Be 動詞與現在簡單式", title: "我每天做... (現在簡單式)", desc: "日常習慣與第三人稱單數加 s/es", filename: "grammar_present.html", themeColor: "#F59E0B" },
+      
+      { id: "g19", category: "空間、時間與存在句", title: "東西在哪裡? (in, on, at)", desc: "基礎空間介系詞的具體感知", filename: "grammer_in_on_at_space.html", themeColor: "#6366F1" },
+      { id: "g20", category: "空間、時間與存在句", title: "時間與日子 (in, on, at)", desc: "時間、特定日子與幾點鐘搭配", filename: "grammer_in_on_at_time.html", themeColor: "#6366F1" },
+      { id: "g21", category: "空間、時間與存在句", title: "這裡有、那裡有 (There is/are)", desc: "某處存在某事物的存在句型", filename: "grammer_there_is_there_are.html", themeColor: "#6366F1" },
+      
+      { id: "g22", category: "過去式表達", title: "過去的狀態 (was, were)", desc: "過去狀態與位置 (I was busy yesterday.)", filename: "grammar_was_were.html", themeColor: "#F43F5E" },
+      { id: "g23", category: "過去式表達", title: "過去做過嗎? (did, didn't)", desc: "過去問句與否定 (I didn't play soccer.)", filename: "grammar_did_didn_t.html", themeColor: "#F43F5E" },
+      { id: "g24", category: "過去式表達", title: "規則動作過去式", desc: "動詞過去式加 ed 規則與字尾變化", filename: "grammar_Ved.html", themeColor: "#F43F5E" },
+      { id: "g25", category: "過去式表達", title: "去過與看過 (不規則過去式)", desc: "常見不規則動詞 (went, saw, ate)", filename: "grammer_went_saw.html", themeColor: "#F43F5E" },
+      
+      { id: "g26", category: "形容詞比較與生活進階", title: "比一比 (比較級)", desc: "A比B更... (taller, bigger, more expensive)", filename: "grammar_comparative.html", themeColor: "#0EA5E9" },
+      { id: "g27", category: "形容詞比較與生活進階", title: "最... (最高級)", desc: "班上最高、世界最大 (the tallest, the most)", filename: "grammar_superlative.html", themeColor: "#0EA5E9" },
+      { id: "g28", category: "形容詞比較與生活進階", title: "花錢與花時間 (cost, spend, take)", desc: "主詞是人還是物？花費動詞三大解析", filename: "grammar_cost_spend_take.html", themeColor: "#0EA5E9" },
+      { id: "g29", category: "形容詞比較與生活進階", title: "如果... (If 條件句)", desc: "如果明天下雨，我就... 的日常假設", filename: "grammar_if_conditional.html", themeColor: "#0EA5E9" }
     ];
 
-    // ==========================================
-    // ⚙️ UI 初始化與事件處理引擎
-    // ==========================================
-    document.addEventListener("DOMContentLoaded", () => {
-      // DOM 節點
-      const sidebar = document.getElementById("sidebar");
-      const sidebarToggle = document.getElementById("sidebar-toggle");
-      const sidebarOverlay = document.getElementById("sidebar-overlay");
-      const sidebarNav = document.getElementById("sidebar-nav");
-      const mainContentCanvas = document.getElementById("main-content-canvas");
-      const searchInput = document.getElementById("search-input");
-      const clearSearch = document.getElementById("clear-search");
-      const noResults = document.getElementById("no-results");
-      const countAllBadge = document.getElementById("count-all-badge");
-      const countStarredBadge = document.getElementById("count-starred-badge");
+    // 初始化收藏夾
+    let favorites = JSON.parse(localStorage.getItem('grammar_favs')) || [];
+    let currentFilter = 'all';
 
-      const btnShowAll = document.getElementById("btn-show-all");
-      const btnShowStarred = document.getElementById("btn-show-starred");
+    // 取得所有不重複大類
+    const categories = [...new Set(grammarData.map(item => item.category))];
 
-      // 儲存收折狀態與收藏狀態
-      let starredItems = JSON.parse(localStorage.getItem("spedu_starred_units")) || [];
-      let collapsedSections = JSON.parse(localStorage.getItem("spedu_collapsed_sections")) || [];
-      let activeFilter = "all"; // 'all' 或 'starred'
-
-      // ==========================================
-      // 🎨 自定義彈窗元件邏輯
-      // ==========================================
-      function showToast(message) {
-        const toast = document.getElementById("custom-toast");
-        const toastMsg = document.getElementById("toast-msg");
-        toastMsg.innerText = message;
-        toast.classList.remove("translate-y-16", "opacity-0", "pointer-events-none");
-        toast.classList.add("translate-y-0", "opacity-100");
+    // 初始化側邊欄按鈕
+    function initSidebar() {
+      const container = document.getElementById('category-list');
+      container.innerHTML = '';
+      categories.forEach(cat => {
+        const count = grammarData.filter(i => i.category === cat).length;
+        const color = cat.includes('代名詞') ? '#3B82F6' : cat.includes('名詞') ? '#10B981' : cat.includes('數字') ? '#8B5CF6' : cat.includes('Be') ? '#F59E0B' : cat.includes('空間') ? '#6366F1' : cat.includes('過去') ? '#F43F5E' : '#0EA5E9';
         
-        setTimeout(() => {
-          toast.classList.add("translate-y-16", "opacity-0", "pointer-events-none");
-          toast.classList.remove("translate-y-0", "opacity-100");
-        }, 3000);
+        container.innerHTML += `
+          <button onclick="filterCategory('${cat}')" id="btn-${cat}" class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
+            <div class="flex items-center space-x-2.5 min-w-0">
+              <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${color}"></span>
+              <span class="truncate font-medium">${cat}</span>
+            </div>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 font-mono">${count}</span>
+          </button>
+        `;
+      });
+      updateCountBadges();
+    }
+
+    // 更新計數
+    function updateCountBadges() {
+      document.getElementById('count-all').innerText = grammarData.length;
+      document.getElementById('count-fav').innerText = favorites.length;
+    }
+
+    // 手機懸浮選單開關控制
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+      setTimeout(() => overlay.classList.toggle('opacity-0'), 50);
+    }
+
+    menuToggle.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', toggleSidebar);
+
+    // 篩選與滾動機制
+    function filterCategory(cat) {
+      currentFilter = cat;
+      
+      // 更新側邊選單樣式狀態
+      const buttons = sidebar.querySelectorAll('button');
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-slate-200/80', 'text-slate-900', 'border-l-4', 'border-[#F59E0B]');
+        btn.classList.add('text-slate-600');
+      });
+
+      const activeBtn = document.getElementById(`btn-${cat}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-slate-200/80', 'text-slate-900');
+        if (cat !== 'all' && cat !== 'fav') {
+          activeBtn.classList.add('border-l-4', 'border-[#F59E0B]');
+        }
       }
 
-      // ==========================================
-      // 1. 動態繪製與架構生成
-      // ==========================================
-      function renderDashboard() {
-        // A. 計算總計 (移除重複總數列，保留最頂層可按按鈕)
-        countAllBadge.innerText = grammarData.length;
-        countStarredBadge.innerText = starredItems.length;
+      renderCards();
 
-        // B. 依 category 將資料打包
-        const groupedData = {};
-        Object.keys(categoriesMeta).forEach(cat => {
-          groupedData[cat] = [];
-        });
+      // 手機端選完後自動把抽屜收摺
+      if (window.innerWidth < 1024) {
+        toggleSidebar();
+      }
 
-        grammarData.forEach(item => {
-          if (groupedData[item.category]) {
-            groupedData[item.category].push(item);
-          }
-        });
+      // 平滑滾動
+      if (cat !== 'all' && cat !== 'fav') {
+        const targetElement = document.getElementById(`section-${cat}`);
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else {
+        document.getElementById('main-content').scrollTop = 0;
+      }
+    }
 
-        // C. 生成左側大類快捷列
-        sidebarNav.innerHTML = "";
-        Object.keys(categoriesMeta).forEach(catName => {
-          const meta = categoriesMeta[catName];
-          const count = groupedData[catName].length;
+    // 收藏星標開關
+    function toggleFav(id, event) {
+      event.stopPropagation();
+      const index = favorites.indexOf(id);
+      if (index === -1) {
+        favorites.push(id);
+      } else {
+        favorites.splice(index, 1);
+      }
+      localStorage.setItem('grammar_favs', JSON.stringify(favorites));
+      updateCountBadges();
+      renderCards();
+    }
 
-          const navLink = document.createElement("a");
-          navLink.href = `#section-${meta.code}`;
-          navLink.className = "sidebar-link flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-slate-200/50 transition-colors font-medium";
-          navLink.innerHTML = `
-            <span class="flex items-center gap-2 truncate">
-              <span class="w-1.5 h-3 rounded shrink-0" style="background-color: ${meta.color}"></span>
-              <span class="sidebar-text truncate">${catName}</span>
-            </span>
-            <span class="bg-slate-200/60 text-slate-600 text-[9px] font-bold px-1.5 py-0.2 rounded-full sidebar-badge">${count}</span>
-          `;
-          
-          // 點擊左側快速滾動定位且保證右側對應抽屜展開 (修復：精確定位至 main 捲動軸容器)
-          navLink.addEventListener("click", (e) => {
-            e.preventDefault();
-            const sectionId = `section-${meta.code}`;
-            const targetSection = document.getElementById(sectionId);
-            
-            if (targetSection) {
-              // 如果是折疊狀態，強制展開它
-              if (collapsedSections.includes(catName)) {
-                collapsedSections = collapsedSections.filter(s => s !== catName);
-                localStorage.setItem("spedu_collapsed_sections", JSON.stringify(collapsedSections));
-                renderDashboard(); // 重新渲染以展開
-              }
+    // 渲染卡片
+    function renderCards() {
+      const container = document.getElementById('cards-container');
+      const searchQuery = document.getElementById('search-input').value.toLowerCase();
+      container.innerHTML = '';
 
-              // 針對滾動軸在 main 容器的架構，精確滾動 main 容器
-              const mainContainer = document.querySelector('main');
-              if (mainContainer) {
-                const topPos = targetSection.offsetTop - 24; // 扣除內距
-                mainContainer.scrollTo({
-                  top: topPos,
-                  behavior: "smooth"
-                });
-              }
+      let filteredData = grammarData;
+      if (currentFilter === 'fav') {
+        filteredData = grammarData.filter(item => favorites.includes(item.id));
+      } else if (currentFilter !== 'all') {
+        filteredData = grammarData.filter(item => item.category === currentFilter);
+      }
 
-              // 手機端點選後自動合上側邊欄
-              if (window.innerWidth < 768) {
-                toggleSidebar();
-              }
-            }
-          });
+      if (searchQuery) {
+        filteredData = filteredData.filter(item => 
+          item.title.toLowerCase().includes(searchQuery) || 
+          item.desc.toLowerCase().includes(searchQuery) ||
+          item.filename.toLowerCase().includes(searchQuery)
+        );
+      }
 
-          sidebarNav.appendChild(navLink);
-        });
+      // 決定大類群組
+      const activeCats = currentFilter === 'all' || currentFilter === 'fav'
+        ? [...new Set(filteredData.map(item => item.category))]
+        : [currentFilter];
 
-        // D. 生成右側教材 Canvas（主內容網格）
-        mainContentCanvas.innerHTML = "";
-        const searchQuery = searchInput.value.toLowerCase().trim();
-        let overallHasCards = false;
+      if (filteredData.length === 0) {
+        container.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-20 text-slate-400">
+            <i class="fa-regular fa-folder-open text-5xl mb-4"></i>
+            <p class="text-sm">沒有找到任何對應的文法教材</p>
+          </div>
+        `;
+        return;
+      }
 
-        Object.keys(categoriesMeta).forEach(catName => {
-          const meta = categoriesMeta[catName];
-          const cards = groupedData[catName];
+      activeCats.forEach(cat => {
+        const catData = filteredData.filter(item => item.category === cat);
+        if (catData.length === 0) return;
 
-          // 過濾卡片
-          const filteredCards = cards.filter(card => {
-            const matchesSearch = !searchQuery || 
-              card.title.toLowerCase().includes(searchQuery) || 
-              card.desc.toLowerCase().includes(searchQuery) || 
-              card.filename.toLowerCase().includes(searchQuery);
+        const isPronoun = cat.includes('代名詞');
+        const isNoun = cat.includes('名詞');
+        const isNumber = cat.includes('數字');
+        const isBe = cat.includes('Be');
+        const isSpace = cat.includes('空間');
+        const isPast = cat.includes('過去');
+        
+        const sectionBg = isPronoun ? 'bg-blue-500/5' : isNoun ? 'bg-emerald-500/5' : isNumber ? 'bg-purple-500/5' : isBe ? 'bg-amber-500/5' : isSpace ? 'bg-indigo-500/5' : isPast ? 'bg-rose-500/5' : 'bg-sky-500/5';
+        const titleColor = isPronoun ? 'text-blue-700' : isNoun ? 'text-emerald-700' : isNumber ? 'text-purple-700' : isBe ? 'text-amber-700' : isSpace ? 'text-indigo-700' : isPast ? 'text-rose-700' : 'text-sky-700';
 
-            const isStarred = starredItems.includes(card.filename);
-            const matchesFilter = (activeFilter === "all") || (activeFilter === "starred" && isStarred);
-
-            return matchesSearch && matchesFilter;
-          });
-
-          // 如果此大類內完全沒有符合篩選的卡片，則本分類區塊不顯示
-          if (filteredCards.length === 0) return;
-          overallHasCards = true;
-
-          const isCollapsed = collapsedSections.includes(catName);
-
-          // 建立區塊 Section
-          const section = document.createElement("section");
-          section.id = `section-${meta.code}`;
-          section.className = "category-block transition-all-300 rounded-xl p-4";
-          // 每個分類區塊套用專屬的 3% 超淡底色背景
-          section.style.backgroundColor = meta.bgTint;
-
-          // 分類 Header Row (44px)
-          const headerRow = document.createElement("div");
-          headerRow.className = "h-11 flex items-center justify-between border-b border-slate-200/60 pb-1 mb-3 cursor-pointer select-none group";
-          
-          headerRow.innerHTML = `
-            <div class="flex items-center gap-2">
-              <span class="text-slate-400 text-xs transition-transform duration-200 ${isCollapsed ? '-rotate-90' : ''}">
-                <i class="fa-solid fa-chevron-down"></i>
-              </span>
-              <span class="w-1.5 h-4.5 rounded-sm" style="background-color: ${meta.color}"></span>
-              <h2 class="text-sm md:text-base font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                ${catName}
-                <span class="text-[11px] font-semibold text-slate-400 font-mono">(${filteredCards.length})</span>
+        let sectionHtml = `
+          <div id="section-${cat}" class="${sectionBg} border border-slate-200/60 p-6 rounded-2xl transition-all">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-200">
+              <h2 class="text-lg font-bold flex items-center space-x-2 ${titleColor}">
+                <i class="fa-solid fa-brain"></i>
+                <span>${cat}</span>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-slate-200/80 text-slate-600 font-mono">${catData.length}</span>
               </h2>
             </div>
-            <!-- 定位定位符 ＋ 按鈕 (非新增，提供定位與新增回饋) -->
-            <button class="plus-btn w-6 h-6 rounded hover:bg-slate-200/50 flex items-center justify-center text-slate-450 hover:text-slate-750 transition-colors" title="定位或增修標記">
-              <i class="fa-solid fa-plus text-xs"></i>
-            </button>
-          `;
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        `;
 
-          // 點選 Header 列進行收折控制
-          headerRow.addEventListener("click", (e) => {
-            // 防止點擊 ＋ 按鈕時觸發折疊
-            if (e.target.closest(".plus-btn")) {
-              e.stopPropagation();
-              showToast(`本平台採用 [Data-Driven] 自動架構。新增教材只要更新 grammar.json 檔案即可！`);
-              return;
-            }
+        catData.forEach(item => {
+          const isStarred = favorites.includes(item.id);
+          const starClass = isStarred ? 'fa-solid text-amber-500' : 'fa-regular text-slate-300 hover:text-amber-500';
 
-            if (isCollapsed) {
-              collapsedSections = collapsedSections.filter(s => s !== catName);
-            } else {
-              collapsedSections.push(catName);
-            }
-            localStorage.setItem("spedu_collapsed_sections", JSON.stringify(collapsedSections));
-            renderDashboard();
-          });
-
-          section.appendChild(headerRow);
-
-          // 卡片 Grid 容器
-          if (!isCollapsed) {
-            const grid = document.createElement("div");
-            grid.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3";
-
-            filteredCards.forEach(card => {
-              const isCardStarred = starredItems.includes(card.filename);
-              const cardEl = document.createElement("a");
-              cardEl.href = card.filename;
-              cardEl.target = "_blank"; // 在新分頁開啟教材，方便隨時切換回主控台
-              cardEl.className = "grammar-card relative bg-white border border-slate-200 rounded-lg p-3 flex flex-col justify-between hover:bg-[#F8FAFC] hover:-translate-y-0.5 hover:shadow-md transition-all duration-150 h-[88px] shadow-sm select-none group";
-              cardEl.style.borderLeft = `4px solid ${meta.color}`;
-
-              cardEl.innerHTML = `
-                <!-- 右上角收藏星號 (阻止冒泡防跳轉) -->
-                <button class="card-star-btn absolute top-2.5 right-2.5 text-slate-300 hover:text-amber-500 transition-colors p-0.5 z-20">
-                  <i class="${isCardStarred ? 'fa-solid fa-star text-amber-400' : 'fa-regular fa-star'} text-[11px]"></i>
+          sectionHtml += `
+            <div onclick="window.open('${item.filename}', '_blank')" class="group relative bg-white border border-slate-200 hover:border-slate-300 rounded-xl p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition-all cursor-pointer h-[112px]">
+              <div class="flex items-start justify-between">
+                <span class="text-base font-black text-slate-800 line-clamp-1 group-hover:text-slate-900 transition-colors">
+                  ${item.title}
+                </span>
+                <button onclick="toggleFav('${item.id}', event)" class="focus:outline-none p-1 rounded hover:bg-slate-100">
+                  <i class="${starClass} fa-star text-sm"></i>
                 </button>
-                
-                <div class="pr-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 class="text-[13.5px] font-bold text-slate-900 leading-snug truncate group-hover:text-amber-600 transition-colors">${card.title}</h3>
-                    <p class="text-[11px] text-slate-500 line-clamp-1 mt-0.5">${card.desc}</p>
-                  </div>
-                  <!-- 英文檔名直接顯示，一目了然 (無 Hover 延遲) -->
-                  <div class="text-[9.5px] text-slate-455 font-mono mt-1.5 flex items-center justify-between">
-                    <span>${card.filename}</span>
-                    <span class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400"><i class="fa-solid fa-arrow-right"></i></span>
-                  </div>
-                </div>
-              `;
-
-              // 星星點擊事件攔截
-              const starBtn = cardEl.querySelector(".card-star-btn");
-              starBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                if (starredItems.includes(card.filename)) {
-                  starredItems = starredItems.filter(f => f !== card.filename);
-                } else {
-                  starredItems.push(card.filename);
-                }
-                localStorage.setItem("spedu_starred_units", JSON.stringify(starredItems));
-                renderDashboard();
-              });
-
-              grid.appendChild(cardEl);
-            });
-
-            section.appendChild(grid);
-          }
-
-          mainContentCanvas.appendChild(section);
+              </div>
+              <p class="text-slate-400 text-xs line-clamp-1 mt-1 flex-1">
+                ${item.desc}
+              </p>
+              <div class="text-[11px] text-slate-400 font-mono tracking-wide mt-2">
+                ${item.filename}
+              </div>
+              <div class="absolute left-0 top-3 bottom-3 w-1 rounded-r-full" style="background-color: ${item.themeColor}"></div>
+            </div>
+          `;
         });
 
-        // 搜尋無結果控制
-        if (overallHasCards) {
-          noResults.classList.add("hidden");
-        } else {
-          noResults.classList.remove("hidden");
-        }
-      }
-
-      // ==========================================
-      // 2. 側邊欄展開/收折控制器 (VSCode 邏輯)
-      // ==========================================
-      function toggleSidebar() {
-        const isMobile = window.innerWidth < 768;
-        if (isMobile) {
-          const isHidden = sidebar.classList.contains("-translate-x-full");
-          if (isHidden) {
-            sidebar.classList.remove("-translate-x-full");
-            sidebarOverlay.classList.remove("hidden");
-          } else {
-            sidebar.classList.add("-translate-x-full");
-            sidebarOverlay.classList.add("hidden");
-          }
-        } else {
-          const isCollapsed = sidebar.classList.contains("w-16");
-          if (isCollapsed) {
-            sidebar.classList.remove("w-16");
-            sidebar.classList.add("w-60");
-            document.querySelectorAll(".sidebar-text").forEach(el => el.classList.remove("hidden"));
-            document.querySelectorAll(".sidebar-text-block").forEach(el => el.classList.remove("hidden"));
-            document.querySelectorAll(".sidebar-badge").forEach(el => el.classList.remove("hidden"));
-            document.getElementById("sidebar-search-container").classList.remove("hidden");
-          } else {
-            sidebar.classList.add("w-16");
-            sidebar.classList.remove("w-60");
-            document.querySelectorAll(".sidebar-text").forEach(el => el.classList.add("hidden"));
-            document.querySelectorAll(".sidebar-text-block").forEach(el => el.classList.add("hidden"));
-            document.querySelectorAll(".sidebar-badge").forEach(el => el.classList.add("hidden"));
-            document.getElementById("sidebar-search-container").classList.add("hidden");
-          }
-        }
-      }
-
-      sidebarToggle.addEventListener("click", toggleSidebar);
-      sidebarOverlay.addEventListener("click", toggleSidebar);
-
-      // 手機與桌機自適應寬度
-      window.addEventListener("resize", () => {
-        if (window.innerWidth >= 768) {
-          sidebar.classList.remove("-translate-x-full", "w-16");
-          sidebar.classList.add("w-60");
-          document.querySelectorAll(".sidebar-text").forEach(el => el.classList.remove("hidden"));
-          document.querySelectorAll(".sidebar-text-block").forEach(el => el.classList.remove("hidden"));
-          document.querySelectorAll(".sidebar-badge").forEach(el => el.classList.remove("hidden"));
-          document.getElementById("sidebar-search-container").classList.remove("hidden");
-          sidebarOverlay.classList.add("hidden");
-        } else {
-          sidebar.classList.add("-translate-x-full");
-          sidebar.classList.remove("w-16");
-          sidebar.classList.add("w-60");
-        }
+        sectionHtml += `</div></div>`;
+        container.innerHTML += sectionHtml;
       });
+    }
 
-      // ==========================================
-      // 3. 搜尋與篩選事件監聽
-      // ==========================================
-      searchInput.addEventListener("input", () => {
-        if (searchInput.value.trim().length > 0) {
-          clearSearch.classList.remove("hidden");
-        } else {
-          clearSearch.classList.add("hidden");
-        }
-        renderDashboard();
-      });
+    // 監聽搜尋
+    document.getElementById('search-input').addEventListener('input', renderCards);
 
-      clearSearch.addEventListener("click", () => {
-        searchInput.value = "";
-        clearSearch.classList.add("hidden");
-        renderDashboard();
-        searchInput.focus();
-      });
-
-      // 全部 / 星標收藏篩選
-      btnShowAll.addEventListener("click", () => {
-        btnShowAll.classList.add("active", "bg-slate-200/50");
-        btnShowAll.classList.remove("text-slate-600");
-        btnShowAll.classList.add("text-slate-700");
-        
-        btnShowStarred.classList.remove("active", "bg-slate-200/50");
-        btnShowStarred.classList.add("text-slate-600");
-
-        activeFilter = "all";
-        renderDashboard();
-      });
-
-      btnShowStarred.addEventListener("click", () => {
-        btnShowStarred.classList.add("active", "bg-slate-200/50");
-        btnShowStarred.classList.remove("text-slate-600");
-        btnShowStarred.classList.add("text-slate-700");
-
-        btnShowAll.classList.remove("active", "bg-slate-200/50");
-        btnShowAll.classList.add("text-slate-600");
-
-        activeFilter = "starred";
-        renderDashboard();
-      });
-
-      // ==========================================
-      // 4. 開機初始載入
-      // ==========================================
-      // 預設在手機版收合側邊欄
-      if (window.innerWidth < 768) {
-        sidebar.classList.add("-translate-x-full");
-      }
-      renderDashboard();
-    });
+    // 啟動載入
+    window.onload = () => {
+      initSidebar();
+      filterCategory('all');
+    };
   </script>
 </body>
 </html>
