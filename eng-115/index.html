@@ -29,12 +29,12 @@
   <!-- 頂部 Header -->
   <header class="h-16 border-t-[4px] border-[#F59E0B] bg-[#FFFDF8] border-b border-slate-200 flex items-center justify-between px-4 z-40 shrink-0">
     <div class="flex items-center space-x-3">
-      <!-- 漢堡選單 (手機版切換，桌機版可用來控制側邊欄寬度) -->
-      <button id="menu-toggle" class="p-2 rounded-lg hover:bg-slate-100 focus:outline-none">
+      <!-- 漢堡選單 (手機版切換) -->
+      <button id="menu-toggle" class="p-2 rounded-lg hover:bg-slate-100 focus:outline-none lg:hidden">
         <i class="fa-solid fa-bars text-xl text-slate-600"></i>
       </button>
-      <!-- Logo 放大至飽滿的 46px 尺寸 -->
-      <img src="line-qrcode.png" alt="Spedu Labs Logo" class="h-[46px] object-contain scale-110 origin-left" onerror="this.src='https://placehold.co/180x46/FFFDF8/F59E0B?text=SINNY+SPEDU+LABS'">
+      <!-- Logo 暴力放大至極致飽滿的 48px 高度，不限寬度 -->
+      <img src="line-qrcode.png" alt="Spedu Labs Logo" style="height: 48px; width: auto; max-height: 48px;" class="object-contain" onerror="this.src='https://placehold.co/180x48/FFFDF8/F59E0B?text=SINNY+SPEDU+LABS'">
       <span class="text-slate-400 font-light">/</span>
       <span class="text-sm font-semibold tracking-wider text-slate-500 uppercase">Book Workspace</span>
     </div>
@@ -80,7 +80,7 @@
 
         <!-- 動態年級分類按鈕區 -->
         <div id="category-list" class="space-y-1">
-          <!-- JS 會自動在這裡產生按鈕 -->
+          <!-- JS 會自動產生 -->
         </div>
       </div>
     </aside>
@@ -90,10 +90,10 @@
       
       <!-- 卡片渲染區 -->
       <div id="cards-container" class="space-y-8 max-w-7xl mx-auto pb-24">
-        <!-- JS 會根據分類與排版自動在這裡產生 HTML -->
+        <!-- JS 會根據分類自動產生 -->
       </div>
 
-      <!-- 右下角 Spedu Labs 太空人燈泡巨型浮水印 -->
+      <!-- 右下角 Spedu Labs 太空人燈泡 w-72 巨型浮水印 (完美置入) -->
       <div class="fixed bottom-4 right-4 w-64 h-64 pointer-events-none opacity-[0.045] select-none z-0">
         <img src="spe-icon2.png" alt="Watermark" class="w-full h-full object-contain" onerror="this.style.display='none'">
       </div>
@@ -124,14 +124,11 @@
       { id: "g9_trans", category: "九年級課本講義", badge_left: "翻譯", badge_right: "115-1", title: "九上 課文翻譯與句型卷", filename: "115-1G9trans.html", themeColor: "#F43F5E" }
     ];
 
-    // 初始化收藏夾
     let favorites = JSON.parse(localStorage.getItem('book_favs')) || [];
     let currentFilter = 'all';
 
-    // 取得所有不重複大類
     const categories = [...new Set(bookData.map(item => item.category))];
 
-    // 初始化側邊欄按鈕
     function initSidebar() {
       const container = document.getElementById('category-list');
       container.innerHTML = '';
@@ -152,13 +149,11 @@
       updateCountBadges();
     }
 
-    // 更新計數
     function updateCountBadges() {
       document.getElementById('count-all').innerText = bookData.length;
       document.getElementById('count-fav').innerText = favorites.length;
     }
 
-    // 手機懸浮選單開關控制
     const menuToggle = document.getElementById('menu-toggle');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
@@ -172,11 +167,8 @@
     menuToggle.addEventListener('click', toggleSidebar);
     overlay.addEventListener('click', toggleSidebar);
 
-    // 篩選與滾動機制
     function filterCategory(cat) {
       currentFilter = cat;
-      
-      // 更新側邊選單樣式狀態
       const buttons = sidebar.querySelectorAll('button');
       buttons.forEach(btn => {
         btn.classList.remove('bg-slate-200/80', 'text-slate-900', 'border-l-4', 'border-[#F59E0B]');
@@ -193,12 +185,10 @@
 
       renderCards();
 
-      // 如果在手機端，選取完後自動把抽屜收摺起來
       if (window.innerWidth < 1024) {
         toggleSidebar();
       }
 
-      // 當點選具體大類時，平滑滾動到該位置
       if (cat !== 'all' && cat !== 'fav') {
         const targetElement = document.getElementById(`section-${cat}`);
         if (targetElement) {
@@ -209,7 +199,6 @@
       }
     }
 
-    // 收藏星標開關
     function toggleFav(id, event) {
       event.stopPropagation();
       const index = favorites.indexOf(id);
@@ -223,7 +212,6 @@
       renderCards();
     }
 
-    // 渲染卡片
     function renderCards() {
       const container = document.getElementById('cards-container');
       const searchQuery = document.getElementById('search-input').value.toLowerCase();
@@ -244,7 +232,6 @@
         );
       }
 
-      // 決定大類群組
       const activeCats = currentFilter === 'all' || currentFilter === 'fav'
         ? [...new Set(filteredData.map(item => item.category))]
         : [currentFilter];
@@ -286,9 +273,9 @@
 
           sectionHtml += `
             <div onclick="window.open('${item.filename}', '_blank')" class="group relative bg-white border border-slate-200 hover:border-slate-300 rounded-xl p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition-all cursor-pointer h-[112px]">
-              <!-- 頂部：功能標籤(左側彩色大粗黑) 與 年度標籤(右側灰字) -->
+              <!-- 頂部：【聽力/配對】放大實心彩色框(左側) ＋ 學期(右側灰字) -->
               <div class="flex items-center justify-between mb-1">
-                <span class="px-2.5 py-0.5 rounded-md text-sm font-black border tracking-wider" style="color: ${item.themeColor}; border-color: ${item.themeColor}; background-color: ${item.themeColor}12">
+                <span class="px-3 py-0.5 rounded-md text-base font-black border tracking-wider" style="color: ${item.themeColor}; border-color: ${item.themeColor}; background-color: ${item.themeColor}12">
                   ${item.badge_left}
                 </span>
                 <div class="flex items-center space-x-2">
@@ -299,12 +286,12 @@
                 </div>
               </div>
               
-              <!-- 中間：粗體描述 -->
+              <!-- 中間：描述（中文字） -->
               <div class="text-slate-600 text-sm font-semibold group-hover:text-slate-900 transition-colors line-clamp-1">
                 ${item.title}
               </div>
               
-              <!-- 底部：直接顯示的檔名 (最小字) -->
+              <!-- 底部：直接顯示的檔名 -->
               <div class="text-[11px] text-slate-400 font-mono tracking-wide truncate">
                 ${item.filename}
               </div>
@@ -317,10 +304,8 @@
       });
     }
 
-    // 監聽搜尋
     document.getElementById('search-input').addEventListener('input', renderCards);
 
-    // 啟動載入
     window.onload = () => {
       initSidebar();
       filterCategory('all');
