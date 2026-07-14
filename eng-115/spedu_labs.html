@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spedu Labs - 課本講義工作台</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* 隱藏滾動條但保持滾動 */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .transition-all-300 {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* 實驗室六角星圖背景 (高質感 2% 科技藍圖微光) */
+    .labs-grid-bg {
+      background-color: #F4F7FB;
+      background-image: 
+        /* 品牌橘與科技藍微弱星空閃爍 */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M20 20 L20 20 M80 30 L80 30 M110 10 L110 10 M40 90 L40 90 M90 110 L90 110' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-opacity='0.22'/%3E%3Cpath d='M15 75 L15 75 M70 85 L70 85 M100 70 L100 70 M5 45 L5 45 M95 45 L95 45' stroke='%23f59e0b' stroke-width='2.2' stroke-linecap='round' stroke-opacity='0.28'/%3E%3C/svg%3E"),
+        /* 超細緻六角形幾何藍圖格線 */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='86.6' height='150' viewBox='0 0 86.6 150'%3E%3Cpath d='M0 0 L43.3 25 L43.3 75 L0 100 L-43.3 75 L-43.3 25 Z M43.3 75 L86.6 100 L86.6 150 L43.3 175 L0 150 L0 100 Z' stroke='%2394a3b8' stroke-width='0.5' stroke-opacity='0.16' fill='none'/%3E%3C/svg%3E");
+      background-attachment: local;
+    }
+  </style>
+</head>
+<body class="bg-[#FFFDF8] text-slate-900 font-sans h-screen flex flex-col overflow-hidden select-none">
+
+  <!-- ========================================== -->
+  <!-- 1. Header (64px) - 全站共用、高雅黑白底色 -->
+  <!-- ========================================== -->
+  <header class="h-16 bg-[#FFFDF8] border-b border-slate-200 px-4 flex items-center justify-between z-40 shrink-0 relative select-none">
+    <!-- 頂部 4px 品牌橘定位細線 -->
+    <div class="absolute top-0 left-0 right-0 h-1 bg-[#F59E0B]"></div>
+
+    <div class="flex items-center gap-3">
+      <!-- 側邊欄開關 (VSCode 體驗) -->
+      <button id="sidebar-toggle" class="p-1.5 hover:bg-slate-100 rounded-md text-slate-500 transition-colors focus:outline-none" title="展開/收折側邊欄">
+        <i class="fa-solid fa-bars text-lg"></i>
+      </button>
+      
+      <!-- 橫式 Logo (拉大尺寸、精準對齊) -->
+      <div class="flex items-center gap-2">
+        <div class="h-12 w-44 overflow-hidden flex items-center justify-start relative">
+          <!-- 放大高度至 24 且調整比例 scale-120 使品牌字體清晰醒目 -->
+          <img src="line-qrcode.png" alt="Spedu Labs Logo" class="h-24 -my-6 max-w-none object-contain scale-120 origin-left transition-transform duration-200 hover:scale-125">
+        </div>
+        
+        <!-- Breadcrumb 導航條 -->
+        <div class="flex items-center gap-1.5 text-sm font-semibold tracking-tight">
+          <span class="text-slate-400">/</span>
+          <span class="text-slate-900">Book Workspace</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右側極簡控制 (全站一體，移除多餘按鈕) -->
+    <div class="flex items-center gap-4">
+      <div class="text-[11px] text-slate-400 font-medium tracking-wider uppercase hidden sm:block">
+        <i class="fa-solid fa-flask-bubble text-amber-500 mr-1"></i>Workspace v1.0
+      </div>
+    </div>
+  </header>
+
+  <!-- 主框架結構：雙欄獨立滾動設計 -->
+  <div class="flex-1 flex relative overflow-hidden">
+    
+    <!-- ========================================== -->
+    <!-- 2. Sidebar (240px / 64px) - 搜尋與導航核心 -->
+    <!-- ========================================== -->
+    <aside id="sidebar" class="w-60 bg-[#F8FAFC] border-r border-slate-200 h-full flex flex-col transition-all-300 z-30 shrink-0">
+      
+      <!-- 搜尋框區 (放置在左側，搜尋即導航，點選橘色品牌高亮) -->
+      <div class="p-3 border-b border-slate-200/60" id="sidebar-search-container">
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400 pointer-events-none">
+            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+          </span>
+          <input type="text" id="search-input" 
+                 placeholder="搜尋教材、說明或檔名..." 
+                 class="w-full pl-7 pr-7 py-1.5 text-xs bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all text-slate-700 placeholder-slate-400" />
+          <button id="clear-search" class="absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400 hover:text-slate-600 hidden">
+            <i class="fa-solid fa-circle-xmark text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 快捷過濾區 (圖示已修復，絕不重疊) -->
+      <div class="p-1 border-b border-slate-200/40 space-y-0.5">
+        <button id="btn-show-all" class="filter-tab active w-full flex items-center justify-between p-2 rounded text-xs text-slate-700 hover:bg-slate-200/50 transition-colors font-medium">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-folder-open text-slate-400 w-4 text-center"></i>
+            <span class="sidebar-text">📂 全部教材</span>
+          </span>
+          <span class="bg-slate-200 text-slate-600 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-all-badge">0</span>
+        </button>
+        
+        <button id="btn-show-starred" class="filter-tab w-full flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-slate-200/50 transition-colors font-medium">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-star text-amber-500 w-4 text-center"></i>
+            <span class="sidebar-text">⭐ 我的收藏</span>
+          </span>
+          <span class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-starred-badge">0</span>
+        </button>
+      </div>
+
+      <!-- 動態大類目錄區 (由 JS 自動產生與計算數量) -->
+      <div class="p-2 border-b border-slate-100 flex items-center justify-between sidebar-text-block">
+        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400"><i class="fa-solid fa-signs-post mr-1"></i>快捷年級分流</span>
+      </div>
+      
+      <!-- 獨立滾動容器 -->
+      <nav id="sidebar-nav" class="flex-1 overflow-y-auto p-1 space-y-0.5 no-scrollbar">
+        <!-- JS 動態生成快捷連結 -->
+      </nav>
+
+    </aside>
+
+    <!-- 遮罩 (小螢幕相容) -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/20 z-20 hidden"></div>
+
+    <!-- ========================================== -->
+    <!-- 3. Main Canvas (右側內容區) - 暖灰藍點陣實驗室背景 -->
+    <!-- ========================================== -->
+    <main class="flex-1 labs-grid-bg overflow-y-auto p-6 space-y-8 no-scrollbar relative z-10">
+      
+      <!-- 太空人去背 Logo 4.5% 透明度浮水印 (右下角定位，尺寸放大至 w-72 h-72 更加和諧大氣) -->
+      <div class="fixed bottom-8 right-8 w-72 h-72 pointer-events-none opacity-[0.045] z-0 select-none">
+        <img src="spe-icon2.png" alt="Spedu Labs Watermark" class="w-full h-full object-contain">
+      </div>
+
+      <div id="no-results" class="hidden py-16 text-center max-w-sm mx-auto bg-white/80 border border-slate-200 rounded-lg shadow-sm backdrop-blur-sm relative z-10">
+        <div class="text-slate-300 text-4xl mb-2"><i class="fa-regular fa-folder-open"></i></div>
+        <h3 class="text-sm font-bold text-slate-700">找不到相符的課本教材</h3>
+        <p class="text-[11px] text-slate-400 mt-1">請試試其他搜尋關鍵字（例如「拼寫」、「G8」）</p>
+      </div>
+
+      <!-- 動態分類網格區 (由 JS 自動載入與繪製) -->
+      <div id="main-content-canvas" class="space-y-6 relative z-10">
+        <!-- JS 將自動生成分類標題、折疊鈕與白底卡片 -->
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 4. 智慧彈窗通知元件 (取代 Alert) -->
+  <!-- ========================================== -->
+  <div id="custom-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-lg z-50 transform translate-y-16 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2">
+    <i class="fa-solid fa-circle-info text-amber-400"></i>
+    <span id="toast-msg">通知內容</span>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 5. JavaScript 數據與動態核心邏輯 (輕量、安全) -->
+  <!-- ========================================== -->
+  <script>
+    // ==========================================
+    // 🎨 設計規範分類色調與 3% 極淡背景色 (Design System)
+    // ==========================================
+    const categoriesMeta = {
+      "七年級課本講義": { color: "#3B82F6", icon: "fa-book", code: "g7", bgTint: "rgba(59, 130, 246, 0.03)" },
+      "八年級課本講義": { color: "#10B981", icon: "fa-book-open", code: "g8", bgTint: "rgba(16, 185, 129, 0.03)" },
+      "九年級課本講義": { color: "#8B5CF6", icon: "fa-graduation-cap", code: "g9", bgTint: "rgba(139, 92, 246, 0.03)" }
+    };
+
+    // ==========================================
+    // 📂 完美 JSON 數據結構 - 課本講義資料庫 (3個年級各5個檔案，全預留)
+    // ==========================================
+    const bookData = [
+      // ==========================================
+      // 七年級 (Grade 7) - 共 5 個檔案
+      // ==========================================
+      {
+        "category": "七年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【聽力】",
+        "title": "七上 單字聽力訓練卷",
+        "filename": "115-1G7hear.html"
+      },
+      {
+        "category": "七年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【配對】",
+        "title": "七上 中英文配對卷",
+        "filename": "115-1G7match.html"
+      },
+      {
+        "category": "七年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【拼寫】",
+        "title": "七上 單字拼寫練習卷",
+        "filename": "115-1G7write.html"
+      },
+      {
+        "category": "七年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【關鍵字】",
+        "title": "七上 課文關鍵字解碼卷",
+        "filename": "115-1G7keyword.html"
+      },
+      {
+        "category": "七年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【翻譯】",
+        "title": "七上 課文翻譯與句型卷",
+        "filename": "115-1G7trans.html"
+      },
+
+      // ==========================================
+      // 八年級 (Grade 8) - 共 5 個檔案
+      // ==========================================
+      {
+        "category": "八年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【聽力】",
+        "title": "八上 單字聽力訓練卷",
+        "filename": "115-1G8hear.html"
+      },
+      {
+        "category": "八年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【配對】",
+        "title": "八上 中英文配對卷",
+        "filename": "115-1G8match.html"
+      },
+      {
+        "category": "八年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【拼寫】",
+        "title": "八上 單字拼寫練習卷",
+        "filename": "115-1G8write.html"
+      },
+      {
+        "category": "八年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【關鍵字】",
+        "title": "八上 課文關鍵字解碼卷",
+        "filename": "115-1G8keyword.html"
+      },
+      {
+        "category": "八年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【翻譯】",
+        "title": "八上 課文翻譯與句型卷",
+        "filename": "115-1G8trans.html"
+      },
+
+      // ==========================================
+      // 九年級 (Grade 9) - 共 5 個檔案
+      // ==========================================
+      {
+        "category": "九年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【聽力】",
+        "title": "九上 單字聽力訓練卷",
+        "filename": "115-1G9hear.html"
+      },
+      {
+        "category": "九年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【配對】",
+        "title": "九上 中英文配對卷",
+        "filename": "115-1G9match.html"
+      },
+      {
+        "category": "九年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【拼寫】",
+        "title": "九上 單字拼寫練習卷",
+        "filename": "115-1G9write.html"
+      },
+      {
+        "category": "九年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【關鍵字】",
+        "title": "九上 課文關鍵字解碼卷",
+        "filename": "115-1G9keyword.html"
+      },
+      {
+        "category": "九年級課本講義",
+        "badge_left": "115-1",
+        "badge_right": "【翻譯】",
+        "title": "九上 課文翻譯與句型卷",
+        "filename": "115-1G9trans.html"
+      }
+    ];
+
+    // ==========================================
+    // ⚙️ UI 初始化與事件處理引擎
+    // ==========================================
+    document.addEventListener("DOMContentLoaded", () => {
+      // DOM 節點
+      const sidebar = document.getElementById("sidebar");
+      const sidebarToggle = document.getElementById("sidebar-toggle");
+      const sidebarOverlay = document.getElementById("sidebar-overlay");
+      const sidebarNav = document.getElementById("sidebar-nav");
+      const mainContentCanvas = document.getElementById("main-content-canvas");
+      const searchInput = document.getElementById("search-input");
+      const clearSearch = document.getElementById("clear-search");
+      const noResults = document.getElementById("no-results");
+      const countAllBadge = document.getElementById("count-all-badge");
+      const countStarredBadge = document.getElementById("count-starred-badge");
+
+      const btnShowAll = document.getElementById("btn-show-all");
+      const btnShowStarred = document.getElementById("btn-show-starred");
+
+      // 儲存收折狀態與收藏狀態
+      let starredItems = JSON.parse(localStorage.getItem("spedu_starred_books")) || [];
+      let collapsedSections = JSON.parse(localStorage.getItem("spedu_collapsed_book_sections")) || [];
+      let activeFilter = "all"; // 'all' 或 'starred'
+
+      // ==========================================
+      // 🎨 自定義彈窗元件邏輯
+      // ==========================================
+      function showToast(message) {
+        const toast = document.getElementById("custom-toast");
+        const toastMsg = document.getElementById("toast-msg");
+        toastMsg.innerText = message;
+        toast.classList.remove("translate-y-16", "opacity-0", "pointer-events-none");
+        toast.classList.add("translate-y-0", "opacity-100");
+        
+        setTimeout(() => {
+          toast.classList.add("translate-y-16", "opacity-0", "pointer-events-none");
+          toast.classList.remove("translate-y-0", "opacity-100");
+        }, 3000);
+      }
+
+      // ==========================================
+      // 1. 動態繪製與架構生成
+      // ==========================================
+      function renderDashboard() {
+        // A. 計算總計 (頂層快捷按鈕計數)
+        countAllBadge.innerText = bookData.length;
+        countStarredBadge.innerText = starredItems.length;
+
+        // B. 依 category 將資料打包
+        const groupedData = {};
+        Object.keys(categoriesMeta).forEach(cat => {
+          groupedData[cat] = [];
+        });
+
+        bookData.forEach(item => {
+          if (groupedData[item.category]) {
+            groupedData[item.category].push(item);
+          }
+        });
+
+        // C. 生成左側大類快捷列 (左側獨立滾動)
+        sidebarNav.innerHTML = "";
+        Object.keys(categoriesMeta).forEach(catName => {
+          const meta = categoriesMeta[catName];
+          const count = groupedData[catName].length;
+
+          const navLink = document.createElement("a");
+          navLink.href = `#section-${meta.code}`;
+          navLink.className = "sidebar-link flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-slate-200/50 transition-colors font-medium border-l-4 border-l-transparent";
+          navLink.innerHTML = `
+            <span class="flex items-center gap-2 truncate">
+              <span class="w-1.5 h-3 rounded shrink-0" style="background-color: ${meta.color}"></span>
+              <span class="sidebar-text truncate">${catName}</span>
+            </span>
+            <span class="bg-slate-200 text-slate-600 text-[9px] font-bold px-1.5 py-0.2 rounded-full sidebar-badge">${count}</span>
+          `;
+          
+          // 點擊左側快速滾動定位且保證右側對應抽屜展開
+          navLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            const sectionId = `section-${meta.code}`;
+            const targetSection = document.getElementById(sectionId);
+            
+            if (targetSection) {
+              // 如果是折疊狀態，強制展開它
+              if (collapsedSections.includes(catName)) {
+                collapsedSections = collapsedSections.filter(s => s !== catName);
+                localStorage.setItem("spedu_collapsed_book_sections", JSON.stringify(collapsedSections));
+                renderDashboard(); // 重新渲染以展開
+              }
+
+              // 針對滾動軸在 main 容器的架構，精確滾動 main 容器 (解決鎖死定位問題)
+              const mainContainer = document.querySelector('main');
+              if (mainContainer) {
+                const topPos = targetSection.offsetTop - 24; // 扣除內距
+                mainContainer.scrollTo({
+                  top: topPos,
+                  behavior: "smooth"
+                });
+              }
+
+              // 手機端點選後自動合上側邊欄
+              if (window.innerWidth < 768) {
+                toggleSidebar();
+              }
+            }
+          });
+
+          sidebarNav.appendChild(navLink);
+        });
+
+        // D. 生成右側教材 Canvas（主內容網格）
+        mainContentCanvas.innerHTML = "";
+        const searchQuery = searchInput.value.toLowerCase().trim();
+        let overallHasCards = false;
+
+        Object.keys(categoriesMeta).forEach(catName => {
+          const meta = categoriesMeta[catName];
+          const cards = groupedData[catName];
+
+          // 過濾卡片
+          const filteredCards = cards.filter(card => {
+            const matchesSearch = !searchQuery || 
+              card.title.toLowerCase().includes(searchQuery) || 
+              card.filename.toLowerCase().includes(searchQuery) || 
+              card.badge_right.toLowerCase().includes(searchQuery);
+
+            const isStarred = starredItems.includes(card.filename);
+            const matchesFilter = (activeFilter === "all") || (activeFilter === "starred" && isStarred);
+
+            return matchesSearch && matchesFilter;
+          });
+
+          // 如果此大類內完全沒有符合篩選的卡片，則本分類區塊不顯示
+          if (filteredCards.length === 0) return;
+          overallHasCards = true;
+
+          const isCollapsed = collapsedSections.includes(catName);
+
+          // 建立區塊 Section
+          const section = document.createElement("section");
+          section.id = `section-${meta.code}`;
+          section.className = "category-block transition-all-300 rounded-xl p-4";
+          // 每個分類區塊套用專屬的 3% 超淡底色背景，襯托白色立體卡片
+          section.style.backgroundColor = meta.bgTint;
+
+          // 分類 Header Row (44px)
+          const headerRow = document.createElement("div");
+          headerRow.className = "h-11 flex items-center justify-between border-b border-slate-200/60 pb-1 mb-3 cursor-pointer select-none group";
+          
+          headerRow.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400 text-xs transition-transform duration-200 ${isCollapsed ? '-rotate-90' : ''}">
+                <i class="fa-solid fa-chevron-down"></i>
+              </span>
+              <span class="w-1.5 h-4.5 rounded-sm" style="background-color: ${meta.color}"></span>
+              <h2 class="text-base md:text-[18px] font-extrabold text-slate-800 tracking-tight flex items-center gap-2">
+                ${catName}
+                <span class="text-[11px] font-semibold text-slate-400 font-mono">(${filteredCards.length})</span>
+              </h2>
+            </div>
+            <!-- 定位定位符 ＋ 按鈕 -->
+            <button class="plus-btn w-6 h-6 rounded hover:bg-slate-200/50 flex items-center justify-center text-slate-450 hover:text-slate-750 transition-colors" title="AI 自動定位標記">
+              <i class="fa-solid fa-plus text-xs"></i>
+            </button>
+          `;
+
+          // 點選 Header 列進行收折控制
+          headerRow.addEventListener("click", (e) => {
+            if (e.target.closest(".plus-btn")) {
+              e.stopPropagation();
+              showToast(`本平台採用 [Data-Driven] 自動架構。新增教材只要更新 book.json 檔案即可！`);
+              return;
+            }
+
+            if (isCollapsed) {
+              collapsedSections = collapsedSections.filter(s => s !== catName);
+            } else {
+              collapsedSections.push(catName);
+            }
+            localStorage.setItem("spedu_collapsed_book_sections", JSON.stringify(collapsedSections));
+            renderDashboard();
+          });
+
+          section.appendChild(headerRow);
+
+          // 卡片 Grid 容器
+          if (!isCollapsed) {
+            // 響應式自動整齊排隊 (不限一行幾個，順序對即可)
+            const grid = document.createElement("div");
+            grid.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3";
+
+            filteredCards.forEach(card => {
+              const isCardStarred = starredItems.includes(card.filename);
+              const cardEl = document.createElement("a");
+              cardEl.href = card.filename;
+              cardEl.target = "_blank"; // 在新分頁開啟
+              
+              // 完美移植上學期「圓潤膠囊方框」設計 (高度 88px, 純白底色, 淡灰細框, 左側專屬高彩度色條)
+              cardEl.className = "book-card relative bg-white border border-slate-200 rounded-xl p-3 flex flex-col justify-between hover:bg-[#F8FAFC] hover:-translate-y-0.5 hover:shadow-md transition-all duration-150 h-[88px] shadow-sm select-none group";
+              cardEl.style.borderLeft = `4px solid ${meta.color}`;
+
+              cardEl.innerHTML = `
+                <!-- 右上角收藏星號 (阻止冒泡防跳轉) -->
+                <button class="card-star-btn absolute top-2.5 right-2.5 text-slate-300 hover:text-amber-500 transition-colors p-0.5 z-20">
+                  <i class="${isCardStarred ? 'fa-solid fa-star text-amber-400' : 'fa-regular fa-star'} text-[11px]"></i>
+                </button>
+                
+                <div class="pr-5 flex-1 flex flex-col justify-between">
+                  <!-- 上：左上膠囊 L1/學期 + 右上功能標籤 -->
+                  <div class="flex items-center gap-1.5 text-[10px] font-semibold mb-1">
+                    <span class="px-1.5 py-0.2 rounded border border-slate-300 text-slate-500 bg-slate-50">${card.badge_left}</span>
+                    <span class="text-indigo-600 font-bold" style="color: ${meta.color}">${card.badge_right}</span>
+                  </div>
+                  <!-- 中：大字粗體中英文標題 -->
+                  <div>
+                    <h3 class="text-[13.5px] font-extrabold text-slate-900 leading-snug truncate group-hover:text-amber-600 transition-colors">${card.title}</h3>
+                  </div>
+                  <!-- 下：直接整齊顯示英文檔名 (無 Hover 遮蔽) -->
+                  <div class="text-[9.5px] text-slate-400 font-mono mt-1 flex items-center justify-between">
+                    <span>${card.filename}</span>
+                    <span class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400"><i class="fa-solid fa-arrow-right"></i></span>
+                  </div>
+                </div>
+              `;
+
+              // 星星點擊事件攔截
+              const starBtn = cardEl.querySelector(".card-star-btn");
+              starBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (starredItems.includes(card.filename)) {
+                  starredItems = starredItems.filter(f => f !== card.filename);
+                } else {
+                  starredItems.push(card.filename);
+                }
+                localStorage.setItem("spedu_starred_books", JSON.stringify(starredItems));
+                renderDashboard();
+              });
+
+              grid.appendChild(cardEl);
+            });
+
+            section.appendChild(grid);
+          }
+
+          mainContentCanvas.appendChild(section);
+        });
+
+        // 搜尋無結果控制
+        if (overallHasCards) {
+          noResults.classList.add("hidden");
+        } else {
+          noResults.classList.remove("hidden");
+        }
+      }
+
+      // ==========================================
+      // 2. 側邊欄展開/收折控制器 (VSCode 邏輯)
+      // ==========================================
+      function toggleSidebar() {
+        const isMobile = window.innerWidth < 768;
+        if (isMobile) {
+          const isHidden = sidebar.classList.contains("-translate-x-full");
+          if (isHidden) {
+            sidebar.classList.remove("-translate-x-full");
+            sidebarOverlay.classList.remove("hidden");
+          } else {
+            sidebar.classList.add("-translate-x-full");
+            sidebarOverlay.classList.add("hidden");
+          }
+        } else {
+          const isCollapsed = sidebar.classList.contains("w-16");
+          if (isCollapsed) {
+            sidebar.classList.remove("w-16");
+            sidebar.classList.add("w-60");
+            document.querySelectorAll(".sidebar-text").forEach(el => el.classList.remove("hidden"));
+            document.querySelectorAll(".sidebar-text-block").forEach(el => el.classList.remove("hidden"));
+            document.querySelectorAll(".sidebar-badge").forEach(el => el.classList.remove("hidden"));
+            document.getElementById("sidebar-search-container").classList.remove("hidden");
+          } else {
+            sidebar.classList.add("w-16");
+            sidebar.classList.remove("w-60");
+            document.querySelectorAll(".sidebar-text").forEach(el => el.classList.add("hidden"));
+            document.querySelectorAll(".sidebar-text-block").forEach(el => el.classList.add("hidden"));
+            document.querySelectorAll(".sidebar-badge").forEach(el => el.classList.add("hidden"));
+            document.getElementById("sidebar-search-container").classList.add("hidden");
+          }
+        }
+      }
+
+      sidebarToggle.addEventListener("click", toggleSidebar);
+      sidebarOverlay.addEventListener("click", toggleSidebar);
+
+      // 手機與桌機自適應寬度
+      window.addEventListener("resize", () => {
+        if (window.innerWidth >= 768) {
+          sidebar.classList.remove("-translate-x-full", "w-16");
+          sidebar.classList.add("w-60");
+          document.querySelectorAll(".sidebar-text").forEach(el => el.classList.remove("hidden"));
+          document.querySelectorAll(".sidebar-text-block").forEach(el => el.classList.remove("hidden"));
+          document.querySelectorAll(".sidebar-badge").forEach(el => el.classList.remove("hidden"));
+          document.getElementById("sidebar-search-container").classList.remove("hidden");
+          sidebarOverlay.classList.add("hidden");
+        } else {
+          sidebar.classList.add("-translate-x-full");
+          sidebar.classList.remove("w-16");
+          sidebar.classList.add("w-60");
+        }
+      });
+
+      // ==========================================
+      // 3. 搜尋與篩選事件監聽
+      // ==========================================
+      searchInput.addEventListener("input", () => {
+        if (searchInput.value.trim().length > 0) {
+          clearSearch.classList.remove("hidden");
+        } else {
+          clearSearch.classList.add("hidden");
+        }
+        renderDashboard();
+      });
+
+      clearSearch.addEventListener("click", () => {
+        searchInput.value = "";
+        clearSearch.classList.add("hidden");
+        renderDashboard();
+        searchInput.focus();
+      });
+
+      // 全部 / 星標收藏篩選
+      btnShowAll.addEventListener("click", () => {
+        btnShowAll.classList.add("active", "bg-slate-200/50");
+        btnShowAll.classList.remove("text-slate-600");
+        btnShowAll.classList.add("text-slate-700");
+        
+        btnShowStarred.classList.remove("active", "bg-slate-200/50");
+        btnShowStarred.classList.add("text-slate-600");
+
+        activeFilter = "all";
+        renderDashboard();
+      });
+
+      btnShowStarred.addEventListener("click", () => {
+        btnShowStarred.classList.add("active", "bg-slate-200/50");
+        btnShowStarred.classList.remove("text-slate-600");
+        btnShowStarred.classList.add("text-slate-700");
+
+        btnShowAll.classList.remove("active", "bg-slate-200/50");
+        btnShowAll.classList.add("text-slate-600");
+
+        activeFilter = "starred";
+        renderDashboard();
+      });
+
+      // ==========================================
+      // 4. 開機初始載入
+      // ==========================================
+      // 預設在手機版收合側邊欄
+      if (window.innerWidth < 768) {
+        sidebar.classList.add("-translate-x-full");
+      }
+      renderDashboard();
+    });
+  </script>
+</body>
+</html>
