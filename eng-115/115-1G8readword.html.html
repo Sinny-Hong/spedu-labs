@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>八下 L1 英文科講義 課文關鍵字選擇</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+    }
+    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
+    .font-english { font-family: 'Lexend', sans-serif; }
+    
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 15px auto;
+      padding: 6mm 12mm; 
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .title-large { font-size: 21px; font-weight: 700; }
+    .info-text { font-size: 15px; font-weight: 500; }
+    
+    .answer-input:focus {
+      border-color: #3b82f6;
+      background-color: #eff6ff;
+    }
+
+    /* 目標單字：同時加粗、底線、且呈現紅色 */
+    .target-word {
+      color: #ef4444 !important;
+      font-weight: 700 !important;
+      text-decoration: underline !important;
+    }
+
+    #print-all-container { display: none; }
+    
+    @media print {
+      @page { size: A4; margin: 0; }
+      body { background-color: #ffffff; margin: 0; padding: 0; }
+      .no-print { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body.printing-all .page-a4 { display: none !important; }
+      body.printing-all #print-all-container { display: block !important; width: 210mm; }
+      .page-a4 { box-shadow: none; border: none; margin: 0; padding: 6mm 12mm; height: 297mm; }
+      .print-page {
+        width: 210mm;
+        height: 297mm;
+        padding: 6mm 12mm;
+        box-sizing: border-box;
+        background-color: #ffffff;
+        page-break-after: always;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: hidden;
+      }
+      .print-page:last-child { page-break-after: avoid; }
+    }
+  </style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <!-- 頂端控制列（列印時自動隱藏） -->
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
+    <div class="flex flex-wrap gap-2 items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+        <span class="text-slate-700 font-medium text-sm font-chinese">📺 大電視功能：點擊題目高亮並聽發音，點選右方選項即可直接無痕填入答案！</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="toggleAllAnswers()" class="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese flex items-center gap-1">💡 公布 / 隱藏答案</button>
+        <button onclick="clearAllAnswers()" class="px-3.5 py-1.5 bg-slate-600 hover:bg-slate-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese flex items-center gap-1">🧼 重設清除</button>
+        <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
+        <button onclick="printAllLessons()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 全部列印 (6頁)</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-6 gap-1.5" id="lesson-selectors"></div>
+  </div>
+
+  <!-- A4 靜態列印主結構 -->
+  <div class="page-a4">
+    <!-- 頂部標頭與學生資料填寫區 -->
+    <div class="border-b-4 border-double border-slate-400 pb-2 mb-3 shrink-0">
+      <div class="flex justify-between items-end">
+        <div class="flex items-center gap-3">
+          <h1 class="title-large text-slate-800 tracking-wider font-chinese" id="main-title">八下 L1 英文科講義 課文關鍵字選擇</h1>
+        </div>
+        
+        <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+          <div class="flex items-end">
+            <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+            <span class="ml-1 shrink-0">班</span>
+          </div>
+          <div class="flex items-end">
+            <span class="shrink-0">姓名：</span>
+            <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+          </div>
+        </div>
+      </div>
+      <!-- 說明欄調整：縮減合併為指定的一行 -->
+      <div class="mt-2 flex flex-col justify-start bg-slate-100 px-3 py-1.5 rounded border-l-4 border-slate-500 shrink-0">
+        <span class="text-[13.5px] font-bold text-slate-800 font-chinese">◎ 每題五分，錯字用紅筆訂正，中文、英文各 1次。</span>
+      </div>
+    </div>
+
+    <!-- 題目區域：上下對等雙區塊 -->
+    <div class="flex-grow flex flex-col justify-between overflow-hidden" id="questions-container">
+      <!-- 上半部 (對話篇) -->
+      <div class="flex-grow flex flex-col justify-start" id="part-1-container">
+        <div class="bg-slate-200/60 px-2 py-1 rounded text-[13.5px] font-bold text-slate-700 mb-2 font-chinese shrink-0 flex justify-between items-center">
+          <span>【上半部：對話篇】</span>
+          <!-- 區塊專用控制按鈕與分數徽章 -->
+          <div class="no-print flex items-center gap-2">
+            <span id="score-badge-part1" class="hidden px-2 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-extrabold rounded-full border border-emerald-300">答對 0 / 9</span>
+            <button onclick="checkPartAnswers('part1')" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-xs transition shadow-sm">✅ 檢查</button>
+            <button onclick="clearPartAnswers('part1')" class="px-2 py-0.5 bg-slate-600 hover:bg-slate-700 text-white font-bold rounded text-xs transition shadow-sm">🧼 清空</button>
+            <button onclick="togglePartAnswers('part1')" class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded text-xs transition shadow-sm">💡 解答</button>
+          </div>
+        </div>
+        <div class="flex-grow flex flex-col justify-between" id="part-1-list"></div>
+      </div>
+      
+      <!-- 中間虛線分隔 -->
+      <div class="border-t-2 border-dashed border-slate-300 my-2 shrink-0"></div>
+
+      <!-- 下半部 (閱讀篇) -->
+      <div class="flex-grow flex flex-col justify-start" id="part-2-container">
+        <div class="bg-slate-200/60 px-2 py-1 rounded text-[13.5px] font-bold text-slate-700 mb-2 font-chinese shrink-0 flex justify-between items-center">
+          <span>【下半部：閱讀篇】</span>
+          <!-- 區塊專用控制按鈕與分數徽章 -->
+          <div class="no-print flex items-center gap-2">
+            <span id="score-badge-part2" class="hidden px-2 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-extrabold rounded-full border border-emerald-300">答對 0 / 6</span>
+            <button onclick="checkPartAnswers('part2')" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-xs transition shadow-sm">✅ 檢查</button>
+            <button onclick="clearPartAnswers('part2')" class="px-2 py-0.5 bg-slate-600 hover:bg-slate-700 text-white font-bold rounded text-xs transition shadow-sm">🧼 清空</button>
+            <button onclick="togglePartAnswers('part2')" class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded text-xs transition shadow-sm">💡 解答</button>
+          </div>
+        </div>
+        <div class="flex-grow flex flex-col justify-between" id="part-2-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="print-all-container"></div>
+
+  <script>
+    // 翰林八下資料庫 (L1 ~ L6)
+    const database = {
+      "L1": {
+        part1: [
+          { speaker: "Jamie", txtPre: "Hey, how was your ", target: "summer vacation", txtPost: "?", tts: "Hey, how was your summer vacation?", ans: "A", opts: ["暑假", "新年", "星期天"] },
+          { speaker: "Zac", txtPre: "It was good. I visited my ", target: "aunt", txtPost: " in India.", tts: "It was good. I visited my aunt in India.", ans: "C", opts: ["同學", "老師", "阿姨/姑姑"] },
+          { speaker: "Jamie", txtPre: "How was the ", target: "weather", txtPost: " there?", tts: "How was the weather there?", ans: "A", opts: ["天氣", "學校", "功課"] },
+          { speaker: "Zac", txtPre: "It was hot, and it ", target: "rained", txtPost: " a lot.", tts: "It was hot, and it rained a lot.", ans: "B", opts: ["出太陽", "下雨", "颳風"] },
+          { speaker: "Jamie", txtPre: "It was cold, and it ", target: "snowed", txtPost: " for a few days.", tts: "It was cold, and it snowed for a few days.", ans: "A", opts: ["下雪", "下雨", "地震"] },
+          { speaker: "Jamie", txtPre: "I sent you a ", target: "postcard", txtPost: " from Australia.", tts: "I sent you a postcard from Australia.", ans: "B", opts: ["課本", "明信片", "信封"] },
+          { speaker: "Jamie", txtPre: "I ", target: "borrowed", txtPost: " it from my aunt.", tts: "I borrowed it from my aunt.", ans: "A", opts: ["借來", "買下", "遺失"] },
+          { speaker: "Jamie", txtPre: "My parents gave it to me for my ", target: "birthday", txtPost: ".", tts: "My parents gave it to me for my birthday.", ans: "B", opts: ["畢業", "生日", "聖誕節"] },
+          { speaker: "Jamie", txtPre: "I hate heavy ", target: "jackets", txtPost: ".", tts: "I hate heavy jackets.", ans: "A", opts: ["夾克/外套", "鞋子", "手套"] }
+        ],
+        part2: [
+          { speaker: "Jamie", txtPre: "My family and I are in ", target: "Australia", txtPost: " now.", tts: "My family and I are in Australia now.", ans: "A", opts: ["澳洲", "印度", "臺灣"] },
+          { speaker: "Jamie", txtPre: "One morning, a man said \"go die\" to me on the ", target: "street", txtPost: ".", tts: "One morning, a man said \"go die\" to me on the street.", ans: "B", opts: ["教室", "街道", "海灘"] },
+          { speaker: "Jamie", txtPre: "But in fact, he ", target: "meant", txtPost: " \"good day.\"", tts: "But in fact, he meant \"good day.\"", ans: "B", opts: ["忘記", "意思是", "聽說"] },
+          { speaker: "Jamie", txtPre: "I went to a coffee shop. I ", target: "ordered", txtPost: " cookies and hot chocolate.", tts: "I went to a coffee shop. I ordered cookies and hot chocolate.", ans: "A", opts: ["點餐/預訂", "製作", "弄倒"] },
+          { speaker: "Jamie", txtPre: "The ", target: "clerk", txtPost: " said to me, \"Bikkies and hot chokkie...\"", tts: "The clerk said to me, \"Bikkies and hot chokkie...\"", ans: "B", opts: ["醫生", "店員", "警察"] },
+          { speaker: "Jamie", txtPre: "How ", target: "strange", txtPost: "! Anyway, see you at school soon.", tts: "How strange! Anyway, see you at school soon.", ans: "A", opts: ["奇怪的", "好玩的", "漂亮的"] }
+        ]
+      },
+      "L2": {
+        part1: [
+          { speaker: "Cody", txtPre: "May I ", target: "speak to", txtPost: " Yuki, please?", tts: "May I speak to Yuki, please?", ans: "A", opts: ["說話/通話", "唱歌", "奔跑"] },
+          { speaker: "Cody", txtPre: "Are you in any school ", target: "clubs", txtPost: "?", tts: "Are you in any school clubs?", ans: "B", opts: ["教室", "社團", "操場"] },
+          { speaker: "Yuki", txtPre: "I can't make my ", target: "mind", txtPost: " up.", tts: "I can't make my mind up.", ans: "B", opts: ["身體", "心意/決定", "功課"] },
+          { speaker: "Yuki", txtPre: "All the clubs are ", target: "interesting", txtPost: ".", tts: "All the clubs are interesting.", ans: "A", opts: ["有趣的", "無聊的", "困難的"] },
+          { speaker: "Cody", txtPre: "Computer science is my favorite ", target: "subject", txtPost: ".", tts: "Computer science is my favorite subject.", ans: "C", opts: ["運動", "食物", "科目"] },
+          { speaker: "Cody", txtPre: "When I ", target: "heard", txtPost: " about the club, I thought of you.", tts: "When I heard about the club, I thought of you.", ans: "A", opts: ["聽到", "看到", "忘記"] },
+          { speaker: "Yuki", txtPre: "I ", target: "signed up", txtPost: " for the water sports club.", tts: "I signed up for the water sports club.", ans: "B", opts: ["遲到", "報名", "拒絕"] },
+          { speaker: "Cody", txtPre: "By the way, ", target: "whose", txtPost: " camera is this?", tts: "By the way, whose camera is this?", ans: "A", opts: ["誰的", "什麼", "哪裡"] }
+        ],
+        part2: [
+          { speaker: "Poster", txtPre: "They're game ", target: "engineers", txtPost: " from a famous video game company.", tts: "They're game engineers from a famous video game company.", ans: "B", opts: ["司機", "工程師", "廚師"] },
+          { speaker: "Poster", txtPre: "Our ", target: "lessons", txtPost: " are not difficult at all.", tts: "Our lessons are not difficult at all.", ans: "C", opts: ["功課", "考試", "課程"] },
+          { speaker: "Poster", txtPre: "You can ", target: "design", txtPost: " your own video games.", tts: "You can design your own video games.", ans: "A", opts: ["設計", "購買", "刪除"] },
+          { speaker: "Poster", txtPre: "We can take you to the London Game ", target: "Festival", txtPost: ".", tts: "We can take you to the London Game Festival.", ans: "B", opts: ["學校", "節日/慶典", "商店"] },
+          { speaker: "Poster", txtPre: "Our lessons ", target: "start", txtPost: " on September 10.", tts: "Our lessons start on September 10.", ans: "B", opts: ["結束", "開始", "暫停"] },
+          { speaker: "Poster", txtPre: "The ", target: "choice", txtPost: " is yours!", tts: "The choice is yours!", ans: "B", opts: ["名字", "選擇", "時間"] }
+        ]
+      },
+      "L3": {
+        part1: [
+          { speaker: "Kim", txtPre: "Someone ", target: "broke", txtPost: " my favorite cup.", tts: "Someone broke my favorite cup.", ans: "B", opts: ["買", "打破", "洗"] },
+          { speaker: "Kim", txtPre: "Let's ", target: "check", txtPost: " the video from the dog monitor.", tts: "Let's check the video from the dog monitor.", ans: "A", opts: ["檢查", "刪除", "錄影"] },
+          { speaker: "Jamie", txtPre: "Mom was doing the ", target: "dishes", txtPost: " at half past twelve.", tts: "Mom was doing the dishes at half past twelve.", ans: "C", opts: ["地板", "衣服", "碗盤"] },
+          { speaker: "Jamie", txtPre: "Cool down. I was drinking water.", target: "Cool down", txtPost: ". I was drinking water.", tts: "Cool down. I was drinking water.", ans: "A", opts: ["冷靜/冷卻", "哭泣", "熱水"] },
+          { speaker: "Jamie", txtPre: "I wasn't ", target: "even", txtPost: " close to the table.", tts: "I wasn't even close to the table.", ans: "A", opts: ["甚至", "已經", "剛剛"] },
+          { speaker: "Kim", txtPre: "I don't ", target: "remember", txtPost: " that at all.", tts: "I don't remember that at all.", ans: "B", opts: ["忘記", "記得", "討厭"] },
+          { speaker: "Kim", txtPre: "I was ", target: "sleepwalking", txtPost: " when I broke my cup.", tts: "I was sleepwalking when I broke my cup.", ans: "B", opts: ["唱歌", "夢遊", "慢跑"] }
+        ],
+        part2: [
+          { speaker: "Story", txtPre: "Emma had bad ", target: "dreams", txtPost: " almost every night.", tts: "Emma had bad dreams almost every night.", ans: "A", opts: ["夢/惡夢", "故事", "朋友"] },
+          { speaker: "Story", txtPre: "These dreams always ", target: "woke", txtPost: " her up.", tts: "These dreams always woke her up.", ans: "A", opts: ["吵醒/喚醒", "逗笑", "嚇跑"] },
+          { speaker: "Story", txtPre: "She couldn't fall ", target: "asleep", txtPost: " again.", tts: "She couldn't fall asleep again.", ans: "B", opts: ["起床", "睡著", "讀書"] },
+          { speaker: "Story", txtPre: "\"You're just ", target: "nervous", txtPost: " about your new school,\" her parents said.", tts: "You're just nervous about your new school, her parents said.", ans: "B", opts: ["開心的", "緊張的", "生氣的"] },
+          { speaker: "Dakota", txtPre: "\"The web catches the bad dreams, but the good ones go ", target: "through", txtPost: ".\"", tts: "The web catches the bad dreams, but the good ones go through.", ans: "A", opts: ["通過/穿過", "擋住", "掉落"] },
+          { speaker: "Story", txtPre: "The dreamcatcher ", target: "saved", txtPost: " her from terrible nights.", tts: "The dreamcatcher saved her from terrible nights.", ans: "A", opts: ["拯救", "帶走", "忘記"] }
+        ]
+      },
+      "L4": {
+        part1: [
+          { speaker: "Zac", txtPre: "I enjoy making videos for my ", target: "channel", txtPost: ".", tts: "I enjoy making videos for my channel.", ans: "A", opts: ["頻道", "學校", "筆記"] },
+          { speaker: "Zac", txtPre: "I hope to be a ", target: "famous", txtPost: " YouTuber one day.", tts: "I hope to be a famous YouTuber one day.", ans: "A", opts: ["著名的/有名的", "奇怪的", "壞心的"] },
+          { speaker: "Cody", txtPre: "I plan to be a ", target: "lawyer", txtPost: ".", tts: "I plan to be a lawyer.", ans: "A", opts: ["律師", "歌手", "老師"] },
+          { speaker: "Cody", txtPre: "I want to fight for their ", target: "rights", txtPost: ".", tts: "I want to fight for their rights.", ans: "A", opts: ["權利", "金錢", "課本"] },
+          { speaker: "Yuki", txtPre: "I get ", target: "butterflies in my stomach", txtPost: " when people watch me.", tts: "I get butterflies in my stomach when people watch me.", ans: "B", opts: ["開心", "緊張/忐忑不安", "生氣"] },
+          { speaker: "Zac", txtPre: "Just keep ", target: "practicing", txtPost: ".", tts: "Just keep practicing.", ans: "C", opts: ["停止", "開始", "保持/繼續"] },
+          { speaker: "Cody", txtPre: "Or you can put on a big ", target: "wig", txtPost: ".", tts: "Or you can put on a big wig.", ans: "A", opts: ["假髮", "眼鏡", "帽子"] }
+        ],
+        part2: [
+          { speaker: "Story", txtPre: "IU is a ", target: "successful", txtPost: " Korean singer.", tts: "IU is a successful Korean singer.", ans: "B", opts: ["失敗的", "成功的", "年輕的"] },
+          { speaker: "Story", txtPre: "Her relatives didn't ", target: "believe in", txtPost: " her dream.", tts: "Her relatives didn't believe in her dream.", ans: "A", opts: ["相信", "反對", "支持"] },
+          { speaker: "Story", txtPre: "Her relatives ", target: "made fun of", txtPost: " her dream.", tts: "Her relatives made fun of her dream.", ans: "B", opts: ["實現", "嘲笑/取笑", "幫助"] },
+          { speaker: "Story", txtPre: "However, IU didn't ", target: "give up", txtPost: ".", tts: "However, IU didn't give up.", ans: "B", opts: ["休息", "放棄", "哭泣"] },
+          { speaker: "Story", txtPre: "IU went to about twenty ", target: "auditions", txtPost: ".", tts: "IU went to about twenty auditions.", ans: "B", opts: ["演唱會", "試鏡/聽選會", "學校"] },
+          { speaker: "Story", txtPre: "Now, ", target: "besides", txtPost: " singing, IU also writes songs.", tts: "Now, besides singing, IU also writes songs.", ans: "A", opts: ["除了...之外", "關於", "因為"] }
+        ]
+      },
+      "L5": {
+        part1: [
+          { speaker: "Dad", txtPre: "We can take the train or the ", target: "Tube", txtPost: ".", tts: "We can take the train or the Tube.", ans: "C", opts: ["飛機", "腳踏車", "地鐵(倫敦)"] },
+          { speaker: "Mom", txtPre: "We are ", target: "lost", txtPost: ", but we don't have a map.", tts: "We are lost, but we don't have a map.", ans: "A", opts: ["迷路", "到達", "肚子餓"] },
+          { speaker: "Man", txtPre: "Go straight and turn left on Berkeley ", target: "Street", txtPost: ".", tts: "Go straight and turn left on Berkeley Street.", ans: "A", opts: ["街道", "橋樑", "公園"] },
+          { speaker: "Man", txtPre: "Go along the street for two ", target: "blocks", txtPost: ".", tts: "Go along the street for two blocks.", ans: "A", opts: ["街區", "小時", "公里"] },
+          { speaker: "Man", txtPre: "The hotel is across from a ", target: "supermarket", txtPost: ".", tts: "The hotel is across from a supermarket.", ans: "A", opts: ["超級市場", "火車站", "警察局"] },
+          { speaker: "Clerk", txtPre: "It's on the first floor. Go up the ", target: "stairs", txtPost: ".", tts: "It's on the first floor. Go up the stairs.", ans: "B", opts: ["電梯", "樓梯", "走廊"] },
+          { speaker: "Dad", txtPre: "We can go there ", target: "on foot", txtPost: ".", tts: "We can go there on foot.", ans: "B", opts: ["搭公車", "走路/步行", "騎車"] }
+        ],
+        part2: [
+          { speaker: "Diary", txtPre: "The plan today was to go ", target: "sightseeing", txtPost: " along the way.", tts: "The plan today was to go sightseeing along the way.", ans: "A", opts: ["觀光/欣賞風景", "買東西", "睡覺"] },
+          { speaker: "Diary", txtPre: "We walked ", target: "around", txtPost: " the lake.", tts: "We walked around the lake.", ans: "B", opts: ["橫跨", "環繞/圍繞", "穿過"] },
+          { speaker: "Diary", txtPre: "I was ", target: "busy", txtPost: " taking pictures when the clock hit twelve.", tts: "I was busy taking pictures when the clock hit twelve.", ans: "A", opts: ["忙碌的", "空閒的", "開心的"] },
+          { speaker: "Diary", txtPre: "It was a great ", target: "experience", txtPost: " to see the famous play with my family.", tts: "It was a great experience to see the famous play with my family.", ans: "B", opts: ["功課", "經驗/體驗", "秘密"] },
+          { speaker: "Diary", txtPre: "We went on a boat ride on the River Thames and enjoyed ", target: "afternoon tea", txtPost: ".", tts: "We went on a boat ride on the River Thames and enjoyed afternoon tea.", ans: "A", opts: ["下午茶", "早餐", "宵夜"] },
+          { speaker: "Diary", txtPre: "What a ", target: "wonderful", txtPost: " day!", tts: "What a wonderful day!", ans: "B", opts: ["糟糕的", "美好的/棒極了", "寒冷"] }
+        ]
+      },
+      "L6": {
+        part1: [
+          { speaker: "Jamie", txtPre: "There will be an ugly Christmas sweater ", target: "party", txtPost: " tonight.", tts: "There will be an ugly Christmas sweater party tonight.", ans: "B", opts: ["考試", "派對/聚會", "課堂"] },
+          { speaker: "Cody", txtPre: "How much does it ", target: "cost", txtPost: "?", tts: "How much does it cost?", ans: "A", opts: ["花費/要價", "買", "賣"] },
+          { speaker: "Cody", txtPre: "Don't ", target: "spend", txtPost: " that much money on a sweater.", tts: "Don't spend that much money on a sweater.", ans: "B", opts: ["賺取", "花費(金錢/時間)", "借給"] },
+          { speaker: "Jamie", txtPre: "Yesterday I spent an hour looking for ", target: "gloves", txtPost: ".", tts: "Yesterday I spent an hour looking for gloves.", ans: "B", opts: ["襪子", "手套", "外套"] },
+          { speaker: "Cody", txtPre: "Look at these gloves. They're ", target: "on sale", txtPost: ".", tts: "Look at these gloves. They're on sale.", ans: "A", opts: ["特價中", "弄丟了", "很貴"] },
+          { speaker: "Clerk", txtPre: "The ", target: "total", txtPost: " is NT$510.", tts: "The total is NT$510.", ans: "B", opts: ["找零", "總共/總計", "特價"] },
+          { speaker: "Clerk", txtPre: "How would you like to pay, in ", target: "cash", txtPost: " or by card?", tts: "How would you like to pay, in cash or by card?", ans: "C", opts: ["支票", "信用卡", "現金"] },
+          { speaker: "Clerk", txtPre: "OK. Here's your ", target: "change", txtPost: ". Have a nice day.", tts: "OK. Here's your change. Have a nice day.", ans: "A", opts: ["找零/零錢", "課本", "發票"] }
+        ],
+        part2: [
+          { speaker: "Article", txtPre: "People can buy new clothes with nice designs at low ", target: "prices", txtPost: ".", tts: "People can buy new clothes with nice designs at low prices.", ans: "B", opts: ["顏色", "價格", "尺寸"] },
+          { speaker: "Article", txtPre: "However, the truth ", target: "behind", txtPost: " those beautiful clothes can be really ugly.", tts: "However, the truth behind those beautiful clothes can be really ugly.", ans: "B", opts: ["在...前面", "在...後面/背後", "關於"] },
+          { speaker: "Article", txtPre: "They move the factories for ", target: "cheap", txtPost: " workers.", tts: "They move the factories for cheap workers.", ans: "A", opts: ["便宜的/廉價的", "聰明的", "辛苦的"] },
+          { speaker: "Article", txtPre: "Workers work long hours for very low ", target: "pay", txtPost: ".", tts: "Workers work long hours for very low pay.", ans: "B", opts: ["時間", "工資/報酬", "餐點"] },
+          { speaker: "Article", txtPre: "It goes into the sea and ", target: "hurts", txtPost: " the environment.", tts: "It goes into the sea and hurts the environment.", ans: "B", opts: ["幫助", "傷害", "保護"] },
+          { speaker: "Article", txtPre: "Stop for a ", target: "second", txtPost: " and think - do I really need them?", tts: "Stop for a second and think - do I really need them?", ans: "A", opts: ["一秒/片刻", "一個小時", "一天"] }
+        ]
+      }
+    };
+
+    let currentLesson = "L1";
+    let isShowingAnswers = false;
+
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.65; // 慢速發音
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function buildItemHtml(item, globalIndex, relativeIndex) {
+      const sentence = `${item.speaker}: ${item.txtPre}<span class="target-word">${item.target}</span>${item.txtPost}`;
+      
+      const optHtml = item.opts.map((opt, oIdx) => {
+        const label = ["A", "B", "C"][oIdx];
+        return `
+          <div onclick="selectAnswerDirectly(event, this, '${label}')" class="opt-box px-2 py-0.5 rounded transition cursor-pointer hover:bg-slate-100 flex items-center">
+            (${label}) ${opt}
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="flex flex-col leading-tight quiz-row transition py-1 rounded px-1" onclick="setActiveRow(this, '${item.tts.replace(/'/g, "\\'")}')">
+          <div class="flex items-start">
+            <span class="text-slate-800 font-bold shrink-0 mt-0.5 text-[16px]">(</span>
+            <input type="text" maxlength="1" data-ans="${item.ans}" readonly class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 pointer-events-none cursor-pointer">
+            <span class="text-slate-800 font-bold shrink-0 mt-0.5 text-[16px]">) ${relativeIndex}.</span>
+            <span class="font-medium text-slate-800 font-english text-[16px] pl-1 tracking-tight truncate flex-grow cursor-pointer">${sentence}</span>
+          </div>
+          <div class="pl-14 flex gap-12 text-[14.5px] font-chinese text-slate-500 font-medium mt-1 shrink-0">
+            ${optHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectAnswerDirectly(event, optElement, label) {
+      event.stopPropagation(); // 阻止點選選項時觸發整句語音發音與黃底高亮
+
+      // 直接靜音、消除所有題目的黃色背景，上課更安靜
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      document.querySelectorAll('.quiz-row').forEach(row => {
+        row.classList.remove('bg-yellow-200/90');
+      });
+
+      // 精準定位並填入對應題目的 input
+      const row = optElement.closest('.quiz-row');
+      if (row) {
+        const input = row.querySelector('.answer-input');
+        if (input) {
+          input.value = label;
+          // 恢復一般作答樣式
+          input.className = "answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 pointer-events-none cursor-pointer";
+        }
+      }
+    }
+
+    function setActiveRow(element, ttsText) {
+      // 移除其他題目的黃底高亮
+      document.querySelectorAll('.quiz-row').forEach(row => {
+        row.classList.remove('bg-yellow-200/90');
+      });
+      // 本題高亮
+      element.classList.add('bg-yellow-200/90');
+      speakWord(ttsText);
+    }
+
+    function loadLesson(lessonKey) {
+      currentLesson = lessonKey;
+      isShowingAnswers = false;
+
+      // 隱藏區塊徽章
+      document.getElementById('score-badge-part1').classList.add('hidden');
+      document.getElementById('score-badge-part2').classList.add('hidden');
+
+      // 更新選擇按鈕樣式
+      document.querySelectorAll('.lesson-btn').forEach(btn => {
+        const k = btn.getAttribute('data-lesson');
+        btn.className = (k === lessonKey) ? 
+          "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-indigo-600 text-white border-indigo-600 shadow-sm" :
+          "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
+      });
+
+      document.getElementById('main-title').innerText = `八下 ${lessonKey} 英文科講義 課文關鍵字選擇`;
+      
+      const p1List = document.getElementById('part-1-list');
+      const p2List = document.getElementById('part-2-list');
+      p1List.innerHTML = '';
+      p2List.innerHTML = '';
+
+      let globalIdx = 1;
+      const data = database[lessonKey];
+
+      // 渲染上半部 (對話)
+      data.part1.forEach((item, rIdx) => {
+        p1List.innerHTML += buildItemHtml(item, globalIdx++, rIdx + 1);
+      });
+
+      // 渲染下半部 (閱讀)
+      data.part2.forEach((item, rIdx) => {
+        p2List.innerHTML += buildItemHtml(item, globalIdx++, rIdx + 1);
+      });
+    }
+
+    function checkPartAnswers(partId) {
+      const listId = partId === 'part1' ? 'part-1-list' : 'part-2-list';
+      const badgeId = partId === 'part1' ? 'score-badge-part1' : 'score-badge-part2';
+      const listContainer = document.getElementById(listId);
+      if (!listContainer) return;
+      
+      const inputs = listContainer.querySelectorAll('.answer-input');
+      const totalCount = inputs.length;
+      let correctCount = 0;
+      
+      inputs.forEach(input => {
+        const userAns = input.value.trim().toUpperCase();
+        const correctAns = input.getAttribute('data-ans').toUpperCase();
+        
+        if (userAns === correctAns) {
+          correctCount++;
+          // 正確：綠底白字
+          input.className = "answer-input w-7 h-6 text-center font-extrabold bg-emerald-500 text-white border-b-2 border-emerald-600 focus:outline-none uppercase text-[15px] shrink-0 mx-0.5 pointer-events-none cursor-pointer rounded shadow-sm";
+        } else {
+          // 錯誤：自動清空讓孩子重選
+          input.value = '';
+          input.className = "answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 pointer-events-none cursor-pointer";
+        }
+      });
+      
+      // 更新對應區塊得分徽章
+      const badge = document.getElementById(badgeId);
+      if (badge) {
+        badge.innerText = `答對 ${correctCount} / ${totalCount}`;
+        badge.classList.remove('hidden');
+      }
+    }
+
+    function clearPartAnswers(partId) {
+      const listId = partId === 'part1' ? 'part-1-list' : 'part-2-list';
+      const badgeId = partId === 'part1' ? 'score-badge-part1' : 'score-badge-part2';
+      const listContainer = document.getElementById(listId);
+      if (!listContainer) return;
+      
+      const inputs = listContainer.querySelectorAll('.answer-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.className = "answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 pointer-events-none cursor-pointer";
+      });
+      
+      const badge = document.getElementById(badgeId);
+      if (badge) {
+        badge.classList.add('hidden');
+      }
+      
+      // 消除此區塊的所有高亮
+      listContainer.querySelectorAll('.quiz-row').forEach(row => {
+        row.classList.remove('bg-yellow-200/90');
+      });
+      
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+
+    function togglePartAnswers(partId) {
+      const listId = partId === 'part1' ? 'part-1-list' : 'part-2-list';
+      const badgeId = partId === 'part1' ? 'score-badge-part1' : 'score-badge-part2';
+      const listContainer = document.getElementById(listId);
+      if (!listContainer) return;
+      
+      const inputs = listContainer.querySelectorAll('.answer-input');
+      let currentlyShowing = false;
+      
+      // 偵測目前是否已經是公布狀態
+      inputs.forEach(input => {
+        if (input.classList.contains('text-red-600')) {
+          currentlyShowing = true;
+        }
+      });
+      
+      const badge = document.getElementById(badgeId);
+      if (badge) badge.classList.add('hidden');
+      
+      inputs.forEach(input => {
+        const ans = input.getAttribute('data-ans');
+        if (!currentlyShowing) {
+          input.value = ans;
+          input.className = "answer-input w-7 h-6 text-center font-extrabold bg-red-50 text-red-600 border-b-2 border-red-400 focus:outline-none uppercase text-[15px] shrink-0 mx-0.5 pointer-events-none cursor-pointer rounded";
+        } else {
+          input.value = '';
+          input.className = "answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 pointer-events-none cursor-pointer";
+        }
+      });
+    }
+
+    function toggleAllAnswers() {
+      togglePartAnswers('part1');
+      togglePartAnswers('part2');
+    }
+
+    function clearAllAnswers() {
+      clearPartAnswers('part1');
+      clearPartAnswers('part2');
+    }
+
+    function initApp() {
+      const selectorContainer = document.getElementById('lesson-selectors');
+      selectorContainer.innerHTML = '';
+      Object.keys(database).forEach(key => {
+        const btn = document.createElement('button');
+        btn.innerText = `八下 ${key}`;
+        btn.setAttribute('data-lesson', key);
+        btn.className = "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese";
+        btn.onclick = () => loadLesson(key);
+        selectorContainer.appendChild(btn);
+      });
+      loadLesson("L1");
+    }
+
+    function printAllLessons() {
+      const printContainer = document.getElementById('print-all-container');
+      printContainer.innerHTML = '';
+
+      Object.keys(database).forEach(lessonKey => {
+        const page = document.createElement('div');
+        page.className = "print-page";
+
+        let p1Html = '';
+        let p2Html = '';
+        let globalIdx = 1;
+
+        database[lessonKey].part1.forEach((item, rIdx) => {
+          p1Html += buildItemHtml(item, globalIdx++, rIdx + 1);
+        });
+
+        database[lessonKey].part2.forEach((item, rIdx) => {
+          p2Html += buildItemHtml(item, globalIdx++, rIdx + 1);
+        });
+
+        page.innerHTML = `
+          <div class="border-b-4 border-double border-slate-400 pb-2 mb-3 shrink-0">
+            <div class="flex justify-between items-end">
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">八下 ${lessonKey} 英文科講義 課文關鍵字選擇</h1>
+              <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+                <div class="flex items-end">
+                  <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+                  <span class="ml-1 shrink-0">班</span>
+                </div>
+                <div class="flex items-end">
+                  <span class="shrink-0">姓名：</span>
+                  <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 flex flex-col justify-start bg-slate-100 px-3 py-1.5 rounded border-l-4 border-slate-500 shrink-0">
+              <span class="text-[13.5px] font-bold text-slate-800 font-chinese">◎ 每題五分，錯字用紅筆訂正，中文、英文各 1次。</span>
+            </div>
+          </div>
+          <div class="flex-grow flex flex-col justify-between overflow-hidden">
+            <div class="flex-grow flex flex-col justify-start">
+              <div class="bg-slate-200/60 px-2 py-0.5 rounded text-[13.5px] font-bold text-slate-700 mb-2 font-chinese shrink-0">【上半部：對話篇】</div>
+              <div class="flex-grow flex flex-col justify-between">${p1Html}</div>
+            </div>
+            <div class="border-t-2 border-dashed border-slate-300 my-2 shrink-0"></div>
+            <div class="flex-grow flex flex-col justify-start">
+              <div class="bg-slate-200/60 px-2 py-0.5 rounded text-[13.5px] font-bold text-slate-700 mb-2 font-chinese shrink-0">【下半部：閱讀篇】</div>
+              <div class="flex-grow flex flex-col justify-between">${p2Html}</div>
+            </div>
+          </div>
+        `;
+        printContainer.appendChild(page);
+      });
+
+      setTimeout(() => {
+        document.body.classList.add('printing-all');
+        window.print();
+        setTimeout(() => { document.body.classList.remove('printing-all'); }, 600);
+      }, 50);
+    }
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>

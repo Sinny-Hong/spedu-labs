@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>八上 英文科講義 中英文配對卷 (大電視點擊智慧填入版)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+    }
+    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
+    .font-english { font-family: 'Lexend', sans-serif; }
+    
+    /* 嚴格 A4 滿版尺寸 */
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 15px auto;
+      padding: 6mm 8mm; 
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .title-large { font-size: 24px; font-weight: 700; }
+    .info-text { font-size: 16px; font-weight: 500; }
+    
+    .match-input:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+      background-color: #fef2f2;
+    }
+
+    .row-item {
+      height: 34px; /* 嚴格限制行高，與原聽力卷等高 */
+    }
+
+    /* 大電視選取中題目的特效底色 */
+    .active-row {
+      background-color: #fef08a !important; /* 明亮的黃色底，提示學生目前正在作答哪一題 */
+    }
+
+    #print-all-container { display: none; }
+    
+    @media print {
+      @page { size: A4; margin: 0; }
+      body { background-color: #ffffff; margin: 0; padding: 0; }
+      .no-print { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body.printing-all .page-a4 { display: none !important; }
+      body.printing-all #print-all-container { display: block !important; width: 210mm; }
+      .page-a4 { box-shadow: none; border: none; margin: 0; padding: 6mm 8mm; }
+      .print-page {
+        width: 210mm;
+        height: 297mm;
+        padding: 6mm 8mm;
+        box-sizing: border-box;
+        background-color: #ffffff;
+        page-break-after: always;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: hidden;
+      }
+      .print-page:last-child { page-break-after: avoid; }
+    }
+  </style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
+    <div class="flex flex-wrap gap-2 items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+        <span class="text-slate-700 font-medium text-sm font-chinese">📺 大電視功能已啟動：點擊左側任一題（變黃底），再點右側藍框中文，即可自動填入答案！</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
+        <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除</button>
+        <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
+        <button onclick="printAllLessons()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印 (6頁)</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-6 gap-1.5" id="lesson-selectors"></div>
+  </div>
+
+  <div class="page-a4">
+    <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
+      <div class="flex justify-between items-end">
+        <h1 class="title-large text-slate-800 tracking-wider font-chinese" id="main-title">八上 L1 英文科講義 中英文配對卷</h1>
+        
+        <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+          <div class="flex items-end">
+            <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+            <span class="ml-1 shrink-0">班</span>
+          </div>
+          <div class="flex items-end">
+            <span class="shrink-0">姓名：</span>
+            <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
+        <span class="text-[14px] font-bold text-slate-700 font-chinese">◎ 請將正確英文單字的代號填入括號中。錯字用紅筆訂正，中文、英文各 1 次。</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups-container"></div>
+    <div class="h-1 shrink-0"></div>
+  </div>
+
+  <div id="print-all-container"></div>
+
+  <script>
+    const database = {
+      "L1": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "summer vacation", ch: "暑假" }, { eng: "spring", ch: "春天" }, { eng: "autumn", ch: "秋天" },
+          { eng: "winter", ch: "冬天" }, { eng: "season", ch: "季節" }, { eng: "weather", ch: "天氣" },
+          { eng: "cloud", ch: "雲" }, { eng: "sun", ch: "太陽" }, { eng: "wind", ch: "風" },
+          { eng: "snow", ch: "下雪;雪" }, { eng: "another", ch: "另一(的)" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "sunny", ch: "陽光普照的" }, { eng: "snowy", ch: "有雪的;下雪的" }, { eng: "rainy", ch: "有雨的;下雨的" },
+          { eng: "cloudy", ch: "多雲的" }, { eng: "windy", ch: "風大的" }, { eng: "cool", ch: "涼爽的" },
+          { eng: "heavy", ch: "厚重的;大量的" }, { eng: "lovely", ch: "可愛的;美好的" }, { eng: "strange", ch: "奇怪的;陌生的" },
+          { eng: "mad", ch: "生氣的" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "send", ch: "寄;送" }, { eng: "borrow", ch: "借(人)" }, { eng: "lend", ch: "借(出)" },
+          { eng: "speak", ch: "講話" }, { eng: "mean", ch: "意指" }, { eng: "order", ch: "點餐;訂購" },
+          { eng: "give", ch: "給予" }, { eng: "hate", ch: "討厭" }, { eng: "in fact", ch: "事實上" },
+          { eng: "soon", ch: "很快地" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "Taiwan", ch: "臺灣" }, { eng: "ROC", ch: "中華民國" }, { eng: "postcard", ch: "明信片" },
+          { eng: "glove", ch: "手套" }, { eng: "jacket", ch: "夾克" }, { eng: "Rd.", ch: "路" },
+          { eng: "fun", ch: "樂趣;有趣的" }, { eng: "kind", ch: "親切的;有同情心的" }
+        ]}
+      ],
+      "L2": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "science", ch: "科學" }, { eng: "math", ch: "數學" }, { eng: "Chinese", ch: "中國的;中國人:中文" },
+          { eng: "history", ch: "歷史" }, { eng: "PE", ch: "體育" }, { eng: "lesson", ch: "課;課程" },
+          { eng: "subject", ch: "學科;主題" }, { eng: "club", ch: "社團" }, { eng: "festival", ch: "節慶" },
+          { eng: "show", ch: "表演;節目" }, { eng: "soccer", ch: "足球" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "hear", ch: "聽見" }, { eng: "call", ch: "打電話;呼叫" }, { eng: "tell", ch: "告訴" },
+          { eng: "teach", ch: "教導" }, { eng: "own", ch: "自己的;擁有" }, { eng: "finish", ch: "完成;結束" },
+          { eng: "start", ch: "開始" }, { eng: "end", ch: "結尾;結束" }, { eng: "look for", ch: "尋找" },
+          { eng: "sign up", ch: "報名參加" }, { eng: "miss out", ch: "錯過機會" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "interesting", ch: "有趣的" }, { eng: "difficult", ch: "困難的" }, { eng: "poor", ch: "不佳的;貧窮的" },
+          { eng: "wrong", ch: "錯誤的" }, { eng: "free", ch: "免費的" }, { eng: "same", ch: "相同的" },
+          { eng: "when", ch: "當…" }, { eng: "back", ch: "返回" }, { eng: "not... at all", ch: "一點也不……" },
+          { eng: "hold on", ch: "稍候" }, { eng: "What's up?", ch: "怎麼了?" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "engineer", ch: "工程師" }, { eng: "Ms.", ch: "女士" }, { eng: "violin", ch: "小提琴" },
+          { eng: "robot", ch: "機器人" }, { eng: "camera", ch: "相機" }, { eng: "health", ch: "健康" },
+          { eng: "choice", ch: "選擇" }, { eng: "whose", ch: "誰的(東西)" }, { eng: "mine", ch: "我的(東西)" },
+          { eng: "make up one's mind", ch: "下定決心" }, { eng: "pull one's leg", ch: "開玩笑" }
+        ]}
+      ],
+      "L3": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "drawer", ch: "抽屜" }, { eng: "stairs", ch: "樓梯" }, { eng: "window", ch: "窗戶" },
+          { eng: "floor", ch: "地板:樓層" }, { eng: "clothes", ch: "衣服" }, { eng: "pet", ch: "寵物" },
+          { eng: "city", ch: "城市" }, { eng: "problem", ch: "問題" }, { eng: "tip", ch: "訣竅" },
+          { eng: "pumpkin", ch: "南瓜" }, { eng: "someone", ch: "某人" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "feed", ch: "餵養" }, { eng: "sweep", ch: "掃" }, { eng: "mop", ch: "拖地;拖把" },
+          { eng: "wipe", ch: "擦拭" }, { eng: "dry", ch: "(使)乾燥;乾的" }, { eng: "hang", ch: "吊;掛" },
+          { eng: "fix", ch: "修理;解決" }, { eng: "break", ch: "打破;損壞" }, { eng: "do the dishes", ch: "洗碗盤" },
+          { eng: "cut out", ch: "割出;切出" }, { eng: "nothing", ch: "沒什麼;無事;無物" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "leave", ch: "離開" }, { eng: "move", ch: "搬遷;移動" }, { eng: "catch", ch: "捉;接" },
+          { eng: "save", ch: "拯救" }, { eng: "remember", ch: "記得" }, { eng: "fall asleep", ch: "睡著" },
+          { eng: "take it easy", ch: "放輕鬆" }, { eng: "cool down", ch: "冷靜一下" }, { eng: "almost", ch: "幾乎" },
+          { eng: "finally", ch: "終於;最後" }, { eng: "however", ch: "然而" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "children", ch: "兒童" }, { eng: "Halloween", ch: "萬聖夜" }, { eng: "dream", ch: "夢:夢想(的)" },
+          { eng: "moment", ch: "時刻" }, { eng: "half", ch: "一半;二分之一" }, { eng: "past", ch: "經過;過去(的)" },
+          { eng: "quarter", ch: "十五分鐘;四分之一" }, { eng: "through", ch: "穿越;從頭到尾" }, { eng: "scared", ch: "害怕的" },
+          { eng: "terrible", ch: "糟糕的;可怕的" }
+        ]}
+      ],
+      "L4": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "lawyer", ch: "律師" }, { eng: "reporter", ch: "記者" }, { eng: "mail carrier", ch: "郵差" },
+          { eng: "dentist", ch: "牙醫" }, { eng: "fisherman", ch: "漁夫" }, { eng: "secretary", ch: "祕書" },
+          { eng: "salesman", ch: "銷售員;業務員" }, { eng: "farmer", ch: "農夫" }, { eng: "soldier", ch: "士兵" },
+          { eng: "truck driver", ch: "卡車司機" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "boss", ch: "老闆" }, { eng: "relative", ch: "親戚" }, { eng: "job", ch: "工作" },
+          { eng: "factory", ch: "工廠" }, { eng: "country", ch: "國家" }, { eng: "future", ch: "未來(的)" },
+          { eng: "grade", ch: "年級" }, { eng: "idea", ch: "主意;想法" }, { eng: "right", ch: "權利" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "plan", ch: "規劃:計畫" }, { eng: "grow", ch: "種植:成長" }, { eng: "drive", ch: "開(車)" },
+          { eng: "find", ch: "找到;發現" }, { eng: "decide", ch: "決定" }, { eng: "become", ch: "成為" },
+          { eng: "believe", ch: "相信" }, { eng: "act", ch: "表演" }, { eng: "interview", ch: "採訪:面試" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "hope", ch: "希望" }, { eng: "worry", ch: "擔心" }, { eng: "keep", ch: "持續:保持" },
+          { eng: "put on", ch: "穿上" }, { eng: "successful", ch: "成功的" }, { eng: "all over", ch: "遍及" },
+          { eng: "give up", ch: "放棄" }, { eng: "make fun of", ch: "取笑" }, { eng: "get butterflies in one's stomach", ch: "感到緊張" }
+        ]}
+      ],
+      "L5": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "metro", ch: "捷運" }, { eng: "motorcycle", ch: "機車;摩托車" }, { eng: "scooter", ch: "機車" },
+          { eng: "ship", ch: "輪船" }, { eng: "taxi", ch: "計程車" }, { eng: "bike", ch: "單車" },
+          { eng: "bus stop", ch: "公車站" }, { eng: "bank", ch: "銀行;河岸" }, { eng: "fire station", ch: "消防局" },
+          { eng: "post office", ch: "郵局" }, { eng: "hospital", ch: "醫院" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "map", ch: "地圖" }, { eng: "block", ch: "街區" }, { eng: "corner", ch: "轉角;角落" },
+          { eng: "ground", ch: "地面" }, { eng: "sir", ch: "先生" }, { eng: "toy", ch: "玩具" },
+          { eng: "pool", ch: "水池" }, { eng: "sound", ch: "聲音" }, { eng: "bell", ch: "鐘;鈴" },
+          { eng: "experience", ch: "經歷;經驗" }, { eng: "play", ch: "戲劇" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "ask", ch: "請求:詢問" }, { eng: "turn left", ch: "向左轉" }, { eng: "take", ch: "搭乘(交通工具)" },
+          { eng: "get off", ch: "下(車、飛機等)" }, { eng: "get", ch: "到達" }, { eng: "fly", ch: "飛行:駕駛" },
+          { eng: "hit", ch: "碰撞;打擊" }, { eng: "go jogging", ch: "慢跑" }, { eng: "go sailing", ch: "玩帆船;航行" },
+          { eng: "go surfing", ch: "衝浪" }, { eng: "go biking", ch: "騎單車" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "lost", ch: "迷路的" }, { eng: "straight", ch: "直地;直的" }, { eng: "along", ch: "沿著" },
+          { eng: "across from", ch: "在……的對面" }, { eng: "right", ch: "右邊(的)" }, { eng: "on foot", ch: "步行" },
+          { eng: "by", ch: "搭乘:藉由………方式" }, { eng: "wonderful", ch: "美妙的" }, { eng: "around", ch: "大約" },
+          { eng: "Excuse me.", ch: "(對不起)請問" }, { eng: "supermarket", ch: "超市" }, { eng: "go shopping", ch: "購物" }
+        ]}
+      ],
+      "L6": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "sweater", ch: "毛衣" }, { eng: "jacket", ch: "外套" }, { eng: "coat", ch: "外套" },
+          { eng: "dress", ch: "打扮;洋裝" }, { eng: "shirt", ch: "襯衫" }, { eng: "T-shirt", ch: "T恤" },
+          { eng: "jeans", ch: "牛仔褲" }, { eng: "pants", ch: "長褲" }, { eng: "shorts", ch: "短褲" },
+          { eng: "skirt", ch: "裙子" }, { eng: "belt", ch: "腰帶" }, { eng: "tonight", ch: "今晚" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "tie", ch: "領帶" }, { eng: "sock", ch: "襪子" }, { eng: "shoe", ch: "鞋" },
+          { eng: "cap", ch: "(前有遮簷的)帽子" }, { eng: "hat", ch: "帽子" }, { eng: "glasses", ch: "眼鏡" },
+          { eng: "ring", ch: "戒指;環(狀物)" }, { eng: "price", ch: "價格" }, { eng: "change", ch: "找零" },
+          { eng: "thousand", ch: "千" }, { eng: "pair", ch: "(一)雙:(一)對" }, { eng: "tomorrow", ch: "明天" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "cost", ch: "價錢為:花費" }, { eng: "spend", ch: "花費(時間、金錢)" }, { eng: "pay", ch: "付費:工資" },
+          { eng: "save", ch: "節省" }, { eng: "take", ch: "花費(時間)" }, { eng: "hurt", ch: "傷害" },
+          { eng: "take off", ch: "脫下" }, { eng: "come off", ch: "從…脫落" }, { eng: "would like", ch: "想要" },
+          { eng: "on sale", ch: "特價中" }, { eng: "second", ch: "第二" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "ugly", ch: "醜的" }, { eng: "funny", ch: "滑稽的" }, { eng: "expensive", ch: "昂貴的" },
+          { eng: "cheap", ch: "便宜的" }, { eng: "high", ch: "高的" }, { eng: "low", ch: "低的" },
+          { eng: "fast", ch: "快的;快地" }, { eng: "total", ch: "總計(的);全部(的)" }, { eng: "most", ch: "大部分的" },
+          { eng: "will", ch: "將" }, { eng: "what's more", ch: "而且" }
+        ]}
+      ]
+    };
+
+    let currentLesson = "L1";
+    let showAnswersState = false;
+    let activeInput = null; // 全域變數：追蹤大電視目前被點選的英文題目輸入框
+    const optLetters = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+    // SYSTEM SPEECH UTTERANCE
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85; 
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function seededShuffle(array, seedStr) {
+      let hash = 0;
+      for (let i = 0; i < seedStr.length; i++) {
+        hash = seedStr.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      let shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.abs((hash + i) % (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // 核心排版：維持手動編號，新增每組微型控制項與計分牌
+    function buildFixedGroupHtml(groupData, groupIdx) {
+      const totalWords = groupData.words;
+      const totalCount = totalWords.length; // 這一組實際的總題數
+      const half = Math.ceil(totalCount / 2);
+      
+      const partA_Words = totalWords.slice(0, half);
+      const partB_Words = totalWords.slice(half);
+
+      const shuffledA = seededShuffle(partA_Words, `${currentLesson}-${groupIdx}-A`);
+      const shuffledB = seededShuffle(partB_Words, `${currentLesson}-${groupIdx}-B`);
+
+      let rowsHtml = '';
+
+      for (let i = 0; i < 12; i++) {
+        let isPartB = i >= 6;
+        let localIdx = isPartB ? i - 6 : i;
+        
+        let currentLeftList = isPartB ? partB_Words : partA_Words;
+        let currentRightList = isPartB ? shuffledB : shuffledA;
+
+        let leftItem = currentLeftList[localIdx];  
+        let rightItem = currentRightList[localIdx]; 
+
+        let rowClass = "flex items-center justify-between row-item px-1 quiz-row";
+        if (i === 6) {
+          rowClass += " border-t-2 border-dashed border-slate-300 pt-0.5";
+        }
+
+        let leftColHtml = '';
+        if (leftItem) {
+          const correctAnsLetter = optLetters[currentRightList.findIndex(x => x.ch === leftItem.ch)];
+
+          leftColHtml = `
+            <div class="flex items-center flex-grow truncate h-[28px] pr-2 rounded cursor-pointer transition select-none" onclick="setActiveRow(this, '${leftItem.eng.replace(/'/g, "\\'")}')">
+              <span class="text-[14px] font-bold text-slate-700 shrink-0">(</span>
+              <input type="text" maxlength="1" data-ans="${correctAnsLetter}" readonly class="match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none">
+              <span class="text-[14px] font-bold text-slate-700 shrink-0 mr-2">)</span>
+              <span class="font-bold text-slate-400 text-[12px] font-english mr-1.5 shrink-0">${localIdx + 1}.</span>
+              <span class="font-english font-medium text-slate-800 text-[15.5px] tracking-tight truncate word-span leading-none">${leftItem.eng}</span>
+            </div>
+          `;
+        } else {
+          leftColHtml = `<div class="flex-grow h-[28px] opacity-0 pointer-events-none"></div>`;
+        }
+
+        let rightColHtml = '';
+        if (rightItem) {
+          const letterLabel = optLetters[localIdx];
+          
+          let radiusClass = "rounded-none";
+          if (localIdx === 0) radiusClass = "rounded-t";
+          if (localIdx === currentRightList.length - 1 || localIdx === 5) radiusClass = "rounded-b";
+
+          rightColHtml = `
+            <div onclick="selectChineseAnswer('${letterLabel}')" class="flex items-center bg-sky-100 border-x border-sky-300 ${radiusClass} ${localIdx === 0 ? 'border-t' : ''} ${localIdx === currentRightList.length - 1 || localIdx === 5 ? 'border-b' : ''} px-2 w-[115px] h-[30px] shrink-0 shadow-sm cursor-pointer hover:bg-sky-200 transition">
+              <span class="font-bold text-red-600 text-[13px] font-english mr-1 shrink-0">${letterLabel}.</span>
+              <span class="font-chinese text-slate-800 text-[13px] font-medium truncate flex-grow leading-none">${rightItem.ch}</span>
+            </div>
+          `;
+        } else {
+          rightColHtml = `<div class="w-[115px] h-[30px] shrink-0 opacity-0 pointer-events-none"></div>`;
+        }
+
+        rowsHtml += `
+          <div class="${rowClass}">
+            ${leftColHtml}
+            ${rightColHtml}
+          </div>
+        `;
+      }
+
+      return `
+        <div class="bg-white flex flex-col justify-start flex-grow">
+          <div class="flex justify-between items-center bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 mb-1 shrink-0">
+            <div class="flex items-center gap-2">
+              <h3 class="text-[15.5px] font-bold text-slate-800 font-chinese tracking-wide">${groupData.gTitle}</h3>
+              <span id="score-${groupIdx}" class="no-print hidden px-1.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded text-[11px] font-bold font-chinese"></span>
+            </div>
+            
+            <div class="no-print flex gap-1">
+              <button onclick="checkGroupAnswers(${groupIdx}, ${totalCount})" title="檢查批改" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese flex items-center gap-0.5">✅ 檢查</button>
+              <button onclick="clearGroupAnswers(${groupIdx})" title="清空本組" class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded text-[11px] transition border border-slate-300 font-chinese flex items-center gap-0.5">🧼 清空</button>
+              <button onclick="toggleGroupAnswers(${groupIdx})" title="本組解答" class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese flex items-center gap-0.5">💡 解答</button>
+            </div>
+          </div>
+          <div class="flex flex-col flex-grow justify-start">
+            ${rowsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    // 大電視專用：點擊左側英文列，高亮亮起黃底，並進入準備填入狀態
+    function setActiveRow(element, engWord) {
+      document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      const parentRow = element.closest('.quiz-row');
+      parentRow.classList.add('active-row');
+      activeInput = parentRow.querySelector('.match-input');
+      speakWord(engWord);
+    }
+
+    // 大電視專用：點擊右側中文大藍框的任一選項，自動把代號抓去黃色格子裡
+    function selectChineseAnswer(letter) {
+      if (activeInput) {
+        activeInput.value = letter;
+        activeInput.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        
+        const allInputs = Array.from(document.querySelectorAll('.match-input'));
+        const currentIndex = allInputs.indexOf(activeInput);
+        
+        activeInput.closest('.quiz-row').classList.remove('active-row');
+        
+        if (currentIndex !== -1 && currentIndex < allInputs.length - 1) {
+          const nextInput = allInputs[currentIndex + 1];
+          const nextRow = nextInput.closest('.quiz-row');
+          
+          if (nextRow && !nextRow.classList.contains('opacity-0')) {
+            nextRow.classList.add('active-row');
+            activeInput = nextInput;
+          } else {
+            activeInput = null;
+          }
+        } else {
+          activeInput = null;
+        }
+      }
+    }
+
+    // 功能一：✅ 獨立檢查批改功能 (附帶計分牌機制)
+    function checkGroupAnswers(groupIdx, totalCount) {
+      const groupContainers = document.querySelectorAll('#groups-container > div');
+      if (!groupContainers[groupIdx]) return;
+      
+      const inputs = groupContainers[groupIdx].querySelectorAll('.match-input');
+      let correctScore = 0;
+      let filledCount = 0;
+
+      inputs.forEach(input => {
+        const userAns = input.value.trim().toUpperCase();
+        const correctAns = input.getAttribute('data-ans');
+        
+        if (userAns === '') return; // 沒寫的不算分
+        
+        filledCount++;
+        if (userAns === correctAns) {
+          correctScore++;
+          // 正確：變綠底、深綠字
+          input.className = "match-input w-5 h-5 text-center font-black text-emerald-700 focus:outline-none bg-emerald-100 rounded text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        } else {
+          // 錯誤：用橡皮擦擦掉，維持透明底藍框狀態等待重新作答
+          input.value = '';
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        }
+      });
+
+      // 秀出計分告示牌
+      const scoreBadge = document.getElementById(`score-${groupIdx}`);
+      if (scoreBadge) {
+        scoreBadge.innerText = `答對 ${correctScore} / ${totalCount}`;
+        scoreBadge.classList.remove('hidden');
+      }
+    }
+
+    // 功能二：🧼 獨立清空單組功能
+    function clearGroupAnswers(groupIdx) {
+      const groupContainers = document.querySelectorAll('#groups-container > div');
+      if (!groupContainers[groupIdx]) return;
+      
+      const inputs = groupContainers[groupIdx].querySelectorAll('.match-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+      });
+      
+      groupContainers[groupIdx].querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      
+      // 隱藏計分牌
+      const scoreBadge = document.getElementById(`score-${groupIdx}`);
+      if (scoreBadge) {
+        scoreBadge.innerText = '';
+        scoreBadge.classList.add('hidden');
+      }
+    }
+
+    // 功能三：💡 顯示/隱藏單組解答功能
+    function toggleGroupAnswers(groupIdx) {
+      const groupContainers = document.querySelectorAll('#groups-container > div');
+      if (!groupContainers[groupIdx]) return;
+      
+      const inputs = groupContainers[groupIdx].querySelectorAll('.match-input');
+      
+      let isAlreadyShowing = false;
+      if (inputs.length > 0 && inputs[0].value === inputs[0].getAttribute('data-ans') && inputs[0].classList.contains('bg-red-50')) {
+        isAlreadyShowing = true;
+      }
+      
+      inputs.forEach(input => {
+        const ans = input.getAttribute('data-ans');
+        if (!isAlreadyShowing) {
+          input.value = ans;
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-red-50 text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        } else {
+          input.value = '';
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        }
+      });
+
+      // 解答狀態下自動隱藏動態計分
+      const scoreBadge = document.getElementById(`score-${groupIdx}`);
+      if (scoreBadge) scoreBadge.classList.add('hidden');
+    }
+
+    function loadLesson(lessonKey) {
+      currentLesson = lessonKey;
+      showAnswersState = false;
+      activeInput = null;
+
+      document.querySelectorAll('.lesson-btn').forEach(btn => {
+        const k = btn.getAttribute('data-lesson');
+        btn.className = (k === lessonKey) ? 
+          "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-red-600 text-white border-red-600 shadow-sm" :
+          "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
+      });
+
+      document.getElementById('main-title').innerText = `八上 ${lessonKey} 英文科講義 中英文配對卷`;
+      const container = document.getElementById('groups-container');
+      container.innerHTML = '';
+
+      const groups = database[lessonKey];
+      groups.forEach((groupData, idx) => {
+        container.innerHTML += buildFixedGroupHtml(groupData, idx);
+      });
+
+      applyMicroScaling();
+    }
+
+    // 微自動縮放：防止超長單字/片語在 A4 列印或大螢幕時溢出
+    function applyMicroScaling() {
+      document.querySelectorAll('.word-span').forEach(span => {
+        const textLength = span.innerText.length;
+        if (textLength > 20) {
+          span.style.fontSize = "11.5px";
+          span.style.letterSpacing = "-0.7px";
+        } else if (textLength > 14) {
+          span.style.fontSize = "13.5px";
+          span.style.letterSpacing = "-0.3px";
+        } else {
+          span.style.fontSize = "15.5px";
+        }
+      });
+    }
+
+    function initApp() {
+      const selectorContainer = document.getElementById('lesson-selectors');
+      selectorContainer.innerHTML = '';
+      Object.keys(database).forEach(key => {
+        const btn = document.createElement('button');
+        btn.innerText = `八上 ${key}`;
+        btn.setAttribute('data-lesson', key);
+        btn.className = "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese";
+        btn.onclick = () => loadLesson(key);
+        selectorContainer.appendChild(btn);
+      });
+      loadLesson("L1");
+    }
+
+    function toggleAnswers() {
+      showAnswersState = !showAnswersState;
+      document.querySelectorAll('.match-input').forEach(input => {
+        const ans = input.getAttribute('data-ans');
+        if (showAnswersState) {
+          input.value = ans;
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-red-50 text-[14px] p-0 shrink-0 pointer-events-none";
+        } else {
+          input.value = '';
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 pointer-events-none";
+        }
+      });
+      document.querySelectorAll('[id^="score-"]').forEach(badge => badge.classList.add('hidden'));
+    }
+
+    function clearAnswers() {
+      document.querySelectorAll('.match-input').forEach(input => {
+        input.value = '';
+        input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 pointer-events-none";
+      });
+      document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      document.querySelectorAll('[id^="score-"]').forEach(badge => badge.classList.add('hidden'));
+      showAnswersState = false;
+      activeInput = null;
+    }
+
+    function printAllLessons() {
+      const printContainer = document.getElementById('print-all-container');
+      printContainer.innerHTML = '';
+
+      Object.keys(database).forEach(lessonKey => {
+        const page = document.createElement('div');
+        page.className = "print-page";
+
+        const savedLesson = currentLesson;
+        currentLesson = lessonKey;
+        
+        let allGroupsHtml = '';
+        database[lessonKey].forEach((groupData, idx) => {
+          allGroupsHtml += buildFixedGroupHtml(groupData, idx);
+        });
+
+        currentLesson = savedLesson;
+
+        page.innerHTML = `
+          <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
+            <div class="flex justify-between items-end">
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">八上 ${lessonKey} 英文科講義 中英文配對卷</h1>
+              <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+                <div class="flex items-end">
+                  <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+                  <span class="ml-1 shrink-0">班</span>
+                </div>
+                <div class="flex items-end">
+                  <span class="shrink-0">姓名：</span>
+                  <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
+              <span class="text-[14px] font-bold text-slate-700 font-chinese">◎ 請將正確英文單字的代號填入括號中。錯字用紅筆訂正，中文、英文各 1 次。</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden">
+            ${allGroupsHtml}
+          </div>
+          <div class="h-1 shrink-0"></div>
+        `;
+        printContainer.appendChild(page);
+      });
+
+      setTimeout(() => {
+        applyMicroScaling();
+        document.body.classList.add('printing-all');
+        window.print();
+        setTimeout(() => { document.body.classList.remove('printing-all'); }, 600);
+      }, 50);
+    }
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>
