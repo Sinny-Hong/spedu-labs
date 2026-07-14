@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>英文文法目錄索引 - Grammar Resource Hub</title>
+  <title>Spedu Labs - 教材管理工作台</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
@@ -14,12 +14,14 @@
         extend: {
           fontFamily: {
             sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
           }
         }
       }
     }
   </script>
   <style>
+    /* 隱藏滾動條但保持滾動 */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -30,778 +32,464 @@
     .transition-all-300 {
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
+    /* 實驗室六角星圖背景 (高質感 2% 科技藍圖微光) */
+    .labs-grid-bg {
+      background-color: #F4F7FB;
+      background-image: 
+        /* 品牌橘與科技藍微弱星空閃爍 */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M20 20 L20 20 M80 30 L80 30 M110 10 L110 10 M40 90 L40 90 M90 110 L90 110' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-opacity='0.22'/%3E%3Cpath d='M15 75 L15 75 M70 85 L70 85 M100 70 L100 70 M5 45 L5 45 M95 45 L95 45' stroke='%23f59e0b' stroke-width='2.2' stroke-linecap='round' stroke-opacity='0.28'/%3E%3C/svg%3E"),
+        /* 超細緻六角形幾何藍圖格線 */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='86.6' height='150' viewBox='0 0 86.6 150'%3E%3Cpath d='M0 0 L43.3 25 L43.3 75 L0 100 L-43.3 75 L-43.3 25 Z M43.3 75 L86.6 100 L86.6 150 L43.3 175 L0 150 L0 100 Z' stroke='%2394a3b8' stroke-width='0.5' stroke-opacity='0.16' fill='none'/%3E%3C/svg%3E");
+      background-attachment: local;
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-850 font-sans min-h-screen flex flex-col overflow-x-hidden">
+<body class="bg-[#FFFDF8] text-slate-900 font-sans h-screen flex flex-col overflow-hidden select-none">
 
-  <!-- 頂部控制列 (極簡無路徑) -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-3 py-2 flex items-center justify-between shadow-sm">
-    <div class="flex items-center gap-2">
-      <!-- 側邊欄開關 -->
-      <button id="sidebar-toggle" class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors focus:outline-none" title="收折/展開左側選單">
+  <!-- ========================================== -->
+  <!-- 1. Header (64px) - 全站共用、高雅黑白底色 -->
+  <!-- ========================================== -->
+  <header class="h-16 bg-[#FFFDF8] border-b border-slate-200 px-4 flex items-center justify-between z-40 shrink-0 relative select-none">
+    <!-- 頂部 4px 品牌橘定位細線 -->
+    <div class="absolute top-0 left-0 right-0 h-1 bg-[#F59E0B]"></div>
+
+    <div class="flex items-center gap-3">
+      <!-- 側邊欄開關 (VSCode 體驗) -->
+      <button id="sidebar-toggle" class="p-1.5 hover:bg-slate-100 rounded-md text-slate-500 transition-colors focus:outline-none" title="展開/收折側邊欄">
         <i class="fa-solid fa-bars text-lg"></i>
       </button>
-      <div class="flex flex-col">
-        <h1 class="text-base md:text-lg font-extrabold text-slate-950 tracking-tight flex items-center gap-1.5">
-          <i class="fa-solid fa-map text-indigo-600"></i> 英文文法目錄索引
-        </h1>
-        <p class="text-[10px] text-slate-400 hidden sm:block">極簡緊湊 · 智慧直跳版 (方案 A)</p>
+      
+      <!-- 橫式 Logo (拉大尺寸、精準對齊) -->
+      <div class="flex items-center gap-2">
+        <div class="h-12 w-44 overflow-hidden flex items-center justify-start relative">
+          <!-- 放大高度至 24 且調整比例 scale-120 使品牌字體清晰醒目 -->
+          <img src="line-qrcode.png" alt="Spedu Labs Logo" class="h-24 -my-6 max-w-none object-contain scale-120 origin-left transition-transform duration-200 hover:scale-125">
+        </div>
+        
+        <!-- Breadcrumb 導航條 -->
+        <div class="flex items-center gap-1.5 text-sm font-semibold tracking-tight">
+          <span class="text-slate-400">/</span>
+          <span class="text-slate-900">Grammar Workspace</span>
+        </div>
       </div>
     </div>
 
-    <!-- 系統化 Live 搜尋框 (支持中英檔名模糊搜尋) -->
-    <div class="relative w-44 sm:w-64">
-      <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400 pointer-events-none">
-        <i class="fa-solid fa-magnifying-glass text-xs"></i>
-      </span>
-      <input type="text" id="search-input" 
-             placeholder="搜尋主題、解說、英文檔名..." 
-             class="w-full pl-7 pr-7 py-1 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-slate-700 placeholder-slate-400" />
-      <button id="clear-search" class="absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400 hover:text-slate-650 hidden">
-        <i class="fa-solid fa-circle-xmark text-xs"></i>
-      </button>
+    <!-- 右側極簡控制 (全站一體，移除多餘按鈕) -->
+    <div class="flex items-center gap-4">
+      <div class="text-[11px] text-slate-400 font-medium tracking-wider uppercase hidden sm:block">
+        <i class="fa-solid fa-flask-bubble text-amber-500 mr-1"></i>Workspace v1.0
+      </div>
     </div>
   </header>
 
-  <!-- 主框架：左導覽 + 右網格 -->
+  <!-- 主框架結構：雙欄獨立滾動設計 -->
   <div class="flex-1 flex relative overflow-hidden">
     
-    <!-- 左側收折導覽選單 -->
-    <aside id="sidebar" class="w-60 bg-white border-r border-slate-200 flex flex-col transition-all-300 z-30 shrink-0 absolute md:relative inset-y-0 left-0 -translate-x-full md:translate-x-0">
-      <div class="p-2 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400"><i class="fa-solid fa-layer-group mr-1"></i>文法大類快捷</span>
-        <button id="sidebar-close-mobile" class="md:hidden p-1 text-slate-400 hover:text-slate-655">
-          <i class="fa-solid fa-xmark"></i>
+    <!-- ========================================== -->
+    <!-- 2. Sidebar (240px / 64px) - 搜尋與導航核心 -->
+    <!-- ========================================== -->
+    <aside id="sidebar" class="w-60 bg-[#F8FAFC] border-r border-slate-200 h-full flex flex-col transition-all-300 z-30 shrink-0">
+      
+      <!-- 搜尋框區 (放置在左側，搜尋即導航，點選橘色品牌高亮) -->
+      <div class="p-3 border-b border-slate-200/60" id="sidebar-search-container">
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400 pointer-events-none">
+            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+          </span>
+          <input type="text" id="search-input" 
+                 placeholder="搜尋教材、說明或檔名..." 
+                 class="w-full pl-7 pr-7 py-1.5 text-xs bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all text-slate-700 placeholder-slate-400" />
+          <button id="clear-search" class="absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400 hover:text-slate-600 hidden">
+            <i class="fa-solid fa-circle-xmark text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 快捷過濾區 (圖示已修復，絕不重疊) -->
+      <div class="p-1 border-b border-slate-200/40 space-y-0.5">
+        <button id="btn-show-all" class="filter-tab active w-full flex items-center justify-between p-2 rounded text-xs text-slate-700 hover:bg-slate-200/50 transition-colors font-medium">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-folder-open text-slate-400 w-4 text-center"></i>
+            <span class="sidebar-text">📂 全部教材</span>
+          </span>
+          <span class="bg-slate-200 text-slate-600 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-all-badge">0</span>
         </button>
+        
+        <button id="btn-show-starred" class="filter-tab w-full flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-slate-200/50 transition-colors font-medium">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-star text-amber-500 w-4 text-center"></i>
+            <span class="sidebar-text">⭐ 我的收藏</span>
+          </span>
+          <span class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-starred-badge">0</span>
+        </button>
+      </div>
+
+      <!-- 動態大類目錄區 (由 JS 自動產生與計算數量) -->
+      <div class="p-2 border-b border-slate-100 flex items-center justify-between sidebar-text-block">
+        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400"><i class="fa-solid fa-signs-post mr-1"></i>快捷文法大類</span>
       </div>
       
-      <nav class="flex-1 overflow-y-auto p-1.5 space-y-0.5 no-scrollbar">
-        <!-- 導覽連結 (點擊定位) -->
-        <a href="#section-pronouns" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition-colors border-l-4 border-l-transparent hover:border-l-blue-500 font-medium">
-          <span class="flex items-center gap-1.5 truncate">
-            <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
-            基礎代名詞與常用語
-          </span>
-          <span class="bg-blue-100 text-blue-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-pronouns">0</span>
-        </a>
-
-        <a href="#section-nouns" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors border-l-4 border-l-transparent hover:border-l-emerald-500 font-medium">
-          <span class="flex items-center gap-1.5 truncate">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-            名詞與單複數
-          </span>
-          <span class="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-nouns">0</span>
-        </a>
-
-        <a href="#section-numbers" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-purple-50 hover:text-purple-700 transition-colors border-l-4 border-l-transparent hover:border-l-purple-500 font-medium">
-          <span class="flex items-center gap-1.5 truncate">
-            <span class="w-2 h-2 rounded-full bg-purple-500 shrink-0"></span>
-            基礎數字與應用
-          </span>
-          <span class="bg-purple-100 text-purple-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-numbers">0</span>
-        </a>
-
-        <a href="#section-be-present" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-amber-50 hover:text-amber-700 transition-colors border-l-4 border-l-transparent hover:border-l-amber-500 font-medium">
-          <span class="flex items-center gap-1.5 truncate">
-            <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
-            Be動詞與現在簡單式
-          </span>
-          <span class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-be-present">0</span>
-        </a>
-
-        <a href="#section-space-time" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors border-l-4 border-l-transparent hover:border-l-indigo-500 font-medium">
-          <span class="flex items-center gap-1.5 truncate">
-            <span class="w-2 h-2 rounded-full bg-indigo-500 shrink-0"></span>
-            空間、時間與存在句
-          </span>
-          <span class="bg-indigo-100 text-indigo-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-space-time">0</span>
-        </a>
-
-        <a href="#section-past-tense" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-rose-50 hover:text-rose-700 transition-colors border-l-4 border-l-transparent hover:border-l-rose-500 font-medium">
-          <span class="flex items-center gap-1.5 truncate">
-            <span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
-            過去式表達
-          </span>
-          <span class="bg-rose-100 text-rose-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-past-tense">0</span>
-        </a>
-
-        <a href="#section-adj" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-sky-50 hover:text-sky-700 transition-colors border-l-4 border-l-transparent hover:border-l-sky-500 font-medium">
-          <span class="flex items-center gap-1.5 truncate">
-            <span class="w-2 h-2 rounded-full bg-sky-500 shrink-0"></span>
-            形容詞比較與生活進階
-          </span>
-          <span class="bg-sky-100 text-sky-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-adj">0</span>
-        </a>
+      <!-- 獨立滾動容器 -->
+      <nav id="sidebar-nav" class="flex-1 overflow-y-auto p-1 space-y-0.5 no-scrollbar">
+        <!-- JS 動態生成快捷連結 -->
       </nav>
 
-      <!-- 側欄附屬說明 -->
-      <div class="p-2 border-t border-slate-200 bg-slate-50 text-[10px] text-slate-400">
-        <p class="font-semibold mb-0.5 text-slate-500"><i class="fa-solid fa-star text-amber-400 mr-1"></i>快捷星標</p>
-        點選卡片右上角星號，可標記特定重點單元。
-      </div>
     </aside>
 
-    <!-- 遮罩 (手機側欄專用) -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-950/30 z-25 hidden md:hidden"></div>
+    <!-- 遮罩 (小螢幕相容) -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/20 z-20 hidden"></div>
 
-    <!-- 右側卡片大網格 (極高緊湊度) -->
-    <main class="flex-1 overflow-y-auto p-3 space-y-3 no-scrollbar">
-
-      <!-- 頂部篩選 Tabs -->
-      <div class="flex items-center gap-1.5 overflow-x-auto py-0.5 no-scrollbar text-[11px]">
-        <button class="filter-tab active px-2.5 py-0.5 bg-indigo-600 text-white rounded-full font-semibold shadow-sm transition-all" data-target="all">
-          顯示全部
-        </button>
-        <button class="filter-tab px-2.5 py-0.5 bg-white hover:bg-slate-100 text-slate-600 rounded-full border border-slate-200 transition-all" data-target="starred">
-          <i class="fa-solid fa-star text-amber-500 mr-0.5"></i>我的星標重點
-        </button>
+    <!-- ========================================== -->
+    <!-- 3. Main Canvas (右側內容區) - 暖灰藍點陣實驗室背景 -->
+    <!-- ========================================== -->
+    <main class="flex-1 labs-grid-bg overflow-y-auto p-6 space-y-8 no-scrollbar relative z-10">
+      
+      <!-- 太空人去背 Logo 4.5% 透明度浮水印 (右下角定位，尺寸放大至 w-72 h-72 更加和諧大氣) -->
+      <div class="fixed bottom-8 right-8 w-72 h-72 pointer-events-none opacity-[0.045] z-0 select-none">
+        <img src="spe-icon2.png" alt="Spedu Labs Watermark" class="w-full h-full object-contain">
       </div>
 
-      <!-- 搜尋無結果提示 -->
-      <div id="no-results" class="hidden py-10 text-center bg-white border border-slate-200 rounded-lg max-w-xs mx-auto">
-        <div class="text-slate-300 text-3xl mb-1.5"><i class="fa-regular fa-folder-open"></i></div>
-        <h3 class="text-xs font-bold text-slate-700">未找到相符單元</h3>
-        <p class="text-[10px] text-slate-400 mt-0.5">請嘗試輸入其他關鍵字，例如「過去」、「apple」</p>
+      <div id="no-results" class="hidden py-16 text-center max-w-sm mx-auto bg-white/80 border border-slate-200 rounded-lg shadow-sm backdrop-blur-sm relative z-10">
+        <div class="text-slate-300 text-4xl mb-2"><i class="fa-regular fa-folder-open"></i></div>
+        <h3 class="text-sm font-bold text-slate-700">找不到相符的文法教材</h3>
+        <p class="text-[11px] text-slate-400 mt-1">請試試其他搜尋關鍵字（例如「過去」、「apple」）</p>
       </div>
 
-      <!-- ========================================== -->
-      <!-- 分類一：基礎代名詞與常用語 (Blue Theme) -->
-      <!-- ========================================== -->
-      <section id="section-pronouns" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-blue-200 pb-0.5 mb-1.5">
-          <!-- 標題字體加大、顯眼 -->
-          <h2 class="text-sm md:text-base font-extrabold text-blue-950 flex items-center gap-1.5">
-            <span class="w-1.5 h-3.5 bg-blue-500 rounded-sm"></span>
-            基礎代名詞與常用語
-          </h2>
-        </div>
-        <!-- 卡片網格：超緊密 h-[62px] 隱藏檔名，懸停時平滑浮現 -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
-          
-          <!-- 卡片 1 -->
-          <a href="grammer_I.html" class="grammar-card group relative block border border-blue-100 bg-blue-50/10 hover:bg-blue-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-blue-400 h-[62px] overflow-hidden" 
-             data-id="grammer_I" data-title="我、你、他 (主格)" data-tag="grammer_I" data-desc="我是...，自我介紹與主詞用法 (I / You / He)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-blue-900 transition-colors">我、你、他 (主格)</div>
-              <!-- 靜態時顯示：中文解說 -->
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">我是...，自我介紹與主詞用法 (I / You / He)</div>
-            </div>
-            <!-- 懸停時滑動顯現：英文檔名 (滑動捨棄效果) -->
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-blue-600 font-mono font-medium">grammer_I.html</span>
-              <span class="text-[9px] text-blue-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 2 -->
-          <a href="grammer_me.html" class="grammar-card group relative block border border-blue-100 bg-blue-50/10 hover:bg-blue-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-blue-400 h-[62px] overflow-hidden" 
-             data-id="grammer_me" data-title="我、你、他 (受格)" data-tag="grammer_me" data-desc="動作的接受者 (Give me / Look at him)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-blue-900 transition-colors">我、你、他 (受格)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">動作的接受者 (Give me / Look at him)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-blue-600 font-mono font-medium">grammer_me.html</span>
-              <span class="text-[9px] text-blue-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 3 -->
-          <a href="grammer_my.html" class="grammar-card group relative block border border-blue-100 bg-blue-50/10 hover:bg-blue-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-blue-400 h-[62px] overflow-hidden" 
-             data-id="grammer_my" data-title="我的、他的 (所有格)" data-tag="grammer_my" data-desc="這是我的狗，標示擁有權 (my / your / his)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-blue-900 transition-colors">我的、他的 (所有格)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">這是我的狗，標示擁有權 (my / your / his)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-blue-600 font-mono font-medium">grammer_my.html</span>
-              <span class="text-[9px] text-blue-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 4 -->
-          <a href="grammer_please.html" class="grammar-card group relative block border border-blue-100 bg-blue-50/10 hover:bg-blue-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-blue-400 h-[62px] overflow-hidden" 
-             data-id="grammer_please" data-title="請與祈使句" data-tag="grammer_please" data-desc="禮貌請求與動作命令 (Please sit down.)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-blue-900 transition-colors">請與祈使句</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">禮貌請求與動作命令 (Please sit down.)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-blue-600 font-mono font-medium">grammer_please.html</span>
-              <span class="text-[9px] text-blue-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 5 -->
-          <a href="grammer_can_can_t.html" class="grammar-card group relative block border border-blue-100 bg-blue-50/10 hover:bg-blue-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-blue-400 h-[62px] overflow-hidden" 
-             data-id="grammer_can_can_t" data-title="我會、我不能" data-tag="grammer_can_can_t" data-desc="表達能力或許可 (I can swim. / I can't go.)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-blue-900 transition-colors">我會、我不能</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">表達能力或許可 (I can swim. / I can't go.)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-blue-600 font-mono font-medium">grammer_can_can_t.html</span>
-              <span class="text-[9px] text-blue-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 6 -->
-          <a href="grammer_this_that_these_those.html" class="grammar-card group relative block border border-blue-100 bg-blue-50/10 hover:bg-blue-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-blue-400 h-[62px] overflow-hidden" 
-             data-id="grammer_this_that_these_those" data-title="這個與那個 (指示)" data-tag="grammer_this_that_these_those" data-desc="遠近與單複數指示 (This is... / Those are...)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-blue-900 transition-colors">這個與那個 (指示)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">遠近與單複數指示 (This is... / Those are...)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-blue-600 font-mono font-medium">grammer_this_that_these_those.html</span>
-              <span class="text-[9px] text-blue-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 分類二：名詞與單複數 (Emerald Theme) -->
-      <!-- ========================================== -->
-      <section id="section-nouns" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-emerald-200 pb-0.5 mb-1.5">
-          <h2 class="text-sm md:text-base font-extrabold text-emerald-950 flex items-center gap-1.5">
-            <span class="w-1.5 h-3.5 bg-emerald-500 rounded-sm"></span>
-            名詞與單複數 (新)
-          </h2>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
-
-          <!-- 卡片 7 -->
-          <a href="grammer_apples.html" class="grammar-card group relative block border border-emerald-100 bg-emerald-50/10 hover:bg-emerald-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-emerald-400 h-[62px] overflow-hidden" 
-             data-id="grammer_apples" data-title="蘋果與複數名詞" data-tag="grammer_apples" data-desc="基本名詞複數與計數 (I eat two apples.)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-emerald-900 transition-colors">蘋果與複數名詞</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">基本名詞複數與計數 (I eat two apples.)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-emerald-600 font-mono font-medium">grammer_apples.html</span>
-              <span class="text-[9px] text-emerald-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 8 -->
-          <a href="grammer_n_countable.html" class="grammar-card group relative block border border-emerald-100 bg-emerald-50/10 hover:bg-emerald-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-emerald-400 h-[62px] overflow-hidden" 
-             data-id="grammer_n_countable" data-title="可數與不可數名詞" data-tag="grammer_n_countable" data-desc="區分固體液體與數量計數 (water / bread)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-emerald-900 transition-colors">可數與不可數名詞</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">區分固體液體與數量計數 (water / bread)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-emerald-600 font-mono font-medium">grammer_n_countable.html</span>
-              <span class="text-[9px] text-emerald-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 9 -->
-          <a href="grammer_boys_.html" class="grammar-card group relative block border border-emerald-100 bg-emerald-50/10 hover:bg-emerald-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-emerald-400 h-[62px] overflow-hidden" 
-             data-id="grammer_boys_" data-title="男孩們與複數變化" data-tag="grammer_boys_" data-desc="字尾規律變化複數 (boys / babies / boxes)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-emerald-900 transition-colors">男孩們與複數變化</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">字尾規律變化複數 (boys / babies / boxes)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-emerald-600 font-mono font-medium">grammer_boys_.html</span>
-              <span class="text-[9px] text-emerald-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 分類三：基礎數字與應用 (Purple Theme) -->
-      <!-- ========================================== -->
-      <section id="section-numbers" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-purple-200 pb-0.5 mb-1.5">
-          <h2 class="text-sm md:text-base font-extrabold text-purple-950 flex items-center gap-1.5">
-            <span class="w-1.5 h-3.5 bg-purple-500 rounded-sm"></span>
-            基礎數字與應用
-          </h2>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
-          
-          <!-- 卡片 10 -->
-          <a href="grammer_1_10.html" class="grammar-card group relative block border border-purple-100 bg-purple-50/10 hover:bg-purple-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-purple-400 h-[62px] overflow-hidden" 
-             data-id="grammer_1_10" data-title="基礎數字 1-10" data-tag="grammer_1_10" data-desc="數量與基本物件點數 (one, two, ten)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-purple-900 transition-colors">基礎數字 1-10</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">數量與基本物件點數 (one, two, ten)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-purple-600 font-mono font-medium">grammer_1_10.html</span>
-              <span class="text-[9px] text-purple-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 11 -->
-          <a href="grammer_11_19.html" class="grammar-card group relative block border border-purple-100 bg-purple-50/10 hover:bg-purple-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-purple-400 h-[62px] overflow-hidden" 
-             data-id="grammer_11_19" data-title="數字 11-19" data-tag="grammer_11_19" data-desc="十幾的數字與青少年年齡 (eleven, thirteen)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-purple-900 transition-colors">數字 11-19</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">十幾的數字與青少年年齡 (eleven, thirteen)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-purple-600 font-mono font-medium">grammer_11_19.html</span>
-              <span class="text-[9px] text-purple-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 12 -->
-          <a href="grammer_21_99.html" class="grammar-card group relative block border border-purple-100 bg-purple-50/10 hover:bg-purple-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-purple-400 h-[62px] overflow-hidden" 
-             data-id="grammer_21_99" data-title="雙位數 21-99" data-tag="grammer_21_99" data-desc="價格、年齡、讀頁碼 (twenty-one, ninety-nine)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-purple-900 transition-colors">雙位數 21-99</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">價格、年齡、讀頁碼 (twenty-one, ninety-nine)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-purple-600 font-mono font-medium">grammer_21_99.html</span>
-              <span class="text-[9px] text-purple-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 13 -->
-          <a href="grammer_10_20_100.html" class="grammar-card group relative block border border-purple-100 bg-purple-50/10 hover:bg-purple-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-purple-400 h-[62px] overflow-hidden" 
-             data-id="grammer_10_20_100" data-title="整十與百進位" data-tag="grammer_10_20_100" data-desc="整十、整百與發音聽辨差異 (twenty, one hundred)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-purple-900 transition-colors">整十與百進位</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">整十、整百與發音聽辨差異 (twenty, one hundred)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-purple-600 font-mono font-medium">grammer_10_20_100.html</span>
-              <span class="text-[9px] text-purple-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 14 -->
-          <a href="grammer_1_1000000.html" class="grammar-card group relative block border border-purple-100 bg-purple-50/10 hover:bg-purple-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-purple-400 h-[62px] overflow-hidden" 
-             data-id="grammer_1_1000000" data-title="大數字與百萬" data-tag="grammer_1_1000000" data-desc="大數量到百萬位數規律 (thousand, million)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-purple-900 transition-colors">大數字與百萬</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">大數量到百萬位數規律 (thousand, million)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-purple-600 font-mono font-medium">grammer_1_1000000.html</span>
-              <span class="text-[9px] text-purple-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 分類四：Be 動詞與現在式 (Amber Theme) -->
-      <!-- ========================================== -->
-      <section id="section-be-present" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-amber-200 pb-0.5 mb-1.5">
-          <h2 class="text-sm md:text-base font-extrabold text-amber-955 flex items-center gap-1.5">
-            <span class="w-1.5 h-3.5 bg-amber-500 rounded-sm"></span>
-            Be 動詞與現在簡單式
-          </h2>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
-          
-          <!-- 卡片 15 -->
-          <a href="grammer_be_am_are_is.html" class="grammar-card group relative block border border-amber-100 bg-amber-50/10 hover:bg-amber-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-amber-400 h-[62px] overflow-hidden" 
-             data-id="grammer_be_am_are_is" data-title="Be動詞 (am, are, is)" data-tag="grammer_be_am_are_is" data-desc="人稱與當前狀態搭配 (I am / You are / She is)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-amber-900 transition-colors">Be動詞 (am, are, is)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">人稱與當前狀態搭配 (I am / You are / She is)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-amber-600 font-mono font-medium">grammer_be_am_are_is.html</span>
-              <span class="text-[9px] text-amber-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 16 -->
-          <a href="grammar_present_simple_intro.html" class="grammar-card group relative block border border-amber-100 bg-amber-50/10 hover:bg-amber-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-amber-400 h-[62px] overflow-hidden" 
-             data-id="grammar_present_simple_intro" data-title="現在簡單式 (觀念)" data-tag="grammar_present_simple_intro" data-desc="日常習性與常理事實觀念說明">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-amber-900 transition-colors">現在簡單式 (觀念)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">日常習性與常理事實觀念說明</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-amber-600 font-mono font-medium">grammar_present_simple_intro.html</span>
-              <span class="text-[9px] text-amber-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 17 -->
-          <a href="grammar_present_simple_verbs.html" class="grammar-card group relative block border border-amber-100 bg-amber-50/10 hover:bg-amber-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-amber-400 h-[62px] overflow-hidden" 
-             data-id="grammar_present_simple_verbs" data-title="現在簡單式 (動詞)" data-tag="grammar_present_simple_verbs" data-desc="三單動詞加s變化 (eat / plays / goes)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-amber-900 transition-colors">現在簡單式 (動詞)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">三單動詞加s變化 (eat / plays / goes)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-amber-600 font-mono font-medium">grammar_present_simple_verbs.html</span>
-              <span class="text-[9px] text-amber-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 18 -->
-          <a href="garmmer_always.html" class="grammar-card group relative block border border-amber-100 bg-amber-50/10 hover:bg-amber-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-amber-400 h-[62px] overflow-hidden" 
-             data-id="garmmer_always" data-title="總是與頻率 (always)" data-tag="garmmer_always" data-desc="動作發生頻率說明 (I always drink water.)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-amber-900 transition-colors">總是與頻率 (always)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">動作發生頻率說明 (I always drink water.)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-amber-600 font-mono font-medium">garmmer_always.html</span>
-              <span class="text-[9px] text-amber-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 分類五：空間、時間與存在句 (Indigo Theme) -->
-      <!-- ========================================== -->
-      <section id="section-space-time" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-indigo-200 pb-0.5 mb-1.5">
-          <h2 class="text-sm md:text-base font-extrabold text-indigo-955 flex items-center gap-1.5">
-            <span class="w-1.5 h-3.5 bg-indigo-500 rounded-sm"></span>
-            空間、時間與存在句
-          </h2>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
-          
-          <!-- 卡片 19 -->
-          <a href="grammer_in_on_at_space.html" class="grammar-card group relative block border border-indigo-100 bg-indigo-50/10 hover:bg-indigo-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-indigo-400 h-[62px] overflow-hidden" 
-             data-id="grammer_in_on_at_space" data-title="東西在哪裡 (空間)" data-tag="grammer_in_on_at_space" data-desc="在...裡面/上面/地方 (in / on / at)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-indigo-900 transition-colors">東西在哪裡 (空間)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">在...裡面/上面/地方 (in / on / at)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-indigo-600 font-mono font-medium">grammer_in_on_at_space.html</span>
-              <span class="text-[9px] text-indigo-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 20 -->
-          <a href="grammer_in_on_at_time.html" class="grammar-card group relative block border border-indigo-100 bg-indigo-50/10 hover:bg-indigo-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-indigo-400 h-[62px] overflow-hidden" 
-             data-id="grammer_in_on_at_time" data-title="時間與日子 (介系詞)" data-tag="grammer_in_on_at_time" data-desc="時間、特定日子與點鐘 (in / on / at)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-indigo-900 transition-colors">時間與日子 (介系詞)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">時間、特定日子與點鐘 (in / on / at)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-indigo-600 font-mono font-medium">grammer_in_on_at_time.html</span>
-              <span class="text-[9px] text-indigo-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 21 -->
-          <a href="grammer_there_is_there_are.html" class="grammar-card group relative block border border-indigo-100 bg-indigo-50/10 hover:bg-indigo-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-indigo-400 h-[62px] overflow-hidden" 
-             data-id="grammer_there_is_there_are" data-title="這裡有、那裡有 (存在)" data-tag="grammer_there_is_there_are" data-desc="某處存在人事物 (There is a cup of water.)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-indigo-900 transition-colors">這裡有、那裡有 (存在)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">某處存在人事物 (There is a cup of water.)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-indigo-600 font-mono font-medium">grammer_there_is_there_are.html</span>
-              <span class="text-[9px] text-indigo-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 分類六：過去式表達 (Rose Theme) -->
-      <!-- ========================================== -->
-      <section id="section-past-tense" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-rose-200 pb-0.5 mb-1.5">
-          <h2 class="text-sm md:text-base font-extrabold text-rose-955 flex items-center gap-1.5">
-            <span class="w-1.5 h-3.5 bg-rose-500 rounded-sm"></span>
-            過去式表達
-          </h2>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
-          
-          <!-- 卡片 22 -->
-          <a href="grammar_was_were.html" class="grammar-card group relative block border border-rose-100 bg-rose-50/10 hover:bg-rose-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-rose-400 h-[62px] overflow-hidden" 
-             data-id="grammar_was_were" data-title="過去的狀態 (was, were)" data-tag="grammar_was_were" data-desc="過去狀態與位置 (I was busy yesterday.)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-rose-900 transition-colors">過去的狀態 (was, were)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">過去狀態與位置 (I was busy yesterday.)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-rose-600 font-mono font-medium">grammar_was_were.html</span>
-              <span class="text-[9px] text-rose-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 23 -->
-          <a href="grammar_did_didn_t.html" class="grammar-card group relative block border border-rose-100 bg-rose-50/10 hover:bg-rose-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-rose-400 h-[62px] overflow-hidden" 
-             data-id="grammar_did_didn_t" data-title="過去做過嗎 (did, didn't)" data-tag="grammar_did_didn_t" data-desc="問過去有無做某事 (I didn't play baseball.)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-rose-900 transition-colors">過去做過嗎 (did, didn't)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">問過去有無做某事 (I didn't play baseball.)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-rose-600 font-mono font-medium">grammar_did_didn_t.html</span>
-              <span class="text-[9px] text-rose-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 24 -->
-          <a href="grammar_Ved.html" class="grammar-card group relative block border border-rose-100 bg-rose-50/10 hover:bg-rose-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-rose-400 h-[62px] overflow-hidden" 
-             data-id="grammar_Ved" data-title="規則動作過去式" data-tag="grammar_Ved" data-desc="動作的過去表達 (-ed 字尾變化)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-rose-900 transition-colors">規則動作過去式</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">動作的過去表達 (-ed 字尾變化)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-rose-600 font-mono font-medium">grammar_Ved.html</span>
-              <span class="text-[9px] text-rose-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 25 -->
-          <a href="grammer_went_saw.html" class="grammar-card group relative block border border-rose-100 bg-rose-50/10 hover:bg-rose-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-rose-400 h-[62px] overflow-hidden" 
-             data-id="grammer_went_saw" data-title="去過與看過 (不規則)" data-tag="grammer_went_saw" data-desc="不規則動詞過去式 (went / saw)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-rose-900 transition-colors">去過與看過 (不規則)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">去過與看過 (不規則 - went / saw)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-rose-600 font-mono font-medium">grammer_went_saw.html</span>
-              <span class="text-[9px] text-rose-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-        </div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- 分類七：形容詞比較與生活進階 (Sky Theme) -->
-      <!-- ========================================== -->
-      <section id="section-adj" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-sky-200 pb-0.5 mb-1.5">
-          <h2 class="text-sm md:text-base font-extrabold text-sky-955 flex items-center gap-1.5">
-            <span class="w-1.5 h-3.5 bg-sky-500 rounded-sm"></span>
-            形容詞比較與生活進階
-          </h2>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
-          
-          <!-- 卡片 26 -->
-          <a href="grammer_adj_er.html" class="grammar-card group relative block border border-sky-100 bg-sky-50/10 hover:bg-sky-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-sky-400 h-[62px] overflow-hidden" 
-             data-id="grammer_adj_er" data-title="A比B還要... (比較級)" data-tag="grammer_adj_er" data-desc="形容詞比較級兩者對比 (-er + than)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-sky-900 transition-colors">A比B還要... (比較級)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">形容詞比較級兩者對比 (-er + than)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-sky-600 font-mono font-medium">grammer_adj_er.html</span>
-              <span class="text-[9px] text-sky-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 27 -->
-          <a href="grammer_adj_est.html" class="grammar-card group relative block border border-sky-100 bg-sky-50/10 hover:bg-sky-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-sky-400 h-[62px] overflow-hidden" 
-             data-id="grammer_adj_est" data-title="最...的那一個 (最高級)" data-tag="grammer_adj_est" data-desc="三者以上之最 (the + -est)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-sky-900 transition-colors">最...的那一個 (最高級)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">三者以上之最 (the + -est)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-sky-600 font-mono font-medium">grammer_adj_est.html</span>
-              <span class="text-[9px] text-sky-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 28 -->
-          <a href="grammer_adj_er_est.html" class="grammar-card group relative block border border-sky-100 bg-sky-50/10 hover:bg-sky-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-sky-400 h-[62px] overflow-hidden" 
-             data-id="grammer_adj_er_est" data-title="比較級與最高級綜合" data-tag="grammer_adj_er_est" data-desc="多種物體比較與程度差異對比">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-sky-900 transition-colors">比較級與最高級綜合</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">多種物體比較與程度差異對比</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-sky-600 font-mono font-medium">grammer_adj_er_est.html</span>
-              <span class="text-[9px] text-sky-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-          <!-- 卡片 29 -->
-          <a href="grammer_spend_cost_take.html" class="grammar-card group relative block border border-sky-100 bg-sky-50/10 hover:bg-sky-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-sky-400 h-[62px] overflow-hidden" 
-             data-id="grammer_spend_cost_take" data-title="花時間與花錢" data-tag="grammer_spend_cost_take" data-desc="生活花費區別 (spend / cost / take)">
-            <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[9px]"></i>
-            </button>
-            <div class="pr-4">
-              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-sky-900 transition-colors">花時間與花錢</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">生活花費區別 (spend / cost / take)</div>
-            </div>
-            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
-              <span class="text-[9px] text-sky-600 font-mono font-medium">grammer_spend_cost_take.html</span>
-              <span class="text-[9px] text-sky-500"><i class="fa-solid fa-arrow-right-long"></i></span>
-            </div>
-          </a>
-
-        </div>
-      </section>
+      <!-- 動態分類網格區 (由 JS 自動載入與繪製) -->
+      <div id="main-content-canvas" class="space-y-6 relative z-10">
+        <!-- JS 將自動生成分類標題、折疊鈕與白底卡片 -->
+      </div>
 
     </main>
   </div>
 
-  <!-- 輕量頁尾 -->
-  <footer class="bg-white border-t border-slate-200 py-2 text-center text-[10px] text-slate-400">
-    <p>© 2026 spedu-labs. English Grammar Matrix Dashboard.</p>
-  </footer>
+  <!-- ========================================== -->
+  <!-- 4. 智慧彈窗通知元件 (取代 Alert，符合 Design System) -->
+  <!-- ========================================== -->
+  <div id="custom-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-lg z-50 transform translate-y-16 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2">
+    <i class="fa-solid fa-circle-info text-amber-400"></i>
+    <span id="toast-msg">通知內容</span>
+  </div>
 
+  <!-- ========================================== -->
+  <!-- 5. JavaScript 數據與動態核心邏輯 (輕量、安全) -->
+  <!-- ========================================== -->
   <script>
+    // ==========================================
+    // 🎨 設計規範分類色調與 3% 極淡背景色 (Design System)
+    // ==========================================
+    const categoriesMeta = {
+      "基礎代名詞與常用語": { color: "#3B82F6", icon: "fa-user-astronaut", code: "pronouns", bgTint: "rgba(59, 130, 246, 0.03)" },
+      "名詞與單複數": { color: "#10B981", icon: "fa-apple-whole", code: "nouns", bgTint: "rgba(16, 185, 129, 0.03)" },
+      "基礎數字與應用": { color: "#8B5CF6", icon: "fa-hashtag", code: "numbers", bgTint: "rgba(139, 92, 246, 0.03)" },
+      "Be 動詞與現在簡單式": { color: "#F59E0B", icon: "fa-clock", code: "present", bgTint: "rgba(245, 158, 11, 0.03)" },
+      "空間、時間與存在句": { color: "#6366F1", icon: "fa-map-location-dot", code: "space", bgTint: "rgba(99, 102, 241, 0.03)" },
+      "過去式表達": { color: "#F43F5E", icon: "fa-history", code: "past", bgTint: "rgba(244, 63, 94, 0.03)" },
+      "形容詞比較與生活進階": { color: "#0EA5E9", icon: "fa-scale-balanced", code: "adj", bgTint: "rgba(14, 165, 233, 0.03)" }
+    };
+
+    // ==========================================
+    // 📂 完美 JSON 數據結構 - 教材資料庫 (29個文法單元)
+    // ==========================================
+    const grammarData = [
+      // 基礎代名詞與常用語
+      { category: "基礎代名詞與常用語", title: "我、你、他 (主格)", desc: "我是...，自我介紹與主詞用法 (I / You / He)", filename: "grammer_I.html" },
+      { category: "基礎代名詞與常用語", title: "我、你、他 (受格)", desc: "動作的接受者 (Give me / Look at him)", filename: "grammer_me.html" },
+      { category: "基礎代名詞與常用語", title: "我的、他的 (所有格)", desc: "這是我的狗，標示擁有權 (my / your / his)", filename: "grammer_my.html" },
+      { category: "基礎代名詞與常用語", title: "請與祈使句", desc: "禮貌請求與動作命令 (Please sit down.)", filename: "grammer_please.html" },
+      { category: "基礎代名詞與常用語", title: "我會、我不能", desc: "表達能力或許可 (I can swim. / I can't go.)", filename: "grammer_can_can_t.html" },
+      { category: "基礎代名詞與常用語", title: "這個與那個 (指示)", desc: "遠近與單複數指示 (This is... / Those are...)", filename: "grammer_this_that_these_those.html" },
+
+      // 名詞與單複數
+      { category: "名詞與單複數", title: "蘋果與複數名詞", desc: "基本名詞複數與計數 (I eat two apples.)", filename: "grammer_apples.html" },
+      { category: "名詞與單複數", title: "可數與不可數名詞", desc: "區分固體液體與數量計數 (water / bread)", filename: "grammer_n_countable.html" },
+      { category: "名詞與單複數", title: "男孩們與複數變化", desc: "字尾規律變化複數 (boys / babies / boxes)", filename: "grammer_boys_.html" },
+
+      // 基礎數字與應用
+      { category: "基礎數字與應用", title: "基礎數字 1-10", desc: "數量與基本物件點數 (one, two, ten)", filename: "grammer_1_10.html" },
+      { category: "基礎數字與應用", title: "數字 11-19", desc: "十幾的數字與青少年年齡 (eleven, thirteen)", filename: "grammer_11_19.html" },
+      { category: "基礎數字與應用", title: "雙位數 21-99", desc: "價格、年齡、讀頁碼 (twenty-one, ninety-nine)", filename: "grammer_21_99.html" },
+      { category: "基礎數字與應用", title: "整十與百進位", desc: "整十、整百與發音聽辨差異 (twenty, one hundred)", filename: "grammer_10_20_100.html" },
+      { category: "基礎數字與應用", title: "大數字與百萬", desc: "大數量到百萬位數規律 (thousand, million)", filename: "grammer_1_1000000.html" },
+
+      // Be 動詞與現在簡單式
+      { category: "Be 動詞與現在簡單式", title: "Be動詞 (am, are, is)", desc: "人稱與當前狀態搭配 (I am / You are / She is)", filename: "grammer_be_am_are_is.html" },
+      { category: "Be 動詞與現在簡單式", title: "現在簡單式 (觀念)", desc: "日常習性與常理事實觀念說明", filename: "grammar_present_simple_intro.html" },
+      { category: "Be 動詞與現在簡單式", title: "現在簡單式 (動詞)", desc: "三單動詞加s變化 (eat / plays / goes)", filename: "grammar_present_simple_verbs.html" },
+      { category: "Be 動詞與現在簡單式", title: "總是與頻率 (always)", desc: "動作發生頻率說明 (I always drink water.)", filename: "garmmer_always.html" },
+
+      // 空間、時間與存在句
+      { category: "空間、時間與存在句", title: "東西在哪裡 (空間)", desc: "在...裡面/上面/地方 (in / on / at)", filename: "grammer_in_on_at_space.html" },
+      { category: "空間、時間與存在句", title: "時間與日子 (介系詞)", desc: "時間、特定日子與點鐘 (in / on / at)", filename: "grammer_in_on_at_time.html" },
+      { category: "空間、時間與存在句", title: "這裡有、那裡有 (存在)", desc: "某處存在人事物 (There is a cup of water.)", filename: "grammer_there_is_there_are.html" },
+
+      // 過去式表達
+      { category: "過去式表達", title: "過去的狀態 (was, were)", desc: "過去狀態與位置 (I was busy yesterday.)", filename: "grammar_was_were.html" },
+      { category: "過去式表達", title: "過去做過嗎 (did, didn't)", desc: "問過去有無做某事 (I didn't play baseball.)", filename: "grammar_did_didn_t.html" },
+      { category: "過去式表達", title: "規則動作過去式", desc: "動作的過去表達 (-ed 字尾變化)", filename: "grammar_Ved.html" },
+      { category: "過去式表達", title: "去過與看過 (不規則)", desc: "不規則動詞過去式 (went / saw)", filename: "grammer_went_saw.html" },
+
+      // 形容詞比較與生活進階
+      { category: "形容詞比較與生活進階", title: "A比B還要... (比較級)", desc: "形容詞比較級兩者對比 (-er + than)", filename: "grammer_adj_er.html" },
+      { category: "形容詞比較與生活進階", title: "最...的那一個 (最高級)", desc: "三者以上之最 (the + -est)", filename: "grammer_adj_est.html" },
+      { category: "形容詞比較與生活進階", title: "比較級與最高級綜合", desc: "多種物體比較與程度差異對比", filename: "grammer_adj_er_est.html" },
+      { category: "形容詞比較與生活進階", title: "花時間與花錢", desc: "生活花費區別 (spend / cost / take)", filename: "grammer_spend_cost_take.html" }
+    ];
+
+    // ==========================================
+    // ⚙️ UI 初始化與事件處理引擎
+    // ==========================================
     document.addEventListener("DOMContentLoaded", () => {
-      // 側邊欄與元件
+      // DOM 節點
       const sidebar = document.getElementById("sidebar");
       const sidebarToggle = document.getElementById("sidebar-toggle");
-      const sidebarCloseMobile = document.getElementById("sidebar-close-mobile");
       const sidebarOverlay = document.getElementById("sidebar-overlay");
-      const sidebarLinks = document.querySelectorAll(".sidebar-link");
-
-      // 搜尋與篩選
+      const sidebarNav = document.getElementById("sidebar-nav");
+      const mainContentCanvas = document.getElementById("main-content-canvas");
       const searchInput = document.getElementById("search-input");
       const clearSearch = document.getElementById("clear-search");
-      const filterTabs = document.querySelectorAll(".filter-tab");
-      const categoryBlocks = document.querySelectorAll(".category-block");
       const noResults = document.getElementById("no-results");
+      const countAllBadge = document.getElementById("count-all-badge");
+      const countStarredBadge = document.getElementById("count-starred-badge");
 
-      // 本地星標狀態管理
-      let starredItems = JSON.parse(localStorage.getItem("grammar_starred_units")) || [];
+      const btnShowAll = document.getElementById("btn-show-all");
+      const btnShowStarred = document.getElementById("btn-show-starred");
 
-      function updateStarUI() {
-        document.querySelectorAll(".grammar-card").forEach(card => {
-          const id = card.getAttribute("data-id");
-          const starIcon = card.querySelector(".star-btn i");
-          if (starredItems.includes(id)) {
-            starIcon.className = "fa-solid fa-star text-amber-400";
-            card.classList.add("is-starred");
-          } else {
-            starIcon.className = "fa-regular fa-star text-slate-300 group-hover:text-amber-400";
-            card.classList.remove("is-starred");
-          }
-        });
+      // 儲存收折狀態與收藏狀態
+      let starredItems = JSON.parse(localStorage.getItem("spedu_starred_units")) || [];
+      let collapsedSections = JSON.parse(localStorage.getItem("spedu_collapsed_sections")) || [];
+      let activeFilter = "all"; // 'all' 或 'starred'
+
+      // ==========================================
+      // 🎨 自定義彈窗元件邏輯
+      // ==========================================
+      function showToast(message) {
+        const toast = document.getElementById("custom-toast");
+        const toastMsg = document.getElementById("toast-msg");
+        toastMsg.innerText = message;
+        toast.classList.remove("translate-y-16", "opacity-0", "pointer-events-none");
+        toast.classList.add("translate-y-0", "opacity-100");
+        
+        setTimeout(() => {
+          toast.classList.add("translate-y-16", "opacity-0", "pointer-events-none");
+          toast.classList.remove("translate-y-0", "opacity-100");
+        }, 3000);
       }
 
-      // 星標點擊處理 (阻斷 <a> 預設跳轉與冒泡)
-      document.querySelectorAll(".star-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const card = btn.closest(".grammar-card");
-          const id = card.getAttribute("data-id");
-          
-          if (starredItems.includes(id)) {
-            starredItems = starredItems.filter(item => item !== id);
-          } else {
-            starredItems.push(id);
-          }
-          localStorage.setItem("grammar_starred_units", JSON.stringify(starredItems));
-          updateStarUI();
+      // ==========================================
+      // 1. 動態繪製與架構生成
+      // ==========================================
+      function renderDashboard() {
+        // A. 計算總計 (移除重複總數列，保留最頂層可按按鈕)
+        countAllBadge.innerText = grammarData.length;
+        countStarredBadge.innerText = starredItems.length;
 
-          const activeTab = document.querySelector(".filter-tab.active").getAttribute("data-target");
-          if (activeTab === "starred") {
-            applyFilters();
+        // B. 依 category 將資料打包
+        const groupedData = {};
+        Object.keys(categoriesMeta).forEach(cat => {
+          groupedData[cat] = [];
+        });
+
+        grammarData.forEach(item => {
+          if (groupedData[item.category]) {
+            groupedData[item.category].push(item);
           }
         });
-      });
 
-      // 側邊欄收折控制 (相容手機與桌機)
+        // C. 生成左側大類快捷列
+        sidebarNav.innerHTML = "";
+        Object.keys(categoriesMeta).forEach(catName => {
+          const meta = categoriesMeta[catName];
+          const count = groupedData[catName].length;
+
+          const navLink = document.createElement("a");
+          navLink.href = `#section-${meta.code}`;
+          navLink.className = "sidebar-link flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-slate-200/50 transition-colors font-medium";
+          navLink.innerHTML = `
+            <span class="flex items-center gap-2 truncate">
+              <span class="w-1.5 h-3 rounded shrink-0" style="background-color: ${meta.color}"></span>
+              <span class="sidebar-text truncate">${catName}</span>
+            </span>
+            <span class="bg-slate-200/60 text-slate-600 text-[9px] font-bold px-1.5 py-0.2 rounded-full sidebar-badge">${count}</span>
+          `;
+          
+          // 點擊左側快速滾動定位且保證右側對應抽屜展開 (修復：精確定位至 main 捲動軸容器)
+          navLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            const sectionId = `section-${meta.code}`;
+            const targetSection = document.getElementById(sectionId);
+            
+            if (targetSection) {
+              // 如果是折疊狀態，強制展開它
+              if (collapsedSections.includes(catName)) {
+                collapsedSections = collapsedSections.filter(s => s !== catName);
+                localStorage.setItem("spedu_collapsed_sections", JSON.stringify(collapsedSections));
+                renderDashboard(); // 重新渲染以展開
+              }
+
+              // 針對滾動軸在 main 容器的架構，精確滾動 main 容器
+              const mainContainer = document.querySelector('main');
+              if (mainContainer) {
+                const topPos = targetSection.offsetTop - 24; // 扣除內距
+                mainContainer.scrollTo({
+                  top: topPos,
+                  behavior: "smooth"
+                });
+              }
+
+              // 手機端點選後自動合上側邊欄
+              if (window.innerWidth < 768) {
+                toggleSidebar();
+              }
+            }
+          });
+
+          sidebarNav.appendChild(navLink);
+        });
+
+        // D. 生成右側教材 Canvas（主內容網格）
+        mainContentCanvas.innerHTML = "";
+        const searchQuery = searchInput.value.toLowerCase().trim();
+        let overallHasCards = false;
+
+        Object.keys(categoriesMeta).forEach(catName => {
+          const meta = categoriesMeta[catName];
+          const cards = groupedData[catName];
+
+          // 過濾卡片
+          const filteredCards = cards.filter(card => {
+            const matchesSearch = !searchQuery || 
+              card.title.toLowerCase().includes(searchQuery) || 
+              card.desc.toLowerCase().includes(searchQuery) || 
+              card.filename.toLowerCase().includes(searchQuery);
+
+            const isStarred = starredItems.includes(card.filename);
+            const matchesFilter = (activeFilter === "all") || (activeFilter === "starred" && isStarred);
+
+            return matchesSearch && matchesFilter;
+          });
+
+          // 如果此大類內完全沒有符合篩選的卡片，則本分類區塊不顯示
+          if (filteredCards.length === 0) return;
+          overallHasCards = true;
+
+          const isCollapsed = collapsedSections.includes(catName);
+
+          // 建立區塊 Section
+          const section = document.createElement("section");
+          section.id = `section-${meta.code}`;
+          section.className = "category-block transition-all-300 rounded-xl p-4";
+          // 每個分類區塊套用專屬的 3% 超淡底色背景
+          section.style.backgroundColor = meta.bgTint;
+
+          // 分類 Header Row (44px)
+          const headerRow = document.createElement("div");
+          headerRow.className = "h-11 flex items-center justify-between border-b border-slate-200/60 pb-1 mb-3 cursor-pointer select-none group";
+          
+          headerRow.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400 text-xs transition-transform duration-200 ${isCollapsed ? '-rotate-90' : ''}">
+                <i class="fa-solid fa-chevron-down"></i>
+              </span>
+              <span class="w-1.5 h-4.5 rounded-sm" style="background-color: ${meta.color}"></span>
+              <h2 class="text-sm md:text-base font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                ${catName}
+                <span class="text-[11px] font-semibold text-slate-400 font-mono">(${filteredCards.length})</span>
+              </h2>
+            </div>
+            <!-- 定位定位符 ＋ 按鈕 (非新增，提供定位與新增回饋) -->
+            <button class="plus-btn w-6 h-6 rounded hover:bg-slate-200/50 flex items-center justify-center text-slate-450 hover:text-slate-750 transition-colors" title="定位或增修標記">
+              <i class="fa-solid fa-plus text-xs"></i>
+            </button>
+          `;
+
+          // 點選 Header 列進行收折控制
+          headerRow.addEventListener("click", (e) => {
+            // 防止點擊 ＋ 按鈕時觸發折疊
+            if (e.target.closest(".plus-btn")) {
+              e.stopPropagation();
+              showToast(`本平台採用 [Data-Driven] 自動架構。新增教材只要更新 grammar.json 檔案即可！`);
+              return;
+            }
+
+            if (isCollapsed) {
+              collapsedSections = collapsedSections.filter(s => s !== catName);
+            } else {
+              collapsedSections.push(catName);
+            }
+            localStorage.setItem("spedu_collapsed_sections", JSON.stringify(collapsedSections));
+            renderDashboard();
+          });
+
+          section.appendChild(headerRow);
+
+          // 卡片 Grid 容器
+          if (!isCollapsed) {
+            const grid = document.createElement("div");
+            grid.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3";
+
+            filteredCards.forEach(card => {
+              const isCardStarred = starredItems.includes(card.filename);
+              const cardEl = document.createElement("a");
+              cardEl.href = card.filename;
+              cardEl.target = "_blank"; // 在新分頁開啟教材，方便隨時切換回主控台
+              cardEl.className = "grammar-card relative bg-white border border-slate-200 rounded-lg p-3 flex flex-col justify-between hover:bg-[#F8FAFC] hover:-translate-y-0.5 hover:shadow-md transition-all duration-150 h-[88px] shadow-sm select-none group";
+              cardEl.style.borderLeft = `4px solid ${meta.color}`;
+
+              cardEl.innerHTML = `
+                <!-- 右上角收藏星號 (阻止冒泡防跳轉) -->
+                <button class="card-star-btn absolute top-2.5 right-2.5 text-slate-300 hover:text-amber-500 transition-colors p-0.5 z-20">
+                  <i class="${isCardStarred ? 'fa-solid fa-star text-amber-400' : 'fa-regular fa-star'} text-[11px]"></i>
+                </button>
+                
+                <div class="pr-5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 class="text-[13.5px] font-bold text-slate-900 leading-snug truncate group-hover:text-amber-600 transition-colors">${card.title}</h3>
+                    <p class="text-[11px] text-slate-500 line-clamp-1 mt-0.5">${card.desc}</p>
+                  </div>
+                  <!-- 英文檔名直接顯示，一目了然 (無 Hover 延遲) -->
+                  <div class="text-[9.5px] text-slate-455 font-mono mt-1.5 flex items-center justify-between">
+                    <span>${card.filename}</span>
+                    <span class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400"><i class="fa-solid fa-arrow-right"></i></span>
+                  </div>
+                </div>
+              `;
+
+              // 星星點擊事件攔截
+              const starBtn = cardEl.querySelector(".card-star-btn");
+              starBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (starredItems.includes(card.filename)) {
+                  starredItems = starredItems.filter(f => f !== card.filename);
+                } else {
+                  starredItems.push(card.filename);
+                }
+                localStorage.setItem("spedu_starred_units", JSON.stringify(starredItems));
+                renderDashboard();
+              });
+
+              grid.appendChild(cardEl);
+            });
+
+            section.appendChild(grid);
+          }
+
+          mainContentCanvas.appendChild(section);
+        });
+
+        // 搜尋無結果控制
+        if (overallHasCards) {
+          noResults.classList.add("hidden");
+        } else {
+          noResults.classList.remove("hidden");
+        }
+      }
+
+      // ==========================================
+      // 2. 側邊欄展開/收折控制器 (VSCode 邏輯)
+      // ==========================================
       function toggleSidebar() {
         const isMobile = window.innerWidth < 768;
         if (isMobile) {
@@ -814,150 +502,97 @@
             sidebarOverlay.classList.add("hidden");
           }
         } else {
-          const isCollapsed = sidebar.classList.contains("md:w-0");
+          const isCollapsed = sidebar.classList.contains("w-16");
           if (isCollapsed) {
-            sidebar.classList.remove("md:w-0", "md:opacity-0", "md:pointer-events-none", "md:border-r-0");
-            sidebar.classList.add("md:w-60", "md:opacity-100");
+            sidebar.classList.remove("w-16");
+            sidebar.classList.add("w-60");
+            document.querySelectorAll(".sidebar-text").forEach(el => el.classList.remove("hidden"));
+            document.querySelectorAll(".sidebar-text-block").forEach(el => el.classList.remove("hidden"));
+            document.querySelectorAll(".sidebar-badge").forEach(el => el.classList.remove("hidden"));
+            document.getElementById("sidebar-search-container").classList.remove("hidden");
           } else {
-            sidebar.classList.add("md:w-0", "md:opacity-0", "md:pointer-events-none", "md:border-r-0");
-            sidebar.classList.remove("md:w-60", "md:opacity-100");
+            sidebar.classList.add("w-16");
+            sidebar.classList.remove("w-60");
+            document.querySelectorAll(".sidebar-text").forEach(el => el.classList.add("hidden"));
+            document.querySelectorAll(".sidebar-text-block").forEach(el => el.classList.add("hidden"));
+            document.querySelectorAll(".sidebar-badge").forEach(el => el.classList.add("hidden"));
+            document.getElementById("sidebar-search-container").classList.add("hidden");
           }
         }
       }
 
       sidebarToggle.addEventListener("click", toggleSidebar);
-      sidebarCloseMobile.addEventListener("click", toggleSidebar);
       sidebarOverlay.addEventListener("click", toggleSidebar);
 
+      // 手機與桌機自適應寬度
       window.addEventListener("resize", () => {
         if (window.innerWidth >= 768) {
-          sidebar.classList.remove("-translate-x-full");
+          sidebar.classList.remove("-translate-x-full", "w-16");
+          sidebar.classList.add("w-60");
+          document.querySelectorAll(".sidebar-text").forEach(el => el.classList.remove("hidden"));
+          document.querySelectorAll(".sidebar-text-block").forEach(el => el.classList.remove("hidden"));
+          document.querySelectorAll(".sidebar-badge").forEach(el => el.classList.remove("hidden"));
+          document.getElementById("sidebar-search-container").classList.remove("hidden");
           sidebarOverlay.classList.add("hidden");
         } else {
           sidebar.classList.add("-translate-x-full");
-          sidebar.classList.remove("md:w-0", "md:opacity-0", "md:pointer-events-none", "md:border-r-0");
-          sidebar.classList.add("md:w-60", "md:opacity-100");
+          sidebar.classList.remove("w-16");
+          sidebar.classList.add("w-60");
         }
       });
 
-      // 側欄計數器更新
-      function updateCategoryCounts() {
-        const categories = {
-          "pronouns": document.querySelectorAll("#section-pronouns .grammar-card").length,
-          "nouns": document.querySelectorAll("#section-nouns .grammar-card").length,
-          "numbers": document.querySelectorAll("#section-numbers .grammar-card").length,
-          "be-present": document.querySelectorAll("#section-be-present .grammar-card").length,
-          "space-time": document.querySelectorAll("#section-space-time .grammar-card").length,
-          "past-tense": document.querySelectorAll("#section-past-tense .grammar-card").length,
-          "adj": document.querySelectorAll("#section-adj .grammar-card").length
-        };
-
-        document.getElementById("count-pronouns").innerText = categories["pronouns"];
-        document.getElementById("count-nouns").innerText = categories["nouns"];
-        document.getElementById("count-numbers").innerText = categories["numbers"];
-        document.getElementById("count-be-present").innerText = categories["be-present"];
-        document.getElementById("count-space-time").innerText = categories["space-time"];
-        document.getElementById("count-past-tense").innerText = categories["past-tense"];
-        document.getElementById("count-adj").innerText = categories["adj"];
-      }
-
-      // 高效 Live 搜尋過濾與分頁
-      function applyFilters() {
-        const query = searchInput.value.toLowerCase().trim();
-        const activeTab = document.querySelector(".filter-tab.active").getAttribute("data-target");
-        let hasAnyVisibleCard = false;
-
-        categoryBlocks.forEach(block => {
-          let visibleCardsInBlock = 0;
-          const cards = block.querySelectorAll(".grammar-card");
-
-          cards.forEach(card => {
-            const title = card.getAttribute("data-title").toLowerCase();
-            const tag = card.getAttribute("data-tag").toLowerCase();
-            const desc = card.getAttribute("data-desc").toLowerCase();
-            const isStarred = card.classList.contains("is-starred");
-
-            // 支持中英檔名同時搜尋
-            const matchesSearch = !query || title.includes(query) || tag.includes(query) || desc.includes(query);
-            const matchesTab = (activeTab === "all") || (activeTab === "starred" && isStarred);
-
-            if (matchesSearch && matchesTab) {
-              card.classList.remove("hidden");
-              visibleCardsInBlock++;
-              hasAnyVisibleCard = true;
-            } else {
-              card.classList.add("hidden");
-            }
-          });
-
-          if (visibleCardsInBlock > 0) {
-            block.classList.remove("hidden");
-          } else {
-            block.classList.add("hidden");
-          }
-        });
-
-        if (hasAnyVisibleCard) {
-          noResults.classList.add("hidden");
-        } else {
-          noResults.classList.remove("hidden");
-        }
-      }
-
+      // ==========================================
+      // 3. 搜尋與篩選事件監聽
+      // ==========================================
       searchInput.addEventListener("input", () => {
         if (searchInput.value.trim().length > 0) {
           clearSearch.classList.remove("hidden");
         } else {
           clearSearch.classList.add("hidden");
         }
-        applyFilters();
+        renderDashboard();
       });
 
       clearSearch.addEventListener("click", () => {
         searchInput.value = "";
         clearSearch.classList.add("hidden");
-        applyFilters();
+        renderDashboard();
         searchInput.focus();
       });
 
-      filterTabs.forEach(tab => {
-        tab.addEventListener("click", () => {
-          filterTabs.forEach(t => {
-            t.classList.remove("active", "bg-indigo-600", "text-white");
-            t.classList.add("bg-white", "text-slate-600", "border-slate-200");
-          });
-          tab.classList.add("active", "bg-indigo-600", "text-white");
-          tab.classList.remove("bg-white", "text-slate-600", "border-slate-200");
-          applyFilters();
-        });
+      // 全部 / 星標收藏篩選
+      btnShowAll.addEventListener("click", () => {
+        btnShowAll.classList.add("active", "bg-slate-200/50");
+        btnShowAll.classList.remove("text-slate-600");
+        btnShowAll.classList.add("text-slate-700");
+        
+        btnShowStarred.classList.remove("active", "bg-slate-200/50");
+        btnShowStarred.classList.add("text-slate-600");
+
+        activeFilter = "all";
+        renderDashboard();
       });
 
-      // 側欄點擊快捷定位
-      sidebarLinks.forEach(link => {
-        link.addEventListener("click", (e) => {
-          e.preventDefault();
-          const targetId = link.getAttribute("href");
-          const targetSection = document.querySelector(targetId);
+      btnShowStarred.addEventListener("click", () => {
+        btnShowStarred.classList.add("active", "bg-slate-200/50");
+        btnShowStarred.classList.remove("text-slate-600");
+        btnShowStarred.classList.add("text-slate-700");
 
-          if (targetSection) {
-            const headerOffset = 60;
-            const elementPosition = targetSection.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        btnShowAll.classList.remove("active", "bg-slate-200/50");
+        btnShowAll.classList.add("text-slate-600");
 
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: "smooth"
-            });
-
-            if (window.innerWidth < 768) {
-              toggleSidebar();
-            }
-          }
-        });
+        activeFilter = "starred";
+        renderDashboard();
       });
 
-      updateCategoryCounts();
-      updateStarUI();
+      // ==========================================
+      // 4. 開機初始載入
+      // ==========================================
+      // 預設在手機版收合側邊欄
+      if (window.innerWidth < 768) {
+        sidebar.classList.add("-translate-x-full");
+      }
+      renderDashboard();
     });
   </script>
 </body>
