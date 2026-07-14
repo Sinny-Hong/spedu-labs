@@ -6,7 +6,7 @@
   <title>英文文法目錄索引 - Grammar Resource Hub</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons for Beautiful Visuals -->
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
     tailwind.config = {
@@ -20,7 +20,6 @@
     }
   </script>
   <style>
-    /* 隱藏滾動條但保持滾動功能 (針對美觀) */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -28,58 +27,57 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-    /* 平滑動態變換 */
     .transition-all-300 {
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col overflow-x-hidden">
+<body class="bg-slate-50 text-slate-850 font-sans min-h-screen flex flex-col overflow-x-hidden">
 
-  <!-- 頂部精簡控制列 (無多餘資料夾路徑，乾淨清爽) -->
+  <!-- 頂部控制列 (極簡無路徑) -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-3 py-2 flex items-center justify-between shadow-sm">
-    <div class="flex items-center gap-2.5">
-      <!-- 側邊欄開關按鈕 (桌機與手機皆支援收折) -->
+    <div class="flex items-center gap-2">
+      <!-- 側邊欄開關 -->
       <button id="sidebar-toggle" class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors focus:outline-none" title="收折/展開左側選單">
         <i class="fa-solid fa-bars text-lg"></i>
       </button>
       <div class="flex flex-col">
-        <h1 class="text-base md:text-lg font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
+        <h1 class="text-base md:text-lg font-extrabold text-slate-950 tracking-tight flex items-center gap-1.5">
           <i class="fa-solid fa-map text-indigo-600"></i> 英文文法目錄索引
         </h1>
-        <p class="text-[10px] text-slate-400 hidden sm:block">Grammar Learning Resource Index Hub</p>
+        <p class="text-[10px] text-slate-400 hidden sm:block">極簡緊湊 · 智慧直跳版 (方案 A)</p>
       </div>
     </div>
 
-    <!-- 緊湊搜尋框 -->
-    <div class="relative w-40 sm:w-60">
+    <!-- 系統化 Live 搜尋框 (支持中英檔名模糊搜尋) -->
+    <div class="relative w-44 sm:w-64">
       <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400 pointer-events-none">
         <i class="fa-solid fa-magnifying-glass text-xs"></i>
       </span>
       <input type="text" id="search-input" 
-             placeholder="搜尋文法、中英文、檔名..." 
+             placeholder="搜尋主題、解說、英文檔名..." 
              class="w-full pl-7 pr-7 py-1 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-slate-700 placeholder-slate-400" />
-      <button id="clear-search" class="absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400 hover:text-slate-600 hidden">
+      <button id="clear-search" class="absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400 hover:text-slate-650 hidden">
         <i class="fa-solid fa-circle-xmark text-xs"></i>
       </button>
     </div>
   </header>
 
-  <!-- 主框架區：左選單 + 右內容 -->
+  <!-- 主框架：左導覽 + 右網格 -->
   <div class="flex-1 flex relative overflow-hidden">
     
-    <!-- 左側收折導覽選單 (可完全收縮隱藏) -->
-    <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col transition-all-300 z-30 shrink-0 absolute md:relative inset-y-0 left-0 -translate-x-full md:translate-x-0">
-      <div class="p-2.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+    <!-- 左側收折導覽選單 -->
+    <aside id="sidebar" class="w-60 bg-white border-r border-slate-200 flex flex-col transition-all-300 z-30 shrink-0 absolute md:relative inset-y-0 left-0 -translate-x-full md:translate-x-0">
+      <div class="p-2 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
         <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400"><i class="fa-solid fa-layer-group mr-1"></i>文法大類快捷</span>
-        <button id="sidebar-close-mobile" class="md:hidden p-1 text-slate-400 hover:text-slate-600">
+        <button id="sidebar-close-mobile" class="md:hidden p-1 text-slate-400 hover:text-slate-655">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       
       <nav class="flex-1 overflow-y-auto p-1.5 space-y-0.5 no-scrollbar">
-        <!-- 快速定位按鈕群 (點擊平滑滾動) -->
-        <a href="#section-pronouns" class="sidebar-link flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition-colors border-l-4 border-l-transparent hover:border-l-blue-500 font-medium">
+        <!-- 導覽連結 (點擊定位) -->
+        <a href="#section-pronouns" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition-colors border-l-4 border-l-transparent hover:border-l-blue-500 font-medium">
           <span class="flex items-center gap-1.5 truncate">
             <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
             基礎代名詞與常用語
@@ -87,15 +85,15 @@
           <span class="bg-blue-100 text-blue-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-pronouns">0</span>
         </a>
 
-        <a href="#section-nouns" class="sidebar-link flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors border-l-4 border-l-transparent hover:border-l-emerald-500 font-medium">
+        <a href="#section-nouns" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors border-l-4 border-l-transparent hover:border-l-emerald-500 font-medium">
           <span class="flex items-center gap-1.5 truncate">
             <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-            名詞與單複數 (新)
+            名詞與單複數
           </span>
           <span class="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-nouns">0</span>
         </a>
 
-        <a href="#section-numbers" class="sidebar-link flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-purple-50 hover:text-purple-700 transition-colors border-l-4 border-l-transparent hover:border-l-purple-500 font-medium">
+        <a href="#section-numbers" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-purple-50 hover:text-purple-700 transition-colors border-l-4 border-l-transparent hover:border-l-purple-500 font-medium">
           <span class="flex items-center gap-1.5 truncate">
             <span class="w-2 h-2 rounded-full bg-purple-500 shrink-0"></span>
             基礎數字與應用
@@ -103,7 +101,7 @@
           <span class="bg-purple-100 text-purple-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-numbers">0</span>
         </a>
 
-        <a href="#section-be-present" class="sidebar-link flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-amber-50 hover:text-amber-700 transition-colors border-l-4 border-l-transparent hover:border-l-amber-500 font-medium">
+        <a href="#section-be-present" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-amber-50 hover:text-amber-700 transition-colors border-l-4 border-l-transparent hover:border-l-amber-500 font-medium">
           <span class="flex items-center gap-1.5 truncate">
             <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
             Be動詞與現在簡單式
@@ -111,7 +109,7 @@
           <span class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-be-present">0</span>
         </a>
 
-        <a href="#section-space-time" class="sidebar-link flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors border-l-4 border-l-transparent hover:border-l-indigo-500 font-medium">
+        <a href="#section-space-time" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors border-l-4 border-l-transparent hover:border-l-indigo-500 font-medium">
           <span class="flex items-center gap-1.5 truncate">
             <span class="w-2 h-2 rounded-full bg-indigo-500 shrink-0"></span>
             空間、時間與存在句
@@ -119,7 +117,7 @@
           <span class="bg-indigo-100 text-indigo-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-space-time">0</span>
         </a>
 
-        <a href="#section-past-tense" class="sidebar-link flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-rose-50 hover:text-rose-700 transition-colors border-l-4 border-l-transparent hover:border-l-rose-500 font-medium">
+        <a href="#section-past-tense" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-rose-50 hover:text-rose-700 transition-colors border-l-4 border-l-transparent hover:border-l-rose-500 font-medium">
           <span class="flex items-center gap-1.5 truncate">
             <span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
             過去式表達
@@ -127,7 +125,7 @@
           <span class="bg-rose-100 text-rose-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full" id="count-past-tense">0</span>
         </a>
 
-        <a href="#section-adj" class="sidebar-link flex items-center justify-between p-2 rounded text-xs text-slate-600 hover:bg-sky-50 hover:text-sky-700 transition-colors border-l-4 border-l-transparent hover:border-l-sky-500 font-medium">
+        <a href="#section-adj" class="sidebar-link flex items-center justify-between p-1.5 rounded text-xs text-slate-600 hover:bg-sky-50 hover:text-sky-700 transition-colors border-l-4 border-l-transparent hover:border-l-sky-500 font-medium">
           <span class="flex items-center gap-1.5 truncate">
             <span class="w-2 h-2 rounded-full bg-sky-500 shrink-0"></span>
             形容詞比較與生活進階
@@ -136,208 +134,210 @@
         </a>
       </nav>
 
-      <!-- 側邊欄下方說明 -->
-      <div class="p-2.5 border-t border-slate-200 bg-slate-50 text-[10px] text-slate-400">
-        <p class="font-semibold mb-1 text-slate-500"><i class="fa-solid fa-star text-amber-400 mr-1"></i>快捷標記</p>
-        點擊卡片右上角的星號，可手動儲存需要加強複習或特定的重點單元。
+      <!-- 側欄附屬說明 -->
+      <div class="p-2 border-t border-slate-200 bg-slate-50 text-[10px] text-slate-400">
+        <p class="font-semibold mb-0.5 text-slate-500"><i class="fa-solid fa-star text-amber-400 mr-1"></i>快捷星標</p>
+        點選卡片右上角星號，可標記特定重點單元。
       </div>
     </aside>
 
-    <!-- 遮罩 (手機端側欄開啟時) -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/30 z-20 hidden md:hidden"></div>
+    <!-- 遮罩 (手機側欄專用) -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-950/30 z-25 hidden md:hidden"></div>
 
-    <!-- 右側主內容區 (邊框、間隔、空白全部縮小) -->
-    <main class="flex-1 overflow-y-auto p-3 md:p-4 space-y-3.5 no-scrollbar">
+    <!-- 右側卡片大網格 (極高緊湊度) -->
+    <main class="flex-1 overflow-y-auto p-3 space-y-3 no-scrollbar">
 
-      <!-- 快速篩選標籤 -->
+      <!-- 頂部篩選 Tabs -->
       <div class="flex items-center gap-1.5 overflow-x-auto py-0.5 no-scrollbar text-[11px]">
-        <button class="filter-tab active px-2.5 py-0.5 bg-indigo-600 text-white rounded-full font-medium shadow-sm transition-all" data-target="all">
-          全部文法大類
+        <button class="filter-tab active px-2.5 py-0.5 bg-indigo-600 text-white rounded-full font-semibold shadow-sm transition-all" data-target="all">
+          顯示全部
         </button>
         <button class="filter-tab px-2.5 py-0.5 bg-white hover:bg-slate-100 text-slate-600 rounded-full border border-slate-200 transition-all" data-target="starred">
-          <i class="fa-solid fa-star text-amber-500 mr-1"></i>已星號標記
+          <i class="fa-solid fa-star text-amber-500 mr-0.5"></i>我的星標重點
         </button>
       </div>
 
       <!-- 搜尋無結果提示 -->
-      <div id="no-results" class="hidden py-8 text-center bg-white border border-slate-200 rounded-lg max-w-sm mx-auto">
+      <div id="no-results" class="hidden py-10 text-center bg-white border border-slate-200 rounded-lg max-w-xs mx-auto">
         <div class="text-slate-300 text-3xl mb-1.5"><i class="fa-regular fa-folder-open"></i></div>
-        <h3 class="text-xs font-bold text-slate-700">找不到相符的文法單元</h3>
-        <p class="text-[10px] text-slate-400 mt-0.5">請試試其他關鍵字，例如「過去」、「apples」或「my」</p>
+        <h3 class="text-xs font-bold text-slate-700">未找到相符單元</h3>
+        <p class="text-[10px] text-slate-400 mt-0.5">請嘗試輸入其他關鍵字，例如「過去」、「apple」</p>
       </div>
 
       <!-- ========================================== -->
       <!-- 分類一：基礎代名詞與常用語 (Blue Theme) -->
       <!-- ========================================== -->
-      <section id="section-pronowns" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-blue-200 pb-1 mb-1.5">
-          <!-- 分類標題顯著放大，比卡片字體更大，結構立體 -->
-          <h2 class="text-sm md:text-base font-extrabold text-blue-900 flex items-center gap-1.5">
+      <section id="section-pronouns" class="category-block transition-all-300">
+        <div class="flex items-center justify-between border-b border-blue-200 pb-0.5 mb-1.5">
+          <!-- 標題字體加大、顯眼 -->
+          <h2 class="text-sm md:text-base font-extrabold text-blue-950 flex items-center gap-1.5">
             <span class="w-1.5 h-3.5 bg-blue-500 rounded-sm"></span>
             基礎代名詞與常用語
           </h2>
         </div>
-        <!-- 緊湊型 Grid，邊框空白微縮 -->
+        <!-- 卡片網格：超緊密 h-[62px] 隱藏檔名，懸停時平滑浮現 -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
           
           <!-- 卡片 1 -->
-          <div class="grammar-card transition-all-300 border border-blue-100 bg-blue-50/20 hover:bg-blue-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-blue-400 h-[68px]" 
-               data-id="grammer_I" data-title="我、你、他 (主格)" data-tag="grammer_I" data-desc="介紹人稱代名詞的主格用法，學習最基本的自我介紹，並理解代名詞在英文句子中作主詞的位置。">
+          <a href="grammer_I.html" class="grammar-card group relative block border border-blue-100 bg-blue-50/10 hover:bg-blue-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-blue-400 h-[62px] overflow-hidden" 
+             data-id="grammer_I" data-title="我、你、他 (主格)" data-tag="grammer_I" data-desc="我是...，自我介紹與主詞用法 (I / You / He)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">我、你、他 (主格)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">我是...，自我介紹與主詞用法 (I / You / He)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-blue-900 transition-colors">我、你、他 (主格)</div>
+              <!-- 靜態時顯示：中文解說 -->
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">我是...，自我介紹與主詞用法 (I / You / He)</div>
             </div>
-            <div class="text-[9px] text-blue-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_I.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <!-- 懸停時滑動顯現：英文檔名 (滑動捨棄效果) -->
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-blue-600 font-mono font-medium">grammer_I.html</span>
+              <span class="text-[9px] text-blue-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 2 -->
-          <div class="grammar-card transition-all-300 border border-blue-100 bg-blue-50/20 hover:bg-blue-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-blue-400 h-[68px]" 
-               data-id="grammer_me" data-title="我、你、他 (受格)" data-tag="grammer_me" data-desc="學習人稱代名詞受格的功用。受格緊接在動詞或介系詞後面，表示動作的接受對象（例如：Come with me / Give me）。">
+          <a href="grammer_me.html" class="grammar-card group relative block border border-blue-100 bg-blue-50/10 hover:bg-blue-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-blue-400 h-[62px] overflow-hidden" 
+             data-id="grammer_me" data-title="我、你、他 (受格)" data-tag="grammer_me" data-desc="動作的接受者 (Give me / Look at him)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">我、你、他 (受格)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">動作的接受者 (Give me / Look at him)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-blue-900 transition-colors">我、你、他 (受格)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">動作的接受者 (Give me / Look at him)</div>
             </div>
-            <div class="text-[9px] text-blue-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_me.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-blue-600 font-mono font-medium">grammer_me.html</span>
+              <span class="text-[9px] text-blue-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 3 -->
-          <div class="grammar-card transition-all-300 border border-blue-100 bg-blue-50/20 hover:bg-blue-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-blue-400 h-[68px]" 
-               data-id="grammer_my" data-title="我的、他的 (所有格)" data-tag="grammer_my" data-desc="用來修飾名詞，標明物品或關係的擁有權。是日常會話中表達「誰的物品」最高頻出現的基礎文法。">
+          <a href="grammer_my.html" class="grammar-card group relative block border border-blue-100 bg-blue-50/10 hover:bg-blue-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-blue-400 h-[62px] overflow-hidden" 
+             data-id="grammer_my" data-title="我的、他的 (所有格)" data-tag="grammer_my" data-desc="這是我的狗，標示擁有權 (my / your / his)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">我的、他的 (所有格)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">這是我的狗，標示擁有權 (my / your / his)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-blue-900 transition-colors">我的、他的 (所有格)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">這是我的狗，標示擁有權 (my / your / his)</div>
             </div>
-            <div class="text-[9px] text-blue-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_my.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-blue-600 font-mono font-medium">grammer_my.html</span>
+              <span class="text-[9px] text-blue-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 4 -->
-          <div class="grammar-card transition-all-300 border border-blue-100 bg-blue-50/20 hover:bg-blue-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-blue-400 h-[68px]" 
-               data-id="grammer_please" data-title="請與祈使句" data-tag="grammer_please" data-desc="學習使用 Please 表達禮貌請求，以及省略主詞的祈使句句型，常用於課堂指令、生活請求與安全指引。">
+          <a href="grammer_please.html" class="grammar-card group relative block border border-blue-100 bg-blue-50/10 hover:bg-blue-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-blue-400 h-[62px] overflow-hidden" 
+             data-id="grammer_please" data-title="請與祈使句" data-tag="grammer_please" data-desc="禮貌請求與動作命令 (Please sit down.)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">請與祈使句</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">禮貌請求與動作命令 (Please sit down.)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-blue-900 transition-colors">請與祈使句</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">禮貌請求與動作命令 (Please sit down.)</div>
             </div>
-            <div class="text-[9px] text-blue-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_please.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-blue-600 font-mono font-medium">grammer_please.html</span>
+              <span class="text-[9px] text-blue-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 5 -->
-          <div class="grammar-card transition-all-300 border border-blue-100 bg-blue-50/20 hover:bg-blue-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-blue-400 h-[68px]" 
-               data-id="grammer_can_can_t" data-title="我會、我不能" data-tag="grammer_can_can_t" data-desc="基礎助動詞 can 的肯定與否定語態。用於描述自身或他人的能力、權利，或尋求對方許可（Can I go?）。">
+          <a href="grammer_can_can_t.html" class="grammar-card group relative block border border-blue-100 bg-blue-50/10 hover:bg-blue-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-blue-400 h-[62px] overflow-hidden" 
+             data-id="grammer_can_can_t" data-title="我會、我不能" data-tag="grammer_can_can_t" data-desc="表達能力或許可 (I can swim. / I can't go.)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">我會、我不能</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">表達能力或許可 (I can swim. / I can't go.)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-blue-900 transition-colors">我會、我不能</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">表達能力或許可 (I can swim. / I can't go.)</div>
             </div>
-            <div class="text-[9px] text-blue-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_can_can_t.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-blue-600 font-mono font-medium">grammer_can_can_t.html</span>
+              <span class="text-[9px] text-blue-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
-          <!-- 卡片 6：指示代名詞 (新增) -->
-          <div class="grammar-card transition-all-300 border border-blue-100 bg-blue-50/20 hover:bg-blue-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-blue-400 h-[68px]" 
-               data-id="grammer_this_that_these_those" data-title="這個與那個 (指示)" data-tag="grammer_this_that_these_those" data-desc="學習利用 this/that 指示單數人事物，these/those 指示複數人事物。理解距離遠近對代名詞選擇的影響。">
+          <!-- 卡片 6 -->
+          <a href="grammer_this_that_these_those.html" class="grammar-card group relative block border border-blue-100 bg-blue-50/10 hover:bg-blue-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-blue-400 h-[62px] overflow-hidden" 
+             data-id="grammer_this_that_these_those" data-title="這個與那個 (指示)" data-tag="grammer_this_that_these_those" data-desc="遠近與單複數指示 (This is... / Those are...)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">這個與那個 (指示)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">遠近與單複數指示 (This is... / Those are...)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-blue-900 transition-colors">這個與那個 (指示)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">遠近與單複數指示 (This is... / Those are...)</div>
             </div>
-            <div class="text-[9px] text-blue-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_this_that_these_those.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-blue-600 font-mono font-medium">grammer_this_that_these_those.html</span>
+              <span class="text-[9px] text-blue-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 分類二：名詞與單複數 (Emerald Theme) (新增規劃) -->
+      <!-- 分類二：名詞與單複數 (Emerald Theme) -->
       <!-- ========================================== -->
       <section id="section-nouns" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-emerald-200 pb-1 mb-1.5">
-          <h2 class="text-sm md:text-base font-extrabold text-emerald-900 flex items-center gap-1.5">
+        <div class="flex items-center justify-between border-b border-emerald-200 pb-0.5 mb-1.5">
+          <h2 class="text-sm md:text-base font-extrabold text-emerald-950 flex items-center gap-1.5">
             <span class="w-1.5 h-3.5 bg-emerald-500 rounded-sm"></span>
             名詞與單複數 (新)
           </h2>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
 
-          <!-- 卡片 7：蘋果與複數名詞 (新增) -->
-          <div class="grammar-card transition-all-300 border border-emerald-100 bg-emerald-50/20 hover:bg-emerald-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-emerald-400 h-[68px]" 
-               data-id="grammer_apples" data-title="蘋果與複數名詞" data-tag="grammer_apples" data-desc="從最生活化的水果（apples）切入，學習在可數名詞字尾加上字母 -s 表示多數的基本規律與發音要領。">
+          <!-- 卡片 7 -->
+          <a href="grammer_apples.html" class="grammar-card group relative block border border-emerald-100 bg-emerald-50/10 hover:bg-emerald-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-emerald-400 h-[62px] overflow-hidden" 
+             data-id="grammer_apples" data-title="蘋果與複數名詞" data-tag="grammer_apples" data-desc="基本名詞複數與計數 (I eat two apples.)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">蘋果與複數名詞</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">基本名詞複數與計數 (I eat two apples.)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-emerald-900 transition-colors">蘋果與複數名詞</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">基本名詞複數與計數 (I eat two apples.)</div>
             </div>
-            <div class="text-[9px] text-emerald-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_apples.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-emerald-600 font-mono font-medium">grammer_apples.html</span>
+              <span class="text-[9px] text-emerald-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
-          <!-- 卡片 8：可數與不可數名詞 (新增) -->
-          <div class="grammar-card transition-all-300 border border-emerald-100 bg-emerald-50/20 hover:bg-emerald-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-emerald-400 h-[68px]" 
-               data-id="grammer_n_countable" data-title="可數與不可數名詞" data-tag="grammer_n_countable" data-desc="釐清「數得出來」與「無法拆分/計數」的名詞本質差異，並學習搭配 a, an, some, any 的基本句型。">
+          <!-- 卡片 8 -->
+          <a href="grammer_n_countable.html" class="grammar-card group relative block border border-emerald-100 bg-emerald-50/10 hover:bg-emerald-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-emerald-400 h-[62px] overflow-hidden" 
+             data-id="grammer_n_countable" data-title="可數與不可數名詞" data-tag="grammer_n_countable" data-desc="區分固體液體與數量計數 (water / bread)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">可數與不可數名詞</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">區分固體液體與數量計數 (water / bread)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-emerald-900 transition-colors">可數與不可數名詞</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">區分固體液體與數量計數 (water / bread)</div>
             </div>
-            <div class="text-[9px] text-emerald-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_n_countable.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-emerald-600 font-mono font-medium">grammer_n_countable.html</span>
+              <span class="text-[9px] text-emerald-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
-          <!-- 卡片 9：男孩們與複數變化 (新增) -->
-          <div class="grammar-card transition-all-300 border border-emerald-100 bg-emerald-50/20 hover:bg-emerald-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-emerald-400 h-[68px]" 
-               data-id="grammer_boys_" data-title="男孩們與複數變化" data-tag="grammer_boys_" data-desc="深入探討一般名詞複數型的特殊拼字法：如去 y 加 ies、字尾加 es 或是特殊的發音變化。以 boys 等生活名詞作示範。">
+          <!-- 卡片 9 -->
+          <a href="grammer_boys_.html" class="grammar-card group relative block border border-emerald-100 bg-emerald-50/10 hover:bg-emerald-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-emerald-400 h-[62px] overflow-hidden" 
+             data-id="grammer_boys_" data-title="男孩們與複數變化" data-tag="grammer_boys_" data-desc="字尾規律變化複數 (boys / babies / boxes)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">男孩們與複數變化</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">字尾規律變化複數 (boys / babies / boxes)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-emerald-900 transition-colors">男孩們與複數變化</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">字尾規律變化複數 (boys / babies / boxes)</div>
             </div>
-            <div class="text-[9px] text-emerald-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_boys_.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-emerald-600 font-mono font-medium">grammer_boys_.html</span>
+              <span class="text-[9px] text-emerald-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
         </div>
       </section>
@@ -346,8 +346,8 @@
       <!-- 分類三：基礎數字與應用 (Purple Theme) -->
       <!-- ========================================== -->
       <section id="section-numbers" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-purple-200 pb-1 mb-1.5">
-          <h2 class="text-sm md:text-base font-extrabold text-purple-900 flex items-center gap-1.5">
+        <div class="flex items-center justify-between border-b border-purple-200 pb-0.5 mb-1.5">
+          <h2 class="text-sm md:text-base font-extrabold text-purple-950 flex items-center gap-1.5">
             <span class="w-1.5 h-3.5 bg-purple-500 rounded-sm"></span>
             基礎數字與應用
           </h2>
@@ -355,94 +355,94 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
           
           <!-- 卡片 10 -->
-          <div class="grammar-card transition-all-300 border border-purple-100 bg-purple-50/20 hover:bg-purple-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-purple-400 h-[68px]" 
-               data-id="grammer_1_10" data-title="基礎數字 1-10" data-tag="grammer_1_10" data-desc="英文基數 1 至 10。學習基礎點數、指明物體數量，為後續的大數字以及購物價格會話建立核心基礎。">
+          <a href="grammer_1_10.html" class="grammar-card group relative block border border-purple-100 bg-purple-50/10 hover:bg-purple-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-purple-400 h-[62px] overflow-hidden" 
+             data-id="grammer_1_10" data-title="基礎數字 1-10" data-tag="grammer_1_10" data-desc="數量與基本物件點數 (one, two, ten)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">基礎數字 1-10</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">數量與基本物件點數 (one, two, ten)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-purple-900 transition-colors">基礎數字 1-10</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">數量與基本物件點數 (one, two, ten)</div>
             </div>
-            <div class="text-[9px] text-purple-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_1_10.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-purple-600 font-mono font-medium">grammer_1_10.html</span>
+              <span class="text-[9px] text-purple-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 11 -->
-          <div class="grammar-card transition-all-300 border border-purple-100 bg-purple-50/20 hover:bg-purple-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-purple-400 h-[68px]" 
-               data-id="grammer_11_19" data-title="數字 11-19" data-tag="grammer_11_19" data-desc="學習英文「十幾」的規律（字尾通常為 -teen）。這組數字常用在描述青少年的歲數以及月份中的特定日期。">
+          <a href="grammer_11_19.html" class="grammar-card group relative block border border-purple-100 bg-purple-50/10 hover:bg-purple-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-purple-400 h-[62px] overflow-hidden" 
+             data-id="grammer_11_19" data-title="數字 11-19" data-tag="grammer_11_19" data-desc="十幾的數字與青少年年齡 (eleven, thirteen)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">數字 11-19</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">十幾的數字與青少年年齡 (eleven, thirteen)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-purple-900 transition-colors">數字 11-19</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">十幾的數字與青少年年齡 (eleven, thirteen)</div>
             </div>
-            <div class="text-[9px] text-purple-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_11_19.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-purple-600 font-mono font-medium">grammer_11_19.html</span>
+              <span class="text-[9px] text-purple-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 12 -->
-          <div class="grammar-card transition-all-300 border border-purple-100 bg-purple-50/20 hover:bg-purple-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-purple-400 h-[68px]" 
-               data-id="grammer_21_99" data-title="雙位數 21-99" data-tag="grammer_21_99" data-desc="英文二位數的讀法規律（十位數單字-個位數單字，如 twenty-one）。掌握日常生活中問年紀、讀頁碼的英文用法。">
+          <a href="grammer_21_99.html" class="grammar-card group relative block border border-purple-100 bg-purple-50/10 hover:bg-purple-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-purple-400 h-[62px] overflow-hidden" 
+             data-id="grammer_21_99" data-title="雙位數 21-99" data-tag="grammer_21_99" data-desc="價格、年齡、讀頁碼 (twenty-one, ninety-nine)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">雙位數 21-99</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">價格、年齡、讀頁碼 (twenty-one, ninety-nine)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-purple-900 transition-colors">雙位數 21-99</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">價格、年齡、讀頁碼 (twenty-one, ninety-nine)</div>
             </div>
-            <div class="text-[9px] text-purple-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_21_99.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-purple-600 font-mono font-medium">grammer_21_99.html</span>
+              <span class="text-[9px] text-purple-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 13 -->
-          <div class="grammar-card transition-all-300 border border-purple-100 bg-purple-50/20 hover:bg-purple-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-purple-400 h-[68px]" 
-               data-id="grammer_10_20_100" data-title="整十與百進位" data-tag="grammer_10_20_100" data-desc="學習十的倍數與整百的讀音與寫法，釐清 -ty 字尾與 -teen 字尾的發音聽辨差異。">
+          <a href="grammer_10_20_100.html" class="grammar-card group relative block border border-purple-100 bg-purple-50/10 hover:bg-purple-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-purple-400 h-[62px] overflow-hidden" 
+             data-id="grammer_10_20_100" data-title="整十與百進位" data-tag="grammer_10_20_100" data-desc="整十、整百與發音聽辨差異 (twenty, one hundred)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">整十與百進位</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">整十、整百與發音聽辨差異 (twenty, one hundred)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-purple-900 transition-colors">整十與百進位</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">整十、整百與發音聽辨差異 (twenty, one hundred)</div>
             </div>
-            <div class="text-[9px] text-purple-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_10_20_100.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-purple-600 font-mono font-medium">grammer_10_20_100.html</span>
+              <span class="text-[9px] text-purple-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 14 -->
-          <div class="grammar-card transition-all-300 border border-purple-100 bg-purple-50/20 hover:bg-purple-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-purple-400 h-[68px]" 
-               data-id="grammer_1_1000000" data-title="大數字與百萬" data-tag="grammer_1_1000000" data-desc="掌握千 (thousand)、百萬 (million) 等大數字的計數單位，能夠流暢唸出商品標價以及統計數據。">
+          <a href="grammer_1_1000000.html" class="grammar-card group relative block border border-purple-100 bg-purple-50/10 hover:bg-purple-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-purple-400 h-[62px] overflow-hidden" 
+             data-id="grammer_1_1000000" data-title="大數字與百萬" data-tag="grammer_1_1000000" data-desc="大數量到百萬位數規律 (thousand, million)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">大數字與百萬</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">大數量到百萬位數規律 (thousand, million)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-purple-900 transition-colors">大數字與百萬</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">大數量到百萬位數規律 (thousand, million)</div>
             </div>
-            <div class="text-[9px] text-purple-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_1_1000000.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-purple-600 font-mono font-medium">grammer_1_1000000.html</span>
+              <span class="text-[9px] text-purple-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 分類四：基礎 Be 動詞與現在式 (Amber Theme) -->
+      <!-- 分類四：Be 動詞與現在式 (Amber Theme) -->
       <!-- ========================================== -->
       <section id="section-be-present" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-amber-200 pb-1 mb-1.5">
-          <h2 class="text-sm md:text-base font-extrabold text-amber-900 flex items-center gap-1.5">
+        <div class="flex items-center justify-between border-b border-amber-200 pb-0.5 mb-1.5">
+          <h2 class="text-sm md:text-base font-extrabold text-amber-955 flex items-center gap-1.5">
             <span class="w-1.5 h-3.5 bg-amber-500 rounded-sm"></span>
             Be 動詞與現在簡單式
           </h2>
@@ -450,68 +450,68 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
           
           <!-- 卡片 15 -->
-          <div class="grammar-card transition-all-300 border border-amber-100 bg-amber-50/20 hover:bg-amber-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-amber-400 h-[68px]" 
-               data-id="grammer_be_am_are_is" data-title="Be動詞 (am, are, is)" data-tag="grammer_be_am_are_is" data-desc="學習 am, are, is 的主詞搭配規則。用於說明當前的人事物狀態、名字、身分或目前所在的地點。">
+          <a href="grammer_be_am_are_is.html" class="grammar-card group relative block border border-amber-100 bg-amber-50/10 hover:bg-amber-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-amber-400 h-[62px] overflow-hidden" 
+             data-id="grammer_be_am_are_is" data-title="Be動詞 (am, are, is)" data-tag="grammer_be_am_are_is" data-desc="人稱與當前狀態搭配 (I am / You are / She is)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">Be動詞 (am, are, is)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">人稱與當前狀態搭配 (I am / You are / She is)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-amber-900 transition-colors">Be動詞 (am, are, is)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">人稱與當前狀態搭配 (I am / You are / She is)</div>
             </div>
-            <div class="text-[9px] text-amber-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_be_am_are_is.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-amber-600 font-mono font-medium">grammer_be_am_are_is.html</span>
+              <span class="text-[9px] text-amber-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 16 -->
-          <div class="grammar-card transition-all-300 border border-amber-100 bg-amber-50/20 hover:bg-amber-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-amber-400 h-[68px]" 
-               data-id="grammar_present_simple_intro" data-title="現在簡單式 (觀念)" data-tag="grammar_present_simple_intro" data-desc="建立現在簡單式的文法核心觀念。用於表達不變的事實、真理，或是週而復始發生的日常習慣與常態。">
+          <a href="grammar_present_simple_intro.html" class="grammar-card group relative block border border-amber-100 bg-amber-50/10 hover:bg-amber-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-amber-400 h-[62px] overflow-hidden" 
+             data-id="grammar_present_simple_intro" data-title="現在簡單式 (觀念)" data-tag="grammar_present_simple_intro" data-desc="日常習性與常理事實觀念說明">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">現在簡單式 (觀念)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">日常習性與常理事實觀念說明</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-amber-900 transition-colors">現在簡單式 (觀念)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">日常習性與常理事實觀念說明</div>
             </div>
-            <div class="text-[9px] text-amber-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammar_present_simple_intro.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-amber-600 font-mono font-medium">grammar_present_simple_intro.html</span>
+              <span class="text-[9px] text-amber-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 17 -->
-          <div class="grammar-card transition-all-300 border border-amber-100 bg-amber-50/20 hover:bg-amber-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-amber-400 h-[68px]" 
-               data-id="grammar_present_simple_verbs" data-title="現在簡單式 (動詞)" data-tag="grammar_present_simple_verbs" data-desc="學習一般動詞在現在簡單式中的主詞單複數動詞變化（主詞為第三人稱單數 He, She, It 時，動詞字尾加 -s/-es 規律）。">
+          <a href="grammar_present_simple_verbs.html" class="grammar-card group relative block border border-amber-100 bg-amber-50/10 hover:bg-amber-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-amber-400 h-[62px] overflow-hidden" 
+             data-id="grammar_present_simple_verbs" data-title="現在簡單式 (動詞)" data-tag="grammar_present_simple_verbs" data-desc="三單動詞加s變化 (eat / plays / goes)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">現在簡單式 (動詞)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">三單動詞加s變化 (eat / plays / goes)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-amber-900 transition-colors">現在簡單式 (動詞)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">三單動詞加s變化 (eat / plays / goes)</div>
             </div>
-            <div class="text-[9px] text-amber-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammar_present_simple_verbs.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-amber-600 font-mono font-medium">grammar_present_simple_verbs.html</span>
+              <span class="text-[9px] text-amber-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 18 -->
-          <div class="grammar-card transition-all-300 border border-amber-100 bg-amber-50/20 hover:bg-amber-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-amber-400 h-[68px]" 
-               data-id="garmmer_always" data-title="總是與頻率 (always)" data-tag="garmmer_always" data-desc="學習用頻率副詞（例如：always 總是、usually 通常）來裝飾動詞，表達某動作或日常作息發生的頻率。">
+          <a href="garmmer_always.html" class="grammar-card group relative block border border-amber-100 bg-amber-50/10 hover:bg-amber-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-amber-400 h-[62px] overflow-hidden" 
+             data-id="garmmer_always" data-title="總是與頻率 (always)" data-tag="garmmer_always" data-desc="動作發生頻率說明 (I always drink water.)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">總是與頻率 (always)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">動作發生頻率說明 (I always drink water.)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-amber-900 transition-colors">總是與頻率 (always)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">動作發生頻率說明 (I always drink water.)</div>
             </div>
-            <div class="text-[9px] text-amber-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>garmmer_always.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-amber-600 font-mono font-medium">garmmer_always.html</span>
+              <span class="text-[9px] text-amber-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
         </div>
       </section>
@@ -520,8 +520,8 @@
       <!-- 分類五：空間、時間與存在句 (Indigo Theme) -->
       <!-- ========================================== -->
       <section id="section-space-time" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-indigo-200 pb-1 mb-1.5">
-          <h2 class="text-sm md:text-base font-extrabold text-indigo-900 flex items-center gap-1.5">
+        <div class="flex items-center justify-between border-b border-indigo-200 pb-0.5 mb-1.5">
+          <h2 class="text-sm md:text-base font-extrabold text-indigo-955 flex items-center gap-1.5">
             <span class="w-1.5 h-3.5 bg-indigo-500 rounded-sm"></span>
             空間、時間與存在句
           </h2>
@@ -529,52 +529,52 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
           
           <!-- 卡片 19 -->
-          <div class="grammar-card transition-all-300 border border-indigo-100 bg-indigo-50/20 hover:bg-indigo-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-indigo-400 h-[68px]" 
-               data-id="grammer_in_on_at_space" data-title="東西在哪裡 (空間)" data-tag="grammer_in_on_at_space" data-desc="精準使用空間介系詞 (in, on, at)。學會描述鑰匙在桌上、筆在盒子裡或是人在特定場所的空間關係。">
+          <a href="grammer_in_on_at_space.html" class="grammar-card group relative block border border-indigo-100 bg-indigo-50/10 hover:bg-indigo-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-indigo-400 h-[62px] overflow-hidden" 
+             data-id="grammer_in_on_at_space" data-title="東西在哪裡 (空間)" data-tag="grammer_in_on_at_space" data-desc="在...裡面/上面/地方 (in / on / at)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">東西在哪裡 (空間)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">在...裡面/上面/地方 (in / on / at)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-indigo-900 transition-colors">東西在哪裡 (空間)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">在...裡面/上面/地方 (in / on / at)</div>
             </div>
-            <div class="text-[9px] text-indigo-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_in_on_at_space.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-indigo-600 font-mono font-medium">grammer_in_on_at_space.html</span>
+              <span class="text-[9px] text-indigo-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 20 -->
-          <div class="grammar-card transition-all-300 border border-indigo-100 bg-indigo-50/20 hover:bg-indigo-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-indigo-400 h-[68px]" 
-               data-id="grammer_in_on_at_time" data-title="時間與日子 (介系詞)" data-tag="grammer_in_on_at_time" data-desc="釐清時間介系詞。在特定點鐘用 at，在星期與特定日期用 on，在月份、年份與季節時段用 in。">
+          <a href="grammer_in_on_at_time.html" class="grammar-card group relative block border border-indigo-100 bg-indigo-50/10 hover:bg-indigo-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-indigo-400 h-[62px] overflow-hidden" 
+             data-id="grammer_in_on_at_time" data-title="時間與日子 (介系詞)" data-tag="grammer_in_on_at_time" data-desc="時間、特定日子與點鐘 (in / on / at)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">時間與日子 (介系詞)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">時間、特定日子與點鐘 (in / on / at)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-indigo-900 transition-colors">時間與日子 (介系詞)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">時間、特定日子與點鐘 (in / on / at)</div>
             </div>
-            <div class="text-[9px] text-indigo-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_in_on_at_time.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-indigo-600 font-mono font-medium">grammer_in_on_at_time.html</span>
+              <span class="text-[9px] text-indigo-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 21 -->
-          <div class="grammar-card transition-all-300 border border-indigo-100 bg-indigo-50/20 hover:bg-indigo-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-indigo-400 h-[68px]" 
-               data-id="grammer_there_is_there_are" data-title="這裡有、那裡有 (存在)" data-tag="grammer_there_is_there_are" data-desc="學習存在句 (There is/are)。用於說明及描述某空間中「有」哪些人事物，與 have/has (擁有) 的概念進行關鍵區分。">
+          <a href="grammer_there_is_there_are.html" class="grammar-card group relative block border border-indigo-100 bg-indigo-50/10 hover:bg-indigo-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-indigo-400 h-[62px] overflow-hidden" 
+             data-id="grammer_there_is_there_are" data-title="這裡有、那裡有 (存在)" data-tag="grammer_there_is_there_are" data-desc="某處存在人事物 (There is a cup of water.)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">這裡有、那裡有 (存在)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">某處存在人事物 (There is a cup of water.)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-indigo-900 transition-colors">這裡有、那裡有 (存在)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">某處存在人事物 (There is a cup of water.)</div>
             </div>
-            <div class="text-[9px] text-indigo-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_there_is_there_are.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-indigo-600 font-mono font-medium">grammer_there_is_there_are.html</span>
+              <span class="text-[9px] text-indigo-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
         </div>
       </section>
@@ -583,8 +583,8 @@
       <!-- 分類六：過去式表達 (Rose Theme) -->
       <!-- ========================================== -->
       <section id="section-past-tense" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-rose-200 pb-1 mb-1.5">
-          <h2 class="text-sm md:text-base font-extrabold text-rose-900 flex items-center gap-1.5">
+        <div class="flex items-center justify-between border-b border-rose-200 pb-0.5 mb-1.5">
+          <h2 class="text-sm md:text-base font-extrabold text-rose-955 flex items-center gap-1.5">
             <span class="w-1.5 h-3.5 bg-rose-500 rounded-sm"></span>
             過去式表達
           </h2>
@@ -592,68 +592,68 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
           
           <!-- 卡片 22 -->
-          <div class="grammar-card transition-all-300 border border-rose-100 bg-rose-50/20 hover:bg-rose-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-rose-400 h-[68px]" 
-               data-id="grammar_was_were" data-title="過去的狀態 (was, were)" data-tag="grammar_was_were" data-desc="介紹過去式 Be 動詞 was 與 were 的人稱搭配，用來表達某人在過去某時的位置、狀態或身分。">
+          <a href="grammar_was_were.html" class="grammar-card group relative block border border-rose-100 bg-rose-50/10 hover:bg-rose-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-rose-400 h-[62px] overflow-hidden" 
+             data-id="grammar_was_were" data-title="過去的狀態 (was, were)" data-tag="grammar_was_were" data-desc="過去狀態與位置 (I was busy yesterday.)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">過去的狀態 (was, were)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">過去狀態與位置 (I was busy yesterday.)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-rose-900 transition-colors">過去的狀態 (was, were)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">過去狀態與位置 (I was busy yesterday.)</div>
             </div>
-            <div class="text-[9px] text-rose-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammar_was_were.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-rose-600 font-mono font-medium">grammar_was_were.html</span>
+              <span class="text-[9px] text-rose-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 23 -->
-          <div class="grammar-card transition-all-300 border border-rose-100 bg-rose-50/20 hover:bg-rose-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-rose-400 h-[68px]" 
-               data-id="grammar_did_didn_t" data-title="過去做過嗎 (did, didn't)" data-tag="grammar_did_didn_t" data-desc="學習用過去式助動詞 did 與 didn't 表達過去某時間點有無從事某種動作，在問句與否定句中動詞必須回復原形。">
+          <a href="grammar_did_didn_t.html" class="grammar-card group relative block border border-rose-100 bg-rose-50/10 hover:bg-rose-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-rose-400 h-[62px] overflow-hidden" 
+             data-id="grammar_did_didn_t" data-title="過去做過嗎 (did, didn't)" data-tag="grammar_did_didn_t" data-desc="問過去有無做某事 (I didn't play baseball.)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">過去做過嗎 (did, didn't)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">問過去有無做某事 (I didn't play baseball.)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-rose-900 transition-colors">過去做過嗎 (did, didn't)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">問過去有無做某事 (I didn't play baseball.)</div>
             </div>
-            <div class="text-[9px] text-rose-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammar_did_didn_t.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-rose-600 font-mono font-medium">grammar_did_didn_t.html</span>
+              <span class="text-[9px] text-rose-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 24 -->
-          <div class="grammar-card transition-all-300 border border-rose-100 bg-rose-50/20 hover:bg-rose-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-rose-400 h-[68px]" 
-               data-id="grammar_Ved" data-title="規則動作過去式" data-tag="grammar_Ved" data-desc="學習大部分規則動詞在過去式時，字尾加 -ed 的發音以及拼字法規則（如：played, watched）。">
+          <a href="grammar_Ved.html" class="grammar-card group relative block border border-rose-100 bg-rose-50/10 hover:bg-rose-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-rose-400 h-[62px] overflow-hidden" 
+             data-id="grammar_Ved" data-title="規則動作過去式" data-tag="grammar_Ved" data-desc="動作的過去表達 (-ed 字尾變化)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">規則動作過去式</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">動作的過去表達 (-ed 字尾變化)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-rose-900 transition-colors">規則動作過去式</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">動作的過去表達 (-ed 字尾變化)</div>
             </div>
-            <div class="text-[9px] text-rose-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammar_Ved.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-rose-600 font-mono font-medium">grammar_Ved.html</span>
+              <span class="text-[9px] text-rose-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 25 -->
-          <div class="grammar-card transition-all-300 border border-rose-100 bg-rose-50/20 hover:bg-rose-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-rose-400 h-[68px]" 
-               data-id="grammer_went_saw" data-title="去過與看過 (不規則)" data-tag="grammer_went_saw" data-desc="精通生活最常用、且不遵循加 -ed 規則的不規則動詞：如 go 變 went、see 變 saw 等過去型單字。">
+          <a href="grammer_went_saw.html" class="grammar-card group relative block border border-rose-100 bg-rose-50/10 hover:bg-rose-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-rose-400 h-[62px] overflow-hidden" 
+             data-id="grammer_went_saw" data-title="去過與看過 (不規則)" data-tag="grammer_went_saw" data-desc="不規則動詞過去式 (went / saw)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">去過與看過 (不規則)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">不規則動詞過去式 (went / saw)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-rose-900 transition-colors">去過與看過 (不規則)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">去過與看過 (不規則 - went / saw)</div>
             </div>
-            <div class="text-[9px] text-rose-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_went_saw.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-rose-600 font-mono font-medium">grammer_went_saw.html</span>
+              <span class="text-[9px] text-rose-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
         </div>
       </section>
@@ -662,8 +662,8 @@
       <!-- 分類七：形容詞比較與生活進階 (Sky Theme) -->
       <!-- ========================================== -->
       <section id="section-adj" class="category-block transition-all-300">
-        <div class="flex items-center justify-between border-b border-sky-200 pb-1 mb-1.5">
-          <h2 class="text-sm md:text-base font-extrabold text-sky-900 flex items-center gap-1.5">
+        <div class="flex items-center justify-between border-b border-sky-200 pb-0.5 mb-1.5">
+          <h2 class="text-sm md:text-base font-extrabold text-sky-955 flex items-center gap-1.5">
             <span class="w-1.5 h-3.5 bg-sky-500 rounded-sm"></span>
             形容詞比較與生活進階
           </h2>
@@ -671,446 +671,83 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
           
           <!-- 卡片 26 -->
-          <div class="grammar-card transition-all-300 border border-sky-100 bg-sky-50/20 hover:bg-sky-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-sky-400 h-[68px]" 
-               data-id="grammer_adj_er" data-title="A比B還要... (比較級)" data-tag="grammer_adj_er" data-desc="學習單音節與短形容詞字尾加 -er 的規則，以及 B 比 A 更如何的語句架構，常伴隨關鍵字 than。">
+          <a href="grammer_adj_er.html" class="grammar-card group relative block border border-sky-100 bg-sky-50/10 hover:bg-sky-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-sky-400 h-[62px] overflow-hidden" 
+             data-id="grammer_adj_er" data-title="A比B還要... (比較級)" data-tag="grammer_adj_er" data-desc="形容詞比較級兩者對比 (-er + than)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">A比B還要... (比較級)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">形容詞比較級兩者對比 (-er + than)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-sky-900 transition-colors">A比B還要... (比較級)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">形容詞比較級兩者對比 (-er + than)</div>
             </div>
-            <div class="text-[9px] text-sky-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_adj_er.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-sky-600 font-mono font-medium">grammer_adj_er.html</span>
+              <span class="text-[9px] text-sky-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 27 -->
-          <div class="grammar-card transition-all-300 border border-sky-100 bg-sky-50/20 hover:bg-sky-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-sky-400 h-[68px]" 
-               data-id="grammer_adj_est" data-title="最...的那一個 (最高級)" data-tag="grammer_adj_est" data-desc="學習形容詞最高級變化（字尾加 -est），並學會搭配定冠詞 the 來說明在群體或某範圍內最突出的那一個。">
+          <a href="grammer_adj_est.html" class="grammar-card group relative block border border-sky-100 bg-sky-50/10 hover:bg-sky-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-sky-400 h-[62px] overflow-hidden" 
+             data-id="grammer_adj_est" data-title="最...的那一個 (最高級)" data-tag="grammer_adj_est" data-desc="三者以上之最 (the + -est)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">最...的那一個 (最高級)</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">三者以上之最 (the + -est)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-sky-900 transition-colors">最...的那一個 (最高級)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">三者以上之最 (the + -est)</div>
             </div>
-            <div class="text-[9px] text-sky-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_adj_est.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-sky-600 font-mono font-medium">grammer_adj_est.html</span>
+              <span class="text-[9px] text-sky-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 28 -->
-          <div class="grammar-card transition-all-300 border border-sky-100 bg-sky-50/20 hover:bg-sky-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-sky-400 h-[68px]" 
-               data-id="grammer_adj_er_est" data-title="比較級與最高級綜合" data-tag="grammer_adj_er_est" data-desc="整合比較級與最高級的觀念。透過全方位情境模擬，引導學生在正確情境裡判斷該用哪種形容詞程度變化。">
+          <a href="grammer_adj_er_est.html" class="grammar-card group relative block border border-sky-100 bg-sky-50/10 hover:bg-sky-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-sky-400 h-[62px] overflow-hidden" 
+             data-id="grammer_adj_er_est" data-title="比較級與最高級綜合" data-tag="grammer_adj_er_est" data-desc="多種物體比較與程度差異對比">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">比較級與最高級綜合</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">多種物體比較與程度差異對比</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-sky-900 transition-colors">比較級與最高級綜合</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">多種物體比較與程度差異對比</div>
             </div>
-            <div class="text-[9px] text-sky-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_adj_er_est.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-sky-600 font-mono font-medium">grammer_adj_er_est.html</span>
+              <span class="text-[9px] text-sky-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
           <!-- 卡片 29 -->
-          <div class="grammar-card transition-all-300 border border-sky-100 bg-sky-50/20 hover:bg-sky-50/60 rounded p-1.5 flex flex-col justify-between cursor-pointer relative group border-l-4 border-l-sky-400 h-[68px]" 
-               data-id="grammer_spend_cost_take" data-title="花時間與花錢" data-tag="grammer_spend_cost_take" data-desc="學習分辨 spend, cost, take 三大花費動詞的主詞搭配規則、後接名詞特性，以及「人花錢/時間」與「事物花費」的根本結構差異。">
+          <a href="grammer_spend_cost_take.html" class="grammar-card group relative block border border-sky-100 bg-sky-50/10 hover:bg-sky-50/50 rounded px-2 py-1.5 flex flex-col justify-between transition-all duration-200 border-l-4 border-l-sky-400 h-[62px] overflow-hidden" 
+             data-id="grammer_spend_cost_take" data-title="花時間與花錢" data-tag="grammer_spend_cost_take" data-desc="生活花費區別 (spend / cost / take)">
             <button class="star-btn absolute top-1 right-1 p-0.5 text-slate-300 hover:text-amber-400 transition-colors z-10">
-              <i class="fa-solid fa-star text-[10px]"></i>
+              <i class="fa-solid fa-star text-[9px]"></i>
             </button>
             <div class="pr-4">
-              <div class="font-bold text-slate-900 text-[13.5px] leading-tight">花時間與花錢</div>
-              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1">生活花費區別 (spend / cost / take)</div>
+              <div class="font-extrabold text-slate-950 text-[13px] leading-tight group-hover:text-sky-900 transition-colors">花時間與花錢</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 group-hover:opacity-0 transition-opacity duration-200">生活花費區別 (spend / cost / take)</div>
             </div>
-            <div class="text-[9px] text-sky-600 font-mono tracking-tight flex items-center justify-between mt-0.5">
-              <span>grammer_spend_cost_take.html</span>
-              <span class="opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-angle-right"></i></span>
+            <div class="absolute bottom-1 left-2 right-2 flex justify-between items-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none">
+              <span class="text-[9px] text-sky-600 font-mono font-medium">grammer_spend_cost_take.html</span>
+              <span class="text-[9px] text-sky-500"><i class="fa-solid fa-arrow-right-long"></i></span>
             </div>
-          </div>
+          </a>
 
         </div>
       </section>
 
     </main>
-
-    <!-- 右側滑出式「智慧導學面板」 (側邊抽屜彈出，不佔主頁空間) -->
-    <div id="detail-drawer" class="fixed top-0 right-0 h-full w-full sm:w-[380px] bg-white border-l border-slate-200 shadow-2xl z-50 transform translate-x-full transition-all-300 flex flex-col">
-      <!-- 面板頂部 -->
-      <div class="p-3 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-        <span class="text-xs font-bold text-indigo-600 uppercase tracking-wide"><i class="fa-solid fa-book-open mr-1"></i> 文法智慧引導</span>
-        <button id="close-drawer" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-200 transition-colors">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-
-      <!-- 面板內容 (縮小 Padding) -->
-      <div class="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
-        <div>
-          <h3 id="drawer-title" class="text-lg font-bold text-slate-900">單元標題</h3>
-          <p id="drawer-tag" class="text-[11px] text-slate-400 font-mono mt-0.5">grammer_filename.html</p>
-        </div>
-
-        <div class="space-y-1">
-          <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">學習核心介紹</h4>
-          <p id="drawer-desc" class="text-xs text-slate-600 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-            文法內容詳細介紹...
-          </p>
-        </div>
-
-        <div class="space-y-1">
-          <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">生活核心例句</h4>
-          <div class="bg-indigo-50 border-l-4 border-l-indigo-500 p-2.5 rounded-r-lg">
-            <p id="drawer-sentence-en" class="text-xs font-bold text-indigo-900">Sentence in English.</p>
-            <p id="drawer-sentence-zh" class="text-[11px] text-indigo-700 mt-0.5">中文句意翻譯。</p>
-          </div>
-        </div>
-
-        <div class="space-y-1">
-          <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">大腦活化微測驗</h4>
-          <div class="border border-slate-150 p-2.5 rounded-lg bg-white space-y-2 shadow-sm">
-            <p id="drawer-quiz-question" class="text-xs font-semibold text-slate-800">問題載入中...</p>
-            <div id="drawer-quiz-options" class="grid grid-cols-1 gap-1.5 pt-0.5">
-              <!-- 按鈕動態渲染 -->
-            </div>
-            <p id="drawer-quiz-feedback" class="text-[11px] font-bold mt-1.5 hidden"></p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 面板底部連結 -->
-      <div class="p-3 border-t border-slate-100 bg-slate-50 flex flex-col gap-1.5">
-        <a id="drawer-link" href="#" target="_blank" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-center py-2 rounded text-xs shadow hover:shadow-md transition-all flex items-center justify-center gap-1.5">
-          <span>進入學習單元</span>
-          <i class="fa-solid fa-arrow-right-to-bracket"></i>
-        </a>
-      </div>
-    </div>
-
-    <!-- 抽屜背景遮罩 -->
-    <div id="drawer-overlay" class="fixed inset-0 bg-slate-900/40 z-45 hidden"></div>
-
   </div>
 
-  <!-- 頁尾 -->
-  <footer class="bg-white border-t border-slate-200 py-2.5 text-center text-[10px] text-slate-400">
-    <p>© 2026 spedu-labs. English Grammar Matrix Dashboard. All rights reserved.</p>
+  <!-- 輕量頁尾 -->
+  <footer class="bg-white border-t border-slate-200 py-2 text-center text-[10px] text-slate-400">
+    <p>© 2026 spedu-labs. English Grammar Matrix Dashboard.</p>
   </footer>
 
   <script>
-    // ==========================================
-    // 智慧課程核心資料庫 (包含所有 29 個文法主題詳細資訊)
-    // ==========================================
-    const grammarDetails = {
-      // 基礎代名詞與常用語
-      "grammer_I": {
-        sentenceEn: "I am a student, and you are my teacher.",
-        sentenceZh: "我是一個學生，而你是我的老師。",
-        quiz: {
-          q: "___ am happy today.",
-          opts: ["I", "Me", "My", "He"],
-          ans: 0,
-          exp: "am 搭配的第一人稱主格代名詞為 I。"
-        }
-      },
-      "grammer_me": {
-        sentenceEn: "Please listen to me and play with me.",
-        sentenceZh: "請聽我說，並陪我一起玩。",
-        quiz: {
-          q: "Can you help ___? This bag is too heavy.",
-          opts: ["I", "my", "me", "he"],
-          ans: 2,
-          exp: "help 為動詞，後面必須接代名詞受格 me。"
-        }
-      },
-      "grammer_my": {
-        sentenceEn: "This is my dog, and its name is Max.",
-        sentenceZh: "這是我的狗，牠的名字叫 Max。",
-        quiz: {
-          q: "This is ___ cat. Its name is Mimi.",
-          opts: ["I", "me", "my", "mine"],
-          ans: 2,
-          exp: "所有格 my 修飾後面的名詞 cat，表示『我的貓』。"
-        }
-      },
-      "grammer_please": {
-        sentenceEn: "Please close the door and sit down.",
-        sentenceZh: "請關上門並請坐下。",
-        quiz: {
-          q: "___ be quiet. The baby is sleeping.",
-          opts: ["Please", "Do", "You", "Are"],
-          ans: 0,
-          exp: "Please 放句首，用作禮貌性的動作請求。"
-        }
-      },
-      "grammer_can_can_t": {
-        sentenceEn: "I can swim, but I can't fly.",
-        sentenceZh: "我會游泳，但我不會飛。",
-        quiz: {
-          q: "Birds can fly, but fish ___.",
-          opts: ["can", "can't", "don't", "isn't"],
-          ans: 1,
-          exp: "前後語句轉折：鳥會飛，但魚不會飛，用 can't。"
-        }
-      },
-      "grammer_this_that_these_those": {
-        sentenceEn: "This is my pencil here, and that is your book over there.",
-        sentenceZh: "這是我手邊的鉛筆，那是你那邊的書本。",
-        quiz: {
-          q: "Look at ___ stars up in the sky!",
-          opts: ["this", "that", "these", "those"],
-          ans: 3,
-          exp: "天空中的星星是複數且距離遠，要用指示代名詞 those。"
-        }
-      },
-      // 名詞與單複數
-      "grammer_apples": {
-        sentenceEn: "I have two red apples in my hands.",
-        sentenceZh: "我手裡有兩顆紅蘋果。",
-        quiz: {
-          q: "He eats three ___ every week.",
-          opts: ["apple", "apples", "applese", "an apple"],
-          ans: 1,
-          exp: "three (三) 之後接可數名詞複數型 apples。"
-        }
-      },
-      "grammer_n_countable": {
-        sentenceEn: "I want an egg and some milk, please.",
-        sentenceZh: "我想要一顆雞蛋與一些牛奶，謝謝。",
-        quiz: {
-          q: "We need to buy some ___ for breakfast.",
-          opts: ["breads", "milk", "egg", "apple"],
-          ans: 1,
-          exp: "milk 為不可數名詞，可直接搭配 some 使用而不加 s。"
-        }
-      },
-      "grammer_boys_": {
-        sentenceEn: "Those boys are playing basketball in the park.",
-        sentenceZh: "那些男孩們正在公園裡打籃球。",
-        quiz: {
-          q: "The ___ are crying because they are hungry.",
-          opts: ["baby", "babys", "babies", "baby's"],
-          ans: 2,
-          exp: "baby 的複數形式為去 y 加 ies 變成 babies。"
-        }
-      },
-      // 基礎數字與應用
-      "grammer_1_10": {
-        sentenceEn: "I can see seven colorful balloons in the sky.",
-        sentenceZh: "我能看見天空中高掛著七個彩色的氣球。",
-        quiz: {
-          q: "One, two, three, four, ___, six, seven.",
-          opts: ["nine", "five", "ten", "eight"],
-          ans: 1,
-          exp: "4 到 6 之間漏掉的英文數字為 5 (five)。"
-        }
-      },
-      "grammer_11_19": {
-        sentenceEn: "My sister is fifteen years old this year.",
-        sentenceZh: "我妹妹今年十五歲。",
-        quiz: {
-          q: "Ten plus five is equal to ___.",
-          opts: ["twelve", "thirteen", "fifteen", "fifty"],
-          ans: 2,
-          exp: "10 加 5 等於 15 (fifteen)。"
-        }
-      },
-      "grammer_21_99": {
-        sentenceEn: "There are thirty-five students in our class.",
-        sentenceZh: "我們班上有三十五位同學。",
-        quiz: {
-          q: "What is 20 + 4 in English?",
-          opts: ["twenty four", "twenty-four", "fourteen-two", "forty-two"],
-          ans: 1,
-          exp: "雙位數拼寫字中間必須加上連字號，故為 twenty-four。"
-        }
-      },
-      "grammer_10_20_100": {
-        sentenceEn: "I spent eighty dollars on this beautiful notebook.",
-        sentenceZh: "我在這本漂亮的筆記本上花了八十元。",
-        quiz: {
-          q: "Ten, twenty, thirty, forty, ___.",
-          opts: ["fifty", "fifteen", "five", "hundred"],
-          ans: 0,
-          exp: "以十為級數遞增，40 之後是 50 (fifty)。"
-        }
-      },
-      "grammer_1_1000000": {
-        sentenceEn: "There are about one million stars shown in the map.",
-        sentenceZh: "地圖上大約顯示了一百萬顆星星。",
-        quiz: {
-          q: "There are one ___ people living in this small town.",
-          opts: ["hundreds", "thousand", "thousands", "million of"],
-          ans: 1,
-          exp: "具體數字後加 thousand 不用加複數 s。意為一千人。"
-        }
-      },
-      // 基礎 Be 動詞與現在式
-      "grammer_be_am_are_is": {
-        sentenceEn: "She is happy, but they are sad.",
-        sentenceZh: "她很快樂，但是他們很悲傷。",
-        quiz: {
-          q: "You ___ a very nice person.",
-          opts: ["am", "is", "are", "be"],
-          ans: 2,
-          exp: "you 搭配的現在簡單式 Be 動詞為 are。"
-        }
-      },
-      "grammar_present_simple_intro": {
-        sentenceEn: "The sun rises in the east every morning.",
-        sentenceZh: "太陽每天早晨從東方升起。(表不變事實)",
-        quiz: {
-          q: "Water ___ at 100 degrees Celsius.",
-          opts: ["boil", "boils", "boiling", "boiled"],
-          ans: 1,
-          exp: "物理規律，主詞 Water 為第三人稱單數，動詞使用單數形式 boils。"
-        }
-      },
-      "grammar_present_simple_verbs": {
-        sentenceEn: "He goes to school by school bus every day.",
-        sentenceZh: "他每天都搭校車上學。",
-        quiz: {
-          q: "My mother ___ delicious dinners for us.",
-          opts: ["cook", "cooks", "cooking", "cooked"],
-          ans: 1,
-          exp: "主詞 My mother 是第三人稱單數，現在簡單式的一般動詞要加 -s (cooks)。"
-        }
-      },
-      "garmmer_always": {
-        sentenceEn: "I always brush my teeth before going to bed.",
-        sentenceZh: "我睡覺前總是會刷牙。",
-        quiz: {
-          q: "They ___ go jogging in the park when it is sunny.",
-          opts: ["always", "ever", "never", "always are"],
-          ans: 0,
-          exp: "頻率副詞 always 通常置於一般動詞 go 之前。"
-        }
-      },
-      // 空間、時間與存在句
-      "grammer_in_on_at_space": {
-        sentenceEn: "My cat is sleeping on the table in the room.",
-        sentenceZh: "我的貓咪正躺在房間裡的桌子上面睡覺。",
-        quiz: {
-          q: "Who is that girl sitting ___ the corner of the classroom?",
-          opts: ["in", "on", "at", "to"],
-          ans: 2,
-          exp: "在角落或某個精確特定的點上，空間介系詞常使用 at。"
-        }
-      },
-      "grammer_in_on_at_time": {
-        sentenceEn: "Our school starts at eight o'clock in September.",
-        sentenceZh: "我們的學校在九月份的早上八點開始上課。",
-        quiz: {
-          q: "We always go camping ___ Christmas day.",
-          opts: ["in", "on", "at", "by"],
-          ans: 1,
-          exp: "聖誕節當天(特定的日子)，時間介系詞要使用 on。"
-        }
-      },
-      "grammer_there_is_there_are": {
-        sentenceEn: "There is a cup of hot water and there are some cookies.",
-        sentenceZh: "這裡有一杯熱水，還有一些餅乾。",
-        quiz: {
-          q: "___ many old trees near our home.",
-          opts: ["There is", "There are", "They have", "They are"],
-          ans: 1,
-          exp: "主詞為複數名詞 many old trees，存在句要選 There are。"
-        }
-      },
-      // 過去式表達
-      "grammar_was_were": {
-        sentenceEn: "They were at the museum last Sunday.",
-        sentenceZh: "上星期日他們在博物館裡。",
-        quiz: {
-          q: "I ___ sick yesterday, so I didn't go out.",
-          opts: ["am", "was", "were", "be"],
-          ans: 1,
-          exp: "時間點為 yesterday (昨天)，第一人稱單數過去式 Be 動詞使用 was。"
-        }
-      },
-      "grammar_did_didn_t": {
-        sentenceEn: "Did you watch the movie last night? No, I didn't.",
-        sentenceZh: "你昨天晚上看這部電影了嗎？不，我沒看。",
-        quiz: {
-          q: "He didn't ___ tennis yesterday afternoon.",
-          opts: ["play", "plays", "played", "playing"],
-          ans: 0,
-          exp: "助動詞 didn't 後面的一般動詞必須回歸原形動詞 play。"
-        }
-      },
-      "grammar_Ved": {
-        sentenceEn: "We cleaned our rooms and washed the dishes.",
-        sentenceZh: "我們整理了我們的房間，並且洗了碗盤。",
-        quiz: {
-          q: "Yesterday, Mary ___ all day for the English test.",
-          opts: ["study", "studies", "studying", "studied"],
-          ans: 3,
-          exp: "時間詞為 Yesterday。規則動詞 study 的過去式是去 y 加 ied 變 studied。"
-        }
-      },
-      "grammer_went_saw": {
-        sentenceEn: "We went to the zoo and saw many penguins.",
-        sentenceZh: "我們去了動物園，並看到了很多企鵝。",
-        quiz: {
-          q: "We ___ a big tiger in the safari park last week.",
-          opts: ["see", "sees", "saw", "seeing"],
-          ans: 2,
-          exp: "時間是 last week (上週)，不規則動詞 see 的過去式為 saw。"
-        }
-      },
-      // 形容詞比較與生活進階
-      "grammer_adj_er": {
-        sentenceEn: "This blue bus is bigger and faster than that red car.",
-        sentenceZh: "這輛藍色公車比那輛紅車更大且更快。",
-        quiz: {
-          q: "A horse is ___ than a rabbit.",
-          opts: ["large", "larger", "largest", "more large"],
-          ans: 1,
-          exp: "句尾有 than 表示兩者比較，形容詞 large 比較級為字尾直接加 r (larger)。"
-        }
-      },
-      "grammer_adj_est": {
-        sentenceEn: "Mount Everest is the highest mountain in the world.",
-        sentenceZh: "聖母峰是世界上最高的山峰。",
-        quiz: {
-          q: "Jerry is the ___ boy in our school basketball team.",
-          opts: ["tall", "taller", "tallest", "most tall"],
-          ans: 2,
-          exp: "前有 the 且在隊伍範圍中，形容詞 tall 使用最高級 tallest。"
-        }
-      },
-      "grammer_adj_er_est": {
-        sentenceEn: "Your score is better than mine, but Lisa's is the best.",
-        sentenceZh: "你的分數比我好，但麗莎的分數是全班最好的。",
-        quiz: {
-          q: "This laptop is fast, that tablet is faster, but the PC is the ___.",
-          opts: ["fast", "faster", "fastest", "most fast"],
-          ans: 2,
-          exp: "三者對比，最後表示三者之中最快的一部，要搭配 the + 最高級 fastest。"
-        }
-      },
-      "grammer_spend_cost_take": {
-        sentenceEn: "It takes twenty minutes to walk, and cost fifty dollars.",
-        sentenceZh: "走路需要花二十分鐘，而且需要花費五十元。",
-        quiz: {
-          q: "I ___ three hours cleaning my room yesterday.",
-          opts: ["spent", "cost", "took", "pay"],
-          ans: 0,
-          exp: "主詞是人 I，後接時間 cleaning，應選花費動詞過去式 spent。"
-        }
-      }
-    };
-
-    // ==========================================
-    // DOM 節點初始化與控制
-    // ==========================================
     document.addEventListener("DOMContentLoaded", () => {
-      // 側邊欄元件
+      // 側邊欄與元件
       const sidebar = document.getElementById("sidebar");
       const sidebarToggle = document.getElementById("sidebar-toggle");
       const sidebarCloseMobile = document.getElementById("sidebar-close-mobile");
@@ -1124,25 +761,7 @@
       const categoryBlocks = document.querySelectorAll(".category-block");
       const noResults = document.getElementById("no-results");
 
-      // 智慧抽屜元件
-      const detailDrawer = document.getElementById("detail-drawer");
-      const drawerOverlay = document.getElementById("drawer-overlay");
-      const closeDrawer = document.getElementById("close-drawer");
-      const drawerTitle = document.getElementById("drawer-title");
-      const drawerTag = document.getElementById("drawer-tag");
-      const drawerDesc = document.getElementById("drawer-desc");
-      const drawerSentenceEn = document.getElementById("drawer-sentence-en");
-      const drawerSentenceZh = document.getElementById("drawer-sentence-zh");
-      const drawerLink = document.getElementById("drawer-link");
-      const drawerQuizQuestion = document.getElementById("drawer-quiz-question");
-      const drawerQuizOptions = document.getElementById("drawer-quiz-options");
-      const drawerQuizFeedback = document.getElementById("drawer-quiz-feedback");
-
-      let currentActiveCardId = null;
-
-      // ==========================================
-      // 星號標記儲存邏輯 (LocalStorage)
-      // ==========================================
+      // 本地星標狀態管理
       let starredItems = JSON.parse(localStorage.getItem("grammar_starred_units")) || [];
 
       function updateStarUI() {
@@ -1159,81 +778,11 @@
         });
       }
 
-      // ==========================================
-      // 桌機/手機雙重相容收折選單功能
-      // ==========================================
-      function toggleSidebar() {
-        const isMobile = window.innerWidth < 768;
-        if (isMobile) {
-          // 手機端：切換滑出效果
-          const isHidden = sidebar.classList.contains("-translate-x-full");
-          if (isHidden) {
-            sidebar.classList.remove("-translate-x-full");
-            sidebarOverlay.classList.remove("hidden");
-          } else {
-            sidebar.classList.add("-translate-x-full");
-            sidebarOverlay.classList.add("hidden");
-          }
-        } else {
-          // 桌機端：切換寬度與顯示狀態，達到優雅的平滑收折
-          const isCollapsed = sidebar.classList.contains("md:w-0");
-          if (isCollapsed) {
-            sidebar.classList.remove("md:w-0", "md:opacity-0", "md:pointer-events-none", "md:border-r-0");
-            sidebar.classList.add("md:w-64", "md:opacity-100");
-          } else {
-            sidebar.classList.add("md:w-0", "md:opacity-0", "md:pointer-events-none", "md:border-r-0");
-            sidebar.classList.remove("md:w-64", "md:opacity-100");
-          }
-        }
-      }
-
-      sidebarToggle.addEventListener("click", toggleSidebar);
-      sidebarCloseMobile.addEventListener("click", toggleSidebar);
-      sidebarOverlay.addEventListener("click", toggleSidebar);
-
-      // 監聽視窗重置大小
-      window.addEventListener("resize", () => {
-        if (window.innerWidth >= 768) {
-          sidebar.classList.remove("-translate-x-full");
-          sidebarOverlay.classList.add("hidden");
-        } else {
-          // 在手機模式預設收起
-          sidebar.classList.add("-translate-x-full");
-          // 重設桌機可能遺留的 w-0 類別
-          sidebar.classList.remove("md:w-0", "md:opacity-0", "md:pointer-events-none", "md:border-r-0");
-          sidebar.classList.add("md:w-64", "md:opacity-100");
-        }
-      });
-
-      // ==========================================
-      // 動態更新側邊欄各分類卡片計數
-      // ==========================================
-      function updateCategoryCounts() {
-        const categories = {
-          "pronowns": document.querySelectorAll("#section-pronowns .grammar-card").length,
-          "nouns": document.querySelectorAll("#section-nouns .grammar-card").length,
-          "numbers": document.querySelectorAll("#section-numbers .grammar-card").length,
-          "be-present": document.querySelectorAll("#section-be-present .grammar-card").length,
-          "space-time": document.querySelectorAll("#section-space-time .grammar-card").length,
-          "past-tense": document.querySelectorAll("#section-past-tense .grammar-card").length,
-          "adj": document.querySelectorAll("#section-adj .grammar-card").length
-        };
-
-        document.getElementById("count-pronouns").innerText = categories["pronowns"];
-        document.getElementById("count-nouns").innerText = categories["nouns"];
-        document.getElementById("count-numbers").innerText = categories["numbers"];
-        document.getElementById("count-be-present").innerText = categories["be-present"];
-        document.getElementById("count-space-time").innerText = categories["space-time"];
-        document.getElementById("count-past-tense").innerText = categories["past-tense"];
-        document.getElementById("count-adj").innerText = categories["adj"];
-      }
-
-      // ==========================================
-      // 星號點擊儲存事件
-      // ==========================================
+      // 星標點擊處理 (阻斷 <a> 預設跳轉與冒泡)
       document.querySelectorAll(".star-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
-          e.stopPropagation(); // 阻止點擊星號時開啟右側抽屜
+          e.preventDefault();
+          e.stopPropagation();
           const card = btn.closest(".grammar-card");
           const id = card.getAttribute("data-id");
           
@@ -1245,7 +794,6 @@
           localStorage.setItem("grammar_starred_units", JSON.stringify(starredItems));
           updateStarUI();
 
-          // 如果當前是在「已星號標記」分頁下，點擊取消星號應立即過濾更新頁面
           const activeTab = document.querySelector(".filter-tab.active").getAttribute("data-target");
           if (activeTab === "starred") {
             applyFilters();
@@ -1253,9 +801,67 @@
         });
       });
 
-      // ==========================================
-      // Live 搜尋與過濾篩選器 (綜合判斷)
-      // ==========================================
+      // 側邊欄收折控制 (相容手機與桌機)
+      function toggleSidebar() {
+        const isMobile = window.innerWidth < 768;
+        if (isMobile) {
+          const isHidden = sidebar.classList.contains("-translate-x-full");
+          if (isHidden) {
+            sidebar.classList.remove("-translate-x-full");
+            sidebarOverlay.classList.remove("hidden");
+          } else {
+            sidebar.classList.add("-translate-x-full");
+            sidebarOverlay.classList.add("hidden");
+          }
+        } else {
+          const isCollapsed = sidebar.classList.contains("md:w-0");
+          if (isCollapsed) {
+            sidebar.classList.remove("md:w-0", "md:opacity-0", "md:pointer-events-none", "md:border-r-0");
+            sidebar.classList.add("md:w-60", "md:opacity-100");
+          } else {
+            sidebar.classList.add("md:w-0", "md:opacity-0", "md:pointer-events-none", "md:border-r-0");
+            sidebar.classList.remove("md:w-60", "md:opacity-100");
+          }
+        }
+      }
+
+      sidebarToggle.addEventListener("click", toggleSidebar);
+      sidebarCloseMobile.addEventListener("click", toggleSidebar);
+      sidebarOverlay.addEventListener("click", toggleSidebar);
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth >= 768) {
+          sidebar.classList.remove("-translate-x-full");
+          sidebarOverlay.classList.add("hidden");
+        } else {
+          sidebar.classList.add("-translate-x-full");
+          sidebar.classList.remove("md:w-0", "md:opacity-0", "md:pointer-events-none", "md:border-r-0");
+          sidebar.classList.add("md:w-60", "md:opacity-100");
+        }
+      });
+
+      // 側欄計數器更新
+      function updateCategoryCounts() {
+        const categories = {
+          "pronouns": document.querySelectorAll("#section-pronouns .grammar-card").length,
+          "nouns": document.querySelectorAll("#section-nouns .grammar-card").length,
+          "numbers": document.querySelectorAll("#section-numbers .grammar-card").length,
+          "be-present": document.querySelectorAll("#section-be-present .grammar-card").length,
+          "space-time": document.querySelectorAll("#section-space-time .grammar-card").length,
+          "past-tense": document.querySelectorAll("#section-past-tense .grammar-card").length,
+          "adj": document.querySelectorAll("#section-adj .grammar-card").length
+        };
+
+        document.getElementById("count-pronouns").innerText = categories["pronouns"];
+        document.getElementById("count-nouns").innerText = categories["nouns"];
+        document.getElementById("count-numbers").innerText = categories["numbers"];
+        document.getElementById("count-be-present").innerText = categories["be-present"];
+        document.getElementById("count-space-time").innerText = categories["space-time"];
+        document.getElementById("count-past-tense").innerText = categories["past-tense"];
+        document.getElementById("count-adj").innerText = categories["adj"];
+      }
+
+      // 高效 Live 搜尋過濾與分頁
       function applyFilters() {
         const query = searchInput.value.toLowerCase().trim();
         const activeTab = document.querySelector(".filter-tab.active").getAttribute("data-target");
@@ -1271,9 +877,8 @@
             const desc = card.getAttribute("data-desc").toLowerCase();
             const isStarred = card.classList.contains("is-starred");
 
-            // 搜尋關鍵字匹配
+            // 支持中英檔名同時搜尋
             const matchesSearch = !query || title.includes(query) || tag.includes(query) || desc.includes(query);
-            // 標籤頁過濾
             const matchesTab = (activeTab === "all") || (activeTab === "starred" && isStarred);
 
             if (matchesSearch && matchesTab) {
@@ -1285,7 +890,6 @@
             }
           });
 
-          // 如果此大分類下沒有符合的卡片，則隱藏該分類標題與區塊
           if (visibleCardsInBlock > 0) {
             block.classList.remove("hidden");
           } else {
@@ -1293,7 +897,6 @@
           }
         });
 
-        // 顯示或隱藏無搜尋結果的提示
         if (hasAnyVisibleCard) {
           noResults.classList.add("hidden");
         } else {
@@ -1301,7 +904,6 @@
         }
       }
 
-      // 搜尋輸入監聽
       searchInput.addEventListener("input", () => {
         if (searchInput.value.trim().length > 0) {
           clearSearch.classList.remove("hidden");
@@ -1311,7 +913,6 @@
         applyFilters();
       });
 
-      // 清除搜尋
       clearSearch.addEventListener("click", () => {
         searchInput.value = "";
         clearSearch.classList.add("hidden");
@@ -1319,7 +920,6 @@
         searchInput.focus();
       });
 
-      // 分頁切換監聽
       filterTabs.forEach(tab => {
         tab.addEventListener("click", () => {
           filterTabs.forEach(t => {
@@ -1332,86 +932,7 @@
         });
       });
 
-      // ==========================================
-      // 智慧導學抽屜面板 (Drawer) 控制與測驗系統
-      // ==========================================
-      function openDrawer(card) {
-        const id = card.getAttribute("data-id");
-        const title = card.getAttribute("data-title");
-        const tag = card.getAttribute("data-tag");
-        const desc = card.getAttribute("data-desc");
-        const info = grammarDetails[id];
-
-        currentActiveCardId = id;
-
-        // 渲染基礎資訊 (確認檔案連結正確)
-        drawerTitle.innerText = title;
-        drawerTag.innerText = `${tag}.html`;
-        drawerDesc.innerText = desc;
-        drawerLink.href = `${tag}.html`; // 點擊按鈕直接開啟對應的 HTML 檔案
-
-        // 渲染例句
-        if (info) {
-          drawerSentenceEn.innerText = info.sentenceEn;
-          drawerSentenceZh.innerText = info.sentenceZh;
-
-          // 重設並渲染測驗
-          drawerQuizFeedback.classList.add("hidden");
-          drawerQuizFeedback.className = "text-[11px] font-bold mt-1.5 hidden";
-          drawerQuizQuestion.innerText = info.quiz.q;
-          
-          drawerQuizOptions.innerHTML = "";
-          info.quiz.opts.forEach((opt, index) => {
-            const btn = document.createElement("button");
-            btn.className = "quiz-opt-btn w-full text-left px-2.5 py-1.5 text-xs border border-slate-200 rounded-md hover:bg-slate-50 transition-all font-medium text-slate-700 focus:outline-none";
-            btn.innerText = opt;
-            btn.addEventListener("click", () => handleQuizSubmission(index, info.quiz, btn));
-            drawerQuizOptions.appendChild(btn);
-          });
-        }
-
-        // 開啟抽屜動畫
-        detailDrawer.classList.remove("translate-x-full");
-        drawerOverlay.classList.remove("hidden");
-      }
-
-      function closeDrawerPanel() {
-        detailDrawer.classList.add("translate-x-full");
-        drawerOverlay.classList.add("hidden");
-        currentActiveCardId = null;
-      }
-
-      function handleQuizSubmission(selectedIndex, quiz, selectedBtn) {
-        const buttons = drawerQuizOptions.querySelectorAll(".quiz-opt-btn");
-        
-        // 禁用所有按鈕防止重複點擊
-        buttons.forEach(btn => btn.disabled = true);
-
-        drawerQuizFeedback.classList.remove("hidden");
-        if (selectedIndex === quiz.ans) {
-          selectedBtn.className = "quiz-opt-btn w-full text-left px-2.5 py-1.5 text-xs bg-emerald-50 border-2 border-emerald-500 rounded-md font-bold text-emerald-800 focus:outline-none";
-          drawerQuizFeedback.innerText = `🎉 答對了！ ${quiz.exp}`;
-          drawerQuizFeedback.classList.add("text-emerald-600");
-        } else {
-          selectedBtn.className = "quiz-opt-btn w-full text-left px-2.5 py-1.5 text-xs bg-rose-50 border-2 border-rose-500 rounded-md font-bold text-rose-800 focus:outline-none";
-          // 標出正確答案
-          buttons[quiz.ans].className = "quiz-opt-btn w-full text-left px-2.5 py-1.5 text-xs bg-emerald-50 border border-emerald-500 rounded-md font-bold text-emerald-800 focus:outline-none";
-          drawerQuizFeedback.innerText = `❌ 答錯了。 ${quiz.exp}`;
-          drawerQuizFeedback.classList.add("text-rose-500");
-        }
-      }
-
-      // 卡片點擊事件監聽
-      document.querySelectorAll(".grammar-card").forEach(card => {
-        card.addEventListener("click", () => openDrawer(card));
-      });
-
-      closeDrawer.addEventListener("click", closeDrawerPanel);
-      drawerOverlay.addEventListener("click", closeDrawerPanel);
-
-      // ==========================================
-      // 左側快捷列平滑滾動定位與手機端自動收合
-      // ==========================================
+      // 側欄點擊快捷定位
       sidebarLinks.forEach(link => {
         link.addEventListener("click", (e) => {
           e.preventDefault();
@@ -1419,8 +940,7 @@
           const targetSection = document.querySelector(targetId);
 
           if (targetSection) {
-            // 平滑定位滾動
-            const headerOffset = 60; // 扣除頂部導覽列的高度
+            const headerOffset = 60;
             const elementPosition = targetSection.getBoundingClientRect().top;
             const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -1429,7 +949,6 @@
               behavior: "smooth"
             });
 
-            // 手機版點擊捷徑後，自動將左側欄收折起來
             if (window.innerWidth < 768) {
               toggleSidebar();
             }
@@ -1437,7 +956,6 @@
         });
       });
 
-      // 初始化 UI 載入
       updateCategoryCounts();
       updateStarUI();
     });
