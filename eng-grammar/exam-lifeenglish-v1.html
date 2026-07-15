@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>實用英文能力評估 - 互動語音教學系統</title>
+    <!-- 引入 Tailwind CSS 進行現代化視覺設計 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Google 字體與 Font Awesome 圖標 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fdf8f1; /* 溫暖木色背景 */
+            color: #434a54;
+        }
+        /* 答題正確的啵啵與閃爍動畫 */
+        @keyframes correct-pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        .correct-animate {
+            animation: correct-pop 0.4s ease-in-out;
+        }
+        /* 煙火與得分彈出框特效 */
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: 0;
+            opacity: 0;
+            animation: fall 3s infinite ease-out;
+        }
+        @keyframes fall {
+            0% { top: -10px; transform: translateX(0) rotate(0deg); opacity: 1; }
+            100% { top: 100%; transform: translateX(100px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-2 md:p-6">
+
+    <div id="app-container" class="w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-xl border border-stone-200/60 overflow-hidden flex flex-col">
+        <!-- 頂部導覽列與標題 -->
+        <header class="bg-gradient-to-r from-stone-700 to-stone-900 text-stone-100 p-6 md:p-8 text-center shadow-md relative">
+            <div class="absolute top-6 left-6 hidden md:flex items-center gap-2">
+                <span class="bg-amber-600 text-white text-xs px-2.5 py-1 rounded-full font-bold">雙語語音教學版</span>
+            </div>
+            <div class="w-16 h-16 bg-white rounded-2xl shadow-inner flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-language text-stone-800 text-3xl animate-pulse"></i>
+            </div>
+            <h1 class="text-2xl md:text-3.5xl font-black tracking-tight flex items-center justify-center gap-2">
+                實用英文能力評估系統
+            </h1>
+            <p class="text-sm md:text-base text-amber-200/90 mt-1.5 font-medium">全方位語音報讀 ‧ 互動式自主學習測驗 ‧ 詳解回饋面板</p>
+        </header>
+
+        <!-- 控制與設定區 -->
+        <div class="bg-stone-50 border-b border-stone-200 p-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <!-- 學習模式切換 -->
+                <div class="flex items-center gap-1.5 bg-white p-1 rounded-xl shadow-sm border border-stone-200">
+                    <button id="mode-study-btn" onclick="switchMode('study')" class="px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 bg-stone-800 text-white shadow-sm">
+                        <i class="fa-solid fa-graduation-cap mr-1"></i> 即時學習模式
+                    </button>
+                    <button id="mode-test-btn" onclick="switchMode('test')" class="px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 text-stone-600 hover:bg-stone-100">
+                        <i class="fa-solid fa-file-invoice mr-1"></i> 模擬測驗模式
+                    </button>
+                </div>
+
+                <!-- 單元選擇與進度統計 -->
+                <div class="flex items-center gap-2">
+                    <label for="unit-select" class="font-bold text-stone-700 hidden sm:inline">
+                        <i class="fa-solid fa-list-check text-amber-600 mr-1"></i>選擇單元:
+                    </label>
+                    <select id="unit-select" onchange="changeUnit(this.value)" class="bg-white border border-stone-300 rounded-lg px-3 py-1.5 font-bold text-stone-850 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer">
+                        <!-- 由 JS 動態產生十個單元 -->
+                    </select>
+                </div>
+
+                <!-- 語音控制折疊鈕 -->
+                <button onclick="toggleVoicePanel()" class="text-sm font-bold text-stone-700 hover:text-stone-900 flex items-center gap-1">
+                    <i class="fa-solid fa-sliders text-amber-600"></i> <span id="voice-panel-toggle-text">設定語音/語速</span>
+                </button>
+            </div>
+
+            <!-- 語音設定面板 -->
+            <div id="voice-settings-panel" class="mt-4 p-4 bg-white rounded-xl border border-stone-200 grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-300">
+                <div class="flex flex-col gap-1">
+                    <label for="voice-select" class="text-sm font-bold text-stone-600"><i class="fa-solid fa-comment-dots mr-1 text-stone-400"></i>選擇唸讀發音:</label>
+                    <select id="voice-select" onchange="updateVoice()" class="bg-stone-50 border border-stone-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-amber-500"></select>
+                </div>
+                <div class="flex flex-col gap-1 justify-center">
+                    <div class="flex justify-between items-center text-sm font-bold text-stone-600">
+                        <span><i class="fa-solid fa-gauge-high mr-1 text-stone-400"></i>唸讀速度:</span>
+                        <span id="speed-value" class="text-amber-700 font-extrabold">0.9x</span>
+                    </div>
+                    <input id="speed-control" type="range" min="0.5" max="1.5" step="0.1" value="0.9" oninput="updateSpeed(this.value)" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-stone-700">
+                </div>
+                <div class="flex items-center justify-around gap-2 pt-2 md:pt-0">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="auto-read-toggle" checked class="sr-only peer">
+                        <div class="w-11 h-6 bg-stone-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-stone-800"></div>
+                        <span class="ml-2 text-sm font-bold text-stone-600">下一題自動唸題目</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 進度與計分看板 -->
+        <div class="bg-amber-50/50 p-4 border-b border-stone-200 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="bg-stone-800 text-stone-100 text-sm font-black px-3 py-1 rounded-lg" id="unit-title-display">
+                    單元一 (第1~10題)
+                </span>
+                <span class="text-sm font-bold text-stone-500" id="progress-text">
+                    進度: 1 / 10 題
+                </span>
+            </div>
+            
+            <!-- 進度小圓點指標 (10個點由 JS 動態生成) -->
+            <div class="flex items-center gap-1.5" id="progress-dots-container"></div>
+
+            <!-- 得分顯示 -->
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-bold text-stone-600">目前分數:</span>
+                <span id="current-score-display" class="text-2xl font-black text-amber-850 bg-amber-100 px-3 py-0.5 rounded-lg border border-amber-200">0</span>
+            </div>
+        </div>
+
+        <!-- 主作答與播放區 -->
+        <main class="flex-grow p-4 md:p-8 flex flex-col justify-between min-h-[380px]">
+            <div>
+                <!-- 題目內容 -->
+                <div class="flex items-start gap-4 mb-6">
+                    <button id="replay-btn" onclick="speakCurrentQuestion()" class="bg-stone-800 hover:bg-stone-900 active:scale-95 text-white p-3 md:p-4 rounded-xl shadow-md flex items-center justify-center gap-2 flex-shrink-0 transition-all duration-150" title="唸出題目與選項">
+                        <i class="fa-solid fa-volume-high text-xl md:text-2xl"></i>
+                        <span class="text-sm font-bold hidden md:inline">報讀題目</span>
+                    </button>
+                    <div class="flex-grow">
+                        <h2 id="question-text" class="text-lg md:text-2xl font-bold leading-relaxed text-stone-800">
+                            載入中...
+                        </h2>
+                    </div>
+                </div>
+
+                <!-- 選項按鈕區 -->
+                <div id="options-list" class="space-y-3 md:space-y-4">
+                    <!-- 選項按鈕由 JS 動態生成 -->
+                </div>
+            </div>
+
+            <!-- 回饋與詳解提示區 (學習模式或提交後顯示) -->
+            <div id="feedback-alert" class="hidden mt-6 p-5 rounded-xl border flex flex-col gap-2 transition-all duration-300 bg-stone-50 border-stone-200">
+                <div class="flex items-start gap-3">
+                    <div id="feedback-icon-container" class="text-2xl mt-0.5"></div>
+                    <div>
+                        <h4 id="feedback-title" class="font-extrabold text-base md:text-lg text-stone-850"></h4>
+                        <p id="feedback-desc" class="text-sm md:text-base mt-1 text-stone-600"></p>
+                    </div>
+                </div>
+                <!-- 詳解盒子 -->
+                <div class="mt-2 pt-3 border-t border-stone-200">
+                    <p class="text-[10px] font-black tracking-widest text-amber-700 uppercase"><i class="fa-solid fa-circle-info mr-1"></i>Feedback & Analysis / 詳解分析</p>
+                    <p id="feedback-explanation" class="text-sm md:text-base text-stone-600 mt-1 leading-relaxed font-medium"></p>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部導覽控制 -->
+        <nav class="bg-stone-50 border-t border-stone-200 p-4 flex justify-between items-center gap-4">
+            <button id="prev-btn" onclick="prevQuestion()" class="px-5 py-3 rounded-xl font-bold text-stone-700 bg-white border border-stone-300 hover:bg-stone-100 disabled:opacity-50 disabled:pointer-events-none transition-all duration-150">
+                <i class="fa-solid fa-arrow-left mr-1"></i> 上一題
+            </button>
+
+            <!-- 測驗模式下的提交按鈕 -->
+            <button id="submit-quiz-btn" onclick="calculateAndShowReport(true)" class="hidden px-6 py-3 rounded-xl font-extrabold text-white bg-amber-600 hover:bg-amber-700 shadow-md transition-all duration-150 animate-pulse">
+                <i class="fa-solid fa-paper-plane mr-1"></i> 提交單元測驗
+            </button>
+
+            <button id="next-btn" onclick="nextQuestion()" class="px-5 py-3 rounded-xl font-bold text-white bg-stone-800 hover:bg-stone-950 disabled:opacity-50 disabled:pointer-events-none transition-all duration-150">
+                下一題 <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </nav>
+
+        <!-- 頁尾與離線下載 -->
+        <footer class="bg-stone-100 border-t border-stone-200 p-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
+            <button id="download-btn" onclick="downloadOfflineVersion()" class="bg-stone-700 hover:bg-stone-800 text-white font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-150 shadow-sm">
+                <i class="fa-solid fa-cloud-arrow-down"></i> 下載本單元互動離線版
+            </button>
+            <div class="flex flex-col items-center md:items-end">
+                <p class="text-xs text-stone-500 font-bold">© 實用英文能力語音互動評估 ｜ 本題庫採 CC BY-NC-SA 4.0 授權</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 學習成果報告 Modal -->
+    <div id="report-modal" class="fixed inset-0 bg-stone-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl border border-stone-200 w-full max-w-lg overflow-hidden transform scale-95 transition-all duration-300 relative">
+            
+            <!-- 琥珀金煙火效果容器 -->
+            <div id="modal-confetti" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+            <div class="p-6 text-center">
+                <div class="w-20 h-20 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-inner animate-bounce">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                
+                <h3 class="text-2xl font-black text-stone-800" id="report-title">單元學習成果報告</h3>
+                <p class="text-stone-500 font-bold mt-1 text-sm">恭喜你完成了這個單元的英文挑戰！</p>
+                
+                <!-- 成績看板 -->
+                <div class="my-6 bg-stone-50 p-6 rounded-2xl border border-stone-100 flex flex-col items-center justify-center">
+                    <span class="text-sm font-bold text-stone-500 uppercase tracking-widest">單元得分</span>
+                    <span class="text-6xl font-black text-amber-600 mt-2" id="report-score">0 <span class="text-2xl font-bold text-stone-400">分</span></span>
+                    
+                    <div class="grid grid-cols-2 gap-4 w-full mt-6 pt-4 border-t border-stone-200 text-sm">
+                        <div class="text-left bg-emerald-50 p-3 rounded-xl border border-emerald-100">
+                            <p class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check mr-1"></i>答對題數</p>
+                            <p class="text-xl font-black text-emerald-800 mt-1" id="report-correct-count">0 題</p>
+                        </div>
+                        <div class="text-left bg-rose-50 p-3 rounded-xl border border-rose-100">
+                            <p class="text-rose-700 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i>答錯題數</p>
+                            <p class="text-xl font-black text-rose-800 mt-1" id="report-wrong-count">0 題</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 評語與語音讚美 -->
+                <p id="report-comment" class="text-base font-extrabold text-stone-800 mb-6 px-4 py-2.5 bg-amber-50 rounded-xl inline-block border border-amber-100"></p>
+
+                <!-- 互動按鈕 -->
+                <div class="flex flex-col gap-2">
+                    <button onclick="retryCurrentUnit()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold py-3 px-4 rounded-xl transition-all duration-150">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> 重新挑戰本單元
+                    </button>
+                    <button id="next-unit-btn" onclick="goToNextUnit()" class="w-full bg-stone-800 hover:bg-stone-900 text-white font-extrabold py-3.5 px-4 rounded-xl transition-all duration-150 shadow-lg">
+                        解鎖下一單元 <i class="fa-solid fa-circle-arrow-right ml-1"></i>
+                    </button>
+                    <button onclick="closeReportModal()" class="w-full text-stone-500 hover:text-stone-700 font-bold text-sm py-2">
+                        關閉並檢視詳解
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 題目資料庫 (100題完整重置)
+        const questions = [
+            // 第一部分：公共場所與安全標示 (1-20)
+            { section: "公共場所與安全標示", displayId: "1", question: "1. 小華在捷運站看到標示寫著「EXIT」。請問這代表什麼意思？", options: ["(1) 廁所", "(2) 入口", "(3) 出口", "(4) 服務台"], answer: 2, explain: "EXIT 即為「出口」的意思。" },
+            { section: "公共場所與安全標示", displayId: "2", question: "2. 求職門口看到「PUSH」的牌子。請問他應該怎麼做才能把門打開？", options: ["(1) 用手推", "(2) 用手拉", "(3) 用腳踢", "(4) 用身體靠"], answer: 0, explain: "PUSH 是指「推」的意思。" },
+            { section: "公共場所與安全標示", displayId: "3", question: "3. 在百貨公司看到電梯旁的「UP」和「DOWN」按鈕。「DOWN」是指電梯要往哪裡去？", options: ["(1) 往上", "(2) 往下", "(3) 往左", "(4) 往右"], answer: 1, explain: "DOWN 代表「往下」。" },
+            { section: "公共場所與安全標示", displayId: "4", question: "4. 在馬路上看到一個紅色的八角形標誌寫著「STOP」。請問這表示什麼？", options: ["(1) 可以快走", "(2) 禁止通行", "(3) 停車或停止", "(4) 小心地滑"], answer: 2, explain: "STOP 指的是「停止」或「停車」。" },
+            { section: "公共場所與安全標示", displayId: "5", question: "5. 在咖啡店看到告示牌寫著「NO SMOKING」。這是提醒大家什麼？", options: ["(1) 可以吸菸", "(2) 禁止吸菸", "(3) 請保持安靜", "(4) 廁所在這裡"], answer: 1, explain: "NO SMOKING 意思為「禁止吸菸」。" },
+            { section: "公共場所與安全標示", displayId: "6", question: "6. 商店門口掛著牌子寫「OPEN」。這是指這間店？", options: ["(1) 正在休息", "(2) 正在營業", "(3) 準備打烊", "(4) 不能進入"], answer: 1, explain: "OPEN 代表店鋪「正在營業」。" },
+            { section: "公共場所與安全標示", displayId: "7", question: "7. 飯店房間的門上寫著「DO NOT DISTURB」。這是告訴服務人員？", options: ["(1) 請送餐點", "(2) 請勿打擾", "(3) 請進來打掃", "(4) 請幫忙開門"], answer: 1, explain: "DO NOT DISTURB 意指「請勿打擾」。" },
+            { section: "公共場所與安全標示", displayId: "8", question: "8. 在公共廁所，看到標示「GENTLEMEN」。這是指哪個性別的廁所？", options: ["(1) 女士", "(2) 男士", "(3) 寵物", "(4) 小孩"], answer: 1, explain: "GENTLEMEN 指的是「男士廁所」。" },
+            { section: "公共場所與安全標示", displayId: "9", question: "9. 在火車站想要找「TICKET」櫃檯。請問 TICKET 是什麼意思？", options: ["(1) 行李", "(2) 座位", "(3) 車票/門票", "(4) 廣播"], answer: 2, explain: "TICKET 是指「車票」或「門票」。" },
+            { section: "公共場所與安全標示", displayId: "10", question: "10. 在路邊看到「DANGER」的標示。這是提醒我們？", options: ["(1) 可以拍照", "(2) 有免費禮物", "(3) 附近很危險", "(4) 路口有警察"], answer: 2, explain: "DANGER 代表「危險」的警告標示。" },
+            { section: "公共場所與安全標示", displayId: "11", question: "11. 小華要進入門口時，看到「PULL」的牌子。他應該怎麼做？", options: ["(1) 用手推", "(2) 用手拉", "(3) 用腳踢", "(4) 用身體靠"], answer: 1, explain: "PULL 的意思是「拉」門。" },
+            { section: "公共場所與安全標示", displayId: "12", question: "12. 看到標示寫著「ENTRANCE」。這是指哪裡？", options: ["(1) 出口", "(2) 入口", "(3) 洗手間", "(4) 停車場"], answer: 1, explain: "ENTRANCE 代表「入口」。" },
+            { section: "公共場所與安全標示", displayId: "13", question: "13. 在百貨公司看到電梯旁的「UP」按鈕。「UP」是指電梯要往哪裡去？", options: ["(1) 往上", "(2) 往下", "(3) 往左", "(4) 往右"], answer: 0, explain: "UP 代表「往上」。" },
+            { section: "公共場所與安全標示", displayId: "14", question: "14. 在商場走道看到黃色的立牌寫著「WET FLOOR」。這是什麼意思？", options: ["(1) 可以跳舞", "(2) 小心地滑/地板濕滑", "(3) 正在清洗", "(4) 地板很燙"], answer: 1, explain: "WET FLOOR 意指「地板濕滑，請小心慢行」。" },
+            { section: "公共場所與安全標示", displayId: "15", question: "15. 在圖書館或捷運車廂內看到「NO EATING OR DRINKING」。這是提醒我們？", options: ["(1) 可以大聲說話", "(2) 禁止飲食", "(3) 可以打電話", "(4) 請勿奔跑"], answer: 1, explain: "NO EATING OR DRINKING 意指「禁止吃東西或喝飲料」。" },
+            { section: "公共場所與安全標示", displayId: "16", question: "16. 在醫院或學校看到「FIRE EXIT」。這是指什麼？", options: ["(1) 廁所", "(2) 員工入口", "(3) 緊急出口", "(4) 停車場"], answer: 2, explain: "FIRE EXIT 意指「緊急逃生出口/安全出口」。" },
+            { section: "公共場所與安全標示", displayId: "17", question: "17. 在公共廁所，看到標示「LADIES」。這是指哪個性別的廁所？", options: ["(1) 女士", "(2) 男士", "(3) 寵物", "(4) 小孩"], answer: 0, explain: "LADIES 指的是「女士廁所」。" },
+            { section: "公共場所與安全標示", displayId: "18", question: "18. 在路邊看到「BUS STOP」的標示。這是指什麼？", options: ["(1) 計程車招呼站", "(2) 公車站", "(3) 火車站", "(4) 捷運站"], answer: 1, explain: "BUS STOP 為「公車站、公車候車亭」。" },
+            { section: "公共場所與安全標示", displayId: "19", question: "19. 在藥品或危險物品上看到「CAUTION」的字樣。請問這是什麼意思？", options: ["(1) 可以隨意碰觸", "(2) 請小心/警告", "(3) 有特價", "(4) 免費"], answer: 1, explain: "CAUTION 代表「小心、警告、防範」。" },
+            { section: "公共場所與安全標示", displayId: "20", question: "20. 在餐廳桌上看到「RESERVED」的牌子。這是指？", options: ["(1) 這個位子沒人用", "(2) 這個位子已預訂", "(3) 這裡是廚房", "(4) 請自取餐具"], answer: 1, explain: "RESERVED 意指「此座位已被預訂」。" },
+
+            // 第二部分：生活與服務詞彙 (21-40)
+            { section: "生活與服務詞彙", displayId: "21", question: "21. 想找服務台詢問，他應該找寫著「INFO」的地方。請問 INFO 是指？", options: ["(1) 廁所", "(2) 資訊/服務", "(3) 停車場", "(4) 提款機"], answer: 1, explain: "INFO 是 Information 的縮寫，代表「資訊、詢問處或服務台」。" },
+            { section: "生活與服務詞彙", displayId: "22", question: "22. 喝飲料時，看到杯子外面寫著「HOT」。這是說裡面的飲料是？", options: ["(1) 冰的", "(2) 熱的", "(3) 甜的", "(4) 苦的"], answer: 1, explain: "HOT 意為「熱的」。" },
+            { section: "生活與服務詞彙", displayId: "23", question: "23. 小蓮在超商看到飲料包裝上寫著「MILK」。請問這是什麼？", options: ["(1) 果汁", "(2) 牛奶", "(3) 汽水", "(4) 水"], answer: 1, explain: "MILK 意為「牛奶」。" },
+            { section: "生活與服務詞彙", displayId: "24", question: "24. 小芬看到廣告單寫著「FREE」。請問這是指？", options: ["(1) 很貴", "(2) 免費", "(3) 特價", "(4) 快壞了"], answer: 1, explain: "FREE 在消費情境中意為「免費的」。" },
+            { section: "生活與服務詞彙", displayId: "25", question: "25. 小林買東西結帳時，店員問他要不要「BAG」。請問 BAG 是什麼？", options: ["(1) 發票", "(2) 錢包", "(3) 塑膠袋/袋子", "(4) 零錢"], answer: 2, explain: "BAG 意為「袋子、提袋、購物袋」。" },
+            { section: "生活與服務詞彙", displayId: "26", question: "26. 在藥局看到藥品說明有「WATER」。這是指要配什麼服用？", options: ["(1) 果汁", "(2) 咖啡", "(3) 牛奶", "(4) 水"], answer: 3, explain: "WATER 意為「水」。" },
+            { section: "生活與服務詞彙", displayId: "27", question: "27. 在菜單上看到「RICE」。請問這是指什麼食物？", options: ["(1) 麵包", "(2) 麵條", "(3) 米飯", "(4) 肉類"], answer: 2, explain: "RICE 意為「米飯、大米」。" },
+            { section: "生活與服務詞彙", displayId: "28", question: "28. 在機場或捷運站找洗手間，應該找「RESTROOM」或「TOILET」。請問這是指？", options: ["(1) 餐廳", "(2) 休息室", "(3) 洗手間", "(4) 售票處"], answer: 2, explain: "RESTROOM 與 TOILET 均是指「洗手間/廁所」。" },
+            { section: "生活與服務詞彙", displayId: "29", question: "29. 結帳時，如果看到價錢牌寫著「SALE」，通常是指？", options: ["(1) 漲價", "(2) 打折/特價", "(3) 剛賣完", "(4) 請勿購買"], answer: 1, explain: "SALE 意為「特價、拍賣、促銷」。" },
+            { section: "生活與服務詞彙", displayId: "30", question: "30. 在旅館的緊急電話上看到「POLICE」。請問這是指要打給誰？", options: ["(1) 醫生", "(2) 警察", "(3) 消防員", "(4) 計程車"], answer: 1, explain: "POLICE 意為「警察」。" },
+            { section: "生活與服務詞彙", displayId: "31", question: "31. 買飲料時，如果要求「COLD」的，這是指要？", options: ["(1) 熱的", "(2) 常溫的", "(3) 冰的/冷的", "(4) 甜的"], answer: 2, explain: "COLD 意為「冰的、冷的」。" },
+            { section: "生活與服務詞彙", displayId: "32", question: "32. 餐廳提供的「SODA」通常是指？", options: ["(1) 果汁", "(2) 牛奶", "(3) 白開水", "(4) 汽水/蘇打水"], answer: 3, explain: "SODA 意為「汽水或蘇打汽水」。" },
+            { section: "生活與服務詞彙", displayId: "33", question: "33. 菜單上的「MEAT」是指什麼？", options: ["(1) 蔬菜", "(2) 水果", "(3) 肉類", "(4) 甜點"], answer: 2, explain: "MEAT 意為「肉類（包括豬、牛、雞等肉）」。" },
+            { section: "生活與服務詞彙", displayId: "34", question: "34. 喝咖啡時想要加「SUGAR」。請問這是指要加什麼？", options: ["(1) 水", "(2) 牛奶", "(3) 糖", "(4) 鹽"], answer: 2, explain: "SUGAR 意為「糖」。" },
+            { section: "生活與服務詞彙", displayId: "35", question: "35. 煮飯時需要「SALT」。請問這是什麼調味料？", options: ["(1) 糖", "(2) 鹽", "(3) 醋", "(4) 油"], answer: 1, explain: "SALT 意為「鹽」。" },
+            { section: "生活與服務詞彙", displayId: "36", question: "36. 在玩具店裡，主要販售的商品是「TOY」。請問這是？", options: ["(1) 衣服", "(2) 玩具", "(3) 食物", "(4) 鞋子"], answer: 1, explain: "TOY 意為「玩具」。" },
+            { section: "生活與服務詞彙", displayId: "37", question: "37. 買東西時，我們想知道「PRICE」。這是指什麼？", options: ["(1) 數量", "(2) 重量", "(3) 價格", "(4) 尺寸"], answer: 2, explain: "PRICE 意為「價格、價錢」。" },
+            { section: "生活與服務詞彙", displayId: "38", question: "38. 看到一個商品標示「NEW」。這是說這個商品是？", options: ["(1) 舊的", "(2) 新的", "(3) 特價的", "(4) 壞掉的"], answer: 1, explain: "NEW 意為「新的」。" },
+            { section: "生活與服務詞彙", displayId: "39", question: "39. 看到一個商品標示「OLD」。這是說這個商品是？", options: ["(1) 舊的", "(2) 新的", "(3) 特價的", "(4) 剛生產的"], answer: 0, explain: "OLD 意為「舊的、古老的」。" },
+            { section: "生活與服務詞彙", displayId: "40", question: "40. 在餐廳裡，點餐時需要看「MENU」。請問這是什麼？", options: ["(1) 帳單", "(2) 菜單", "(3) 地圖", "(4) 報紙"], answer: 1, explain: "MENU 意為「菜單」。" },
+
+            // 第三部分：基礎電子與數位應用 (41-60)
+            { section: "基礎電子與數位應用", displayId: "41", question: "41. 電視遙控器上的「POWER」鈕通常是做什麼的？", options: ["(1) 換頻道", "(2) 調整音量", "(3) 電源開關", "(4) 設定時間"], answer: 2, explain: "POWER 代表「電源、開關機鍵」。" },
+            { section: "基礎電子與數位應用", displayId: "42", question: "42. 在電器上看到「ON」這個字，通常是表示電器處於什麼狀態？", options: ["(1) 已開啟/啟動", "(2) 已關閉", "(3) 已暫停", "(4) 沒電了"], answer: 0, explain: "ON 代表「開啟、啟動狀態」。" },
+            { section: "基礎電子與數位應用", displayId: "43", question: "43. 在手機App裡，點擊「OK」鈕通常是表示什麼？", options: ["(1) 返回", "(2) 取消", "(3) 確認/完成", "(4) 開始"], answer: 2, explain: "OK 代表「確認、好、完成」。" },
+            { section: "基礎電子與數位應用", displayId: "44", question: "44. 使用手機App時，想要回到上一個畫面，可以找哪個英文單字？", options: ["(1) Start", "(2) Back", "(3) Exit", "(4) Play"], answer: 1, explain: "BACK 代表「返回、後退」。" },
+            { section: "基礎電子與數位應用", displayId: "45", question: "45. 在電腦或平板上看到「SAVE」的按鈕。這是要你做什麼？", options: ["(1) 刪除", "(2) 儲存", "(3) 開啟", "(4) 列印"], answer: 1, explain: "SAVE 代表「儲存、存檔」。" },
+            { section: "基礎電子與數位應用", displayId: "46", question: "46. 玩遊戲時，要開始遊戲通常會點擊哪個按鈕？", options: ["(1) Cancel", "(2) End", "(3) Start", "(4) Stop"], answer: 2, explain: "START 代表「開始」。" },
+            { section: "基礎電子與數位應用", displayId: "47", question: "47. 在電子產品上看到「OFF」這個字，通常是表示電器處於什麼狀態？", options: ["(1) 已開啟", "(2) 已關閉/停止", "(3) 已連線", "(4) 已充電"], answer: 1, explain: "OFF 代表「關閉、停止狀態」。" },
+            { section: "基礎電子與數位應用", displayId: "48", question: "48. 在網頁或App上看到「LOG IN」。這是指要進行什麼操作？", options: ["(1) 登出", "(2) 註冊", "(3) 登入", "(4) 取消"], answer: 2, explain: "LOG IN 代表「會員登入、系統登入」。" },
+            { section: "基礎電子與數位應用", displayId: "49", question: "49. 在自動販賣機上，點擊「CANCEL」鈕通常是表示？", options: ["(1) 開始投幣", "(2) 購買商品", "(3) 退出或取消交易", "(4) 拿取商品"], answer: 2, explain: "CANCEL 代表「取消交易、退款」。" },
+            { section: "基礎電子與數位應用", displayId: "50", question: "50. 在相機或手機裡，想要看以前拍的照片，要點選哪個單字？", options: ["(1) Record", "(2) Album/相簿", "(3) Delete", "(4) Zoom"], answer: 1, explain: "ALBUM 代表「相簿、相冊」。" },
+            { section: "基礎電子與數位應用", displayId: "51", question: "51. 調整電視聲音大小時，會使用到「VOLUME」按鈕。這是指？", options: ["(1) 調整頻道", "(2) 調整音量", "(3) 調整亮度", "(4) 調整顏色"], answer: 1, explain: "VOLUME 代表「音量」。" },
+            { section: "基礎電子與數位應用", displayId: "52", question: "52. 手機沒電時需要「CHARGE」。請問這是什麼意思？", options: ["(1) 關機", "(2) 充電", "(3) 換電池", "(4) 格式化"], answer: 1, explain: "CHARGE 代表「充電」。" },
+            { section: "基礎電子與數位應用", displayId: "53", question: "53. 小明想把剛拍好的「PHOTO」傳給朋友。請問 PHOTO 是什麼？", options: ["(1) 音樂", "(2) 文字", "(3) 照片", "(4) 影片"], answer: 2, explain: "PHOTO 代表「照片、相片」。" },
+            { section: "基礎電子與數位應用", displayId: "54", question: "54. 想要打電話給朋友，應該點選「CALL」這個按鈕。這是什麼意思？", options: ["(1) 簡訊", "(2) 打電話", "(3) 拍照", "(4) 看影片"], answer: 1, explain: "CALL 代表「撥打電話、呼叫」。" },
+            { section: "基礎電子與數位應用", displayId: "55", question: "55. 收到朋友傳來的「MESSAGE」。請問這是什麼？", options: ["(1) 簡訊/訊息", "(2) 禮物", "(3) 食物", "(4) 地址"], answer: 0, explain: "MESSAGE 代表「訊息、簡訊」。" },
+            { section: "基礎電子與數位應用", displayId: "56", question: "56. 不喜歡某張照片想將它「DELETE」。請問 DELETE 是什麼？", options: ["(1) 儲存", "(2) 分享", "(3) 刪除", "(4) 放大"], answer: 2, explain: "DELETE 代表「刪除」。" },
+            { section: "基礎電子與數位應用", displayId: "57", question: "57. 在網站上看到檔案要「DOWNLOAD」。這是什麼意思？", options: ["(1) 上傳", "(2) 下載", "(3) 購買", "(4) 分享"], answer: 1, explain: "DOWNLOAD 代表「下載」。" },
+            { section: "基礎電子與數位應用", displayId: "58", question: "58. 提款機上要求輸入「CODE」。這是指什麼？", options: ["(1) 地址", "(2) 密碼/代碼", "(3) 電話", "(4) 商品名稱"], answer: 1, explain: "CODE 代表「代碼、驗證碼或密碼」。" },
+            { section: "基礎電子與數位應用", displayId: "59", question: "59. 想在網路上找資料時，需要點選「SEARCH」。這是什麼意思？", options: ["(1) 登入", "(2) 列印", "(3) 搜尋", "(4) 關閉"], answer: 2, explain: "SEARCH 代表「搜尋、尋找」。" },
+            { section: "基礎電子與數位應用", displayId: "60", question: "60. 在視訊或通話中，點擊「MUTE」按鈕的功能是？", options: ["(1) 開始說話", "(2) 將麥克風靜音", "(3) 開啟鏡頭", "(4) 調整亮度"], answer: 1, explain: "MUTE 代表「靜音、麥克風靜音」。" },
+
+            // 第四部分：情境對話與基本禮儀 (61-80)
+            { section: "情境對話與基本禮儀", displayId: "61", question: "61. 早上遇到老師，A: Good morning! 請問 B 應該如何回應最恰當？", options: ["(1) Thank you.", "(2) Good morning!", "(3) I'm sorry.", "(4) Bye bye."], answer: 1, explain: "Good morning! 意為「早安」，回應同樣為 Good morning!。" },
+            { section: "情境對話與基本禮儀", displayId: "62", question: "62. 服務員給你餐點時說：「Thank you!」請問你應該怎麼回答？", options: ["(1) Please.", "(2) Hello.", "(3) You’re welcome.", "(4) Stop!"], answer: 2, explain: "面對感謝，回應「不客氣」(You’re welcome)。" },
+            { section: "情境對話與基本禮儀", displayId: "63", question: "63. 朋友離開時，對你說「See you!」你應該回應：", options: ["(1) Yes.", "(2) No.", "(3) See you.", "(4) Hot."], answer: 2, explain: "「再見/回頭見」(See you) 的回應同樣是 See you!。" },
+            { section: "情境對話與基本禮儀", displayId: "64", question: "64. 老師問你：「Are you ready?」（你準備好了嗎？）如果你準備好了，應該回答：", options: ["(1) NO.", "(2) YES.", "(3) MAYBE.", "(4) THANK YOU."], answer: 1, explain: "肯定回答「是的，我好了」使用 YES。" },
+            { section: "情境對話與基本禮儀", displayId: "65", question: "65. 老師說「Stand up!」時，你應該怎麼做？", options: ["(1) 坐下來", "(2) 站起來", "(3) 走出去", "(4) 跑回家"], answer: 1, explain: "STAND UP 是「站起來、起立」。" },
+            { section: "情境對話與基本禮儀", displayId: "66", question: "66. 老師說「Sit down!」時，你應該怎麼做？", options: ["(1) 坐下來", "(2) 站起來", "(3) 走出去", "(4) 跑回家"], answer: 0, explain: "SIT DOWN 是「坐下來、請坐」。" },
+            { section: "情境對話與基本禮儀", displayId: "67", question: "67. 當別人向你說「I am sorry.」（我很抱歉。）你應該回答？", options: ["(1) I am fine.", "(2) Thank you.", "(3) That’s okay.", "(4) You are welcome."], answer: 2, explain: "面對別人的道歉，可以用 That’s okay (沒關係) 回應。" },
+            { section: "情境對話與基本禮儀", displayId: "68", question: "68. 你想要禮貌地請求別人給你某樣東西，應該說：", options: ["(1) Give me!", "(2) Please, give me.", "(3) Thank you.", "(4) Hello."], answer: 1, explain: "祈使句加入 Please (請) 可以顯得更有禮貌。" },
+            { section: "情境對話與基本禮儀", displayId: "69", question: "69. 有人問你「What is your name?」他想知道什麼？", options: ["(1) 你的年齡", "(2) 你的名字", "(3) 你的職業", "(4) 你住在哪裡"], answer: 1, explain: "What is your name? 代表問「你的名字是什麼？」" },
+            { section: "情境對話與基本禮儀", displayId: "70", question: "70. 陌生人想要進入教室，你應該禮貌地說：「Come in!」意思是？", options: ["(1) 請離開", "(2) 請進來", "(3) 請安靜", "(4) 請等待"], answer: 1, explain: "Come in! 意指「請進來」。" },
+            { section: "情境對話與基本禮儀", displayId: "71", question: "71. 晚上睡覺前對家人說「Good night!」。這是什麼意思？", options: ["(1) 早安", "(2) 午安", "(3) 晚安", "(4) 再見"], answer: 2, explain: "GOOD NIGHT 是「晚安、祝好夢」。" },
+            { section: "情境對話與基本禮儀", displayId: "72", question: "72. 遇到朋友時，可以說「Hello!」這是什麼意思？", options: ["(1) 再見", "(2) 對不起", "(3) 嗨/你好", "(4) 謝謝"], answer: 2, explain: "HELLO 是最常見的打招呼用語，意指「你好」。" },
+            { section: "情境對話與基本禮儀", displayId: "73", question: "73. 離開學校時，可以對老師說「Goodbye.」這是什麼意思？", options: ["(1) 你好", "(2) 再見", "(3) 對不起", "(4) 請進"], answer: 1, explain: "GOODBYE 是「再見、告別」。" },
+            { section: "情境對話與基本禮儀", displayId: "74", question: "74. 老師問你「How are you?」（你好嗎？）如果你很好，應該回答？", options: ["(1) I am sorry.", "(2) I'm fine.", "(3) Thank you.", "(4) Sit down."], answer: 1, explain: "面對問候「你好嗎」，標準且客氣的回應是 I'm fine (我很好)。" },
+            { section: "情境對話與基本禮儀", displayId: "75", question: "75. 老師說「Close the door.」你應該怎麼做？", options: ["(1) 開門", "(2) 關門", "(3) 開窗", "(4) 關窗"], answer: 1, explain: "CLOSE 代表「關閉」，DOOR 是「門」。" },
+            { section: "情境對話與基本禮儀", displayId: "76", question: "76. 老師說「Open the window.」你應該怎麼做？", options: ["(1) 開門", "(2) 關門", "(3) 開窗", "(4) 關窗"], answer: 2, explain: "OPEN 代表「打開」，WINDOW 是「窗戶」。" },
+            { section: "情境對話與基本禮儀", displayId: "77", question: "77. 當你把東西交給別人時，可以說「Here you are.」意思是？", options: ["(1) 在這裡等你", "(2) 給你", "(3) 請坐下", "(4) 謝謝你"], answer: 1, explain: "Here you are. 是遞交物品給對方時的禮貌用語，意指「拿去吧、給你」。" },
+            { section: "情境對話與基本禮儀", displayId: "78", question: "78. 聽到廣播說「It's time for lunch.」這是提醒大家？", options: ["(1) 上課了", "(2) 午餐時間到了", "(3) 下課了", "(4) 回家了"], answer: 1, explain: "LUNCH 代表「午餐」，It's time for... 代表「該做某事的時間到了」。" },
+            { section: "情境對話與基本禮儀", displayId: "79", question: "79. 老師問「What color?」（什麼顏色？）你看到藍色，應該回答：", options: ["(1) It's an apple.", "(2) Blue.", "(3) Big.", "(4) Fast."], answer: 1, explain: "Blue 意指「藍色」。" },
+            { section: "情境對話與基本禮儀", displayId: "80", question: "80. 老師說「Listen!」時，你應該怎麼做？", options: ["(1) 大聲說話", "(2) 仔細聽", "(3) 跳舞", "(4) 看書"], answer: 1, explain: "LISTEN 是指示動詞，代表「仔細聽、傾聽」。" },
+
+            // 第五部分：基礎字母認知 (81-100)
+            { section: "基礎字母認知", displayId: "81", question: "81. 請問下列哪一個是「大寫」字母？", options: ["(1) p", "(2) z", "(3) T", "(4) k"], answer: 2, explain: "T 是大寫英文字母，其餘皆為小寫。" },
+            { section: "基礎字母認知", displayId: "82", question: "82. 請問下列哪一個是「小寫」字母？", options: ["(1) D", "(2) Y", "(3) j", "(4) P"], answer: 2, explain: "j 是小寫英文字母，其餘皆為大寫。" },
+            { section: "基礎字母認知", displayId: "83", question: "83. 請問下列哪一組英文字母是按照正確順序排列的？", options: ["(1) C, B, A", "(2) B, A, C", "(3) A, B, C", "(4) D, C, B"], answer: 2, explain: "英文字母開頭順序為 A、B、C。" },
+            { section: "基礎字母認知", displayId: "84", question: "84. 想要在字典裡查「Dog」（狗）這個字，應該由下列哪一個字母查起才正確？", options: ["(1) O", "(2) G", "(3) D", "(4) E"], answer: 2, explain: "Dog 的字首是字母 D。" },
+            { section: "基礎字母認知", displayId: "85", question: "85. 請問下列哪一個字母排在字母「J」的後面？", options: ["(1) H", "(2) I", "(3) K", "(4) L"], answer: 2, explain: "字母表順序為：H, I, J, K..." },
+            { section: "基礎字母認知", displayId: "86", question: "86. 請問下列哪一個字母排在字母「E」的前面？", options: ["(1) F", "(2) D", "(3) G", "(4) H"], answer: 1, explain: "字母表順序為：C, D, E, F..." },
+            { section: "基礎字母認知", displayId: "87", question: "87. 請問下列哪個單字是由四個字母組成的？", options: ["(1) Cat", "(2) Elephant", "(3) Lion", "(4) Book"], answer: 3, explain: "Book (B-O-O-K) 共有 4 個字母。" },
+            { section: "基礎字母認知", displayId: "88", question: "88. 請問下列哪個數字的英文是「FOUR」？", options: ["(1) 3", "(2) 4", "(3) 5", "(4) 6"], answer: 1, explain: "FOUR 代表數字 4。" },
+            { section: "基礎字母認知", displayId: "89", question: "89. 請問下列哪個數字的英文是「EIGHT」？", options: ["(1) 7", "(2) 8", "(3) 9", "(4) 10"], answer: 1, explain: "EIGHT 代表數字 8。" },
+            { section: "基礎字母認知", displayId: "90", question: "90. 請問下列哪個字母的唸法是「歐」？", options: ["(1) A", "(2) E", "(3) I", "(4) O"], answer: 3, explain: "O 的英文字母發音為「歐」。" },
+            { section: "基礎字母認知", displayId: "91", question: "91. 請問下列哪一個是「大寫」字母？", options: ["(1) b", "(2) d", "(3) Q", "(4) f"], answer: 2, explain: "Q 是大寫字母，其餘皆為小寫。" },
+            { section: "基礎字母認知", displayId: "92", question: "92. 請問下列哪一個是「小寫」字母？", options: ["(1) K", "(2) M", "(3) h", "(4) N"], answer: 2, explain: "h 是小寫字母，其餘皆為大寫。" },
+            { section: "基礎字母認知", displayId: "93", question: "93. 請問下列哪一組英文字母是按照正確順序排列的？", options: ["(1) X, Y, Z", "(2) Y, X, Z", "(3) Z, Y, X", "(4) X, Z, Y"], answer: 0, explain: "字母結尾正確順序為 X、Y、Z。" },
+            { section: "基礎字母認知", displayId: "94", question: "94. 想要查「Sun」（太陽）這個字，應該由下列哪一個字母查起才正確？", options: ["(1) U", "(2) N", "(3) S", "(4) M"], answer: 2, explain: "Sun 的字首是字母 S。" },
+            { section: "基礎字母認知", displayId: "95", question: "95. 請問下列哪一個字母排在字母「R」的後面？", options: ["(1) P", "(2) Q", "(3) S", "(4) T"], answer: 2, explain: "字母順序為：P, Q, R, S..." },
+            { section: "基礎字母認知", displayId: "96", question: "96. 請問下列哪一個字母排在字母「V」的前面？", options: ["(1) X", "(2) W", "(3) U", "(4) T"], answer: 2, explain: "字母順序為：T, U, V, W..." },
+            { section: "基礎字母認知", displayId: "97", question: "97. 請問下列哪個單字是由三個字母組成的？", options: ["(1) Door", "(2) Window", "(3) Pen", "(4) Pencil"], answer: 2, explain: "Pen (P-E-N) 共有 3 個字母。" },
+            { section: "基礎字母認知", displayId: "98", question: "98. 請問下列哪個數字的英文是「TWO」？", options: ["(1) 1", "(2) 2", "(3) 3", "(4) 4"], answer: 1, explain: "TWO 代表數字 2。" },
+            { section: "基礎字母認知", displayId: "99", question: "99. 請問下列哪個數字的英文是「NINE」？", options: ["(1) 8", "(2) 9", "(3) 10", "(4) 11"], answer: 1, explain: "NINE 代表數字 9。" },
+            { section: "基礎字母認知", displayId: "100", question: "100. 請問下列哪個字母的唸法是「艾」？", options: ["(1) A", "(2) B", "(3) C", "(4) I"], answer: 3, explain: "I 的英文字母發音為「艾」。" }
+        ];
+
+        // 核心狀態管理
+        let currentUnitIndex = 0;              // 目前單元 (0 ~ 9 對應單元 1 ~ 10)
+        let currentQuestionInUnit = 0;         // 在單元中的題號 (0 ~ 9)
+        let quizMode = 'study';                // 'study' (即時回饋學習) or 'test' (模擬測驗計分)
+        let userAnswers = Array(10).fill(null); // 當前單元使用者作答紀錄 (長度10)
+        let hasCheckedAnswer = Array(10).fill(false); // 即時學習模式下該題是否已被判定對錯
+        let isUnitSubmitted = false;           // 在測驗模式下單元是否已被提交
+
+        // Web Speech API 語音控制
+        const synth = window.speechSynthesis;
+        let utterance = new SpeechSynthesisUtterance();
+        utterance.lang = 'zh-TW';
+        utterance.rate = 0.9;
+        let voices = [];
+
+        // DOM 元素快取
+        const questionEl = document.getElementById('question-text');
+        const optionsEl = document.getElementById('options-list');
+        const unitSelectEl = document.getElementById('unit-select');
+        const voiceSelectEl = document.getElementById('voice-select');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitQuizBtn = document.getElementById('submit-quiz-btn');
+        const speedControl = document.getElementById('speed-control');
+        const speedValue = document.getElementById('speed-value');
+        const autoReadToggle = document.getElementById('auto-read-toggle');
+        const feedbackAlertEl = document.getElementById('feedback-alert');
+        const feedbackTitleEl = document.getElementById('feedback-title');
+        const feedbackDescEl = document.getElementById('feedback-desc');
+        const feedbackExplanationEl = document.getElementById('feedback-explanation');
+        const feedbackIconContainer = document.getElementById('feedback-icon-container');
+        const currentScoreDisplay = document.getElementById('current-score-display');
+        const unitTitleDisplay = document.getElementById('unit-title-display');
+        const progressTextEl = document.getElementById('progress-text');
+        const progressDotsContainer = document.getElementById('progress-dots-container');
+
+        // 載入語音裝置
+        function populateVoiceList() {
+            // 支持中文和英文的語音引擎過濾
+            voices = synth.getVoices().filter(v => v.lang.startsWith('zh') || v.lang.startsWith('en'));
+            voiceSelectEl.innerHTML = '';
+            
+            if (!voices.length) {
+                voiceSelectEl.appendChild(new Option('找不到中文或英文語音', ''));
+                return;
+            }
+            
+            voices.forEach((v, i) => {
+                const opt = new Option(`${v.name} (${v.lang})`, i);
+                voiceSelectEl.appendChild(opt);
+            });
+
+            // 優先選擇台灣中文發音
+            let defaultVoiceIdx = voices.findIndex(v => v.name.includes('Yating') && v.lang === 'zh-TW');
+            if (defaultVoiceIdx === -1) defaultVoiceIdx = voices.findIndex(v => v.name.includes('Google') && v.lang.includes('TW'));
+            if (defaultVoiceIdx === -1) defaultVoiceIdx = voices.findIndex(v => v.lang.startsWith('zh'));
+            if (defaultVoiceIdx === -1) defaultVoiceIdx = 0;
+
+            if (voices[defaultVoiceIdx]) {
+                utterance.voice = voices[defaultVoiceIdx];
+                voiceSelectEl.selectedIndex = defaultVoiceIdx;
+            }
+        }
+
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = populateVoiceList;
+        }
+
+        // 切換語音設定面板顯示狀態
+        function toggleVoicePanel() {
+            const panel = document.getElementById('voice-settings-panel');
+            const txt = document.getElementById('voice-panel-toggle-text');
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                txt.textContent = '收合語音設定';
+            } else {
+                panel.classList.add('hidden');
+                txt.textContent = '設定語音/語速';
+            }
+        }
+
+        // 更新語速
+        function updateSpeed(val) {
+            const s = parseFloat(val);
+            utterance.rate = s;
+            speedValue.textContent = `${s.toFixed(1)}x`;
+            if (synth.speaking) {
+                speakText(utterance.text);
+            }
+        }
+
+        // 更新發音人
+        function updateVoice() {
+            const idx = voiceSelectEl.value;
+            if (voices[idx]) {
+                utterance.voice = voices[idx];
+                speakCurrentQuestion();
+            }
+        }
+
+        // 初始化單元下拉選單
+        function initUnits() {
+            unitSelectEl.innerHTML = '';
+            for (let i = 0; i < 10; i++) {
+                const startNum = i * 10 + 1;
+                const endNum = (i + 1) * 10;
+                let unitName = "";
+                if (i < 2) unitName = "公共場所標示";
+                else if (i < 4) unitName = "生活與服務詞彙";
+                else if (i < 6) unitName = "數位電子應用";
+                else if (i < 8) unitName = "情境對話禮儀";
+                else unitName = "基礎字母認知";
+
+                const opt = new Option(`單元 ${i + 1} (${unitName} ${startNum}~${endNum}題)`, i);
+                unitSelectEl.appendChild(opt);
+            }
+            populateVoiceList();
+            loadUnit(0);
+        }
+
+        // 載入指定的單元 (0-9)
+        function loadUnit(unitIdx) {
+            synth.cancel();
+            currentUnitIndex = parseInt(unitIdx, 10);
+            currentQuestionInUnit = 0;
+            userAnswers = Array(10).fill(null);
+            hasCheckedAnswer = Array(10).fill(false);
+            isUnitSubmitted = false;
+            
+            unitSelectEl.value = currentUnitIndex;
+            unitTitleDisplay.textContent = `單元 ${currentUnitIndex + 1} (第 ${currentUnitIndex * 10 + 1} ~ ${(currentUnitIndex + 1) * 10} 題)`;
+            
+            renderQuestion();
+            updateScoreBoard();
+        }
+
+        // 切換單元
+        function changeUnit(val) {
+            loadUnit(val);
+        }
+
+        // 切換模式：即時學習 vs 模擬測驗
+        function switchMode(mode) {
+            quizMode = mode;
+            synth.cancel();
+            
+            const studyBtn = document.getElementById('mode-study-btn');
+            const testBtn = document.getElementById('mode-test-btn');
+            
+            if (mode === 'study') {
+                studyBtn.className = "px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 bg-stone-800 text-white shadow-sm";
+                testBtn.className = "px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 text-stone-600 hover:bg-stone-100";
+            } else {
+                testBtn.className = "px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 bg-amber-600 text-white shadow-sm";
+                studyBtn.className = "px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 text-stone-600 hover:bg-stone-100";
+            }
+            
+            // 重新載入當前單元以重設答題狀況
+            loadUnit(currentUnitIndex);
+        }
+
+        // 取得當前題目在全題庫中的實際 Index
+        function getGlobalIndex() {
+            return currentUnitIndex * 10 + currentQuestionInUnit;
+        }
+
+        // 繪製或更新當前題目
+        function renderQuestion() {
+            const globalIdx = getGlobalIndex();
+            const q = questions[globalIdx];
+
+            // 設定題目文字
+            questionEl.textContent = q.question;
+            
+            // 繪製選項
+            optionsEl.innerHTML = '';
+            q.options.forEach((optText, optIdx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 md:p-5 rounded-2xl border-2 border-stone-200 bg-white hover:bg-amber-50/40 hover:border-amber-400 font-bold text-base md:text-lg transition-all duration-150 flex items-center justify-between shadow-sm group";
+                
+                // 選項文字
+                const textSpan = document.createElement('span');
+                textSpan.textContent = optText;
+                textSpan.className = "flex-grow pr-4";
+                btn.appendChild(textSpan);
+
+                // 狀態 icon 佔位
+                const iconContainer = document.createElement('span');
+                iconContainer.className = "flex-shrink-0 text-xl w-8 h-8 flex items-center justify-center rounded-full";
+                btn.appendChild(iconContainer);
+
+                // 點擊選項邏輯
+                btn.onclick = () => selectOption(optIdx);
+
+                // 依照不同模式或狀態套用特定樣式
+                applyStyleToOption(btn, optIdx, iconContainer);
+
+                optionsEl.appendChild(btn);
+            });
+
+            // 更新按鈕狀態
+            prevBtn.disabled = currentQuestionInUnit === 0;
+            
+            // 在「測驗模式」下，未提交且為最後一題，則改為顯示提交測驗
+            if (quizMode === 'test' && currentQuestionInUnit === 9 && !isUnitSubmitted) {
+                nextBtn.classList.add('hidden');
+                submitQuizBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitQuizBtn.classList.add('hidden');
+                nextBtn.disabled = currentQuestionInUnit === 9 && quizMode === 'study'; 
+            }
+
+            // 更新進度與回饋面板
+            updateProgressIndicators();
+            renderFeedbackPanel();
+
+            // 如果開啟了自動報讀，自動發聲
+            if (autoReadToggle.checked) {
+                speakCurrentQuestion();
+            }
+        }
+
+        // 根據作答狀態為選項套用視覺樣式
+        function applyStyleToOption(btn, optIdx, iconContainer) {
+            const globalIdx = getGlobalIndex();
+            const q = questions[globalIdx];
+            const chosen = userAnswers[currentQuestionInUnit];
+            const checked = hasCheckedAnswer[currentQuestionInUnit];
+            const correctIdx = q.answer;
+
+            // 如果是即時學習模式，或者測驗模式下已經提交單元 (進入答案 review 狀態)
+            if (quizMode === 'study' || isUnitSubmitted) {
+                const isShowingFeedback = quizMode === 'study' ? checked : true;
+
+                if (isShowingFeedback) {
+                    btn.disabled = true; // 已判定對錯就不可再點選
+                    if (optIdx === correctIdx) {
+                        // 正確選項亮綠燈
+                        btn.className = "w-full text-left p-4 md:p-5 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold text-base md:text-lg transition-all duration-150 flex items-center justify-between shadow-sm correct-animate";
+                        iconContainer.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 animate-bounce"></i>`;
+                    } else if (optIdx === chosen) {
+                        // 選錯的選項亮紅燈
+                        btn.className = "w-full text-left p-4 md:p-5 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-900 font-bold text-base md:text-lg transition-all duration-150 flex items-center justify-between shadow-sm";
+                        iconContainer.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+                    } else {
+                        // 其他沒選的普通選項半透明
+                        btn.className = "w-full text-left p-4 md:p-5 rounded-2xl border border-stone-200 bg-white font-bold text-base md:text-lg opacity-40 flex items-center justify-between";
+                    }
+                } else if (chosen === optIdx) {
+                    // 已點選但尚未認證
+                    btn.className = "w-full text-left p-4 md:p-5 rounded-2xl border-2 border-amber-500 bg-amber-50/40 font-bold text-base md:text-lg flex items-center justify-between shadow-inner";
+                }
+            } else {
+                // 【純粹模擬測驗模式下 (未提交前)】
+                if (chosen === optIdx) {
+                    btn.className = "w-full text-left p-4 md:p-5 rounded-2xl border-2 border-stone-700 bg-stone-50 font-bold text-base md:text-lg flex items-center justify-between shadow-inner";
+                    iconContainer.innerHTML = `<i class="fa-solid fa-circle text-stone-700 text-xs"></i>`;
+                }
+            }
+        }
+
+        // 使用者點選選項
+        function selectOption(optIdx) {
+            if (quizMode === 'test' && isUnitSubmitted) return; // 提交後 review 模式不可修改答案
+
+            synth.cancel();
+            const globalIdx = getGlobalIndex();
+            const q = questions[globalIdx];
+            
+            // 記錄當前題目的選擇
+            userAnswers[currentQuestionInUnit] = optIdx;
+
+            if (quizMode === 'study') {
+                // 即時學習模式：立刻判定對錯並播放回饋音
+                if (!hasCheckedAnswer[currentQuestionInUnit]) {
+                    hasCheckedAnswer[currentQuestionInUnit] = true;
+                    const isCorrect = (optIdx === q.answer);
+                    
+                    // 更新畫面上按鈕狀態與計分板
+                    renderQuestion();
+                    updateScoreBoard();
+                    
+                    // 即時回饋語音
+                    let feedbackSpeech = "";
+                    if (isCorrect) {
+                        feedbackSpeech = "答對了！太棒了！";
+                    } else {
+                        // 乾淨唸出正確答案內容
+                        const correctTextClean = q.options[q.answer].replace(/^\(\d+\)/, ''); 
+                        feedbackSpeech = `答錯囉，正確答案應該是：${correctTextClean}。`;
+                    }
+                    speakText(feedbackSpeech);
+                }
+            } else {
+                // 模擬測驗模式：僅更新 UI
+                renderQuestion();
+                updateScoreBoard();
+            }
+        }
+
+        // 更新進度條點點
+        function updateProgressIndicators() {
+            progressTextEl.textContent = `進度: ${currentQuestionInUnit + 1} / 10 題`;
+            progressDotsContainer.innerHTML = '';
+            
+            for (let i = 0; i < 10; i++) {
+                const dot = document.createElement('div');
+                dot.className = "w-4 h-4 rounded-full border transition-all duration-200 ";
+                
+                if (i === currentQuestionInUnit) {
+                    // 當前作答中
+                    dot.className += "bg-amber-400 border-amber-600 animate-pulse scale-125";
+                } else if (userAnswers[i] === null) {
+                    // 未答
+                    dot.className += "bg-stone-100 border-stone-300";
+                } else {
+                    // 已答
+                    if (quizMode === 'study' || isUnitSubmitted) {
+                        // 即時學習模式或已提交的測驗模式，顯示對錯
+                        const isCorrect = (userAnswers[i] === questions[currentUnitIndex * 10 + i].answer);
+                        if (isCorrect) {
+                            dot.className += "bg-emerald-500 border-emerald-600";
+                        } else {
+                            dot.className += "bg-rose-500 border-rose-600";
+                        }
+                    } else {
+                        // 未提交的測驗模式只顯示已作答深灰色
+                        dot.className += "bg-stone-600 border-stone-700";
+                    }
+                }
+                
+                dot.title = `第 ${i + 1} 題`;
+                dot.style.cursor = "pointer";
+                dot.onclick = () => {
+                    synth.cancel();
+                    currentQuestionInUnit = i;
+                    renderQuestion();
+                };
+
+                progressDotsContainer.appendChild(dot);
+            }
+        }
+
+        // 計算目前單元分數並更新看板
+        function updateScoreBoard() {
+            let score = 0;
+            for (let i = 0; i < 10; i++) {
+                if (userAnswers[i] !== null) {
+                    const correctIdx = questions[currentUnitIndex * 10 + i].answer;
+                    if (userAnswers[i] === correctIdx) {
+                        score += 10;
+                    }
+                }
+            }
+            currentScoreDisplay.textContent = score;
+        }
+
+        // 顯示/更新即時回饋與詳解提示面板
+        function renderFeedbackPanel() {
+            const checked = hasCheckedAnswer[currentQuestionInUnit];
+            const chosen = userAnswers[currentQuestionInUnit];
+            const isShowingFeedback = quizMode === 'study' ? checked : isUnitSubmitted;
+            
+            if (isShowingFeedback && chosen !== null) {
+                const globalIdx = getGlobalIndex();
+                const q = questions[globalIdx];
+                const isCorrect = (chosen === q.answer);
+
+                feedbackAlertEl.classList.remove('hidden');
+                
+                if (isCorrect) {
+                    feedbackAlertEl.className = "mt-6 p-5 rounded-2xl border border-emerald-200 bg-emerald-50/50 flex flex-col gap-2 transition-all duration-300";
+                    feedbackIconContainer.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i>`;
+                    feedbackTitleEl.className = "font-extrabold text-emerald-800 text-lg";
+                    feedbackTitleEl.textContent = "答對了！非常優秀！";
+                    feedbackDescEl.className = "text-sm md:text-base mt-1 text-emerald-700";
+                    feedbackDescEl.textContent = "代表你已經確實掌握這個實用英文觀念。";
+                } else {
+                    feedbackAlertEl.className = "mt-6 p-5 rounded-2xl border border-rose-200 bg-rose-50/50 flex flex-col gap-2 transition-all duration-300";
+                    feedbackIconContainer.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600"></i>`;
+                    feedbackTitleEl.className = "font-extrabold text-rose-800 text-lg";
+                    feedbackTitleEl.textContent = "答錯囉，再接再厲！";
+                    feedbackDescEl.className = "text-sm md:text-base mt-1 text-rose-700 font-bold";
+                    feedbackDescEl.textContent = `正確答案應該是：${q.options[q.answer]}`;
+                }
+
+                // 帶出詳解
+                feedbackExplanationEl.textContent = q.explain;
+
+            } else {
+                feedbackAlertEl.classList.add('hidden');
+            }
+        }
+
+        // 上一題
+        function prevQuestion() {
+            synth.cancel();
+            if (currentQuestionInUnit > 0) {
+                currentQuestionInUnit--;
+                renderQuestion();
+            }
+        }
+
+        // 下一題
+        function nextQuestion() {
+            synth.cancel();
+            if (currentQuestionInUnit < 9) {
+                currentQuestionInUnit++;
+                renderQuestion();
+            } else if (currentQuestionInUnit === 9 && quizMode === 'study') {
+                // 學習模式最後一題，按下一題直接跳出成果結算
+                calculateAndShowReport(false);
+            }
+        }
+
+        // 語音朗讀邏輯
+        function speakText(text) {
+            synth.cancel();
+            utterance.text = text;
+            utterance.rate = parseFloat(speedControl.value);
+            const selectedVoiceIdx = voiceSelectEl.value;
+            if (voices[selectedVoiceIdx]) {
+                utterance.voice = voices[selectedVoiceIdx];
+            }
+            synth.speak(utterance);
+        }
+
+        // 朗讀當前題目與選項
+        function speakCurrentQuestion() {
+            const globalIdx = getGlobalIndex();
+            const q = questions[globalIdx];
+            let textToSpeak = "";
+            
+            textToSpeak += `第 ${currentQuestionInUnit + 1} 題。 ${q.question}。 選項有：`;
+            
+            q.options.forEach((opt, idx) => {
+                // 移除選項編號括號，朗讀時更自然
+                const optTextClean = opt.replace(/^\(\d+\)/, '');
+                textToSpeak += `選項 ${idx + 1}：${optTextClean}。`;
+            });
+            
+            speakText(textToSpeak);
+        }
+
+        // 計算總分並開啟報告 Modal
+        function calculateAndShowReport(isManualSubmit = false) {
+            synth.cancel();
+
+            // 檢查是否還有未答題目 (測驗模式強制提醒)
+            if (quizMode === 'test' && !isUnitSubmitted) {
+                const unansweredCount = userAnswers.filter(ans => ans === null).length;
+                if (unansweredCount > 0 && isManualSubmit) {
+                    const confirmSubmit = confirm(`你還有 ${unansweredCount} 題尚未作答，確定要提交測驗嗎？`);
+                    if (!confirmSubmit) return;
+                }
+            }
+
+            let correctCount = 0;
+            let wrongCount = 0;
+            
+            for (let i = 0; i < 10; i++) {
+                const correctIdx = questions[currentUnitIndex * 10 + i].answer;
+                if (userAnswers[i] === correctIdx) {
+                    correctCount++;
+                } else {
+                    wrongCount++;
+                }
+            }
+
+            const finalScore = correctCount * 10;
+            isUnitSubmitted = true; // 鎖定測驗模式為已提交
+            
+            // 填寫報告內容
+            document.getElementById('report-score').innerHTML = `${finalScore} <span class="text-2xl font-bold text-stone-400">分</span>`;
+            document.getElementById('report-correct-count').textContent = `${correctCount} 題`;
+            document.getElementById('report-wrong-count').textContent = `${wrongCount} 題`;
+            document.getElementById('report-title').textContent = `單元 ${currentUnitIndex + 1} 學習成果報告`;
+
+            // 給予不同分數的評語與語音讚美
+            let comment = "";
+            let speechAward = "";
+            if (finalScore === 100) {
+                comment = "🎉 Perfect! 完美的 100 分！你完全掌握了此單元的實用英文！";
+                speechAward = "恭喜你！獲得完美的 一百 分！你真是英文小天才！太優秀了！";
+                startConfettiEffect();
+            } else if (finalScore >= 80) {
+                comment = "🌟 Excellent! 得到高分！你做得非常好，英文實力堅強！";
+                speechAward = `恭喜你！得到 ${finalScore} 分！做得好棒，繼續保持喔！`;
+                startConfettiEffect();
+            } else if (finalScore >= 60) {
+                comment = "👍 Great! 及格囉！基本英文單字非常熟練，再加油一下就完美了！";
+                speechAward = `太棒了！得到 ${finalScore} 分！及格囉，再加把勁就更棒了！`;
+            } else {
+                comment = "💪 Keep trying! 沒關係！我們看著詳解多練習幾次，一定會越來越進步！";
+                speechAward = `你得到了 ${finalScore} 分！沒關係，多讀幾次詳解，下一次一定能拿滿分！`;
+            }
+
+            document.getElementById('report-comment').textContent = comment;
+            
+            // 顯示下一個單元按鈕 (如果是最後一個單元則隱藏)
+            const nextUnitBtn = document.getElementById('next-unit-btn');
+            if (currentUnitIndex === 9) {
+                nextUnitBtn.classList.add('hidden');
+            } else {
+                nextUnitBtn.classList.remove('hidden');
+            }
+
+            // 開啟 Modal
+            document.getElementById('report-modal').classList.remove('hidden');
+            
+            // 報讀成果
+            setTimeout(() => {
+                speakText(speechAward);
+            }, 300);
+        }
+
+        // 關閉報告並檢視本單元題目及正確詳解
+        function closeReportModal() {
+            document.getElementById('report-modal').classList.add('hidden');
+            stopConfettiEffect();
+            renderQuestion(); // 重新渲染當前題以載入詳解框
+        }
+
+        // 重新挑戰當前單元
+        function retryCurrentUnit() {
+            closeReportModal();
+            loadUnit(currentUnitIndex);
+        }
+
+        // 前往下一單元
+        function goToNextUnit() {
+            closeReportModal();
+            if (currentUnitIndex < 9) {
+                loadUnit(currentUnitIndex + 1);
+            }
+        }
+
+        // 產生煙火彩帶特效
+        function startConfettiEffect() {
+            const container = document.getElementById('modal-confetti');
+            container.innerHTML = '';
+            const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#d4a373', '#ef4444'];
+            for (let i = 0; i < 40; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = `${Math.random() * 100}%`;
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = `${Math.random() * 2}s`;
+                piece.style.animationDuration = `${1.5 + Math.random() * 1.5}s`;
+                piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+                container.appendChild(piece);
+            }
+        }
+
+        function stopConfettiEffect() {
+            document.getElementById('modal-confetti').innerHTML = '';
+        }
+
+        // 下載完整的離線 HTML
+        function downloadOfflineVersion() {
+            // 複製整份文件
+            const docClone = document.cloneNode(true);
+            const blob = new Blob([docClone.documentElement.outerHTML], { type: 'text/html;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `實用英文能力語音互動教學_單元${currentUnitIndex + 1}.html`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        // 初始化載入
+        window.addEventListener('DOMContentLoaded', () => {
+            initUnits();
+        });
+    </script>
+</body>
+</html>
