@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【動詞時態 - 現在進行式使用時機與動詞變化】大電視互動學習單</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=400;700&display=swap');
+        
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
+            margin: 0;
+            user-select: none; /* 防止電視螢幕手寫時誤選到文字 */
+        }
+
+        /* 核心紙張規格：寬度限定 A4 210mm，長度不限以容納展開的智慧詳解 */
+        .paper {
+            width: 210mm;
+            min-height: 297mm;
+            background-color: white;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+            display: flex;
+            flex-direction: column;
+            padding: 12mm 16mm; 
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* 互動卡片槽 - 特教免打字設計 */
+        .card-slot {
+            border: 2px dashed #cbd5e1;
+            background-color: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 105px;
+            height: 34px;
+            border-radius: 6px;
+            vertical-align: middle;
+            margin: 0 4px;
+        }
+        .card-slot:hover {
+            border-color: #64748b;
+            background-color: #f1f5f9;
+        }
+
+        /* 手寫畫布層 */
+        #drawing-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 30;
+            pointer-events: none; /* 預設滑鼠游標模式，不阻擋網頁按鈕與字卡點擊 */
+        }
+        .drawing-active #drawing-canvas {
+            pointer-events: auto; /* 畫筆或橡皮擦模式開啟畫布觸控 */
+            cursor: crosshair;
+        }
+
+        /* 大電視防誤滾動手勢優化 */
+        .drawing-active {
+            touch-action: none;
+            overflow: hidden;
+        }
+
+        @media print {
+            body { background-color: white; padding: 0; }
+            .paper { 
+                box-shadow: none; margin: 0; width: 210mm; min-height: 100%; border-radius: 0; padding: 12mm 16mm;
+            }
+            .no-print { display: none !important; }
+            .print-text {
+                border: none !important; background: transparent !important; box-shadow: none !important;
+                padding: 0 !important; font-weight: bold !important; color: #000 !important; display: inline !important;
+            }
+            
+            /* 列印空白講義或解答本時的特殊顯示邏輯 */
+            .print-hidden-answers .answer-text,
+            .print-hidden-answers .hint-card,
+            .print-hidden-answers .slot-interactive { display: none !important; }
+            
+            .print-hidden-answers .print-blank-line { display: inline !important; }
+
+            .print-show-answers .print-blank-line { display: none !important; }
+            .print-show-answers .answer-text { display: inline !important; color: #dc2626 !important; }
+        }
+        section { break-inside: avoid; }
+    </style>
+</head>
+<body>
+
+    <!-- 頂部扁平控制面板 (列印自動隱藏) -->
+    <div class="no-print w-full max-w-[210mm] bg-white rounded-xl shadow-sm p-3 mb-4 flex items-center justify-between border border-slate-200">
+        <div class="flex gap-2">
+            <button onclick="togglePenPanel()" id="btn-pen-toggle" class="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold text-[14px] transition shadow-sm">✏️ 開啟手寫畫筆</button>
+            <button onclick="resetWorksheet()" class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 font-bold text-[14px] transition">🔄 重設講義</button>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="printWorksheet(false)" class="px-3 py-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-900 font-bold text-[14px] transition shadow-sm">🖨️ 列印空白講義</button>
+            <button onclick="printWorksheet(true)" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-bold text-[14px] transition shadow-sm">🔑 列印解答版</button>
+        </div>
+    </div>
+
+    <!-- 左側大電視手寫工具箱 -->
+    <div id="pen-panel" class="no-print hidden fixed left-4 top-24 bg-white/90 backdrop-blur shadow-lg border border-slate-200 rounded-xl p-2 flex flex-col gap-2 z-50">
+        <div class="text-[11px] text-slate-400 font-bold text-center border-b border-slate-100 pb-1 mb-1">畫筆工具</div>
+        <button onclick="setDrawMode('mouse')" id="tool-mouse" class="p-2.5 rounded-lg bg-blue-50 text-blue-600 flex flex-col items-center gap-1 transition-all" title="游標模式">
+            <span class="text-lg">🖱️</span><span class="text-[11px] font-bold">游標</span>
+        </button>
+        <button onclick="setDrawMode('pen')" id="tool-pen" class="p-2.5 rounded-lg text-slate-600 hover:bg-slate-50 flex flex-col items-center gap-1 transition-all" title="紅筆劃記">
+            <span class="text-lg">✏️</span><span class="text-[11px] font-bold">紅筆</span>
+        </button>
+        <button onclick="setDrawMode('eraser')" id="tool-eraser" class="p-2.5 rounded-lg text-slate-600 hover:bg-slate-50 flex flex-col items-center gap-1 transition-all" title="滑動擦除部分筆跡">
+            <span class="text-lg">🧽</span><span class="text-[11px] font-bold">橡皮擦</span>
+        </button>
+        <button onclick="clearCanvas()" class="p-2.5 rounded-lg text-rose-600 hover:bg-rose-50 flex flex-col items-center gap-1 transition-all border-t border-slate-100 mt-1" title="一鍵清除全部筆跡">
+            <span class="text-lg">🗑️</span><span class="text-[11px] font-bold">全清</span>
+        </button>
+    </div>
+
+    <!-- 自訂彈出式批改提示視窗 -->
+    <div id="custom-modal" class="no-print fixed inset-0 bg-slate-900/40 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl text-center">
+            <div id="modal-icon" class="text-4xl mb-2">🎉</div>
+            <h3 id="modal-title" class="text-xl font-bold text-slate-800 mb-1">批改完成！</h3>
+            <p id="modal-message" class="text-slate-500 mb-4 text-[15px]"></p>
+            <button onclick="closeModal()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition shadow-md">確認</button>
+        </div>
+    </div>
+
+    <!-- A4 學習單主體 -->
+    <div id="printable-paper" class="paper print-hidden-answers">
+        
+        <!-- 手寫畫布層 -->
+        <canvas id="drawing-canvas"></canvas>
+
+        <!-- 標題與班級姓名欄位 -->
+        <header class="border-b border-slate-200 pb-1 mb-2 relative z-10 flex justify-between items-end">
+            <h1 class="text-[24px] font-bold text-slate-800 tracking-tight">【動詞時態 - 現在進行式使用時機與動詞變化】</h1>
+            <div class="text-[14px] text-slate-400 whitespace-nowrap mb-0.5">班級：__________ 姓名：__________</div>
+        </header>
+
+        <!-- 💡 核心重點提示框 -->
+        <div class="bg-blue-50 border border-blue-200 p-2.5 mb-3 rounded-lg relative z-10">
+            <div class="flex items-center gap-1.5 mb-1.5">
+                <h2 class="text-[20px] font-bold text-slate-800">💡 核心重點：現在正在做，動詞加 -ing 變身！</h2>
+                <button onclick="speakGrammarTip()" class="no-print p-1 text-slate-400 hover:text-blue-600 transition" title="朗讀重點提示">🔊</button>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-2 text-center leading-tight">
+                <div class="bg-white border border-blue-100 rounded p-1.5 flex flex-col items-center justify-center">
+                    <p class="font-extrabold text-[17px] text-blue-700 tracking-tight">① 一般動詞 ➔ 加 ing</p>
+                    <p class="text-[14px] text-slate-500 font-semibold mt-1">直接在動詞後面加 ing</p>
+                    <p class="text-[12px] text-rose-600 font-bold mt-1">play ➔ playing</p>
+                </div>
+                <div class="bg-white border border-blue-100 rounded p-1.5 flex flex-col items-center justify-center">
+                    <p class="font-extrabold text-[17px] text-blue-700 tracking-tight">② 字尾有 e ➔ 去 e 加 ing</p>
+                    <p class="text-[14px] text-slate-500 font-semibold mt-1">刪掉最後的 e 再加 ing</p>
+                    <p class="text-[12px] text-rose-600 font-bold mt-1">dance ➔ dancing</p>
+                </div>
+                <div class="bg-white border border-blue-100 rounded p-1.5 flex flex-col items-center justify-center">
+                    <p class="font-extrabold text-[17px] text-blue-700 tracking-tight">③ 短母音+子音 ➔ 重複字尾</p>
+                    <p class="text-[14px] text-slate-500 font-semibold mt-1">最後字母寫兩次再加 ing</p>
+                    <p class="text-[12px] text-rose-600 font-bold mt-1">run ➔ running</p>
+                </div>
+            </div>
+            <p class="text-[13px] text-slate-600 font-bold text-center mt-2">★ 實用時間詞：看到 <b class="text-blue-700">now</b> (現在)、<b class="text-blue-700">Look!</b> (看啊！)、<b class="text-blue-700">Listen!</b> (聽啊！)，就代表要用進行式變身喔！</p>
+        </div>
+
+        <!-- LEVEL 1 -->
+        <section class="mb-4 relative z-10">
+            <div class="flex items-center mb-1">
+                <span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-1.5 py-0.5 rounded mr-2 border border-emerald-200 uppercase">LEVEL 1</span>
+                <span class="text-[18px] font-bold text-slate-700">暖身判讀：動詞變身正確嗎？ (正確選 ◯，錯誤選 ✕)</span>
+            </div>
+            
+            <div class="space-y-1.5 text-[18px]">
+                <!-- Q1 -->
+                <div class="flex items-center justify-between px-3 py-1 bg-slate-50/50 rounded leading-tight">
+                    <div class="flex items-center">
+                        <span class="hidden print:inline font-bold mr-4 text-black l1-print-bracket" data-id="1">( &nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                        <div class="no-print flex gap-1 mr-3">
+                            <button onclick="selectL1(1, '◯')" id="l1-opt-1-O" class="w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-emerald-600 hover:bg-emerald-50 transition">◯</button>
+                            <button onclick="selectL1(1, '✕')" id="l1-opt-1-X" class="w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-rose-600 hover:bg-rose-50 transition">✕</button>
+                        </div>
+                        <span>1. He is <b class="text-blue-600 font-extrabold">playying</b> soccer now.</span>
+                    </div>
+                    <button onclick="speakL1(1)" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l1-1" class="hint-card hidden mx-3"></div>
+
+                <!-- Q2 -->
+                <div class="flex items-center justify-between px-3 py-1 rounded leading-tight">
+                    <div class="flex items-center">
+                        <span class="hidden print:inline font-bold mr-4 text-black l1-print-bracket" data-id="2">( &nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                        <div class="no-print flex gap-1 mr-3">
+                            <button onclick="selectL1(2, '◯')" id="l1-opt-2-O" class="w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-emerald-600 hover:bg-emerald-50 transition">◯</button>
+                            <button onclick="selectL1(2, '✕')" id="l1-opt-2-X" class="w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-rose-600 hover:bg-rose-50 transition">✕</button>
+                        </div>
+                        <span>2. Look! She is <b class="text-blue-600 font-extrabold">danceing</b>.</span>
+                    </div>
+                    <button onclick="speakL1(2)" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l1-2" class="hint-card hidden mx-3"></div>
+
+                <!-- Q3 -->
+                <div class="flex items-center justify-between px-3 py-1 bg-slate-50/50 rounded leading-tight">
+                    <div class="flex items-center">
+                        <span class="hidden print:inline font-bold mr-4 text-black l1-print-bracket" data-id="3">( &nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                        <div class="no-print flex gap-1 mr-3">
+                            <button onclick="selectL1(3, '◯')" id="l1-opt-3-O" class="w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-emerald-600 hover:bg-emerald-50 transition">◯</button>
+                            <button onclick="selectL1(3, '✕')" id="l1-opt-3-X" class="w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-rose-600 hover:bg-rose-50 transition">✕</button>
+                        </div>
+                        <span>3. He is <b class="text-blue-600 font-extrabold">running</b> in the park now.</span>
+                    </div>
+                    <button onclick="speakL1(3)" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l1-3" class="hint-card hidden mx-3"></div>
+            </div>
+            
+            <div class="no-print flex justify-end mt-2">
+                <button onclick="checkLevel(1)" class="px-4 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-bold text-[13px] shadow-sm transition">✅ 批改 Level 1</button>
+            </div>
+        </section>
+
+        <!-- LEVEL 2 -->
+        <section class="mb-4 relative z-10">
+            <div class="flex items-center mb-1">
+                <span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-1.5 py-0.5 rounded mr-2 border border-amber-200 uppercase">LEVEL 2</span>
+                <span class="text-[18px] font-bold text-slate-700">進階挑戰：現在進行式 V-ing 字卡配對</span>
+            </div>
+
+            <!-- 字卡 Word Bank -->
+            <div class="no-print flex items-center justify-center gap-3 bg-slate-50 border border-slate-200 p-1.5 rounded-md mb-2">
+                <span class="text-[14px] font-bold text-slate-500">🖐️ 先選取字卡，再點擊題目空格：</span>
+                <button onclick="selectWord('reading')" id="card-reading" class="px-3 py-0.5 bg-white border border-slate-300 text-slate-700 font-bold text-[16px] rounded shadow-sm transition-all">reading</button>
+                <button onclick="selectWord('writing')" id="card-writing" class="px-3 py-0.5 bg-white border border-slate-300 text-slate-700 font-bold text-[16px] rounded shadow-sm transition-all">writing</button>
+                <button onclick="selectWord('swimming')" id="card-swimming" class="px-3 py-0.5 bg-white border border-slate-300 text-slate-700 font-bold text-[16px] rounded shadow-sm transition-all">swimming</button>
+            </div>
+            
+            <div class="space-y-1.5 text-[18px]">
+                <!-- Q1 -->
+                <div class="px-3 py-1 bg-slate-50/30 border-l-4 border-slate-300 leading-tight flex justify-between items-center">
+                    <div>
+                        <p>
+                            1. He is 
+                            <button onclick="fillSlot(1)" id="l2-slot-1" class="slot-interactive card-slot text-blue-600 font-bold text-[18px]">點此置入</button>
+                            <span id="l2-print-1" class="print-text hidden border-b border-black px-4">________</span>
+                            a book now.
+                        </p>
+                        <p class="text-[14px] text-slate-400 mt-0.5 ml-6">他現在正在讀一本書。</p>
+                    </div>
+                    <button onclick="speakL2(1)" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l2-1" class="hint-card hidden mx-3"></div>
+
+                <!-- Q2 -->
+                <div class="px-3 py-1 border-l-4 border-slate-300 leading-tight flex justify-between items-center">
+                    <div>
+                        <p>
+                            2. She is 
+                            <button onclick="fillSlot(2)" id="l2-slot-2" class="slot-interactive card-slot text-blue-600 font-bold text-[18px]">點此置入</button>
+                            <span id="l2-print-2" class="print-text hidden border-b border-black px-4">________</span>
+                            a letter in her room.
+                        </p>
+                        <p class="text-[14px] text-slate-400 mt-0.5 ml-6">她正在她的房間裡寫信。</p>
+                    </div>
+                    <button onclick="speakL2(2)" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l2-2" class="hint-card hidden mx-3"></div>
+
+                <!-- Q3 -->
+                <div class="px-3 py-1 bg-slate-50/30 border-l-4 border-slate-300 leading-tight flex justify-between items-center">
+                    <div>
+                        <p>
+                            3. Look! The boy is 
+                            <button onclick="fillSlot(3)" id="l2-slot-3" class="slot-interactive card-slot text-blue-600 font-bold text-[18px]">點此置入</button>
+                            <span id="l2-print-3" class="print-text hidden border-b border-black px-4">________</span>
+                            in the pool.
+                        </p>
+                        <p class="text-[14px] text-slate-400 mt-0.5 ml-6">看啊！那個男孩正在泳池裡游泳。</p>
+                    </div>
+                    <button onclick="speakL2(3)" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l2-3" class="hint-card hidden mx-3"></div>
+            </div>
+
+            <div class="no-print flex justify-end mt-2">
+                <button onclick="checkLevel(2)" class="px-4 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-bold text-[13px] shadow-sm transition">✅ 批改 Level 2</button>
+            </div>
+        </section>
+
+        <!-- LEVEL 3 -->
+        <section class="mb-4 relative z-10">
+            <div class="flex items-center mb-1">
+                <span class="bg-rose-100 text-rose-800 text-[11px] font-bold px-1.5 py-0.5 rounded mr-2 border border-rose-200 uppercase">LEVEL 3</span>
+                <span class="text-[18px] font-bold text-slate-700">綜合選擇題：選出正確的動詞變身拼法</span>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-1.5 text-[18px]">
+                <!-- Q1 -->
+                <div class="p-2 border border-slate-100 rounded bg-white flex justify-between items-start">
+                    <div class="w-full">
+                        <p class="font-medium mb-1">( &nbsp;<span id="l3-bracket-1" class="print-text font-bold text-blue-600">&nbsp;&nbsp;</span>&nbsp; ) 1. Look! The bird is ______ in the sky.</p>
+                        <div class="flex gap-6 text-slate-500 ml-10 mt-1 font-bold">
+                            <button onclick="selectL3(1, 'A')" id="l3-opt-1-A" class="px-2.5 py-1 text-left rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(A)</b> flying</button>
+                            <button onclick="selectL3(1, 'B')" id="l3-opt-1-B" class="px-2.5 py-1 text-left rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(B)</b> flyying</button>
+                            <button onclick="selectL3(1, 'C')" id="l3-opt-1-C" class="px-2.5 py-1 text-left rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(C)</b> fly</button>
+                        </div>
+                    </div>
+                    <button onclick="speakL3(1, 'Look! The bird is flying in the sky.')" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l3-1" class="hint-card hidden mx-3"></div>
+
+                <!-- Q2 -->
+                <div class="p-2 border border-slate-100 rounded bg-slate-50/50 flex justify-between items-start">
+                    <div class="w-full">
+                        <p class="font-medium mb-1">( &nbsp;<span id="l3-bracket-2" class="print-text font-bold text-blue-600">&nbsp;&nbsp;</span>&nbsp; ) 2. Satsuki is ______ a cake in the kitchen now.</p>
+                        <div class="flex gap-6 text-slate-500 ml-10 mt-1 font-bold">
+                            <button onclick="selectL3(2, 'A')" id="l3-opt-2-A" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-white transition"><b>(A)</b> makeing</button>
+                            <button onclick="selectL3(2, 'B')" id="l3-opt-2-B" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-white transition"><b>(B)</b> making</button>
+                            <button onclick="selectL3(2, 'C')" id="l3-opt-2-C" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-white transition"><b>(C)</b> make</button>
+                        </div>
+                    </div>
+                    <button onclick="speakL3(2, 'Satsuki is making a cake in the kitchen now.')" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l3-2" class="hint-card hidden mx-3"></div>
+
+                <!-- Q3 -->
+                <div class="p-2 border border-slate-100 rounded bg-white flex justify-between items-start">
+                    <div class="w-full">
+                        <p class="font-medium mb-1">( &nbsp;<span id="l3-bracket-3" class="print-text font-bold text-blue-600">&nbsp;&nbsp;</span>&nbsp; ) 3. They are ______ in the river.</p>
+                        <div class="flex gap-6 text-slate-500 ml-10 mt-1 font-bold">
+                            <button onclick="selectL3(3, 'A')" id="l3-opt-3-A" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(A)</b> swiming</button>
+                            <button onclick="selectL3(3, 'B')" id="l3-opt-3-B" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(B)</b> swimming</button>
+                            <button onclick="selectL3(3, 'C')" id="l3-opt-3-C" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(C)</b> swim</button>
+                        </div>
+                    </div>
+                    <button onclick="speakL3(3, 'They are swimming in the river.')" class="no-print text-slate-400 hover:text-blue-600">🔊</button>
+                </div>
+                <div id="hint-l3-3" class="hint-card hidden mx-3"></div>
+            </div>
+
+            <div class="no-print flex justify-end mt-2">
+                <button onclick="checkLevel(3)" class="px-4 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-bold text-[13px] shadow-sm transition">✅ 批改 Level 3</button>
+            </div>
+        </section>
+
+        <!-- 實體解答列印輔助顯示區 -->
+        <div class="answer-text hidden text-[15px] text-red-600 font-bold border-t border-dashed border-red-300 pt-2 mt-2">
+            🔑 本講義教師解答：【Level 1】1. ✕ &nbsp; 2. ✕ &nbsp; 3. ◯ &nbsp;&nbsp;【Level 2】1. reading &nbsp; 2. writing &nbsp; 3. swimming &nbsp;&nbsp;【Level 3】1. (A) &nbsp; 2. (B) &nbsp; 3. (B)
+        </div>
+
+        <!-- 頁尾 -->
+        <footer class="mt-auto pt-2 border-t border-slate-100 flex justify-between items-end relative z-10">
+            <div>
+                <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Scaffolded Interactive Worksheet</p>
+                <p class="text-[14px] text-slate-500 font-medium">✨ 記得：看到 now, Look!, Listen! 就要用進行式。一般加 -ing，去 e 加 -ing，重複字尾加 -ing！</p>
+            </div>
+            <div class="no-print bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg flex items-center gap-2">
+                <span class="text-[16px]">🏆</span>
+                <p class="text-[16px] font-bold text-slate-700"><span id="score-display">0</span> / 100</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 講義邏輯腳本控制 -->
+    <script>
+        const ANSWERS = {
+            level1: { 1: "✕", 2: "✕", 3: "◯" },
+            level2: { 1: "reading", 2: "writing", 3: "swimming" },
+            level3: { 1: "A", 2: "B", 3: "B" }
+        };
+
+        const EXPLANATIONS = {
+            l1: {
+                1: "動詞 play 的進行式是直接加 ing，拼寫為 **playing**。playying 多寫了一個 y，是錯誤的變身。",
+                2: "動詞 dance (跳舞) 的字尾是 e，進行式變身規則必須是「**去掉 e 再加 ing**」，拼寫成 **dancing**。danceing 是錯誤的拼寫。",
+                3: "動詞 run (跑) 是「單母音 u + 單子音 n」，變形規則是「**重複字尾再加 ing**」，拼寫成 **running** 完全正確！"
+            },
+            l2: {
+                1: "he is 之後需要填入動作進行式。read (閱讀) 是直接加 ing，因此置入 **reading**。",
+                2: "write (寫) 是字尾有 e 的動詞，變形必須去掉 e 再加 ing，因此置入 **writing**。",
+                3: "swim (游泳) 是「單母音 i + 單子音 m」，必須重複字尾再加 ing，因此置入 **swimming**。"
+            },
+            l3: {
+                1: "fly (飛) 的進行式變形規則是直接加 ing，拼寫為 **flying**，答案選 (A)。",
+                2: "make (做) 字尾是 e，必須去掉 e 再加 ing，拼寫為 **making**，答案選 (B)。",
+                3: "swim (游泳) 變形需重複字尾，拼寫為 **swimming**，因此答案選 (B)。"
+            }
+        };
+
+        let userState = {
+            level1: { 1: "", 2: "", 3: "" },
+            level2: { 1: "", 2: "", 3: "" },
+            level3: { 1: "", 2: "", 3: "" }
+        };
+
+        let currentlySelectedWord = null;
+
+        // ================= 1. 大電視手寫 Canvas 控制系統 =================
+        const canvas = document.getElementById("drawing-canvas");
+        const ctx = canvas.getContext("2d");
+        let isDrawing = false;
+        let drawMode = 'mouse'; // mouse, pen, eraser
+        let lastX = 0;
+        let lastY = 0;
+
+        function togglePenPanel() {
+            const panel = document.getElementById("pen-panel");
+            const btn = document.getElementById("btn-pen-toggle");
+            
+            if (panel.classList.contains("hidden")) {
+                panel.classList.remove("hidden");
+                btn.innerText = "✏️ 關閉手寫畫筆";
+                btn.className = "px-4 py-1.5 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-bold text-[14px] transition shadow-sm";
+                setDrawMode('pen');
+            } else {
+                panel.classList.add("hidden");
+                btn.innerText = "✏️ 開啟手寫畫筆";
+                btn.className = "px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold text-[14px] transition shadow-sm";
+                setDrawMode('mouse');
+            }
+        }
+
+        function resizeCanvas() {
+            const paper = document.getElementById("printable-paper");
+            if (!paper) return;
+
+            const targetWidth = paper.clientWidth;
+            const targetHeight = paper.clientHeight;
+
+            if (targetWidth === 0 || targetHeight === 0) return;
+            
+            if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+                let tempCanvas = null;
+                
+                if (canvas.width > 0 && canvas.height > 0) {
+                    tempCanvas = document.createElement("canvas");
+                    tempCanvas.width = canvas.width;
+                    tempCanvas.height = canvas.height;
+                    const tempCtx = tempCanvas.getContext("2d");
+                    try {
+                        tempCtx.drawImage(canvas, 0, 0);
+                    } catch (e) {
+                        tempCanvas = null;
+                    }
+                }
+
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+
+                if (tempCanvas && tempCanvas.width > 0 && tempCanvas.height > 0) {
+                    try {
+                        ctx.drawImage(tempCanvas, 0, 0);
+                    } catch (e) {
+                        console.warn("Failed to restore canvas backup safely:", e);
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // 支援滑鼠與觸控事件
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e.touches[0]); });
+            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); });
+            canvas.addEventListener('touchend', stopDrawing);
+        });
+
+        function setDrawMode(mode) {
+            drawMode = mode;
+            document.querySelectorAll('[id^="tool-"]').forEach(btn => btn.className = "p-2.5 rounded-lg text-slate-600 hover:bg-slate-50 flex flex-col items-center gap-1 transition-all");
+            
+            const activeBtn = document.getElementById(`tool-${mode}`);
+            if (activeBtn) activeBtn.className = "p-2.5 rounded-lg bg-blue-50 text-blue-600 flex flex-col items-center gap-1 transition-all font-bold shadow-sm";
+            
+            if (mode === 'mouse') {
+                document.body.classList.remove("drawing-active");
+            } else {
+                document.body.classList.add("drawing-active");
+            }
+        }
+
+        function startDrawing(e) {
+            if (drawMode === 'mouse') return;
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            lastX = e.clientX - rect.left;
+            lastY = e.clientY - rect.top;
+        }
+
+        function draw(e) {
+            if (!isDrawing || drawMode === 'mouse') return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+
+            if (drawMode === 'pen') {
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.strokeStyle = '#dc2626'; // 教學紅
+                ctx.lineWidth = 3;
+            } else if (drawMode === 'eraser') {
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.lineWidth = 24;
+            }
+
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            lastX = x;
+            lastY = y;
+        }
+
+        function stopDrawing() { isDrawing = false; }
+        function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+        // ================= STREAMING_CHUNK: Coding interaction controls for word slots... =================
+        // LEVEL 1: ◯ ✕ 點選動作
+        function selectL1(id, choice) {
+            userState.level1[id] = choice;
+            
+            const btnO = document.getElementById(`l1-opt-${id}-O`);
+            const btnX = document.getElementById(`l1-opt-${id}-X`);
+            
+            btnO.className = "w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-emerald-600 hover:bg-emerald-50 transition";
+            btnX.className = "w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-rose-600 hover:bg-rose-50 transition";
+            
+            if (choice === '◯') {
+                btnO.className = "w-8 h-8 rounded-full border-2 border-emerald-500 bg-emerald-500 text-white font-bold transition shadow-sm";
+            } else if (choice === '✕') {
+                btnX.className = "w-8 h-8 rounded-full border-2 border-rose-500 bg-rose-500 text-white font-bold transition shadow-sm";
+            }
+        }
+
+        // LEVEL 2: Word Bank 點選與空格置入
+        function selectWord(word) {
+            currentlySelectedWord = word;
+            ['reading', 'writing', 'swimming'].forEach(w => {
+                const element = document.getElementById(`card-${w}`);
+                if (element) {
+                    element.className = "px-3 py-0.5 bg-white border border-slate-300 text-slate-700 font-bold text-[16px] rounded shadow-sm transition-all";
+                }
+            });
+            const targetBtn = document.getElementById(`card-${word}`);
+            if (targetBtn) {
+                targetBtn.className = "px-3 py-0.5 bg-blue-50 border-2 border-blue-500 text-blue-600 font-bold text-[16px] rounded shadow-sm scale-105 transition-all";
+            }
+        }
+
+        function fillSlot(slotId) {
+            const slot = document.getElementById(`l2-slot-${slotId}`);
+            
+            // 已有字卡時點選可清除
+            if (userState.level2[slotId] && !currentlySelectedWord) {
+                userState.level2[slotId] = "";
+                slot.innerText = "點此置入";
+                slot.className = "slot-interactive card-slot text-blue-600 font-bold text-[18px]";
+                return;
+            }
+
+            if (!currentlySelectedWord) {
+                showModalMsg("提示", "請先點擊上方字卡！", "🖐️");
+                return;
+            }
+
+            userState.level2[slotId] = currentlySelectedWord;
+            slot.innerText = currentlySelectedWord;
+            slot.className = "slot-interactive card-slot text-slate-800 bg-slate-100 border border-slate-400 font-extrabold text-[18px] px-3";
+        }
+
+        // LEVEL 3: 選擇題
+        function selectL3(qNum, option) {
+            ['A', 'B', 'C'].forEach(opt => {
+                document.getElementById(`l3-opt-${qNum}-${opt}`).className = "px-2.5 py-1 text-left rounded border border-slate-200 text-[16px] text-slate-500 transition font-bold";
+            });
+            document.getElementById(`l3-opt-${qNum}-${option}`).className = "px-2.5 py-1 text-left rounded border-2 border-blue-500 bg-blue-50 text-blue-600 font-bold text-[16px] transition";
+            document.getElementById(`l3-bracket-${qNum}`).innerText = option;
+            userState.level3[qNum] = option;
+        }
+
+        // ================= STREAMING_CHUNK: Coding evaluation logic and custom modal outputs... =================
+        // ================= 3. 智慧型分段階段批改與動態詳解卡 =================
+        function checkLevel(levelNum) {
+            let correctInLevel = 0;
+            
+            if (levelNum === 1) {
+                for (let i = 1; i <= 3; i++) {
+                    const isCorrect = userState.level1[i] === ANSWERS.level1[i];
+                    const hintCard = document.getElementById(`hint-l1-${i}`);
+                    hintCard.classList.remove("hidden");
+                    
+                    if (userState.level1[i] === "") {
+                        hintCard.className = "hint-card mx-3 p-2 bg-slate-50 text-slate-700 text-[14px] font-medium rounded border border-slate-200 mt-1.5 transition-all";
+                        hintCard.innerHTML = `⚠️ <b>尚未作答：</b> ${EXPLANATIONS.l1[i]} <span class="text-rose-600 font-bold">(應選: ${ANSWERS.level1[i]})</span>`;
+                    } else if (isCorrect) {
+                        correctInLevel++;
+                        hintCard.className = "hint-card mx-3 p-2 bg-emerald-50 text-emerald-800 text-[14px] font-medium rounded border border-emerald-100 mt-1.5 transition-all shadow-sm";
+                        hintCard.innerHTML = `🎉 <b>答對了！</b> ${EXPLANATIONS.l1[i]}`;
+                    } else {
+                        hintCard.className = "hint-card mx-3 p-2 bg-rose-50 text-rose-800 text-[14px] font-medium rounded border border-rose-100 mt-1.5 transition-all shadow-sm";
+                        hintCard.innerHTML = `⚠️ <b>再想想看：</b> ${EXPLANATIONS.l1[i]} <span class="text-rose-900 font-bold">(正確答案：${ANSWERS.level1[i]})</span>`;
+                    }
+                }
+                showFeedbackModal(1, correctInLevel, 3);
+            }
+            
+            if (levelNum === 2) {
+                for (let i = 1; i <= 3; i++) {
+                    const isCorrect = userState.level2[i] === ANSWERS.level2[i];
+                    const slot = document.getElementById(`l2-slot-${i}`);
+                    const hintCard = document.getElementById(`hint-l2-${i}`);
+                    hintCard.classList.remove("hidden");
+                    
+                    if (userState.level2[i] === "") {
+                        slot.className = "slot-interactive card-slot text-rose-600 bg-rose-50 border-2 border-dashed border-rose-300 font-bold text-[18px]";
+                        hintCard.className = "hint-card mx-3 p-2 bg-slate-50 text-slate-700 text-[14px] font-medium rounded border border-slate-200 mt-1.5 transition-all";
+                        hintCard.innerHTML = `⚠️ <b>尚未作答：</b> ${EXPLANATIONS.l2[i]} <span class="text-rose-600 font-bold">(應選: ${ANSWERS.level2[i]})</span>`;
+                    } else if (isCorrect) {
+                        correctInLevel++;
+                        slot.className = "slot-interactive card-slot text-emerald-800 bg-emerald-50 border-2 border-emerald-500 font-extrabold text-[18px] px-3 ring-2 ring-emerald-100";
+                        hintCard.className = "hint-card mx-3 p-2 bg-emerald-50 text-emerald-800 text-[14px] font-medium rounded border border-emerald-100 mt-1.5 transition-all shadow-sm";
+                        hintCard.innerHTML = `🎉 <b>答對了！</b> ${EXPLANATIONS.l2[i]}`;
+                    } else {
+                        slot.className = "slot-interactive card-slot text-rose-800 bg-rose-50 border-2 border-rose-500 font-extrabold text-[18px] px-3 ring-2 ring-rose-100";
+                        hintCard.className = "hint-card mx-3 p-2 bg-rose-50 text-rose-800 text-[14px] font-medium rounded border border-rose-100 mt-1.5 transition-all shadow-sm";
+                        hintCard.innerHTML = `⚠️ <b>再想想看：</b> ${EXPLANATIONS.l2[i]} <span class="text-rose-900 font-bold">(正確答案：${ANSWERS.level2[i]})</span>`;
+                    }
+                }
+                showFeedbackModal(2, correctInLevel, 3);
+            }
+            
+            if (levelNum === 3) {
+                for (let i = 1; i <= 3; i++) {
+                    const isCorrect = userState.level3[i] === ANSWERS.level3[i];
+                    const bracket = document.getElementById(`l3-bracket-${i}`);
+                    const hintCard = document.getElementById(`hint-l3-${i}`);
+                    hintCard.classList.remove("hidden");
+                    
+                    ['A', 'B', 'C'].forEach(opt => {
+                        document.getElementById(`l3-opt-${i}-${opt}`).className = "px-2.5 py-1 text-left rounded border border-slate-200 text-[16px] text-slate-500 transition font-bold";
+                    });
+
+                    if (userState.level3[i] === "") {
+                        bracket.className = "print-text font-bold text-rose-600 bg-rose-50 px-1.5 rounded border border-rose-300";
+                        hintCard.className = "hint-card mx-3 p-2 bg-slate-50 text-slate-700 text-[14px] font-medium rounded border border-slate-200 mt-1.5 transition-all";
+                        hintCard.innerHTML = `⚠️ <b>尚未作答：</b> ${EXPLANATIONS.l3[i]} <span class="text-rose-600 font-bold">(正確答案: (${ANSWERS.level3[i]}))</span>`;
+                    } else if (isCorrect) {
+                        correctInLevel++;
+                        bracket.className = "print-text font-bold text-emerald-700 bg-emerald-50 px-1.5 rounded border border-emerald-300 ring-2 ring-emerald-100";
+                        document.getElementById(`l3-opt-${i}-${userState.level3[i]}`).className = "px-2.5 py-1 text-left rounded border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-bold text-[16px] transition ring-2 ring-emerald-100";
+                        hintCard.className = "hint-card mx-3 p-2 bg-emerald-50 text-emerald-800 text-[14px] font-medium rounded border border-emerald-100 mt-1.5 transition-all shadow-sm";
+                        hintCard.innerHTML = `🎉 <b>答對了！</b> ${EXPLANATIONS.l3[i]}`;
+                    } else {
+                        bracket.className = "print-text font-bold text-rose-700 bg-rose-50 px-1.5 rounded border border-rose-300 ring-2 ring-rose-100";
+                        document.getElementById(`l3-opt-${i}-${userState.level3[i]}`).className = "px-2.5 py-1 text-left rounded border-2 border-rose-500 bg-rose-50 text-rose-800 font-bold text-[16px] transition ring-2 ring-rose-100";
+                        
+                        // 用虛線亮綠色外框框出正確選項
+                        const correctBtn = document.getElementById(`l3-opt-${i}-${ANSWERS.level3[i]}`);
+                        correctBtn.className = "px-2.5 py-1 text-left rounded border-2 border-dashed border-emerald-400 text-emerald-600 font-bold text-[16px] transition bg-emerald-50/30";
+                        
+                        hintCard.className = "hint-card mx-3 p-2 bg-rose-50 text-rose-800 text-[14px] font-medium rounded border border-rose-100 mt-1.5 transition-all shadow-sm";
+                        hintCard.innerHTML = `⚠️ <b>再想想看：</b> ${EXPLANATIONS.l3[i]} <span class="text-rose-900 font-bold">(正確答案是：(${ANSWERS.level3[i]}))</span>`;
+                    }
+                }
+                showFeedbackModal(3, correctInLevel, 3);
+            }
+            updateTotalScore();
+            setTimeout(resizeCanvas, 100); // 詳解卡展開後自動拉長畫布
+        }
+
+        function updateTotalScore() {
+            let totalCorrect = 0;
+            for(let i=1; i<=3; i++) {
+                if(userState.level1[i] === ANSWERS.level1[i]) totalCorrect++;
+                if(userState.level2[i] === ANSWERS.level2[i]) totalCorrect++;
+                if(userState.level3[i] === ANSWERS.level3[i]) totalCorrect++;
+            }
+            const finalScore = Math.round((totalCorrect / 9) * 100);
+            document.getElementById("score-display").innerText = finalScore;
+        }
+
+        function resetWorksheet() {
+            userState = { 
+                level1: { 1: "", 2: "", 3: "" }, 
+                level2: { 1: "", 2: "", 3: "" }, 
+                level3: { 1: "", 2: "", 3: "" }
+            };
+            currentlySelectedWord = null;
+            document.getElementById("score-display").innerText = "0";
+            document.querySelectorAll(".hint-card").forEach(card => {
+                card.classList.add("hidden");
+                card.innerHTML = "";
+            });
+            
+            for(let i=1; i<=3; i++) {
+                const btnO = document.getElementById(`l1-opt-${i}-O`);
+                const btnX = document.getElementById(`l1-opt-${i}-X`);
+                btnO.className = "w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-emerald-600 hover:bg-emerald-50 transition";
+                btnX.className = "w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-rose-600 hover:bg-rose-50 transition";
+                
+                document.getElementById(`l2-slot-${i}`).innerText = "點此置入";
+                document.getElementById(`l2-slot-${i}`).className = "slot-interactive card-slot text-blue-600 font-bold text-[18px]";
+                
+                document.getElementById(`l3-bracket-${i}`).innerText = "  ";
+                ['A','B','C'].forEach(opt => {
+                    document.getElementById(`l3-opt-${i}-${opt}`).className = "px-2.5 py-1 text-left rounded border border-slate-200 text-[16px] text-slate-500 font-bold transition";
+                });
+            }
+
+            ['reading', 'writing', 'swimming'].forEach(w => {
+                const target = document.getElementById(`card-${w}`);
+                if (target) {
+                    target.className = "px-3 py-0.5 bg-white border border-slate-300 text-slate-700 font-bold text-[16px] rounded shadow-sm";
+                }
+            });
+            clearCanvas();
+            showModalMsg("重設講義", "重設講義完成！", "🔄");
+        }
+
+        // ================= STREAMING_CHUNK: Coding speech synthesis and slow audio configuration... =================
+        // ================= 4. 特教慢速朗讀雙語語音 TTS (0.82倍速) =================
+        function speakSequence(sequence) {
+            window.speechSynthesis.cancel();
+            let index = 0;
+            function playNext() {
+                if (index >= sequence.length) return;
+                const item = sequence[index];
+                const ut = new SpeechSynthesisUtterance(item.text);
+                ut.lang = item.lang;
+                ut.rate = item.lang.startsWith('en') ? 0.82 : 0.95; // 特教學生慢速聆聽
+                ut.onend = () => { index++; playNext(); };
+                window.speechSynthesis.speak(ut);
+            }
+            playNext();
+        }
+
+        function speakGrammarTip() {
+            speakSequence([
+                { text: "現在進行式動詞變身口訣！一般動詞直接加 ing；字尾有 e 去掉 e 再加 ing；短母音加子音要重複字尾加 ing 喔！", lang: "zh-TW" },
+                { text: "For the present continuous tense, spelling rules for verbs with ing. Usually just add ing. If ending with e, drop e and add ing. If short vowel and consonant, double the last letter and add ing.", lang: "en-US" }
+            ]);
+        }
+
+        function speakL1(id) {
+            if(id === 1) speakSequence([{ text: "He is playing soccer now.", lang: "en-US" }]);
+            if(id === 2) speakSequence([{ text: "Look! She is dancing.", lang: "en-US" }]);
+            if(id === 3) speakSequence([{ text: "He is running in the park now.", lang: "en-US" }]);
+        }
+
+        function speakL2(id) {
+            if(id === 1) speakSequence([{ text: "He is reading a book now.", lang: "en-US" }]);
+            if(id === 2) speakSequence([{ text: "She is writing a letter in her room.", lang: "en-US" }]);
+            if(id === 3) speakSequence([{ text: "Look! The boy is swimming in the pool.", lang: "en-US" }]);
+        }
+
+        function speakL3(id, text) { speakSequence([{ text: text, lang: "en-US" }]); }
+
+        // ================= STREAMING_CHUNK: Coding double printing controls for blanks vs keys... =================
+        // ================= 5. 雙獨立列印功能與解答 pre-fill 處理 =================
+        function printWorksheet(isAnswerVersion) {
+            const paper = document.getElementById("printable-paper");
+            
+            // 同步 Level 1 括號內容
+            const brackets = document.querySelectorAll('.l1-print-bracket');
+            brackets.forEach(span => {
+                const id = span.getAttribute('data-id');
+                if (isAnswerVersion) {
+                    span.innerHTML = `( &nbsp;<span class="text-rose-600 font-extrabold">${ANSWERS.level1[id]}</span>&nbsp; )`;
+                } else {
+                    const userAns = userState.level1[id];
+                    const displayVal = userAns !== "" ? userAns : "&nbsp;&nbsp;";
+                    span.innerHTML = `( &nbsp;${displayVal}&nbsp; )`;
+                }
+            });
+
+            // 同步 Level 2 狀態到列印純文字
+            for(let i=1; i<=3; i++) {
+                const ans = isAnswerVersion ? ANSWERS.level2[i] : (userState.level2[i] !== "" ? userState.level2[i] : "________");
+                document.getElementById(`l2-print-${i}`).innerText = ans;
+            }
+
+            // 同步 Level 3 狀態到列印純文字
+            for(let i=1; i<=3; i++) {
+                const ans = isAnswerVersion ? ANSWERS.level3[i] : (userState.level3[i] !== "" ? userState.level3[i] : "&nbsp;&nbsp;");
+                document.getElementById(`l3-bracket-${i}`).innerHTML = ans;
+            }
+
+            if (isAnswerVersion) {
+                paper.className = "paper print-show-answers";
+            } else {
+                paper.className = "paper print-hidden-answers";
+            }
+
+            setTimeout(() => { window.print(); }, 120);
+        }
+
+        window.onafterprint = function() {
+            const paper = document.getElementById("printable-paper");
+            paper.className = "paper print-hidden-answers";
+            for(let i=1; i<=3; i++) {
+                const val = userState.level3[i] !== "" ? userState.level3[i] : "  ";
+                document.getElementById(`l3-bracket-${i}`).innerText = val;
+            }
+        };
+
+        function showFeedbackModal(level, correctCount, maxCount) {
+            let icon = "🎉";
+            if (correctCount === maxCount) icon = "🏆";
+            else if (correctCount === 0) icon = "💡";
+            
+            showModalMsg(`Level ${level} 批改完成！`, `此關卡答對了 ${correctCount} / ${maxCount} 題！下方的動態智慧詳解已展開。`, icon);
+        }
+
+        function showModalMsg(title, message, icon) {
+            document.getElementById("modal-icon").innerText = icon || "🎉";
+            document.getElementById("modal-title").innerText = title;
+            document.getElementById("modal-message").innerText = message;
+            const modal = document.getElementById("custom-modal");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+        
+        function closeModal() { 
+            document.getElementById("custom-modal").className = "no-print fixed inset-0 bg-slate-900/40 hidden items-center justify-center z-50"; 
+        }
+    </script>
+</body>
+</html>
