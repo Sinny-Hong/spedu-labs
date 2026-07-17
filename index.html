@@ -1,94 +1,171 @@
 <!DOCTYPE html>
-<html lang="zh-Hant-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SINNY SPEDU LABS </title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Noto Sans TC', sans-serif; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sinny Spedu Labs｜異想教室控制台</title>
+  <link rel="stylesheet" href="portal.css" />
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col justify-between">
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <button class="menu-toggle" id="menuToggle" aria-label="收合選單">☰</button>
 
-    <header class="bg-white shadow-sm py-6">
-        <div class="max-w-5xl mx-auto px-4 flex flex-col items-center justify-center text-center">
-            <img src="logo-landscape.png" alt="SINNY SPEDU LABS Logo" class="h-28 md:h-36 object-contain mb-2">
-              </div>
-    </header>
+      <a class="brand-block" href="./index.html" aria-label="回到首頁">
+        <img src="assets/logo-banner.png" alt="Sinny Spedu Labs" />
+        <small>異想教室控制台</small>
+      </a>
 
-    <main class="max-w-5xl mx-auto px-4 py-10 flex-grow w-full">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            
-            <a href="board/" class="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-100 transition-all duration-200 text-center flex flex-col items-center">
-                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">⏱️</div>
-                <h3 class="font-bold text-slate-700 text-lg group-hover:text-indigo-600">班級經營桌面</h3>
-                <p class="text-xs text-slate-400 mt-1">Classroom Board</p>
-            </a>
+      <nav class="main-nav">
+        <a class="active" href="./index.html"><span>⌂</span><b>首頁</b></a>
+        <a href="./eng-115/"><span>▣</span><b>課本講義</b></a>
+        <a href="./eng-grammar/"><span>✎</span><b>文法與生活英文</b></a>
+        <a href="./math/"><span>▦</span><b>數學教材</b></a>
+        <a href="./life/"><span>◒</span><b>生活教育</b></a>
+        <a href="./info/"><span>◎</span><b>升學輔導</b></a>
+        <a href="./classroom/"><span>⌂</span><b>班務管理</b></a>
+      </nav>
 
-            <a href="english/" class="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-100 transition-all duration-200 text-center flex flex-col items-center">
-                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🔤</div>
-                <h3 class="font-bold text-slate-700 text-lg group-hover:text-indigo-600">英文教學</h3>
-                <p class="text-xs text-slate-400 mt-1">English Learning</p>
-            </a>
+      <div class="sidebar-footer">
+        <span>Every idea lights a life.</span>
+      </div>
+    </aside>
 
-            <a href="game/" class="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-100 transition-all duration-200 text-center flex flex-col items-center">
-                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🎮</div>
-                <h3 class="font-bold text-slate-700 text-lg group-hover:text-indigo-600">互動小遊戲</h3>
-                <p class="text-xs text-slate-400 mt-1">Classroom Games</p>
-            </a>
-
-            <a href="info/" class="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-100 transition-all duration-200 text-center flex flex-col items-center">
-                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">📢</div>
-                <h3 class="font-bold text-slate-700 text-lg group-hover:text-indigo-600">特教資訊</h3>
-                <p class="text-xs text-slate-400 mt-1">Special Edu Info</p>
-            </a>
-
-            <a href="life/" class="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-100 transition-all duration-200 text-center flex flex-col items-center">
-                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">📅</div>
-                <h3 class="font-bold text-slate-700 text-lg group-hover:text-indigo-600">生活管理</h3>
-                <p class="text-xs text-slate-400 mt-1">Life Skills</p>
-            </a>
-
-            <a href="math/" class="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-100 transition-all duration-200 text-center flex flex-col items-center">
-                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🔢</div>
-                <h3 class="font-bold text-slate-700 text-lg group-hover:text-indigo-600">數學功能</h3>
-                <p class="text-xs text-slate-400 mt-1">Math Tools</p>
-            </a>
-
-            <a href="social/" class="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-100 transition-all duration-200 text-center flex flex-col items-center">
-                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🤝</div>
-                <h3 class="font-bold text-slate-700 text-lg group-hover:text-indigo-600">社交技巧</h3>
-                <p class="text-xs text-slate-400 mt-1">Social Skills</p>
-            </a>
-
-            <a href="other/" class="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-100 transition-all duration-200 text-center flex flex-col items-center">
-                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🧪</div>
-                <h3 class="font-bold text-slate-700 text-lg group-hover:text-indigo-600">其他試作</h3>
-                <p class="text-xs text-slate-400 mt-1">Other Labs</p>
-            </a>
-
+    <main class="main-area">
+      <header class="topbar">
+        <div>
+          <h1>歡迎來到異想教室</h1>
+          <p>今天也一起完成任務，讓學習更有方向。</p>
         </div>
-    </main>
+        <div class="status-group">
+          <span class="online-dot"></span>
+          <span>連線正常</span>
+          <button id="fullscreenBtn" class="ghost-btn">全螢幕</button>
+        </div>
+      </header>
 
-    <footer class="bg-slate-900 text-slate-400 py-10 border-t border-slate-800">
-        <div class="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="text-center md:text-left">
-              <p class="text-xs text-slate-500 mt-1">SINNY SPEDU LABS &copy; 2026 • Every Idea Lights a Life.</p>
-            </div>
-            
-            <div class="flex flex-col sm:flex-row items-center gap-4 bg-slate-800/50 p-3 rounded-2xl border border-slate-800">
-                <div class="flex flex-col items-center sm:items-start gap-1">
-                    <span class="text-xs text-slate-400 font-medium">使用電腦？請掃描左側條碼</span>
-                    <a href="https://lin.ee/ZB5eGqO" target="_blank" class="inline-flex items-center gap-2 bg-[#06C755] hover:bg-[#05b34c] text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-sm transition-colors duration-150">
-                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.121.303.079.778.039 1.084l-.171 1.025c-.052.311-.252 1.218 1.089.665 1.341-.553 7.234-4.26 9.873-7.294 2.054-2.292 2.076-4.14 2.076-5.714z"/></svg>
-                        一鍵加入 LINE 好友
-                    </a>
+      <section class="workspace">
+        <div class="content-panel">
+          <div class="tabs" role="tablist">
+            <button class="tab active" data-tab="task">今天任務</button>
+            <button class="tab" data-tab="contact">聯絡簿</button>
+            <button class="tab" data-tab="missing">作業缺交</button>
+            <button class="tab" data-tab="other">其他</button>
+          </div>
+
+          <div class="tab-stage">
+            <section class="tab-page active" id="task">
+              <div class="task-card pinned">
+                <img class="task-watermark" src="assets/watermark-icon.png" alt="" />
+                <div class="task-label">📌 老師置頂</div>
+
+                <div class="task-layout">
+                  <div class="task-message">
+                    <h2>請拿出「八上單字配對 Lesson 2」</h2>
+                    <p>完成後放在老師桌上。</p>
+                  </div>
+
+                  <div class="qr-placeholder" aria-label="QR Code 預留區">
+                    <div class="fake-qr"></div>
+                    <span>掃描開始作答</span>
+                  </div>
                 </div>
-            </div>
-        </div>
-    </footer>
 
+                <div class="task-note">
+                  <strong>貼心提醒</strong>
+                  <span>安靜完成、專心思考，有問題舉手問老師。</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="tab-page" id="contact">
+              <div class="contact-grid">
+                <article class="info-card blue">
+                  <h3>今日上課內容</h3>
+                  <p>課本 Unit 2：My Family</p>
+                  <p>單字配對與句型練習</p>
+                </article>
+
+                <article class="info-card green">
+                  <h3>回家作業</h3>
+                  <p>完成單字拼寫練習第 21 頁</p>
+                  <p>請家長簽名</p>
+                </article>
+
+                <article class="info-card orange">
+                  <h3>老師的話</h3>
+                  <p>今天大家都很認真，記得每天練習單字和句型。</p>
+                </article>
+
+                <article class="info-card purple">
+                  <h3>本週五個單字</h3>
+                  <ul class="word-list">
+                    <li><button class="speak-btn" data-word="usually" aria-label="播放 usually 發音">🔊</button><span class="word">usually</span><span>通常</span></li>
+                    <li><button class="speak-btn" data-word="before" aria-label="播放 before 發音">🔊</button><span class="word">before</span><span>在……之前</span></li>
+                    <li><button class="speak-btn" data-word="after" aria-label="播放 after 發音">🔊</button><span class="word">after</span><span>在……之後</span></li>
+                    <li><button class="speak-btn" data-word="finish" aria-label="播放 finish 發音">🔊</button><span class="word">finish</span><span>完成</span></li>
+                    <li><button class="speak-btn" data-word="remember" aria-label="播放 remember 發音">🔊</button><span class="word">remember</span><span>記得</span></li>
+                  </ul>
+                </article>
+              </div>
+            </section>
+
+            <section class="tab-page" id="missing">
+              <div class="simple-page">
+                <h2>作業缺交</h2>
+                <p>目前為示範資料，之後會改由 Google 試算表自動載入。</p>
+                <div class="name-chips">
+                  <span>03 王小明</span>
+                  <span>08 李小華</span>
+                  <span>12 陳小安</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="tab-page" id="other">
+              <div class="simple-page">
+                <h2>其他公告</h2>
+                <p>段考時間、重要日期、臨時提醒與 QR Code 都可以放在這裡。</p>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <aside class="clock-panel">
+          <div class="clock-block">
+            <div class="analog-clock" id="analogClock">
+              <div class="hand hour" id="hourHand"></div>
+              <div class="hand minute" id="minuteHand"></div>
+              <div class="hand second" id="secondHand"></div>
+              <div class="clock-center"></div>
+              <div class="clock-number n12">12</div>
+              <div class="clock-number n3">3</div>
+              <div class="clock-number n6">6</div>
+              <div class="clock-number n9">9</div>
+            </div>
+
+            <div class="digital-time" id="digitalTime">下午 02:37:34</div>
+            <div class="date-line" id="dateLine">2026 / 07 / 17　星期五</div>
+            <button class="more-btn" id="moreBtn">顯示更多功能⌄</button>
+            <div class="more-tools" id="moreTools">
+              <button disabled>倒數計時（下一階段）</button>
+              <button disabled>英文時間（下一階段）</button>
+              <button disabled>24 小時制（下一階段）</button>
+            </div>
+          </div>
+
+          <div class="widget-placeholder">
+            <div class="widget-astronaut">🚀</div>
+            <h3>小工具預備區</h3>
+            <p>未來可放倒數計時、課表、天氣或太空人動態小人偶。</p>
+          </div>
+        </aside>
+      </section>
+
+      <footer class="footer">© SINNY SPEDU LABS　異想教室控制台</footer>
+    </main>
+  </div>
+
+  <script src="portal.js"></script>
 </body>
 </html>
