@@ -19,7 +19,7 @@
       <nav class="main-nav">
         <a class="active" href="./index.html"><span>⌂</span><b>首頁</b></a>
         <a href="./eng-115/"><span>▣</span><b>課本講義</b></a>
-        <a href="./eng-grammar/"><span>✎</span><b>文法與生活英文</b></a>
+        <a href="./eng-grammar/"><span>✎</span><b>生活英文與文法</b></a>
         <a href="./math/"><span>▦</span><b>數學教材</b></a>
         <a href="./life/"><span>◒</span><b>生活教育</b></a>
         <a href="./info/"><span>◎</span><b>升學輔導</b></a>
@@ -33,13 +33,19 @@
 
     <main class="main-area">
       <header class="topbar">
-        <div>
-          <h1>歡迎來到異想教室</h1>
+        <div class="welcome-block">
+          <div class="welcome-line">
+            <h1>歡迎來到異想教室</h1>
+            <div class="school-date">
+              <strong id="headerDate">7 月 17 日　星期五</strong>
+              <span id="schoolWeek" hidden></span>
+            </div>
+          </div>
           <p>今天也一起完成任務，讓學習更有方向。</p>
         </div>
         <div class="status-group">
-          <span class="online-dot"></span>
-          <span>連線正常</span>
+          <span class="online-dot" id="onlineDot"></span>
+          <span id="connectionText">連線正常</span>
           <button id="fullscreenBtn" class="ghost-btn">全螢幕</button>
         </div>
       </header>
@@ -55,17 +61,17 @@
 
           <div class="tab-stage">
             <section class="tab-page active" id="task">
-              <div class="task-card pinned">
+              <div class="task-card pinned" id="taskCard">
                 <img class="task-watermark" src="assets/watermark-icon.png" alt="" />
-                <div class="task-label">📌 老師置頂</div>
+                <div class="task-label" id="taskLabel">📌 老師置頂</div>
 
                 <div class="task-layout">
                   <div class="task-message">
-                    <h2>請拿出「八上單字配對 Lesson 2」</h2>
-                    <p>完成後放在老師桌上。</p>
+                    <h2 id="taskTitle">請拿出「八上單字配對 Lesson 2」</h2>
+                    <p id="taskSubtitle">完成後放在老師桌上。</p>
                   </div>
 
-                  <div class="qr-placeholder" aria-label="QR Code 預留區">
+                  <div class="qr-placeholder" id="taskQr" aria-label="QR Code 預留區">
                     <div class="fake-qr"></div>
                     <span>掃描開始作答</span>
                   </div>
@@ -73,7 +79,7 @@
 
                 <div class="task-note">
                   <strong>貼心提醒</strong>
-                  <span>安靜完成、專心思考，有問題舉手問老師。</span>
+                  <span id="taskReminder">安靜完成、專心思考，有問題舉手問老師。</span>
                 </div>
               </div>
             </section>
@@ -82,24 +88,22 @@
               <div class="contact-grid">
                 <article class="info-card blue">
                   <h3>今日上課內容</h3>
-                  <p>課本 Unit 2：My Family</p>
-                  <p>單字配對與句型練習</p>
+                  <div id="classContent"><p>課本 Unit 2：My Family</p><p>單字配對與句型練習</p></div>
                 </article>
 
                 <article class="info-card green">
                   <h3>回家作業</h3>
-                  <p>完成單字拼寫練習第 21 頁</p>
-                  <p>請家長簽名</p>
+                  <div id="homeworkContent"><p>完成單字拼寫練習第 21 頁</p><p>請家長簽名</p></div>
                 </article>
 
                 <article class="info-card orange">
                   <h3>老師的話</h3>
-                  <p>今天大家都很認真，記得每天練習單字和句型。</p>
+                  <div id="teacherMessage"><p>今天大家都很認真，記得每天練習單字和句型。</p></div>
                 </article>
 
                 <article class="info-card purple">
                   <h3>本週五個單字</h3>
-                  <ul class="word-list">
+                  <ul class="word-list" id="wordList">
                     <li><button class="speak-btn" data-word="usually" aria-label="播放 usually 發音">🔊</button><span class="word">usually</span><span>通常</span></li>
                     <li><button class="speak-btn" data-word="before" aria-label="播放 before 發音">🔊</button><span class="word">before</span><span>在……之前</span></li>
                     <li><button class="speak-btn" data-word="after" aria-label="播放 after 發音">🔊</button><span class="word">after</span><span>在……之後</span></li>

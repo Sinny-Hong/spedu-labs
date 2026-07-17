@@ -193,3 +193,51 @@ button{cursor:pointer}
   .clock-panel{min-height:520px}
   .footer{position:static;margin-top:12px}
 }
+
+
+/* ===== Portal V1.3 ===== */
+.welcome-block{min-width:0;flex:1}
+.welcome-line{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.welcome-line h1{white-space:nowrap}
+.school-date{
+  display:flex;align-items:center;gap:9px;padding:7px 12px;border-radius:12px;
+  background:#fff;border:1px solid var(--line);color:var(--navy);
+  box-shadow:0 4px 14px rgba(18,63,119,.05)
+}
+.school-date strong{font-size:15px}
+.school-date span{
+  padding:3px 8px;border-radius:999px;background:#fff4de;
+  color:#b76000;font-size:13px;font-weight:900
+}
+.online-dot.offline{background:#ef4444}
+.online-dot.loading{background:#f59e0b}
+.task-card:not(.pinned) .task-label{display:none}
+.task-card:not(.pinned) .task-message h2{font-size:25px}
+.task-card.no-qr .task-layout{grid-template-columns:1fr}
+.task-card.no-qr .qr-placeholder{display:none}
+.task-message h2,.task-message p{overflow-wrap:anywhere}
+#classContent,#homeworkContent,#teacherMessage{font-size:18px;line-height:1.55}
+#classContent p,#homeworkContent p,#teacherMessage p{margin:7px 0}
+.qr-placeholder a{
+  display:block;margin-top:7px;color:var(--navy);font-size:12px;font-weight:800;text-decoration:none
+}
+.qr-placeholder a:hover{text-decoration:underline}
+
+@media(max-height:820px) and (min-width:761px){
+  .contact-grid{gap:10px}
+  .info-card{padding:14px 16px;overflow:hidden}
+  .info-card h3{font-size:19px;margin-bottom:8px}
+  .info-card p,.info-card li,#classContent,#homeworkContent,#teacherMessage{font-size:16px;line-height:1.42}
+  .word-list{gap:5px}
+  .word-list li{grid-template-columns:30px minmax(78px,1fr) minmax(72px,1fr);gap:5px}
+  .speak-btn{width:27px;height:27px}
+}
+@media(max-width:1150px){
+  .welcome-line{gap:10px}
+  .school-date{padding:6px 9px}
+  .school-date strong{font-size:13px}
+}
+@media(max-width:760px){
+  .welcome-line{display:block}
+  .school-date{display:inline-flex;margin-top:9px}
+}
