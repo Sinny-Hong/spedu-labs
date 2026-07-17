@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>異想教室 - 全校總課表系統 (A4直式極致版)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* 嚴格 A4 直式列印控制與防卡死機制 */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-page {
+                width: 210mm !important;
+                height: 297mm !important;
+                margin: 0 !important;
+                padding: 10mm 8mm !important;
+                box-shadow: none !important;
+                background: white !important;
+                page-break-after: always;
+                box-sizing: border-box;
+            }
+            /* 強制背景顏色與框線印出 */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+
+        /* 標楷體公文質感風格 */
+        .timetable-font {
+            font-family: "DFKai-SB", "標楷體", "BiauKai", "Noto Serif TC", serif;
+        }
+
+        /* A4 直式預覽容器 (210mm x 297mm) */
+        .portrait-page {
+            width: 210mm;
+            height: 297mm;
+            box-sizing: border-box;
+        }
+
+        /* 隱藏滾動條 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col items-center py-6 px-4">
+
+    <!-- 頂部控制面板 (列印時自動隱藏) -->
+    <div class="no-print w-full max-w-[210mm] bg-white rounded-2xl shadow-md border border-slate-200/80 p-4 mb-6 transition-all">
+        <div class="flex flex-col gap-4">
+            <!-- 標題與狀態 -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-200">
+                        <i data-lucide="grid"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            全校總課表 <span class="text-xs px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded">A4直式 7節極致版</span>
+                        </h1>
+                        <p class="text-xs text-slate-500 mt-0.5">來源：A3授課分頁 (支援滑鼠右鍵選取複製)</p>
+                    </div>
+                </div>
+                <!-- 連線狀態 -->
+                <span id="sync-status" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 border border-amber-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    連線讀取中...
+                </span>
+            </div>
+
+            <!-- 操作區 -->
+            <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+                <!-- 手動重新整理 -->
+                <button onclick="fetchData(true)" class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 hover:text-slate-900 active:scale-95 transition-all">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="sync-icon"></i>
+                    同步資料
+                </button>
+
+                <!-- 一鍵列印 -->
+                <button onclick="window.print()" class="flex items-center gap-1.5 px-4 py-1.5 bg-indigo-600 text-white rounded-xl text-xs font-semibold hover:bg-indigo-700 hover:shadow-lg active:scale-95 transition-all shadow-md shadow-indigo-100">
+                    <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                    列印 A4 直式總表
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示框與錯誤顯示 (列印時隱藏) -->
+    <div id="error-toast" class="no-print hidden w-full max-w-[210mm] mb-4 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs flex items-start gap-3">
+        <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+        <div>
+            <span class="font-bold">連線提示：</span>
+            <span id="error-message">雲端載入失敗，已啟用離線預覽模式。</span>
+        </div>
+    </div>
+
+    <!-- A4 直式主實體頁面 -->
+    <div class="print-page portrait-page bg-white shadow-2xl rounded-sm border border-slate-300 p-5 flex flex-col justify-between overflow-hidden transition-all">
+        
+        <!-- 一行式公文極簡標題 (已移除底部的橫條黑線，日期與版本靠右) -->
+        <div class="flex items-baseline justify-between mb-2">
+            <span class="text-[14.5px] font-extrabold tracking-wide text-slate-950 timetable-font">
+                臺南市立新市國民中學 114 學年度第二學期 異想教室總課表
+            </span>
+            <span class="text-[9.5px] text-slate-700 font-bold timetable-font tracking-tight" id="version-tag">
+                實施日期: 讀取中... | 版本: 讀取中...
+            </span>
+        </div>
+
+        <!-- 總課表核心 Table (100% 寬度，高度不撐滿，隨內容自由伸縮) -->
+        <div class="flex-grow overflow-hidden flex flex-col">
+            <table class="w-full border-collapse border-2 border-slate-950 text-center timetable-font table-fixed">
+                <!-- 星期標題列 -->
+                <thead>
+                    <tr class="bg-slate-50 h-[24px] border-b-2 border-slate-955 text-slate-950 text-[11px] font-extrabold">
+                        <!-- 時間欄佔比 8%，留下 92% 給五天均分 -->
+                        <th class="w-[8%] border-r-2 border-slate-950 text-[10px]">節次/時間</th>
+                        <th class="w-[18.4%] border-r border-slate-400">星期一</th>
+                        <th class="w-[18.4%] border-r border-slate-400">星期二</th>
+                        <th class="w-[18.4%] border-r border-slate-400">星期三</th>
+                        <th class="w-[18.4%] border-r border-slate-400">星期四</th>
+                        <th class="w-[18.4%]">星期五</th>
+                    </tr>
+                </thead>
+                <tbody id="timetable-body" class="text-slate-950">
+                    <!-- 由 JavaScript 動態生成 7 節課的內容 -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- 數據讀取與渲染邏輯 JS 大腦 -->
+    <script>
+        // 設定 A3授課 發布的網路 CSV 連結
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=1823409322&single=true&output=csv";
+
+        // 節次與時間對照表 (固定只排 7 節課，騰出高度)
+        const periodTimes = [
+            { period: "第一節", time: "08:20-09:05" },
+            { period: "第二節", time: "09:15-10:00" },
+            { period: "第三節", time: "10:10-10:55" },
+            { period: "第四節", time: "11:05-11:50" },
+            { period: "第五節", time: "13:15-14:00" },
+            { period: "第六節", time: "14:10-14:55" },
+            { period: "第七節", time: "15:05-15:50" }
+        ];
+
+        // 特教教師專屬粉嫩色調配置
+        const PRESET_COLORS = {
+            '陳秋錡': { bg: 'bg-emerald-50/95', text: 'text-emerald-950', border: 'border-emerald-300/80', bar: 'bg-emerald-500' },
+            '許杏凰': { bg: 'bg-sky-50/95', text: 'text-sky-950', border: 'border-sky-300/80', bar: 'bg-sky-500' },
+            '洪欣怡': { bg: 'bg-rose-50/95', text: 'text-rose-950', border: 'border-rose-300/80', bar: 'bg-rose-500' },
+            '孫瑞彤': { bg: 'bg-fuchsia-50/95', text: 'text-fuchsia-955', border: 'border-fuchsia-300/80', bar: 'bg-fuchsia-500' },
+            '曾筱雯': { bg: 'bg-indigo-50/95', text: 'text-indigo-950', border: 'border-indigo-300/80', bar: 'bg-indigo-500' },
+            '陳一蘋': { bg: 'bg-amber-50/95', text: 'text-amber-950', border: 'border-amber-300/80', bar: 'bg-amber-500' },
+            '陳瑛質': { bg: 'bg-teal-50/95', text: 'text-teal-950', border: 'border-teal-300/80', bar: 'bg-teal-500' }
+        };
+
+        // 離線備用暫存資料
+        const mockCSVData = `備註,特教教師,分組,節數,上課地點,時間代碼,時間,學生
+改版日期,陳秋錡,國文三A,3,異想C,11,週一(1),"302陳炯浩、307周晉全、307鄭佩雯、310陳軒琛"
+115.5.12,許杏凰,數學三B,4,異想M,"22,55,43",週二(2),"204黃佳羽、205陳暐澄、205潘正貴、208劉濬紳"
+(游泳課改版),洪欣怡,英語二A,2,異想E,11,週一(1),"201朱昱慈、201莊証翔、202吳志浩、205吳柏翰"
+列印日期,孫瑞彤,國文三C,2,異想L,52,週五(2),"301程品璇、303呂雅菁、304林獻堂"
+,陳一蘋,自閉症輔導,1,直播室,11,週一(1),"203莊竣凱"
+,曾筱雯,巡迴輔導,1,校長室走廊,11,週一(1),"306陳紀嘉"
+,陳秋錡,生活管理A,2,異想C,11,週一(1),"303黃振祐、304陳咸睿、204林獻堂、107黃湛晉"
+,許杏凰,生活訓練E,3,異想M,11,週一(1),"201程品璇"`;
+
+        let activeRawData = [];
+
+        window.onload = function() {
+            lucide.createIcons();
+            fetchData();
+        };
+
+        // 同步 CSV 資料
+        async function fetchData(forceRefresh = false) {
+            const syncIcon = document.getElementById('sync-icon');
+            const toast = document.getElementById('error-toast');
+            
+            if (syncIcon) syncIcon.classList.add('animate-spin');
+            updateStatus('connecting', '與雲端安全連線中...');
+
+            let url = csvUrl;
+            if (forceRefresh) url += `&t=${new Date().getTime()}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('網路回應不成功');
+                const text = await response.text();
+                
+                toast.classList.add('hidden');
+                parseAndProcessData(text);
+                updateStatus('success', '雲端資料同步完成');
+                
+            } catch (err) {
+                console.warn("無法取得雲端試算表資料，自動切換至離線預覽:", err);
+                toast.classList.remove('hidden');
+                document.getElementById('error-message').innerText = `無法串接雲端數據庫 (${err.message})。系統目前已自動載入離線暫存數據提供預覽。`;
+                
+                parseAndProcessData(mockCSVData);
+                updateStatus('fallback', '目前顯示離線暫存資料');
+            } finally {
+                if (syncIcon) syncIcon.classList.remove('animate-spin');
+            }
+        }
+
+        function updateStatus(type, message) {
+            const badge = document.getElementById('sync-status');
+            if (!badge) return;
+            badge.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ";
+            
+            if (type === 'connecting') {
+                badge.classList.add('bg-blue-50', 'text-blue-600', 'border', 'border-blue-200');
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> ${message}`;
+            } else if (type === 'success') {
+                badge.classList.add('bg-emerald-50', 'text-emerald-600', 'border', 'border-emerald-200');
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ${message}`;
+            } else {
+                badge.classList.add('bg-amber-50', 'text-amber-600', 'border', 'border-amber-200');
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> ${message}`;
+            }
+        }
+
+        // CSV 安全解析
+        function parseCSV(text) {
+            let lines = [];
+            let row = [""];
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                let next = text[i+1];
+                if (c === '"') {
+                    if (inQuotes && next === '"') {
+                        row[row.length - 1] += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (c === ',') {
+                    if (inQuotes) {
+                        row[row.length - 1] += c;
+                    } else {
+                        row.push("");
+                    }
+                } else if (c === '\r' || c === '\n') {
+                    if (inQuotes) {
+                        row[row.length - 1] += c;
+                    } else {
+                        if (c === '\r' && next === '\n') i++;
+                        lines.push(row);
+                        row = [""];
+                    }
+                } else {
+                    row[row.length - 1] += c;
+                }
+            }
+            if (row.length > 1 || row[0] !== "") lines.push(row);
+            return lines;
+        }
+
+        function parseAndProcessData(csvText) {
+            const parsed = parseCSV(csvText);
+            if (parsed.length < 2) return;
+
+            const headers = parsed[0];
+            const teacherIdx = headers.findIndex(h => h.trim() === '特教教師');
+            const groupIdx = headers.findIndex(h => h.trim() === '分組');
+            const locationIdx = headers.findIndex(h => h.trim() === '上課地點');
+            const timeCodeIdx = headers.findIndex(h => h.trim() === '時間代碼');
+            const studentIdx = headers.findIndex(h => h.trim() === '學生');
+            const noteIdx = headers.findIndex(h => h.trim() === '備註');
+
+            // 提取版本資訊
+            let versionDate = "未指定";
+            let versionNote = "無備註";
+            
+            const noteValues = parsed.slice(1)
+                .map(row => row[noteIdx])
+                .filter(val => val && val.trim() !== "");
+
+            if (noteValues.length > 0) {
+                const datePattern = /\d{3}\.\d{1,2}\.\d{1,2}/;
+                const foundDate = noteValues.find(v => datePattern.test(v));
+                if (foundDate) versionDate = foundDate.trim();
+
+                const foundNote = noteValues.find(v => v.includes('改版') || v.includes('實施') || (v.startsWith('(') && v.endsWith(')')));
+                if (foundNote) {
+                    versionNote = foundNote.trim().replace(/[()]/g, '');
+                } else {
+                    const otherNote = noteValues.find(v => !datePattern.test(v) && v !== "改版日期" && v !== "列印日期");
+                    if (otherNote) versionNote = otherNote.trim();
+                }
+            }
+            document.getElementById('version-tag').innerText = `實施日期: ${versionDate} | 版本: ${versionNote}`;
+
+            activeRawData = [];
+
+            for (let i = 1; i < parsed.length; i++) {
+                const row = parsed[i];
+                if (!row[groupIdx] || row[groupIdx].trim() === "" || row[groupIdx] === "分組") continue;
+
+                activeRawData.push({
+                    teacher: row[teacherIdx] ? row[teacherIdx].trim() : "",
+                    groupName: row[groupIdx].trim(),
+                    location: row[locationIdx] ? row[locationIdx].trim() : "",
+                    timeCodes: parseTimeCodes(row[timeCodeIdx]),
+                    studentsStr: row[studentIdx] ? row[studentIdx].trim() : ""
+                });
+            }
+
+            renderTimetable();
+        }
+
+        function parseTimeCodes(codeStr) {
+            if (!codeStr) return [];
+            return codeStr.toString()
+                .replace(/['"]/g, '')
+                .split(/[\s,、]+/)
+                .map(c => c.trim())
+                .filter(c => c.length === 2 && !isNaN(c));
+        }
+
+        function formatTeacher(name) {
+            if (!name) return "";
+            return name.replace(/老師/g, '').trim();
+        }
+
+        function formatLocation(loc) {
+            if (!loc) return "";
+            loc = loc.trim();
+            if (loc.startsWith('異想')) loc = loc.substring(2);
+            if (/^[A-Za-z0-9]+$/.test(loc)) return loc;
+            if (loc.length > 1) return loc.charAt(0);
+            return loc;
+        }
+
+        function getTeacherColor(name) {
+            name = formatTeacher(name);
+            if (PRESET_COLORS[name]) return PRESET_COLORS[name];
+
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const fallbackPalettes = [
+                { bg: 'bg-teal-50/95', text: 'text-teal-950', border: 'border-teal-300/80', bar: 'bg-teal-500' },
+                { bg: 'bg-violet-50/95', text: 'text-violet-955', border: 'border-violet-300/80', bar: 'bg-violet-500' },
+                { bg: 'bg-orange-50/95', text: 'text-orange-950', border: 'border-orange-300/80', bar: 'bg-orange-500' },
+                { bg: 'bg-lime-50/95', text: 'text-lime-950', border: 'border-lime-300/80', bar: 'bg-lime-500' }
+            ];
+            return fallbackPalettes[Math.abs(hash) % fallbackPalettes.length];
+        }
+
+        // 修改學生名單：標準雙軌道對齊，字體放大至 11px，行間距保持最密 leading-none
+        function formatStudentsHTML(studentsStr) {
+            if (!studentsStr) return "";
+            const list = studentsStr.split(/[、,\s]+/).map(s => s.trim()).filter(s => s !== "");
+            let html = "";
+            
+            for (let i = 0; i < list.length; i += 2) {
+                const s1 = list[i] || "";
+                const s2 = list[i+1] || "";
+                html += `
+                    <div class="grid grid-cols-2 gap-x-1.5 w-full text-left font-semibold text-slate-900 tracking-tight leading-none mt-[1.5px]">
+                        <span class="truncate pl-[2px] text-[11px]">${s1}</span>
+                        <span class="truncate pl-[2px] text-[11px]">${s2}</span>
+                    </div>
+                `;
+            }
+            return html;
+        }
+
+        // 主渲染引擎 (只排 7 節)
+        function renderTimetable() {
+            const tbody = document.getElementById('timetable-body');
+            tbody.innerHTML = "";
+
+            // 時空矩陣改為 7 節課
+            const matrix = Array.from({ length: 7 }, () => Array.from({ length: 5 }, () => []));
+
+            activeRawData.forEach(group => {
+                group.timeCodes.forEach(code => {
+                    const dayDigit = parseInt(code.charAt(0));
+                    const periodDigit = parseInt(code.charAt(1));
+
+                    if (dayDigit >= 1 && dayDigit <= 5 && periodDigit >= 1 && periodDigit <= 7) {
+                        matrix[periodDigit - 1][dayDigit - 1].push(group);
+                    }
+                });
+            });
+
+            periodTimes.forEach((pt, periodIdx) => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-950";
+                
+                // 左側作息時間
+                const timeTd = document.createElement('td');
+                timeTd.className = "bg-slate-50 border-r-2 border-slate-950 p-1";
+                timeTd.innerHTML = `
+                    <div class="flex flex-col justify-center items-center h-full min-h-[50px] font-bold">
+                        <div class="text-[10px] text-slate-900 leading-tight">${pt.period}</div>
+                        <div class="text-[8px] text-slate-500 mt-1 scale-90 leading-none font-mono font-medium">${pt.time}</div>
+                    </div>
+                `;
+                tr.appendChild(timeTd);
+
+                // 星期一至星期五各格
+                for (let dayIdx = 0; dayIdx < 5; dayIdx++) {
+                    const td = document.createElement('td');
+                    td.className = "p-[2px] border-r border-slate-400 align-top h-full overflow-hidden";
+                    if (dayIdx === 4) td.classList.remove('border-r');
+
+                    const cellGroups = matrix[periodIdx][dayIdx];
+
+                    if (cellGroups.length === 0) {
+                        td.innerHTML = `<div class="w-full h-full min-h-[50px]"></div>`;
+                    } else {
+                        const wrapper = document.createElement('div');
+                        // 卡片間距縮小為 gap-[2px] (貼合剛好)，一律垂直順著往下排隊
+                        wrapper.className = `flex flex-col w-full h-full justify-start gap-[2px] min-h-[50px]`;
+
+                        cellGroups.forEach(group => {
+                            const colors = getTeacherColor(group.teacher);
+                            const compressedLocation = formatLocation(group.location);
+                            const displayTeacher = formatTeacher(group.teacher);
+                            
+                            const card = document.createElement('div');
+                            // 縮小卡片內 Padding，行距不變
+                            const padClass = 'py-[2px] px-1';
+                            card.className = `w-full rounded border flex flex-col items-stretch text-left ${colors.bg} ${colors.border} ${colors.text} ${padClass} relative overflow-hidden shadow-sm`;
+                            
+                            card.innerHTML = `
+                                <div class="absolute left-0 top-0 bottom-0 w-[3px] ${colors.bar}"></div>
+                                <div class="w-full">
+                                    <!-- 第一列：科目名稱(老師) 地點 (字體加大，老師 11.5px) -->
+                                    <div class="flex items-center justify-between text-[11.5px] font-extrabold leading-tight tracking-tight border-b border-black/10 pb-[1.5px]">
+                                        <span class="truncate pr-0.5">${group.groupName}(${displayTeacher})</span>
+                                        <span class="flex-shrink-0 bg-black/10 px-1 rounded font-mono font-bold text-[9px]">${compressedLocation}</span>
+                                    </div>
+                                    <!-- 學生名單 (標準雙軌道對齊，學生 11px) -->
+                                    <div class="w-full">
+                                        ${formatStudentsHTML(group.studentsStr)}
+                                    </div>
+                                </div>
+                            `;
+                            wrapper.appendChild(card);
+                        });
+
+                        td.appendChild(wrapper);
+                    }
+                    tr.appendChild(td);
+                }
+
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+
+</body>
+</html>

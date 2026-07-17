@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新市國中異想教室 - 教師課表系統</title>
+    <!-- 引入 Tailwind CSS 用於外圍控制面板 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f1f5f9;
+            margin: 0; padding: 0;
+        }
+
+        /* 嚴格標楷體公文風格（用於 A4 容器內所有文字） */
+        .official-doc {
+            font-family: "DFKai-SB", "標楷體", "BiauKai", "Noto Serif TC", serif !important;
+            color: black;
+            line-height: 1.35;
+        }
+
+        /* A4 紙張直式預覽容器 (嚴格物理尺寸控制) */
+        .page-container {
+            width: 210mm;
+            height: 297mm;
+            padding: 14mm 16mm;
+            margin: 20px auto;
+            background: white;
+            box-sizing: border-box;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* 控制列印時的排版與分頁 */
+        @media print {
+            body {
+                background: white !important;
+                background-color: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .page-container {
+                margin: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 14mm 16mm !important;
+                page-break-after: always;
+                page-break-inside: avoid;
+                width: 210mm !important;
+                height: 297mm !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+            }
+            #single-page-container {
+                display: block !important;
+            }
+            #print-all-section {
+                display: block !important;
+            }
+            body.print-all-mode #single-page-container {
+                display: none !important;
+            }
+        }
+
+        /* 表格與格線官方質感 */
+        table.timetable-table {
+            border-collapse: collapse;
+            width: 100%;
+            border: 2.5px solid black;
+            table-layout: fixed;
+        }
+        table.timetable-table th, table.timetable-table td {
+            border: 1px solid black;
+            text-align: center;
+            vertical-align: middle;
+            padding: 2px;
+            word-wrap: break-word;
+            overflow: hidden;
+        }
+        /* 表頭加粗邊框 */
+        table.timetable-table th {
+            border-bottom: 2px solid black;
+            background-color: #fafafa;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+    <!-- 頂部外圍控制面板 (列印時自動隱藏) -->
+    <div class="no-print bg-slate-900 text-white shadow-md border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            <!-- 標題與資料同步燈號 -->
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-600 p-2 rounded-lg text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold tracking-wider">異想教室課表系統 (教師專用)</h1>
+                    <div id="sync-status-badge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-blue-900/50 border border-blue-700 text-blue-300 mt-0.5">
+                        <span id="sync-status-icon" class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                        <span id="sync-status-text">正在讀取雲端試算表...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 控制選項 -->
+            <div class="flex items-center gap-3 flex-wrap">
+                <!-- 下拉選單 -->
+                <div class="flex items-center gap-2">
+                    <label for="teacher-select" class="text-xs text-slate-300 font-medium">選擇教師：</label>
+                    <select id="teacher-select" class="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 p-2 min-w-[150px] outline-none" disabled>
+                        <option value="">載入中...</option>
+                    </select>
+                </div>
+
+                <!-- 列印控制 -->
+                <div class="flex items-center gap-2">
+                    <button id="btn-print-single" onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs px-3 py-2 rounded-lg flex items-center gap-1.5 transition-colors shadow" disabled>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        </svg>
+                        單頁列印此教師
+                    </button>
+                    <button id="btn-print-all" onclick="triggerPrintAll()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs px-3 py-2 rounded-lg flex items-center gap-1.5 transition-colors shadow" disabled>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v12m0 0l-4-4m4 4l4-4m0 6V7m0 0l-4 4m4-4l4 4m5 2h3a2 2 0 002-2V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4"></path>
+                        </svg>
+                        一鍵列印所有教師
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 網頁預覽主呈現區 -->
+    <div id="single-page-container">
+        <!-- 單頁 A4 容器 -->
+        <div id="table-card" class="page-container official-doc">
+            <!-- 頂部官方大標題 -->
+            <div class="text-center">
+                <h1 class="text-[22px] font-bold tracking-[4px] m-0 p-0 leading-normal">臺南市立新市國民中學</h1>
+                <h2 class="text-[20px] font-bold tracking-[2px] m-0 p-0 leading-normal mt-1">114學年度第二學期 異想教室教師課表</h2>
+                
+                <!-- 教師與版本資訊列 -->
+                <div class="flex justify-between items-center px-2 mt-4 text-[15px] font-bold">
+                    <div class="flex items-baseline">
+                        <span>教師：</span>
+                        <span id="label-teacher" class="underline underline-offset-4 decoration-[1.5px] px-2 min-w-[80px] text-center">載入中...</span>
+                    </div>
+                    <div class="flex items-baseline">
+                        <span>版本：</span>
+                        <span id="label-version" class="underline underline-offset-4 decoration-[1.5px] px-2 min-w-[80px] text-center">載入中...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主功課表 (高剛好分配於 A4，防止產生次頁) -->
+            <div class="flex-grow mt-3" style="height: 850px; display: flex; flex-direction: column; justify-content: space-between;">
+                <table class="timetable-table h-full">
+                    <thead>
+                        <tr style="height: 40px;">
+                            <th class="text-[14px]" style="width: 15%;">節次 / 時間</th>
+                            <th class="text-[14px]" style="width: 17%;">星期一</th>
+                            <th class="text-[14px]" style="width: 17%;">星期二</th>
+                            <th class="text-[14px]" style="width: 17%;">星期三</th>
+                            <th class="text-[14px]" style="width: 17%;">星期四</th>
+                            <th class="text-[14px]" style="width: 17%;">星期五</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timetable-body">
+                        <!-- 由 JavaScript 精準渲染 8 個課堂列 -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 底部完全空白 -->
+        </div>
+    </div>
+
+    <!-- 批量一鍵列印區 -->
+    <div id="print-all-section" class="hidden print:block">
+        <!-- 所有教師課表將在此動態生成 -->
+    </div>
+
+    <!-- JavaScript 核心邏輯 -->
+    <script>
+        // Google 試算表 CSV 連線網址 (A3授課 分頁)
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=1823409322&single=true&output=csv";
+
+        // 作息時間表 (已完全刪除早修、晨讀與午休)
+        const periodsConfig = [
+            { id: "1", name: "第一節", start: "8:20", end: "9:05" },
+            { id: "2", name: "第二節", start: "9:15", end: "10:00" },
+            { id: "3", name: "第三節", start: "10:10", end: "10:55" },
+            { id: "4", name: "第四節", start: "11:05", end: "11:50" },
+            { id: "5", name: "第五節", start: "13:15", end: "14:00" },
+            { id: "6", name: "第六節", start: "14:10", end: "14:55" },
+            { id: "7", name: "第七節", start: "15:05", end: "15:50" },
+            { id: "8", name: "第八節", start: "16:00", end: "16:45" }
+        ];
+
+        // 智慧分組配色盤 (選用深沉、高對比、正式的字體著色色碼)
+        const colorPalette = [
+            "#be123c", // 玫瑰紅 (Rose-700)
+            "#15803d", // 森林綠 (Green-700)
+            "#1d4ed8", // 寶石藍 (Blue-700)
+            "#a21caf", // 羅蘭紫 (Purple-700)
+            "#b45309", // 琥珀橙 (Amber-700)
+            "#0369a1", // 天空藍 (Sky-700)
+            "#be185d", // 櫻花粉 (Pink-700)
+            "#4d7c0f", // 萊姆綠 (Lime-700)
+            "#4338ca", // 靛青藍 (Indigo-700)
+            "#0f766e"  // 深青綠 (Teal-700)
+        ];
+
+        // 系統全局變數
+        let globalRawData = [];       // CSV 完整原始二維陣列
+        let teachersList = [];        // 排序後的不重複教師名單
+        let versionString = "114-2 更新版"; // 動態讀取之版本字串
+        let scheduleDatabase = {};    // 整理後的大腦結構：{ "陳秋錡": { "11": { subject: "國文三A", students: [...] }, ... } }
+
+        // 根據組別名稱產生穩定的專屬色碼
+        function getGroupColor(subject) {
+            if (!subject) return "#000000";
+            let hash = 0;
+            for (let i = 0; i < subject.length; i++) {
+                hash = subject.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const index = Math.abs(hash) % colorPalette.length;
+            return colorPalette[index];
+        }
+
+        // DOM 載入後立即啟動資料撈取
+        window.onload = function() {
+            fetchWithRetry(csvUrl, 5, 1000);
+        };
+
+        // 指數型退避超強連線機制
+        async function fetchWithRetry(url, retries, delay) {
+            updateStatus('connecting', `正在連線試算表... (剩餘重試 ${retries} 次)`);
+            const cacheBuster = `&t=${new Date().getTime()}`;
+            const targetUrl = url + cacheBuster;
+
+            try {
+                const response = await fetch(targetUrl);
+                if (!response.ok) throw new Error(`HTTP status ${response.status}`);
+                
+                const csvText = await response.text();
+                parseAndBuildSchedule(csvText);
+            } catch (error) {
+                if (retries > 0) {
+                    setTimeout(() => {
+                        fetchWithRetry(url, retries - 1, delay * 2);
+                    }, delay);
+                } else {
+                    updateStatus('fallback', '雲端載入失敗，已啟用本地快取機制');
+                    showErrorModal("無法讀取 Google 試算表。請確認您的網路連線，或試算表是否已正確『發布到網路』。");
+                }
+            }
+        }
+
+        // 狀態燈號更新
+        function updateStatus(type, message) {
+            const badge = document.getElementById('sync-status-badge');
+            const icon = document.getElementById('sync-status-icon');
+            const text = document.getElementById('sync-status-text');
+
+            badge.className = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium mt-0.5 border ';
+            icon.className = 'w-2 h-2 rounded-full ';
+
+            if (type === 'connecting') {
+                badge.classList.add('bg-blue-900/50', 'border-blue-700', 'text-blue-300');
+                icon.classList.add('bg-blue-400', 'animate-pulse');
+            } else if (type === 'success') {
+                badge.classList.add('bg-emerald-900/50', 'border-emerald-700', 'text-emerald-300');
+                icon.classList.add('bg-emerald-400');
+            } else {
+                badge.classList.add('bg-amber-950', 'border-amber-600', 'text-amber-300');
+                icon.classList.add('bg-amber-400', 'animate-pulse');
+            }
+            text.textContent = message;
+        }
+
+        // CSV 安全解析器
+        function parseCSV(text) {
+            let lines = [];
+            let row = [""];
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                let next = text[i+1];
+                if (c === '"') {
+                    if (inQuotes && next === '"') {
+                        row[row.length - 1] += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (c === ',' && !inQuotes) {
+                    row.push("");
+                } else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && next === '\n') { i++; }
+                    lines.push(row);
+                    row = [""];
+                } else {
+                    row[row.length - 1] += c;
+                }
+            }
+            if (row.length > 1 || row[0] !== "") {
+                lines.push(row);
+            }
+            return lines;
+        }
+
+        // 特教教師名字過濾：去除尾端的「老師」兩個字
+        function cleanTeacherName(name) {
+            if (!name) return "";
+            return name.replace(/\s*老師\s*$/, "").trim();
+        }
+
+        // 解析 CSV 並建立大腦資料結構
+        function parseAndBuildSchedule(csvText) {
+            const rows = parseCSV(csvText);
+            if (rows.length < 2) {
+                showErrorModal("試算表內無有效資料或欄位格式不符！");
+                return;
+            }
+            globalRawData = rows;
+
+            // 1. 動態尋找「版本」備註資訊
+            let noteFound = "";
+            for (let r = 1; r < rows.length; r++) {
+                let note = rows[r][0]?.trim();
+                if (note && note !== "備註" && note !== "改版日期" && note !== "列印日期" && note !== "改版日期：") {
+                    noteFound = note;
+                    break;
+                }
+            }
+            if (noteFound) {
+                versionString = noteFound;
+            }
+
+            // 2. 遍歷數據建立課表映射
+            scheduleDatabase = {};
+            let tempTeachers = new Set();
+
+            // 預期 A3 欄位結構：備註[0], 特教教師[1], 分組[2], 節數[3], 上課地點[4], 時間代碼[5], 時間[6], 學生[7]
+            for (let r = 1; r < rows.length; r++) {
+                const row = rows[r];
+                if (row.length < 8) continue;
+
+                const rawTeacher = row[1]?.trim();
+                if (!rawTeacher) continue;
+
+                const teacher = cleanTeacherName(rawTeacher);
+                const subject = row[2]?.trim();
+                const timeCodesStr = row[5]?.trim();
+                const rawStudents = row[7]?.trim() || "";
+
+                if (!timeCodesStr || !subject) continue;
+
+                tempTeachers.add(teacher);
+
+                // 解析學生名單，將頓號或空格分隔的學生名字乾淨地拆分成陣列
+                const studentsArray = rawStudents ? rawStudents.split(/[\s、,，]+/).map(s => s.trim()).filter(s => s) : [];
+
+                // 解析時間代碼
+                const codes = timeCodesStr.split(/[\s,，]+/).map(c => c.trim()).filter(c => c);
+
+                codes.forEach(code => {
+                    if (!scheduleDatabase[teacher]) {
+                        scheduleDatabase[teacher] = {};
+                    }
+                    
+                    // 特教任課教師單一節次在學理上僅對應一個抽離組別
+                    scheduleDatabase[teacher][code] = {
+                        subject: subject,
+                        students: studentsArray
+                    };
+                });
+            }
+
+            teachersList = Array.from(tempTeachers).sort();
+
+            if (teachersList.length === 0) {
+                showErrorModal("在『特教教師』欄位中找不到任何教師姓名！");
+                return;
+            }
+
+            // 3. 渲染控制台與下拉選單
+            populateDropdown();
+            updateStatus('success', '與試算表成功連線！資料已同步');
+
+            // 4. 預設選取第一個教師並渲染
+            document.getElementById('teacher-select').value = teachersList[0];
+            renderTeacherTimetable(teachersList[0]);
+
+            // 啟用控制項
+            document.getElementById('teacher-select').disabled = false;
+            document.getElementById('btn-print-single').disabled = false;
+            document.getElementById('btn-print-all').disabled = false;
+        }
+
+        // 填充下拉選單
+        function populateDropdown() {
+            const select = document.getElementById('teacher-select');
+            select.innerHTML = '';
+            teachersList.forEach(teacher => {
+                const opt = document.createElement('option');
+                opt.value = teacher;
+                opt.textContent = teacher;
+                select.appendChild(opt);
+            });
+
+            // 綁定切換事件
+            select.onchange = function() {
+                renderTeacherTimetable(this.value);
+            };
+        }
+
+        // 核心渲染：產生單一教師 A4 紙張內功課表的 HTML 行列
+        function renderTeacherTimetable(teacherName) {
+            document.getElementById('label-teacher').textContent = teacherName;
+            document.getElementById('label-version').textContent = versionString;
+
+            const tbody = document.getElementById('timetable-body');
+            tbody.innerHTML = generateTimetableRowsHTML(teacherName);
+        }
+
+        // 產生功課表主體 Rows 的共通函式 (單一課堂格高度調整為 98px)
+        function generateTimetableRowsHTML(teacherName) {
+            let html = "";
+
+            periodsConfig.forEach(row => {
+                // 正式上課節次，每日獨立一格，高度為 98px
+                html += `
+                    <tr style="height: 98px;">
+                        <td class="text-center font-bold py-1 leading-normal text-black" style="width: 15%;">
+                            <span class="text-[15px] font-bold">${row.name}</span><br>
+                            <span class="text-[13px] font-normal text-gray-700">${row.start}</span><br>
+                            <span class="text-[13px] font-normal text-gray-700">${row.end}</span>
+                        </td>
+                `;
+
+                // 星期一 (1) 到 星期五 (5)
+                for (let day = 1; day <= 5; day++) {
+                    const code = `${day}${row.id}`; // 組合如 "11"
+                    const course = scheduleDatabase[teacherName]?.[code];
+
+                    html += `<td class="text-center p-1" style="width: 17%;">`;
+                    if (course) {
+                        const students = course.students || [];
+                        const groupColor = getGroupColor(course.subject);
+                        
+                        // 生成直排、無卡片、無框線的乾淨學生名單
+                        let studentListHTML = "";
+                        if (students.length > 0) {
+                            studentListHTML = `<div class="flex flex-col gap-y-[2px] mt-1.5 text-center font-bold text-[13px] leading-tight" style="color: ${groupColor};">`;
+                            students.forEach(st => {
+                                studentListHTML += `<div>${st}</div>`;
+                            });
+                            studentListHTML += `</div>`;
+                        }
+
+                        html += `
+                            <div class="flex flex-col justify-center items-center h-full py-0.5">
+                                <span class="font-bold text-[14.5px] leading-tight tracking-wide" style="color: ${groupColor};">${course.subject}</span>
+                                ${studentListHTML}
+                            </div>
+                        `;
+                    } else {
+                        // 空堂留白
+                        html += `<span class="text-gray-300">-</span>`;
+                    }
+                    html += `</td>`;
+                }
+                html += `</tr>`;
+            });
+
+            return html;
+        }
+
+        // 觸發批量列印：建立所有教師的連續頁面，並呼叫列印
+        function triggerPrintAll() {
+            const printSection = document.getElementById('print-all-section');
+            printSection.innerHTML = '';
+            
+            let allPagesHtml = '';
+            
+            teachersList.forEach(teacher => {
+                allPagesHtml += `
+                    <div class="page-container official-doc">
+                        <!-- 頂部官方大標題 -->
+                        <div class="text-center">
+                            <h1 class="text-[22px] font-bold tracking-[4px] m-0 p-0 leading-normal">臺南市立新市國民中學</h1>
+                            <h2 class="text-[20px] font-bold tracking-[2px m-0 p-0 leading-normal mt-1">114學年度第二學期 異想教室教師課表</h2>
+                            
+                            <!-- 教師與版本資訊列 -->
+                            <div class="flex justify-between items-center px-2 mt-4 text-[15px] font-bold">
+                                <div class="flex items-baseline">
+                                    <span>教師：</span>
+                                    <span class="underline underline-offset-4 decoration-[1.5px] px-2 min-w-[80px] text-center">${teacher}</span>
+                                </div>
+                                <div class="flex items-baseline">
+                                    <span>版本：</span>
+                                    <span class="underline underline-offset-4 decoration-[1.5px] px-2 min-w-[80px] text-center">${versionString}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 主功課表 -->
+                        <div class="flex-grow mt-3" style="height: 850px; display: flex; flex-direction: column; justify-content: space-between;">
+                            <table class="timetable-table h-full">
+                                <thead>
+                                    <tr style="height: 40px;">
+                                        <th class="text-[14px]" style="width: 15%;">節次 / 時間</th>
+                                        <th class="text-[14px]" style="width: 17%;">星期一</th>
+                                        <th class="text-[14px]" style="width: 17%;">星期二</th>
+                                        <th class="text-[14px]" style="width: 17%;">星期三</th>
+                                        <th class="text-[14px]" style="width: 17%;">星期四</th>
+                                        <th class="text-[14px]" style="width: 17%;">星期五</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${generateTimetableRowsHTML(teacher)}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            });
+
+            printSection.innerHTML = allPagesHtml;
+
+            // 切換至批量列印模式，暫時屏蔽單頁區
+            document.body.classList.add('print-all-mode');
+
+            // 延遲呼叫，確保 DOM 繪製完畢
+            setTimeout(() => {
+                window.print();
+                // 列印完畢後切回普通預覽模式
+                document.body.classList.remove('print-all-mode');
+                printSection.innerHTML = '';
+            }, 500);
+        }
+
+        // 客製化錯誤警示彈窗 (取代 alert)
+        function showErrorModal(message) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] no-print p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+                    <div class="flex items-start gap-4">
+                        <div class="bg-red-100 p-2.5 rounded-full text-red-600 shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900">連線出現狀況</h3>
+                            <p class="text-sm text-slate-500 mt-2 leading-relaxed">${message}</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end">
+                        <button onclick="this.closest('.fixed').remove()" class="bg-slate-950 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors">
+                            關閉並返回
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+    </script>
+</body>
+</html>
