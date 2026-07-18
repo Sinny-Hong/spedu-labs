@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>異想事件簿 CASE001</title>
+    <style>
+        /* ==========================================
+           1. 視覺樣式設定 (原 style.css)
+           ========================================== */
+        * { box-sizing: border-box; }
+        :root {
+            --blue: #275d9f;
+            --blue-dark: #183b69;
+            --blue-soft: #eaf3ff;
+            --yellow: #f6c94c;
+            --green: #4caf70;
+            --red: #c94343;
+            --ink: #1f2937;
+            --muted: #667085;
+            --paper: #fffdf8;
+            --line: #d9e2ec;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+            color: var(--ink);
+            background: linear-gradient(rgba(255,255,255,.76), rgba(255,255,255,.76)),
+                        repeating-linear-gradient(0deg, #dfe8f2 0, #dfe8f2 1px, transparent 1px, transparent 32px),
+                        #eef4fb;
+        }
+        button { font: inherit; }
+        .page { width: min(760px, 100%); margin: 0 auto; padding: 28px 18px 40px; }
+        .hidden { display: none; }
+        .case-header { text-align: center; margin-bottom: 24px; }
+        .eyebrow { margin: 0 0 4px; color: var(--blue); font-size: .9rem; font-weight: 700; letter-spacing: .15em; }
+        h1, h2, h3, p { margin-top: 0; }
+        h1 { margin-bottom: 4px; font-size: clamp(2rem, 7vw, 3.4rem); color: var(--blue-dark); }
+        h2 { margin-bottom: 20px; color: var(--blue-dark); }
+        .subtitle { color: var(--muted); font-size: 1.05rem; }
+        .progress-card { padding: 14px 16px; margin-bottom: 22px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.88); }
+        .progress-card span { display: block; margin-bottom: 10px; font-weight: 700; }
+        .progress-track { height: 10px; overflow: hidden; border-radius: 999px; background: #dde6ef; }
+        .progress-bar { width: 0; height: 100%; background: var(--green); transition: width .25s; }
+        .clue-board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+        .clue-btn { aspect-ratio: 1; border: 2px solid transparent; border-radius: 16px; font-size: clamp(1.6rem, 6vw, 2.2rem); font-weight: 700; cursor: pointer; }
+        .clue-btn.active { color: #553b00; background: var(--yellow); border-color: #d9aa29; }
+        .clue-btn.finished { color: #fff; background: var(--green); }
+        .clue-btn.locked { color: #8793a1; background: #d8dee5; cursor: not-allowed; }
+        .notebook-btn, .primary-btn { width: 100%; border: 0; border-radius: 15px; color: #fff; background: var(--blue); cursor: pointer; }
+        .notebook-btn { padding: 17px; font-size: 1.2rem; font-weight: 700; }
+        .primary-btn { padding: 15px; margin-top: 18px; font-weight: 700; }
+        .card { clear: both; padding: 24px; border: 1px solid var(--line); border-radius: 20px; background: var(--paper); box-shadow: 0 10px 28px rgba(31,41,55,.1); }
+        .close-btn { float: right; width: 44px; height: 44px; margin-bottom: 12px; border: 0; border-radius: 50%; color: #fff; background: var(--red); font-size: 1.2rem; font-weight: 700; cursor: pointer; }
+        .block { margin: 20px 0; }
+        .label { margin-bottom: 7px; color: var(--blue); font-weight: 700; }
+        .content, .explain, .clue-record { padding: 15px; border-radius: 13px; line-height: 1.75; }
+        .content { background: var(--blue-soft); }
+        .explain { margin: 12px 0 22px; background: #f7f8fa; }
+        .clue-record { background: #fff4cc; font-weight: 700; }
+        .speak { cursor: pointer; }
+        .speak:hover, .speak:focus { outline: 2px solid var(--yellow); outline-offset: 3px; }
+        .choices { display: grid; gap: 11px; }
+        .choice { display: flex; align-items: flex-start; gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: 13px; background: #fff; cursor: pointer; }
+        .choice:hover { background: #f3f8ff; }
+        .choice input { margin-top: 4px; }
+        .hint { min-height: 1.5em; margin: 12px 0 0; color: var(--red); font-weight: 700; }
+        .status { display: inline-block; padding: 8px 12px; border-radius: 999px; font-weight: 700; }
+        .status.correct { color: #176437; background: #ddf5e6; }
+        .status.incorrect { color: #8b2828; background: #fde6e6; }
+        hr { border: 0; border-top: 1px solid var(--line); margin: 22px 0; }
+        .note-item { padding: 14px; margin-top: 12px; border-left: 6px solid var(--blue); border-radius: 10px; background: var(--blue-soft); line-height: 1.6; }
+        .empty-note { color: var(--muted); text-align: center; padding: 22px 0; }
+        @media(max-width:520px){
+            .page { padding: 20px 14px 32px; }
+            .clue-board { gap: 8px; }
+            .clue-btn { border-radius: 12px; }
+            .card { padding: 19px; }
+        }
+    </style>
+</head>
+<body>
+
+    <main id="app">
+        <!-- 主頁面：案件大廳 -->
+        <section id="casePage" class="page">
+            <header class="case-header">
+                <p class="eyebrow">異想事件簿</p>
+                <h1>CASE001</h1>
+                <p class="subtitle">Discord 免費 Nitro 詐騙</p>
+            </header>
+            
+            <section class="progress-card">
+                <span id="progressText">線索 0 / 10</span>
+                <div class="progress-track">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+            </section>
+            
+            <section id="clueBoard" class="clue-board">
+                <button class="clue-btn active" data-id="1">①</button>
+                <button class="clue-btn locked" disabled>②</button>
+                <button class="clue-btn locked" disabled>③</button>
+                <button class="clue-btn locked" disabled>④</button>
+                <button class="clue-btn locked" disabled>⑤</button>
+                <button class="clue-btn locked" disabled>⑥</button>
+                <button class="clue-btn locked" disabled>⑦</button>
+                <button class="clue-btn locked" disabled>⑧</button>
+                <button class="clue-btn locked" disabled>⑨</button>
+                <button class="clue-btn locked" disabled>⑩</button>
+            </section>
+            
+            <button id="notebookBtn" class="notebook-btn">📒 筆記本 <span id="noteCount">(0 / 10)</span></button>
+        </section>
+
+        <!-- 答題頁面 -->
+        <section id="questionPage" class="page hidden">
+            <button class="close-btn" id="closeQuestion" aria-label="返回案件">✕</button>
+            <article class="card">
+                <p class="eyebrow">線索調查</p>
+                <h2 id="qTitle" class="speak" tabindex="0"></h2>
+                <div class="block">
+                    <div class="label">內容</div>
+                    <div id="qContent" class="content speak" tabindex="0"></div>
+                </div>
+                <div class="block">
+                    <div class="label">問題</div>
+                    <div id="qQuestion" class="content speak" tabindex="0"></div>
+                </div>
+                <div id="choices" class="choices"></div>
+                <p id="answerHint" class="hint" aria-live="polite"></p>
+                <button id="submitAnswer" class="primary-btn">確認答案</button>
+            </article>
+        </section>
+
+        <!-- 結果頁面 -->
+        <section id="resultPage" class="page hidden">
+            <button class="close-btn" id="closeResult" aria-label="返回案件">✕</button>
+            <article class="card">
+                <p class="eyebrow">調查結果</p>
+                <h2>詳解</h2>
+                <div id="resultStatus" class="status" aria-live="polite"></div>
+                <div id="explain" class="explain speak" tabindex="0"></div>
+                <hr>
+                <h3>📄 已收錄線索</h3>
+                <div id="clueText" class="clue-record speak" tabindex="0"></div>
+            </article>
+        </section>
+
+        <!-- 筆記本頁面 -->
+        <section id="notebookPage" class="page hidden">
+            <button class="close-btn" id="closeNotebook" aria-label="返回案件">✕</button>
+            <article class="card">
+                <p class="eyebrow">案件紀錄</p>
+                <h2>📒 筆記本</h2>
+                <div id="notebookList"></div>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        /* ==========================================
+           2. 遊戲資料設定 (原 questions.js)
+           ========================================== */
+        const CASE_DATA = {
+            caseId: "CASE001",
+            title: "Discord 免費 Nitro 詐騙",
+            totalClues: 10,
+            questions: [
+                {
+                    id: 1,
+                    title: "線索 1｜可疑網址",
+                    content: "你收到一則訊息：『Discord 官方限時贈送免費 Nitro，請立刻前往 disc0rd-gift.com 領取。』",
+                    question: "這則訊息中，哪一個地方最可疑？",
+                    choices: [
+                        "(A) 訊息中出現 Discord 的名稱",
+                        "(B) 網址把英文字母 o 換成數字 0",
+                        "(C) Nitro 是付費服務"
+                    ],
+                    answer: 1, // 代表第二個選項 (B) 是正確答案
+                    explain: "詐騙網站常利用看起來很像官方網址的拼字，例如把 discord 中的字母 o 換成數字 0。閱讀網址時不能只看大概的外形，要逐字確認。",
+                    clue: "可疑網址常用相似字母或數字假冒官方網站。"
+                }
+            ]
+        };
+
+        /* ==========================================
+           3. 語音朗讀模組 (原 speech.js)
+           ========================================== */
+        (() => {
+            const synth = window.speechSynthesis;
+            function speakText(text) {
+                if (!synth || !text.trim()) return;
+                synth.cancel();
+                const u = new SpeechSynthesisUtterance(text.trim());
+                // 自動判定英文或中文字體語音
+                u.lang = /[A-Za-z]/.test(text) && !/[\u4e00-\u9fff]/.test(text) ? "en-US" : "zh-TW";
+                u.rate = 0.9; // 微調慢一點點，更適合資源班孩子聆聽
+                synth.speak(u);
+            }
+
+            // 綁定點擊事件
+            document.addEventListener("click", e => {
+                const t = e.target.closest(".speak");
+                if (t) speakText(t.textContent);
+            });
+
+            // 綁定鍵盤 Enter 或 空白鍵事件
+            document.addEventListener("keydown", e => {
+                const t = e.target.closest?.(".speak");
+                if (t && (e.key === "Enter" || e.key === " ")) {
+                    e.preventDefault();
+                    speakText(t.textContent);
+                }
+            });
+            window.speakText = speakText;
+        })();
+
+        /* ==========================================
+           4. 遊戲核心邏輯 (原 game.js)
+           ========================================== */
+        (() => {
+            const pages = {
+                case: document.getElementById("casePage"),
+                question: document.getElementById("questionPage"),
+                result: document.getElementById("resultPage"),
+                notebook: document.getElementById("notebookPage")
+            };
+            const state = { currentQuestion: null, completed: new Set() };
+            
+            const progressText = document.getElementById("progressText"),
+                  progressBar = document.getElementById("progressBar"),
+                  noteCount = document.getElementById("noteCount"),
+                  notebookList = document.getElementById("notebookList"),
+                  answerHint = document.getElementById("answerHint");
+
+            function showPage(name) {
+                Object.values(pages).forEach(p => p.classList.add("hidden"));
+                pages[name].classList.remove("hidden");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+
+            function renderQuestion(q) {
+                state.currentQuestion = q;
+                answerHint.textContent = "";
+                document.getElementById("qTitle").textContent = q.title;
+                document.getElementById("qContent").textContent = q.content;
+                document.getElementById("qQuestion").textContent = q.question;
+                
+                const choices = document.getElementById("choices");
+                choices.innerHTML = "";
+                
+                q.choices.forEach((c, i) => {
+                    const label = document.createElement("label");
+                    label.className = "choice speak";
+                    label.tabIndex = 0;
+                    
+                    const input = document.createElement("input");
+                    input.type = "radio";
+                    input.name = "answer";
+                    input.value = String(i);
+                    
+                    const span = document.createElement("span");
+                    span.textContent = c;
+                    
+                    label.append(input, span);
+                    choices.appendChild(label);
+                });
+                showPage("question");
+            }
+
+            function submitAnswer() {
+                const selected = document.querySelector('input[name="answer"]:checked');
+                if (!selected) {
+                    answerHint.textContent = "請先選擇一個答案。";
+                    return;
+                }
+                const q = state.currentQuestion;
+                const ok = Number(selected.value) === q.answer;
+                const status = document.getElementById("resultStatus");
+                
+                status.textContent = ok ? "答對了" : "再仔細看看";
+                status.className = `status ${ok ? "correct" : "incorrect"}`;
+                
+                document.getElementById("explain").textContent = q.explain;
+                document.getElementById("clueText").textContent = `✔ ${q.clue}`;
+                
+                state.completed.add(q.id);
+                updateProgress();
+                showPage("result");
+            }
+
+            function updateProgress() {
+                const n = state.completed.size;
+                progressText.textContent = `線索 ${n} / ${CASE_DATA.totalClues}`;
+                noteCount.textContent = `(${n} / ${CASE_DATA.totalClues})`;
+                progressBar.style.width = `${n / CASE_DATA.totalClues * 100}%`;
+                
+                document.querySelectorAll(".clue-btn[data-id]").forEach(btn => {
+                    if (state.completed.has(Number(btn.dataset.id))) {
+                        btn.classList.remove("active");
+                        btn.classList.add("finished");
+                        btn.textContent = "✔";
+                    }
+                });
+                renderNotebook();
+            }
+
+            function renderNotebook() {
+                const list = CASE_DATA.questions.filter(q => state.completed.has(q.id));
+                notebookList.innerHTML = "";
+                if (!list.length) {
+                    notebookList.innerHTML = '<p class="empty-note">尚未收錄任何線索。</p>';
+                    return;
+                }
+                list.forEach(q => {
+                    const item = document.createElement("div");
+                    item.className = "note-item speak";
+                    item.tabIndex = 0;
+                    item.textContent = `✔ ${q.clue}`;
+                    notebookList.appendChild(item);
+                });
+            }
+
+            // 事件監聽綁定
+            document.querySelector('.clue-btn[data-id="1"]').addEventListener("click", () => renderQuestion(CASE_DATA.questions[0]));
+            document.getElementById("submitAnswer").addEventListener("click", submitAnswer);
+            document.getElementById("notebookBtn").addEventListener("click", () => showPage("notebook"));
+            document.getElementById("closeQuestion").addEventListener("click", () => showPage("case"));
+            document.getElementById("closeResult").addEventListener("click", () => showPage("case"));
+            document.getElementById("closeNotebook").addEventListener("click", () => showPage("case"));
+            
+            renderNotebook();
+            updateProgress();
+        })();
+    </script>
+</body>
+</html>
