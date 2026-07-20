@@ -1,0 +1,12 @@
+使用方式
+1. 請不要只下載單一檔案，請保留完整資料夾結構。
+2. detective-game.html 與 cases.js 必須放在同一層。
+3. images 資料夾也必須和它們放在同一層。
+4. 直接雙擊 detective-game.html 開啟。
+
+正確結構：
+detective-game.html
+cases.js
+images/
+  case001-scene01.png
+  case001-cover.png
