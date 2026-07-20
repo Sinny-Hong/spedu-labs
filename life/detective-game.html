@@ -1,3 +1,197 @@
+ChatGPT
+
+
+
+
+
+請幫我把剛剛的案外案的這個五題,再加上這個程式網頁檔裡面的主要的實體,給拉出來統整。
+
+
+CASE001-v0.5-圖文對齊單檔版.html
+檔案
+請幫我把剛剛的案外案的這個五題,再加上這個程式網頁檔裡面的主要的實體,給拉出來統整。
+
+版面及按鈕太大，不能超過頁面造成不停捲動
+連不到js和圖片
+
+檔案讀取成功了
+整體還是超過頁面，即使全螢幕顯示還是塞不下，建議設定縮減寬度16:9但是縮減寬度不要滿版，有需要時再整體拉大即可
+場請圖片無法點擊縮放，解說文字占用太多版面
+題目按鍵太大，題目選擇區改收到右側避免佔用版面好了
+語音選項用下拉，開啟(整題順著念下去)、關閉(預設)、自訂(點到那行才發音)
+上排標題列再扁一點
+收折選單還是三條線就好，而且收折後底下還是預留了空位，並沒有讓右側圖片變大填滿
+左側選單取消主線進度條，因為題目方框會反色即可
+你再重新計算整體呈現的比例吧
+
+首頁/遊戲說明
+右側題庫字很小但是按鍵很大，直接縮小按鈕做成一列即可，左列十題方框，右側五題圓框
+場景解說欄配色錯誤，可以考慮收折或是可以改放在題庫上下方
+題目填答顯示框可以再長一點點，讓詳解可以完整顯示
+自訂(點擊文字朗讀)
+開啟(整題朗讀)
+另外，偵探筆記也需要朗讀功能
+
+讀不到題庫無法判別
+右側題庫區比例失衡，我希望整體區塊縮小，中間圖片放大，題目按鈕縮小
+
+測試檔整體ok了，右側整體再縮窄，手機板可以做成收折功能或是整個區塊一道圖片下方
+題目方框縮窄字放大，(方框1~10)說明字樣刪除
+右上按鍵說明欄常駐，字體放大也需要點讀功能
+首頁和遊戲說明一道單元選擇的上面，這樣顏色和標題列一致，而且選擇紐順著排列
+可以製作說明頁面了，先討論內容要寫甚麼
+偵探筆記也分為整體朗讀和逐題點擊朗讀
+行名欄位是否拉出來，放側邊或上方
+主線調查完成，可以進行案件判定。可以加入完成印章了，案件判定要如何呈現?
+
+file_000000005eac8209b2e1fb9abe3e1e5c
+file_000000002fa08209bf48737c937ef820
+file_0000000037708209a5ed2877ce38e98f
+我覺得不用再附加這個上面的資訊欄的場景一啊、主線一啊幾分鐘,都不用了,因為版面看起來沒有那個必要,想切換的自己切換就好。那你可以看一下手機版的頁面,然後順便比較一下你剛剛所說的內容。按鍵、資訊列不需要,然後,對,文字的大小你再看一下,跟最後的這個結案報告的位置,你也再想一下,就是跟網頁版做交互比較。
+
+我建議直接做最終版本，不要先花時間做使用說明。
+
+原因是現在整個介面架構已經幾乎定案了，如果這時候先做首頁說明，後面又微調介面，說明還要跟著改一次，等於重工。
+
+我建議照下面的順序，這樣效率最高。
+
+第一階段（V1 正式版）：把整個遊戲介面完全定案，只做功能，不再一直改版型。
+
+完成桌機版最終版（16:9）
+
+完成手機版（上下排列）
+
+左側收折完成
+
+圖片放大
+
+場景說明（常駐＋可展開）
+
+主線／案外案按鈕完成
+
+偵探筆記（整體朗讀＋逐條點讀）
+
+語音模式（三種）
+
+開始結案按鈕（灰階→解鎖）
+
+最後推理／CASE CLOSED
+
+LocalStorage 全部完成
+
+小千預留位置
+
+做到這裡，其實就是一個可以正式開始做第二案件的版本了。
+
+第二階段（內容）
+
+這時再做首頁／新手指南，大概一頁就能完成。
+
+內容我也建議直接定成下面這樣，不需要再另外討論太久。
+
+🕵️ 歡迎來到《異想事件簿》
+你是一名小偵探。
+
+請觀察圖片、閱讀線索，找出事件真相。
+
+🎯 遊戲流程
+🖼️ 觀察場景
+
+➡️ 回答主線題目
+
+➡️ 挑戰案外案
+
+➡️ 完成結案報告
+
+📖 偵探筆記
+完成題目後，
+
+重要線索會自動整理到偵探筆記。
+
+🔊 語音模式
+可於設定切換：
+
+🔇 關閉
+
+🔊 整題朗讀
+
+👆 點擊文字朗讀
+
+💡 辦案技巧
+先觀察，再判斷。
+
+不要急著作答。
+
+▶️ 開始辦案
+
+整頁控制在一個畫面，不需要往下捲。
+
+我反而想補一個V1 最後要加的功能。
+
+目前我們只有「主線完成」。
+
+我建議在左側 CASE 卡片加一個很小的完成標記，不影響版面，例如：
+
+CASE 001
+
+Discord 限時免費點數
+
+✔ 已完成
+或是一個小綠點。
+
+之後做 CASE 002、CASE 003 時，就可以一眼知道哪些案件已經完成，而不用打開才知道。
+
+所以我建議，我們現在正式進入 V1 最終版本，完成後就凍結介面。之後除非是修 Bug，不再調整版面，而是專心新增案件內容（CASE 002、003……）。這樣後面的開發速度會快很多，也不用每做一個案件就重新改一次介面。
+
+
+OK,那記得完成的話,就在題目前面,case前面打一個勾勾,那我們進入完成階段,直接給我程式碼跟那個完整的下載的壓縮檔。
+
+完成版已整理好，包含完整主程式、cases.js、案件圖片與使用說明。
+
+這一版已完成：桌機 16:9 版面、手機上下堆疊、主線與案外案、場景說明滑動與點讀、圖片放大、三種語音模式、偵探筆記整體朗讀與逐條點讀、灰階鎖定的「開始結案」、最後推理、CASE CLOSED 印章，以及案件完成後在 CASE 前顯示勾號。
+
+下載完整完成版 ZIP
+
+detective-game.html
+
+cases.js 
+
+
+
+我知道你希望我不要再改了，但是我還是想改，真是抱歉
+1.希望每一段代碼幫我加上一段解說文字，例如/* 互動卡片插槽 */ 或<!-- 頂部扁平化控制面板 (列印隱藏) -->之類，之前gemini都會幫我標註，對於防呆和理解很有幫助
+2.清除本機資料欄位改成相同顏色，字體紅色，避免習慣性按下去(長的很像確定按鈕)
+3.案外案改成支線案
+4.主線調查題目選單的方框內字體再放大點，應該可以跟左側選單相同大小
+5.案件說明的整題念讀時間調整，因為一關閉新手導覽就會強制結束朗讀，檔讀時機應該是左側選單選擇場景時
+
+已完成這一版調整，而且不用道歉，現在改的是可讀性與操作細節，不是推翻整個架構。
+
+這版已加入大量區段註解，HTML、CSS、JavaScript 與 cases.js 都有清楚標示，例如「頂部控制列」、「題庫按鈕插槽」、「支線案圓形按鈕排列」、「場景切換後朗讀」等，之後你自己找位置會容易很多。
+
+另外也已完成：
+清除本機資料改成白底紅字，不再像主要確認按鈕。
+「案外案」全面改名為「支線案」。
+主線題目按鈕文字放大。
+案件說明不再於首頁載入時自動朗讀，只有從左側「場景選擇」切換場景時，整題朗讀模式才會朗讀場景說明。
+
+下載完整註解強化版 ZIP
+
+detective-game.html
+
+cases.js 
+
+
+
+檔案庫
+/
+遊戲介面設計
+/
+detective-game.html
+
+
+
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -5,27 +199,34 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>異想事件簿｜Detective Game</title>
 <style>
+/* 全域盒模型與色彩變數 */
 *{box-sizing:border-box}
 :root{
   --navy:#173f60;--navy2:#0d2d47;--paper:#fffaf0;--orange:#f5a62b;
   --green:#4ba86a;--red:#d94b50;--ink:#173a59;--line:#dbcba9;
   --soft:#e9f1fc;--shadow:0 8px 20px rgba(0,0,0,.18)
 }
+/* 頁面基礎尺寸與字型 */
 html,body{margin:0;width:100%;height:100%;font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;background:#e9eef2;color:var(--ink)}
 button,select,input{font:inherit} button{touch-action:manipulation}
+/* 外層置中與禁止桌機版整頁捲動 */
 body{padding:8px;display:grid;place-items:center;overflow:hidden}
+/* 16:9 遊戲主畫布 */
 .app{
   width:min(calc(100vw - 16px),calc((100vh - 16px)*16/9),1440px);
   aspect-ratio:16/9;background:linear-gradient(180deg,#24577d,var(--navy2));
   border:5px solid var(--navy);border-radius:24px;overflow:hidden;box-shadow:var(--shadow)
 }
+/* 頂部控制列 */
 .topbar{height:50px;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:5px 14px;color:#fff}
 .menu-toggle{border:2px solid #ffd88b;border-radius:14px;background:var(--orange);color:#4b300a;font-weight:900;padding:6px 12px;display:flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.2)}
 .menu-toggle:active,.final-btn.enabled:active{transform:scale(.97)}
 .menu-icon::before{content:"☰";font-size:1.35rem}
 .brand{text-align:right;min-width:0}.brand strong{display:block;font-size:.95rem}.brand span{display:block;font-size:.72rem;margin-top:1px}
+/* 左右欄主要版面 */
 .layout{height:calc(100% - 50px);display:grid;grid-template-columns:218px minmax(0,1fr);transition:grid-template-columns .25s}
 .layout.closed{grid-template-columns:0 minmax(0,1fr)}
+/* 左側工具欄 */
 .sidebar{background:repeating-linear-gradient(0deg,transparent 0 38px,rgba(20,55,83,.05) 39px 40px),var(--paper);border-right:3px solid var(--navy);padding:10px 11px;overflow:hidden;transition:.25s}
 .layout.closed .sidebar{padding:0;border:0;opacity:0;pointer-events:none}
 .sidebar-inner{width:194px;height:100%;display:flex;flex-direction:column}
@@ -35,9 +236,13 @@ body{padding:8px;display:grid;place-items:center;overflow:hidden}
 .nav-btn{text-align:left;cursor:pointer}.nav-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
 .nav-label{font-size:.68rem;color:#7f91a2;font-weight:800;margin:2px 2px 0}
 .character-space{flex:1;min-height:30px}
+/* 右側主要遊戲內容 */
 .main{height:100%;padding:12px;overflow:hidden}
+/* 場景圖片與題庫的桌機排列 */
 .game-board{height:100%;display:grid;grid-template-columns:minmax(0,2.5fr) minmax(285px,.72fr);gap:10px}
-.scene-panel,.question-panel{min-height:0}
+.scene-panel,/* 右側案件說明與題庫區 */
+.question-panel{min-height:0}
+/* 場景圖片顯示區 */
 .scene-image{height:100%;border:4px solid #dbc58b;border-radius:15px;background:#dfe8ef;display:grid;place-items:center;overflow:hidden;cursor:zoom-in}
 .scene-image img{width:100%;height:100%;object-fit:contain}.placeholder{text-align:center;color:#8da0b3;font-weight:800}.placeholder b{display:block;font-size:1.35rem;color:var(--ink)}
 .question-panel{display:grid;grid-template-rows:88px minmax(0,1fr) 45px;gap:7px;overflow:hidden}
@@ -46,18 +251,23 @@ body{padding:8px;display:grid;place-items:center;overflow:hidden}
 .question-bank{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 54px;gap:7px}
 .section-title{display:flex;align-items:center;justify-content:space-between;margin:0 0 5px;color:#fff}.section-title h2{font-size:.88rem;margin:0}.extra-section .section-title{justify-content:center}
 .main-section,.extra-section{min-height:0}
+/* 主線調查方框按鈕排列 */
 .main-grid{height:calc(100% - 25px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:5px}
 .main-q{border:0;border-radius:9px;background:linear-gradient(#ffbb4b,#f29b1c);color:#4a2e07;box-shadow:0 3px 0 rgba(0,0,0,.18);font-weight:900;padding:3px 5px;display:flex;align-items:center;gap:5px;cursor:pointer;min-height:0}
 .main-q:hover,.extra-q:hover,.final-btn.enabled:hover{filter:brightness(1.04);transform:scale(1.02)}
 .main-q.done,.extra-q.done{background:linear-gradient(#69bf83,#45a064);color:#fff}
-.main-q .num{min-width:18px;font-size:.8rem}.main-q .name{font-size:.67rem;line-height:1.08;text-align:left}
+.main-q .num{min-width:20px;font-size:.88rem}.main-q .name{font-size:.8rem;line-height:1.12;text-align:left}
+/* 支線案圓形按鈕排列 */
 .extra-grid{height:calc(100% - 25px);display:grid;grid-template-rows:repeat(5,1fr);gap:6px;justify-items:center}
 .extra-q{width:38px;height:38px;border:2px solid #ffe1a6;border-radius:50%;background:linear-gradient(#fff5d7,#ffc35c);color:#5c3b0c;font-size:.76rem;font-weight:900;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.17)}
+/* 開始結案長按鈕：鎖定與解鎖狀態 */
 .final-btn{width:100%;height:45px;border:0;border-radius:11px;font-weight:900;transition:.15s}
 .final-btn.locked{background:#7e8993;color:#d7dde1;cursor:not-allowed;filter:grayscale(1)}
 .final-btn.enabled{background:var(--orange);color:#4b300a;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+/* 共用彈出視窗遮罩 */
 .overlay{position:absolute;inset:50px 0 0;background:rgba(5,20,33,.74);display:none;align-items:center;justify-content:center;padding:12px;z-index:50}
 .overlay.show{display:flex}
+/* 共用內容視窗 */
 .modal{width:min(820px,96%);max-height:96%;overflow:auto;background:var(--paper);border-radius:20px;padding:20px;position:relative;box-shadow:var(--shadow)}
 .modal-close{position:absolute;right:12px;top:10px;width:40px;height:40px;border:0;border-radius:50%;background:var(--red);color:#fff;font-size:1.3rem;font-weight:900;cursor:pointer}
 .modal h2{margin:0 54px 14px 0}.question-content,.home-card{background:var(--soft);padding:12px 14px;border-radius:13px;line-height:1.65;margin-bottom:12px}
@@ -70,12 +280,14 @@ body{padding:8px;display:grid;place-items:center;overflow:hidden}
 .note-list{display:grid;gap:8px}.note{background:#eaf2ff;border-left:6px solid var(--navy);padding:10px 12px;border-radius:9px;font-weight:800;line-height:1.5;cursor:pointer}
 .notebook-actions{margin-bottom:10px}.empty{text-align:center;color:#8898a7;padding:20px}
 .settings{display:grid;gap:12px}.setting{border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px}.setting label{display:block;font-weight:900;margin-bottom:7px}.setting input,.setting select{width:100%;padding:9px;border:2px solid #ccd6df;border-radius:9px}
-.danger{width:100%;border:0;border-radius:10px;padding:11px;background:var(--red);color:#fff;font-weight:900}
+.danger{width:100%;border:2px solid var(--line);border-radius:10px;padding:11px;background:#fff;color:var(--red);font-weight:900;cursor:pointer}.danger:hover{background:#fff4f4;border-color:#e6a6a9}
 .home-title{text-align:center;margin:0 0 14px}.guide{display:grid;gap:9px}.guide-row{font-size:1rem;font-weight:800;line-height:1.55}.start-btn{margin-top:14px}
 .image-modal{width:min(1120px,96%);height:min(87vh,760px);display:grid;place-items:center;position:relative}.image-modal img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
+/* 結案印章動畫 */
 .stamp-stage{text-align:center;padding:16px 0}.stamp{display:inline-block;border:6px double #ba2930;color:#ba2930;border-radius:10px;padding:10px 18px;font-size:2rem;font-weight:1000;transform:rotate(-7deg) scale(0);opacity:0}.stamp.show{animation:stampIn .55s ease forwards}
 @keyframes stampIn{0%{transform:rotate(-7deg) scale(2.5);opacity:0}70%{transform:rotate(-7deg) scale(.92);opacity:1}100%{transform:rotate(-7deg) scale(1);opacity:1}}
 .case-result{font-size:1.1rem;font-weight:900;line-height:1.7;text-align:center}
+/* 手機版：維持相同介面，只改為上下堆疊 */
 @media(max-width:820px){
   html,body{height:auto;overflow:auto}body{padding:0;display:block}.app{width:100%;aspect-ratio:auto;min-height:100vh;border-radius:0;border-width:0}
   .topbar{position:sticky;top:0;z-index:40}.layout{height:auto;display:block}.sidebar{position:fixed;top:50px;left:0;bottom:0;width:min(78vw,320px);z-index:45;transform:translateX(0);box-shadow:var(--shadow)}
@@ -83,21 +295,27 @@ body{padding:8px;display:grid;place-items:center;overflow:hidden}
   .main{height:auto;min-height:calc(100vh - 50px);overflow:visible;padding:12px}.game-board{display:flex;flex-direction:column;gap:10px}
   .scene-panel{order:1}.question-panel{order:2;display:grid;grid-template-rows:95px auto 48px;overflow:visible}
   .scene-image{height:min(66vw,360px);min-height:225px}.question-bank{height:410px;grid-template-columns:minmax(0,1fr) 54px}
-  .main-q .name{font-size:.78rem}.main-q .num{font-size:.9rem}.section-title h2{font-size:1rem}.story-box{font-size:.92rem}
+  .main-q .name{font-size:.86rem}.main-q .num{font-size:.94rem}.section-title h2{font-size:1rem}.story-box{font-size:.92rem}
   .overlay{position:fixed;inset:50px 0 0;align-items:flex-start;overflow:auto}.modal{margin-top:8px;max-height:none}.brand strong{font-size:.82rem}.brand span{font-size:.67rem}
 }
 </style>
 </head>
 <body>
+<!-- 遊戲主外框：限制為 16:9，集中管理整體畫面 -->
 <div class="app">
+<!-- 頂部扁平化控制面板：選單開關、案件名稱與場景名稱 -->
 <header class="topbar">
   <button id="menuToggle" class="menu-toggle" type="button" aria-expanded="true"><span class="menu-icon"></span><span>選單</span></button>
   <div class="brand"><strong id="topCaseTitle">異想事件簿</strong><span id="topSceneTitle">載入案件中……</span></div>
 </header>
+<!-- 主要版面：左側工具欄＋右側遊戲內容 -->
 <div id="layout" class="layout">
+  <!-- 左側工具欄：案件切換、場景切換、筆記與設定 -->
   <aside class="sidebar">
     <div class="sidebar-inner">
+      <!-- 目前案件標題卡：案件完成後會在 CASE 前顯示勾號 -->
       <div class="case-card"><div id="sidebarCaseNo" class="case-no">CASE</div><h1 id="sidebarCaseTitle">異想事件簿</h1></div>
+      <!-- 導覽控制區：所有選擇按鈕依序排列 -->
       <div class="nav-group">
         <button id="homeBtn" class="nav-btn active" type="button">🏠 首頁／遊戲說明</button>
         <label class="nav-label" for="caseSelect">案件選擇</label><select id="caseSelect" class="nav-select"></select>
@@ -105,30 +323,38 @@ body{padding:8px;display:grid;place-items:center;overflow:hidden}
         <button id="notebookBtn" class="nav-btn" type="button">📓 偵探筆記</button>
         <button id="settingsBtn" class="nav-btn" type="button">⚙️ 偵探設定</button>
       </div>
+      <!-- 偵探小千圖片預留區：之後放入單張角色圖片 -->
       <div class="character-space"></div>
     </div>
   </aside>
+  <!-- 遊戲主畫面：左側場景圖片、右側說明與題庫 -->
   <main class="main">
     <div class="game-board">
+      <!-- 場景圖片區：可點擊放大檢視 -->
       <section class="scene-panel"><div id="sceneImage" class="scene-image" role="button" tabindex="0" aria-label="點擊放大案件情境圖"><div class="placeholder"><b>案件情境圖</b>載入中</div></div></section>
+      <!-- 題庫控制區：案件說明、主線、支線案與結案按鈕 -->
       <section class="question-panel">
+        <!-- 案件說明：可捲動；自訂朗讀模式下可點擊朗讀 -->
         <div id="sceneStory" class="story-box">正在讀取案件資料……</div>
+        <!-- 題庫按鈕插槽：主線方框在左、支線案圓框在右 -->
         <div class="question-bank">
           <section class="main-section"><div class="section-title"><h2>主線調查</h2></div><div id="mainGrid" class="main-grid"></div></section>
-          <section class="extra-section"><div class="section-title"><h2>案外案</h2></div><div id="extraGrid" class="extra-grid"></div></section>
+          <section class="extra-section"><div class="section-title"><h2>支線案</h2></div><div id="extraGrid" class="extra-grid"></div></section>
         </div>
+        <!-- 結案按鈕：主線十題完成前為灰階鎖定 -->
         <button id="finalBtn" class="final-btn locked" type="button" disabled>🔒 開始結案</button>
       </section>
     </div>
   </main>
 </div>
 
+<!-- 單頁遊戲說明導覽 -->
 <div id="homeOverlay" class="overlay"><section class="modal"><button class="modal-close" data-close="homeOverlay">×</button>
   <h2 class="home-title">🕵️ 歡迎來到《異想事件簿》</h2>
   <div class="home-card guide">
     <div class="guide-row">🖼️ 先觀察場景圖片，找出可疑的地方。</div>
     <div class="guide-row">🟧 完成主線調查，重要線索會自動加入偵探筆記。</div>
-    <div class="guide-row">⚪ 案外案是加強練習，不影響結案。</div>
+    <div class="guide-row">⚪ 支線案是加強練習，不影響結案。</div>
     <div class="guide-row">📓 可隨時打開偵探筆記，整理已找到的線索。</div>
     <div class="guide-row">🔊 語音可選擇關閉、整題朗讀或點擊文字朗讀。</div>
     <div class="guide-row">🔍 辦案重點：先觀察，再判斷，不要急著作答。</div>
@@ -136,15 +362,18 @@ body{padding:8px;display:grid;place-items:center;overflow:hidden}
   <button id="startGameBtn" class="secondary start-btn" type="button">開始辦案</button>
 </section></div>
 
+<!-- 一般題目作答視窗 -->
 <div id="questionOverlay" class="overlay"><section class="modal"><button class="modal-close" data-close="questionOverlay">×</button>
   <h2 id="questionTitle">題目</h2><div id="questionContent" class="question-content"></div><div id="questionText" class="question-text"></div>
   <div id="choices" class="choices"></div><button id="submitAnswer" class="submit" type="button">送出答案</button><div id="feedback" class="feedback" aria-live="polite"></div>
 </section></div>
 
+<!-- 偵探筆記視窗：支援整體朗讀與逐條點讀 -->
 <div id="notebookOverlay" class="overlay"><section class="modal"><button class="modal-close" data-close="notebookOverlay">×</button>
   <h2>偵探筆記</h2><div class="notebook-actions"><button id="readNotebookBtn" class="secondary" type="button">整體朗讀</button></div><div id="notebookList" class="note-list"></div>
 </section></div>
 
+<!-- 全站設定視窗：姓名、朗讀模式、語速與資料清除 -->
 <div id="settingsOverlay" class="overlay"><section class="modal"><button class="modal-close" data-close="settingsOverlay">×</button>
   <h2>偵探設定</h2><div class="settings">
     <div class="setting"><label for="detectiveName">偵探姓名</label><input id="detectiveName" type="text" placeholder="請輸入姓名"></div>
@@ -154,23 +383,32 @@ body{padding:8px;display:grid;place-items:center;overflow:hidden}
   </div>
 </section></div>
 
+<!-- 結案報告視窗：最後推理與 CASE CLOSED 印章 -->
 <div id="finalOverlay" class="overlay"><section class="modal"><button class="modal-close" data-close="finalOverlay">×</button>
   <h2 id="finalTitle">結案報告</h2><div id="finalQuestion" class="question-text"></div><div id="finalChoices" class="choices"></div>
   <button id="submitFinal" class="submit" type="button">送出結案報告</button><div id="finalFeedback" class="feedback" aria-live="polite"></div>
   <div id="stampStage" class="stamp-stage" hidden><div id="caseStamp" class="stamp">CASE CLOSED</div><div id="caseResult" class="case-result"></div></div>
 </section></div>
 
+<!-- 場景圖片放大視窗 -->
 <div id="imageOverlay" class="overlay"><section class="image-modal"><button class="modal-close" data-close="imageOverlay">×</button><img id="lightboxImage" alt="放大的案件情境圖"></section></div>
 </div>
 
+<!-- 題庫載入狀態：若 cases.js 讀取失敗，畫面會顯示提示 -->
 <script>window.__casesLoadError=false;</script>
+<!-- 外部題庫資料檔：必須與本 HTML 放在同一層 -->
 <script src="./cases.js" onerror="window.__casesLoadError=true"></script>
+<!-- 遊戲互動主程式 -->
 <script>
 (() => {
+/* 讀取外部題庫資料 */
 const CASES=Array.isArray(window.CASES)?window.CASES:[];
+/* LocalStorage 儲存鍵值 */
 const KEY="detectiveGameFinalV1";
+/* 建立預設儲存資料結構 */
 const defaultSave=()=>({answered:{},notebook:[],completedCases:{},settings:{detectiveName:"",voiceMode:"off",speed:"1"}});
 let save=load(); let caseIndex=0,sceneIndex=0,activeQuestion=null,activeType=null;
+/* 簡化 DOM 元素查找 */
 const $=id=>document.getElementById(id);
 const els={layout:$("layout"),caseSelect:$("caseSelect"),sceneSelect:$("sceneSelect"),sceneImage:$("sceneImage"),sceneStory:$("sceneStory"),
 mainGrid:$("mainGrid"),extraGrid:$("extraGrid"),finalBtn:$("finalBtn"),topCaseTitle:$("topCaseTitle"),topSceneTitle:$("topSceneTitle"),
@@ -180,17 +418,20 @@ notebookList:$("notebookList"),voiceMode:$("voiceMode"),voiceSpeed:$("voiceSpeed
 finalOverlay:$("finalOverlay"),finalQuestion:$("finalQuestion"),finalChoices:$("finalChoices"),finalFeedback:$("finalFeedback"),
 submitFinal:$("submitFinal"),stampStage:$("stampStage"),caseStamp:$("caseStamp"),caseResult:$("caseResult"),lightboxImage:$("lightboxImage")};
 
+/* 載入本機紀錄，失敗時回傳預設值 */
 function load(){try{const x=JSON.parse(localStorage.getItem(KEY));return x&&typeof x==="object"?Object.assign(defaultSave(),x):defaultSave()}catch{return defaultSave()}}
 function persist(){localStorage.setItem(KEY,JSON.stringify(save))}
 function currentCase(){return CASES[caseIndex]} function currentScene(){return currentCase()?.scenes?.[sceneIndex]}
 function qkey(type,id){return `${type}:${id}`}
 function caseDone(id){return !!save.completedCases[id]}
+/* 建立案件與場景下拉選單 */
 function initSelectors(){
   els.caseSelect.innerHTML="";
   CASES.forEach((c,i)=>{const o=document.createElement("option");o.value=i;o.textContent=`${caseDone(c.id)?"✓ ":""}${c.caseNumber}｜${c.shortTitle||c.title}`;els.caseSelect.appendChild(o)});
   refreshScenes()
 }
 function refreshScenes(){els.sceneSelect.innerHTML="";(currentCase()?.scenes||[]).forEach((s,i)=>{const o=document.createElement("option");o.value=i;o.textContent=`場景 ${i+1}｜${s.title}`;els.sceneSelect.appendChild(o)});els.sceneSelect.value=String(sceneIndex)}
+/* 重新繪製目前案件與場景畫面 */
 function render(){
  const c=currentCase(),s=currentScene();
  if(!c||!s){els.sceneStory.textContent=window.__casesLoadError?"cases.js 載入失敗，請確認檔名與位置。":"找不到案件資料。";return}
@@ -198,35 +439,59 @@ function render(){
  els.sidebarCaseNo.textContent=`${caseDone(c.id)?"✓ ":""}${c.caseNumber}`;els.sidebarCaseTitle.textContent=c.title;els.sceneStory.textContent=s.story||"";
  renderImage(s.image,s.title);renderMain(s.mainQuestions||[]);renderExtra(s.extraMissions||[]);updateFinal(s.mainQuestions||[]);
  els.detectiveName.value=save.settings.detectiveName||"";els.voiceMode.value=save.settings.voiceMode||"off";els.voiceSpeed.value=save.settings.speed||"1";
- if(save.settings.voiceMode==="auto") speak(s.story||"")
+
 }
+/* 顯示場景圖片並處理載入失敗 */
 function renderImage(src,title){els.sceneImage.innerHTML="";const img=document.createElement("img");img.src=src||"";img.alt=title||"案件情境圖";img.onerror=()=>els.sceneImage.innerHTML='<div class="placeholder"><b>案件情境圖</b>圖片尚未放入指定位置</div>';els.sceneImage.appendChild(img)}
+/* 產生主線調查方框按鈕 */
 function renderMain(list){els.mainGrid.innerHTML="";list.forEach((q,i)=>{const b=document.createElement("button");const done=save.answered[qkey("main",q.id)];b.className="main-q"+(done?" done":"");b.type="button";b.innerHTML=`<span class="num">${done?"✓":i+1}</span><span class="name">${(q.title||"").replace(/^線索\s*\d+\s*[｜|]\s*/,"")||`主線 ${i+1}`}</span>`;b.onclick=()=>openQuestion(q,"main");els.mainGrid.appendChild(b)})}
+/* 產生支線案圓形按鈕 */
 function renderExtra(list){els.extraGrid.innerHTML="";list.forEach((q,i)=>{const b=document.createElement("button");const done=save.answered[qkey("extra",q.id)];b.className="extra-q"+(done?" done":"");b.type="button";b.textContent=done?"✓":i+1;b.onclick=()=>openQuestion(q,"extra");els.extraGrid.appendChild(b)})}
+/* 檢查主線是否完成，決定是否解鎖結案 */
 function updateFinal(list){const ready=list.length>0&&list.every(q=>save.answered[qkey("main",q.id)]);els.finalBtn.disabled=!ready;els.finalBtn.className="final-btn "+(ready?"enabled":"locked");els.finalBtn.textContent=ready?"開始結案":"🔒 開始結案"}
+/* 開啟一般題目視窗 */
 function openQuestion(q,type){activeQuestion=q;activeType=type;els.questionTitle.textContent=q.title||"題目";els.questionContent.textContent=q.content||"";els.questionContent.style.display=q.content?"block":"none";els.questionText.textContent=q.question||"";els.choices.innerHTML="";els.feedback.className="feedback";q.choices.forEach((v,i)=>{const l=document.createElement("label");l.className="choice";l.innerHTML=`<input type="radio" name="answer" value="${i}"><span>${String.fromCharCode(65+i)}. ${v}</span>`;els.choices.appendChild(l)});show("questionOverlay");if(save.settings.voiceMode==="auto")speak([q.content,q.question,...q.choices].filter(Boolean).join("。"))}
+/* 判斷題目答案並更新筆記與進度 */
 function submitAnswer(){const q=activeQuestion;if(!q)return;const checked=els.choices.querySelector("input:checked");if(!checked){feedback(els.feedback,false,"請先選擇答案。");return}const selected=+checked.value,correct=+q.answer;save.answered[qkey(activeType,q.id)]=true;if(activeType==="main"&&q.notebook&&!save.notebook.some(n=>n.id===q.id))save.notebook.push({id:q.id,text:q.notebook});persist();feedback(els.feedback,selected===correct,`${selected===correct?"答對了":"答錯了"}<br>${selected===correct?"答案":"正確答案"}：${String.fromCharCode(65+correct)}<br>解析：${q.explanation||""}`);render()}
 function feedback(node,ok,html){node.className=`feedback ${ok?"correct":"wrong"} show`;node.innerHTML=html}
+/* 顯示偵探筆記；自訂模式可逐條點讀 */
 function renderNotebook(){els.notebookList.innerHTML="";if(!save.notebook.length){els.notebookList.innerHTML='<div class="empty">目前還沒有收集到主線線索。</div>';return}save.notebook.forEach((n,i)=>{const d=document.createElement("div");d.className="note";d.textContent=`${i+1}. ${n.text}`;d.onclick=()=>{if(save.settings.voiceMode==="custom")speak(d.textContent)};els.notebookList.appendChild(d)})}
+/* 開啟最後結案報告 */
 function openFinal(){const f=currentCase()?.finalJudgment;if(!f)return;els.finalQuestion.textContent=f.question||"";els.finalChoices.innerHTML="";els.finalFeedback.className="feedback";els.stampStage.hidden=true;els.caseStamp.classList.remove("show");f.choices.forEach((v,i)=>{const l=document.createElement("label");l.className="choice";l.innerHTML=`<input type="radio" name="finalAnswer" value="${i}"><span>${String.fromCharCode(65+i)}. ${v}</span>`;els.finalChoices.appendChild(l)});show("finalOverlay");if(save.settings.voiceMode==="auto")speak([f.question,...f.choices].join("。"))}
+/* 判斷結案答案，答對後標記完成並蓋章 */
 function submitFinal(){const f=currentCase()?.finalJudgment;const checked=els.finalChoices.querySelector("input:checked");if(!checked){feedback(els.finalFeedback,false,"請先完成結案判斷。");return}if(+checked.value!==+f.answer){feedback(els.finalFeedback,false,`結案判斷不正確。<br>正確答案：${String.fromCharCode(65+f.answer)}<br>解析：${f.explanation||""}`);return}feedback(els.finalFeedback,true,`結案判斷正確。<br>解析：${f.explanation||""}`);save.completedCases[currentCase().id]=true;persist();els.stampStage.hidden=false;els.caseStamp.classList.add("show");els.caseResult.textContent=f.explanation||"案件完成。";initSelectors();render()}
+/* 共用語音朗讀函式 */
 function speak(text){if(!("speechSynthesis"in window)||!text)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(text));u.lang="zh-TW";u.rate=Number(save.settings.speed||1);speechSynthesis.speak(u)}
 function show(id){$(id).classList.add("show")} function close(id){$(id).classList.remove("show");if("speechSynthesis"in window)speechSynthesis.cancel()}
 
+/* 左側工具欄收折控制 */
 $("menuToggle").onclick=()=>{const closed=els.layout.classList.toggle("closed");$("menuToggle").setAttribute("aria-expanded",String(!closed))};
+/* 首頁說明與主要視窗開關 */
 $("homeBtn").onclick=()=>show("homeOverlay");$("startGameBtn").onclick=()=>close("homeOverlay");
 $("notebookBtn").onclick=()=>{renderNotebook();show("notebookOverlay")};$("settingsBtn").onclick=()=>show("settingsOverlay");
 els.submitAnswer.onclick=submitAnswer;els.finalBtn.onclick=openFinal;els.submitFinal.onclick=submitFinal;
-els.caseSelect.onchange=()=>{caseIndex=+els.caseSelect.value;sceneIndex=0;refreshScenes();render()};els.sceneSelect.onchange=()=>{sceneIndex=+els.sceneSelect.value;render()};
+/* 案件與場景切換 */
+els.caseSelect.onchange=()=>{caseIndex=+els.caseSelect.value;sceneIndex=0;refreshScenes();render()};els.sceneSelect.onchange=()=>{
+  sceneIndex=+els.sceneSelect.value;
+  render();
+  /* 場景切換後，若設定為整題朗讀，才朗讀本場景說明。 */
+  if(save.settings.voiceMode==="auto") speak(currentScene()?.story||"");
+};
+/* 場景圖片放大與鍵盤操作 */
 els.sceneImage.onclick=()=>{const img=els.sceneImage.querySelector("img");if(img){els.lightboxImage.src=img.src;show("imageOverlay")}};
 els.sceneImage.onkeydown=e=>{if(e.key==="Enter"||e.key===" ")els.sceneImage.click()};
+/* 自訂模式：點擊文字才朗讀 */
 els.sceneStory.onclick=()=>{if(save.settings.voiceMode==="custom")speak(els.sceneStory.textContent)};
 [els.questionContent,els.questionText,els.choices,els.finalQuestion,els.finalChoices].forEach(n=>n.onclick=e=>{if(save.settings.voiceMode==="custom"){const t=e.target.closest(".choice")||e.target;speak(t.innerText||t.textContent)}});
+/* 偵探筆記整體朗讀 */
 $("readNotebookBtn").onclick=()=>speak(save.notebook.map((n,i)=>`${i+1}。${n.text}`).join("。"));
+/* 設定資料即時儲存 */
 els.detectiveName.oninput=()=>{save.settings.detectiveName=els.detectiveName.value;persist()};els.voiceMode.onchange=()=>{save.settings.voiceMode=els.voiceMode.value;persist()};els.voiceSpeed.onchange=()=>{save.settings.speed=els.voiceSpeed.value;persist()};
+/* 清除本機資料：保留二次確認避免誤觸 */
 $("clearRecord").onclick=()=>{if(confirm("確定清除全部紀錄嗎？")){localStorage.removeItem(KEY);save=defaultSave();initSelectors();render();close("settingsOverlay")}};
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>close(b.dataset.close));
 document.querySelectorAll(".overlay").forEach(o=>o.onclick=e=>{if(e.target===o)close(o.id)});
+/* 啟動遊戲：建立選單、繪製畫面並顯示說明 */
 initSelectors();render();show("homeOverlay");
 })();
 </script>
