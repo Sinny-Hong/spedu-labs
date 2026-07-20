@@ -485,6 +485,7 @@ body{padding:10px}
   .menu-toggle .open-label,.menu-toggle .close-label{display:none!important}
 }
 </style>
+<<<<<<< HEAD
 
 
 
@@ -877,14 +878,22 @@ body{
 }
 </style>
 
+=======
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
 </head>
 <body>
 <div class="app">
   <header class="topbar">
     <button id="menuToggle" class="menu-toggle" type="button" aria-expanded="true">
+<<<<<<< HEAD
       <span class="menu-icon" aria-hidden="true"></span>
       <span class="open-label">選單</span>
       <span class="close-label">選單</span>
+=======
+      <span class="menu-icon">🔍</span>
+      <span class="open-label">開啟選單</span>
+      <span class="close-label">收合選單</span>
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
     </button>
 
     <div class="brand-title">
@@ -902,7 +911,11 @@ body{
         </div>
 
         <div class="nav-group">
+<<<<<<< HEAD
           <button id="homeBtn" class="nav-btn active" type="button">🏠 首頁／遊戲說明</button>
+=======
+          <button id="homeBtn" class="nav-btn active" type="button">🏠 首頁</button>
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
 
           <label class="nav-label" for="caseSelect">案件選擇</label>
           <select id="caseSelect" class="nav-select"></select>
@@ -927,14 +940,21 @@ body{
     </aside>
 
     <main class="main">
+<<<<<<< HEAD
       <div class="game-board">
         <section class="scene-panel">
           <div id="sceneImage" class="scene-image" role="button" tabindex="0" aria-label="點擊放大案件情境圖">
+=======
+      <div class="scene-shell">
+        <section class="scene-card">
+          <div id="sceneImage" class="scene-image">
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
             <div class="scene-placeholder">
               <b>案件情境圖</b>
               請將圖片放入 images 資料夾
             </div>
           </div>
+<<<<<<< HEAD
         </section>
 
         <section class="question-panel">
@@ -966,6 +986,24 @@ body{
 
           <div id="unlockNote" class="unlock">主線調查完成，可以進行案件判定。</div>
         </section>
+=======
+          <div id="sceneStory" class="scene-story">正在讀取案件資料……</div>
+        </section>
+
+        <div class="section-title">
+          <h2>主線調查</h2>
+          <span>方塊 1～10</span>
+        </div>
+        <div id="mainGrid" class="main-grid"></div>
+
+        <div class="section-title">
+          <h2>案外案</h2>
+          <span>圓形 1～5</span>
+        </div>
+        <div id="extraGrid" class="extra-grid"></div>
+
+        <div id="unlockNote" class="unlock">主線調查完成，可以進行案件判定。</div>
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
       </div>
     </main>
   </div>
@@ -986,7 +1024,10 @@ body{
     <section class="modal" role="dialog" aria-modal="true" aria-labelledby="notebookTitle">
       <button class="modal-close" data-close="notebookOverlay" type="button">×</button>
       <h2 id="notebookTitle">偵探筆記</h2>
+<<<<<<< HEAD
       <button id="readNotebookBtn" class="secondary-btn notebook-read-btn" type="button">朗讀偵探筆記</button>
+=======
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
       <div id="notebookList" class="notebook-list"></div>
     </section>
   </div>
@@ -1000,6 +1041,7 @@ body{
           <label for="detectiveName">偵探姓名</label>
           <input id="detectiveName" type="text" placeholder="請輸入姓名">
         </div>
+<<<<<<< HEAD
         <div class="setting-row">
           <label for="voiceMode">語音朗讀</label>
           <select id="voiceMode">
@@ -1007,6 +1049,14 @@ body{
             <option value="auto">開啟（整題朗讀）</option>
             <option value="custom">自訂（點擊文字朗讀）</option>
           </select>
+=======
+        <div class="setting-row switch-row">
+          <div>
+            <strong>語音朗讀</strong>
+            <div style="margin-top:4px;color:var(--muted);font-size:.9rem">預設關閉</div>
+          </div>
+          <input id="voiceToggle" type="checkbox">
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
         </div>
         <div class="setting-row">
           <label for="voiceSpeed">朗讀速度</label>
@@ -1022,6 +1072,7 @@ body{
   </div>
 </div>
 
+<<<<<<< HEAD
   <div id="imageOverlay" class="overlay image-overlay">
     <section class="image-modal" role="dialog" aria-modal="true" aria-label="案件情境圖放大檢視">
       <button class="modal-close" data-close="imageOverlay" type="button">×</button>
@@ -1047,6 +1098,12 @@ window.__casesLoadError = false;
   if (window.__casesLoadError) {
     console.error("cases.js 載入失敗，請確認檔名與 detective-game.html 位於同一資料夾。");
   }
+=======
+<script src="cases.js"></script>
+<script>
+(() => {
+  const appData = Array.isArray(window.CASES) ? window.CASES : [];
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
   const storageKey = "detectiveGameSaveV1";
 
   const state = {
@@ -1086,7 +1143,11 @@ window.__casesLoadError = false;
     settingsBtn: document.getElementById("settingsBtn"),
     settingsOverlay: document.getElementById("settingsOverlay"),
     detectiveName: document.getElementById("detectiveName"),
+<<<<<<< HEAD
     voiceMode: document.getElementById("voiceMode"),
+=======
+    voiceToggle: document.getElementById("voiceToggle"),
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
     voiceSpeed: document.getElementById("voiceSpeed"),
     clearRecord: document.getElementById("clearRecord")
   };
@@ -1096,13 +1157,21 @@ window.__casesLoadError = false;
       return JSON.parse(localStorage.getItem(storageKey)) || {
         answered: {},
         notebook: [],
+<<<<<<< HEAD
         settings: { detectiveName: "", voiceMode: "off", speed: "1" }
+=======
+        settings: { detectiveName: "", voice: false, speed: "1" }
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
       };
     } catch {
       return {
         answered: {},
         notebook: [],
+<<<<<<< HEAD
         settings: { detectiveName: "", voiceMode: "off", speed: "1" }
+=======
+        settings: { detectiveName: "", voice: false, speed: "1" }
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
       };
     }
   }
@@ -1152,9 +1221,13 @@ window.__casesLoadError = false;
     const s = currentScene();
 
     if (!c || !s) {
+<<<<<<< HEAD
       el.sceneStory.textContent = window.__casesLoadError
         ? "cases.js 載入失敗：請確認檔名完全是 cases.js，並和 detective-game.html 放在同一層。"
         : "cases.js 已載入，但沒有讀到案件資料。";
+=======
+      el.sceneStory.textContent = "找不到案件資料，請確認 cases.js 已放在同一個資料夾。";
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
       return;
     }
 
@@ -1171,7 +1244,11 @@ window.__casesLoadError = false;
     updateProgress(s.mainQuestions || []);
 
     el.detectiveName.value = state.save.settings.detectiveName || "";
+<<<<<<< HEAD
     el.voiceMode.value = state.save.settings.voiceMode || "off";
+=======
+    el.voiceToggle.checked = !!state.save.settings.voice;
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
     el.voiceSpeed.value = state.save.settings.speed || "1";
   }
 
@@ -1308,10 +1385,15 @@ window.__casesLoadError = false;
     });
   }
 
+<<<<<<< HEAD
 
 
   function speakQuestion(question) {
     if (state.save.settings.voiceMode !== "auto" || !("speechSynthesis" in window)) return;
+=======
+  function speakQuestion(question) {
+    if (!state.save.settings.voice || !("speechSynthesis" in window)) return;
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
     speechSynthesis.cancel();
     const text = [question.content, question.question, ...(question.choices || [])].filter(Boolean).join("。");
     const utterance = new SpeechSynthesisUtterance(text);
@@ -1325,6 +1407,7 @@ window.__casesLoadError = false;
     if ("speechSynthesis" in window) speechSynthesis.cancel();
   }
 
+<<<<<<< HEAD
 
   const layout = document.querySelector(".layout");
   const storyToggleBtn = document.getElementById("storyToggleBtn");
@@ -1392,6 +1475,12 @@ window.__casesLoadError = false;
     el.sidebar.classList.toggle("collapsed", closed);
     el.menuToggle.classList.toggle("open", !closed);
     el.menuToggle.setAttribute("aria-expanded", String(!closed));
+=======
+  el.menuToggle.addEventListener("click", () => {
+    const collapsed = el.sidebar.classList.toggle("collapsed");
+    el.menuToggle.classList.toggle("open", !collapsed);
+    el.menuToggle.setAttribute("aria-expanded", String(!collapsed));
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
   });
 
   el.caseSelect.addEventListener("change", () => {
@@ -1436,8 +1525,13 @@ window.__casesLoadError = false;
     saveState();
   });
 
+<<<<<<< HEAD
   el.voiceMode.addEventListener("change", () => {
     state.save.settings.voiceMode = el.voiceMode.value;
+=======
+  el.voiceToggle.addEventListener("change", () => {
+    state.save.settings.voice = el.voiceToggle.checked;
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
     saveState();
   });
 
@@ -1460,3 +1554,7 @@ window.__casesLoadError = false;
 </script>
 </body>
 </html>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 55832b449aede49b4cf25089e5a9889f551812bf
