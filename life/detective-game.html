@@ -183,7 +183,11 @@ body{padding:8px;display:grid;place-items:center;overflow:hidden}
 <div id="settingsOverlay" class="overlay"><section class="modal"><button class="modal-close" data-close="settingsOverlay">×</button>
   <h2>偵探設定</h2><div class="settings">
     <div class="setting"><label for="detectiveName">偵探姓名</label><input id="detectiveName" type="text" placeholder="請輸入姓名"></div>
-    <div class="setting"><label for="voiceMode">語音朗讀</label><select id="voiceMode"><option value="off">關閉（預設）</option><option value="auto">開啟（整題朗讀）</option><option value="custom">自訂（點擊文字朗讀）</option></select></div>
+    <div class="setting"><label for="voiceMode">語音朗讀</label><select id="voiceMode">
+        <option value="custom" selected>自訂（點擊文字朗讀，預設）</option>
+        <option value="auto">開啟（整題朗讀）</option>
+        <option value="off">關閉</option>
+      </select></div>
     <div class="setting"><label for="voiceSpeed">朗讀速度</label><select id="voiceSpeed"><option value="0.8">慢</option><option value="1">正常</option><option value="1.2">快</option></select></div>
     <button id="clearRecord" class="danger" type="button">清除本機紀錄</button>
   </div>
@@ -211,8 +215,10 @@ body{padding:8px;display:grid;place-items:center;overflow:hidden}
 const CASES=Array.isArray(window.CASES)?window.CASES:[];
 /* LocalStorage 儲存鍵值 */
 const KEY="detectiveGameFinalV1";
-/* 建立預設儲存資料結構 */
-const defaultSave=()=>({answered:{},notebook:[],completedCases:{},settings:{detectiveName:"",voiceMode:"off",speed:"1"}});
+/* 建立預設儲存資料結構
+ * voiceMode 設為 custom，代表第一次開啟時預設使用「點擊文字朗讀」。
+ */
+const defaultSave=()=>({answered:{},notebook:[],completedCases:{},settings:{detectiveName:"",voiceMode:"custom",speed:"1"}});
 let save=load(); let caseIndex=0,sceneIndex=0,activeQuestion=null,activeType=null;
 /* 簡化 DOM 元素查找 */
 const $=id=>document.getElementById(id);
@@ -244,7 +250,7 @@ function render(){
  els.caseSelect.value=String(caseIndex);els.topCaseTitle.textContent=`${caseDone(c.id)?"✓ ":""}${c.caseNumber}｜${c.title}`;els.topSceneTitle.textContent=`場景 ${sceneIndex+1}｜${s.title}`;
  els.sidebarCaseNo.textContent=`${caseDone(c.id)?"✓ ":""}${c.caseNumber}`;els.sidebarCaseTitle.textContent=c.title;els.sceneStory.textContent=s.story||"";
  renderImage(s.image,s.title);renderMain(s.mainQuestions||[]);renderExtra(s.extraMissions||[]);updateFinal(s.mainQuestions||[]);
- els.detectiveName.value=save.settings.detectiveName||"";els.voiceMode.value=save.settings.voiceMode||"off";els.voiceSpeed.value=save.settings.speed||"1";
+ els.detectiveName.value=save.settings.detectiveName||"";els.voiceMode.value=save.settings.voiceMode||"custom";els.voiceSpeed.value=save.settings.speed||"1";
 
 }
 /* 顯示場景圖片並處理載入失敗 */
