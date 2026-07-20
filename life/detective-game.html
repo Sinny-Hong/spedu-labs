@@ -185,27 +185,55 @@ function persist(){localStorage.setItem(KEY,JSON.stringify(save))}
 function currentCase(){return CASES[caseIndex]} function currentScene(){return currentCase()?.scenes?.[sceneIndex]}
 function qkey(type,id){return `${type}:${id}`}
 function caseDone(id){return !!save.completedCases[id]}
+function requiredMainCount(scene){
+ const configured=Number(scene?.completion?.requiredMainQuestions);
+ return Number.isFinite(configured)&&configured>=0?configured:(scene?.mainQuestions||[]).length
+}
+function sceneDone(scene){
+ const list=scene?.mainQuestions||[],required=requiredMainCount(scene);
+ const answered=list.filter(q=>save.answered[qkey("main",q.id)]).length;
+ return answered>=required
+}
+function sceneUnlocked(index){
+ if(index===0)return true;
+ const scenes=currentCase()?.scenes||[];
+ for(let i=0;i<index;i++){
+  if(!sceneDone(scenes[i])||!scenes[i]?.completion?.unlockNextScene)return false
+ }
+ return true
+}
+function finalUnlocked(){
+ const scenes=currentCase()?.scenes||[];
+ if(!scenes.length||!scenes.every(sceneDone))return false;
+ return !!scenes[scenes.length-1]?.completion?.unlockFinalJudgment
+}
 function initSelectors(){
   els.caseSelect.innerHTML="";
   CASES.forEach((c,i)=>{const o=document.createElement("option");o.value=i;o.textContent=`${caseDone(c.id)?"✓ ":""}${c.caseNumber}｜${c.shortTitle||c.title}`;els.caseSelect.appendChild(o)});
   refreshScenes()
 }
-function refreshScenes(){els.sceneSelect.innerHTML="";(currentCase()?.scenes||[]).forEach((s,i)=>{const o=document.createElement("option");o.value=i;o.textContent=`場景 ${i+1}｜${s.title}`;els.sceneSelect.appendChild(o)});els.sceneSelect.value=String(sceneIndex)}
+function refreshScenes(){
+ const scenes=currentCase()?.scenes||[];
+ if(!sceneUnlocked(sceneIndex))sceneIndex=Math.max(0,scenes.reduce((last,s,i)=>sceneUnlocked(i)?i:last,0));
+ els.sceneSelect.innerHTML="";
+ scenes.forEach((s,i)=>{const o=document.createElement("option");const unlocked=sceneUnlocked(i);o.value=i;o.disabled=!unlocked;o.textContent=`${sceneDone(s)?"✓ ":unlocked?"":"🔒 "}場景 ${i+1}｜${s.title}`;els.sceneSelect.appendChild(o)});
+ els.sceneSelect.value=String(sceneIndex)
+}
 function render(){
  const c=currentCase(),s=currentScene();
  if(!c||!s){els.sceneStory.textContent=window.__casesLoadError?"cases.js 載入失敗，請確認檔名與位置。":"找不到案件資料。";return}
  els.caseSelect.value=String(caseIndex);els.topCaseTitle.textContent=`${caseDone(c.id)?"✓ ":""}${c.caseNumber}｜${c.title}`;els.topSceneTitle.textContent=`場景 ${sceneIndex+1}｜${s.title}`;
  els.sidebarCaseNo.textContent=`${caseDone(c.id)?"✓ ":""}${c.caseNumber}`;els.sidebarCaseTitle.textContent=c.title;els.sceneStory.textContent=s.story||"";
- renderImage(s.image,s.title);renderMain(s.mainQuestions||[]);renderExtra(s.extraMissions||[]);updateFinal(s.mainQuestions||[]);
+ renderImage(s.image,s.title);renderMain(s.mainQuestions||[]);renderExtra(s.extraMissions||[]);updateFinal();
  els.detectiveName.value=save.settings.detectiveName||"";els.voiceMode.value=save.settings.voiceMode||"off";els.voiceSpeed.value=save.settings.speed||"1";
  if(save.settings.voiceMode==="auto") speak(s.story||"")
 }
 function renderImage(src,title){els.sceneImage.innerHTML="";const img=document.createElement("img");img.src=src||"";img.alt=title||"案件情境圖";img.onerror=()=>els.sceneImage.innerHTML='<div class="placeholder"><b>案件情境圖</b>圖片尚未放入指定位置</div>';els.sceneImage.appendChild(img)}
 function renderMain(list){els.mainGrid.innerHTML="";list.forEach((q,i)=>{const b=document.createElement("button");const done=save.answered[qkey("main",q.id)];b.className="main-q"+(done?" done":"");b.type="button";b.innerHTML=`<span class="num">${done?"✓":i+1}</span><span class="name">${(q.title||"").replace(/^線索\s*\d+\s*[｜|]\s*/,"")||`主線 ${i+1}`}</span>`;b.onclick=()=>openQuestion(q,"main");els.mainGrid.appendChild(b)})}
 function renderExtra(list){els.extraGrid.innerHTML="";list.forEach((q,i)=>{const b=document.createElement("button");const done=save.answered[qkey("extra",q.id)];b.className="extra-q"+(done?" done":"");b.type="button";b.textContent=done?"✓":i+1;b.onclick=()=>openQuestion(q,"extra");els.extraGrid.appendChild(b)})}
-function updateFinal(list){const ready=list.length>0&&list.every(q=>save.answered[qkey("main",q.id)]);els.finalBtn.disabled=!ready;els.finalBtn.className="final-btn "+(ready?"enabled":"locked");els.finalBtn.textContent=ready?"開始結案":"🔒 開始結案"}
+function updateFinal(){const ready=finalUnlocked();els.finalBtn.disabled=!ready;els.finalBtn.className="final-btn "+(ready?"enabled":"locked");els.finalBtn.textContent=ready?"開始結案":"🔒 開始結案"}
 function openQuestion(q,type){activeQuestion=q;activeType=type;els.questionTitle.textContent=q.title||"題目";els.questionContent.textContent=q.content||"";els.questionContent.style.display=q.content?"block":"none";els.questionText.textContent=q.question||"";els.choices.innerHTML="";els.feedback.className="feedback";q.choices.forEach((v,i)=>{const l=document.createElement("label");l.className="choice";l.innerHTML=`<input type="radio" name="answer" value="${i}"><span>${String.fromCharCode(65+i)}. ${v}</span>`;els.choices.appendChild(l)});show("questionOverlay");if(save.settings.voiceMode==="auto")speak([q.content,q.question,...q.choices].filter(Boolean).join("。"))}
-function submitAnswer(){const q=activeQuestion;if(!q)return;const checked=els.choices.querySelector("input:checked");if(!checked){feedback(els.feedback,false,"請先選擇答案。");return}const selected=+checked.value,correct=+q.answer;save.answered[qkey(activeType,q.id)]=true;if(activeType==="main"&&q.notebook&&!save.notebook.some(n=>n.id===q.id))save.notebook.push({id:q.id,text:q.notebook});persist();feedback(els.feedback,selected===correct,`${selected===correct?"答對了":"答錯了"}<br>${selected===correct?"答案":"正確答案"}：${String.fromCharCode(65+correct)}<br>解析：${q.explanation||""}`);render()}
+function submitAnswer(){const q=activeQuestion;if(!q)return;const checked=els.choices.querySelector("input:checked");if(!checked){feedback(els.feedback,false,"請先選擇答案。");return}const selected=+checked.value,correct=+q.answer,s=currentScene(),wasDone=sceneDone(s);save.answered[qkey(activeType,q.id)]=true;if(activeType==="main"&&q.notebook&&!save.notebook.some(n=>n.id===q.id))save.notebook.push({id:q.id,text:q.notebook});persist();const justCompleted=activeType==="main"&&!wasDone&&sceneDone(s);const completionMessage=justCompleted&&s?.completion?.message?`<br><br>${s.completion.message}`:"";feedback(els.feedback,selected===correct,`${selected===correct?"答對了":"答錯了"}<br>${selected===correct?"答案":"正確答案"}：${String.fromCharCode(65+correct)}<br>解析：${q.explanation||""}${completionMessage}`);refreshScenes();render()}
 function feedback(node,ok,html){node.className=`feedback ${ok?"correct":"wrong"} show`;node.innerHTML=html}
 function renderNotebook(){els.notebookList.innerHTML="";if(!save.notebook.length){els.notebookList.innerHTML='<div class="empty">目前還沒有收集到主線線索。</div>';return}save.notebook.forEach((n,i)=>{const d=document.createElement("div");d.className="note";d.textContent=`${i+1}. ${n.text}`;d.onclick=()=>{if(save.settings.voiceMode==="custom")speak(d.textContent)};els.notebookList.appendChild(d)})}
 function openFinal(){const f=currentCase()?.finalJudgment;if(!f)return;els.finalQuestion.textContent=f.question||"";els.finalChoices.innerHTML="";els.finalFeedback.className="feedback";els.stampStage.hidden=true;els.caseStamp.classList.remove("show");f.choices.forEach((v,i)=>{const l=document.createElement("label");l.className="choice";l.innerHTML=`<input type="radio" name="finalAnswer" value="${i}"><span>${String.fromCharCode(65+i)}. ${v}</span>`;els.finalChoices.appendChild(l)});show("finalOverlay");if(save.settings.voiceMode==="auto")speak([f.question,...f.choices].join("。"))}
