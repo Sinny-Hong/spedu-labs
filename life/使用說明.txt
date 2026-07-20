@@ -1,12 +1,20 @@
-使用方式
-1. 請不要只下載單一檔案，請保留完整資料夾結構。
-2. detective-game.html 與 cases.js 必須放在同一層。
-3. images 資料夾也必須和它們放在同一層。
-4. 直接雙擊 detective-game.html 開啟。
+《異想事件簿》V1 完成版
 
-正確結構：
-detective-game.html
-cases.js
-images/
-  case001-scene01.png
-  case001-cover.png
+使用方式：
+1. 保留完整資料夾結構。
+2. detective-game.html 與 cases.js 必須放在同一層。
+3. images 資料夾也必須位於同一層。
+4. 直接開啟 detective-game.html，或整包上傳 GitHub Pages。
+
+功能：
+- 桌機 16:9 版面
+- 手機上下堆疊，介面風格一致
+- 主線 10 題、案外案 5 題
+- 圖片點擊放大
+- 場景說明可捲動及點讀
+- 全站三種語音模式
+- 偵探筆記整體朗讀與逐條點讀
+- 主線完成後解鎖「開始結案」
+- 結案成功顯示 CASE CLOSED
+- 已完成案件在 CASE 前顯示勾號
+- LocalStorage 自動保存
