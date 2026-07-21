@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>九上 英文科講義 中英文配對卷 (大電視點擊智慧填入版)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+    }
+    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
+    .font-english { font-family: 'Lexend', sans-serif; }
+    
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 15px auto;
+      padding: 6mm 8mm; 
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .title-large { font-size: 24px; font-weight: 700; }
+    .info-text { font-size: 16px; font-weight: 500; }
+    
+    .match-input:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+      background-color: #fef2f2;
+    }
+
+    .row-item {
+      height: 34px;
+    }
+
+    .active-row {
+      background-color: #fef08a !important;
+    }
+
+    #print-all-container { display: none; }
+    
+    @media print {
+      @page { size: A4; margin: 0; }
+      body { background-color: #ffffff; margin: 0; padding: 0; }
+      .no-print { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body.printing-all .page-a4 { display: none !important; }
+      body.printing-all #print-all-container { display: block !important; width: 210mm; }
+      .page-a4 { box-shadow: none; border: none; margin: 0; padding: 6mm 8mm; }
+      .print-page {
+        width: 210mm;
+        height: 297mm;
+        padding: 6mm 8mm;
+        box-sizing: border-box;
+        background-color: #ffffff;
+        page-break-after: always;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: hidden;
+      }
+      .print-page:last-child { page-break-after: avoid; }
+    }
+  </style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
+    <div class="flex flex-wrap gap-2 items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+        <span class="text-slate-700 font-medium text-sm font-chinese">📺 大電視功能已啟動：點擊左側任一題（變黃底），再點右側藍框中文，即可自動填入答案！</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
+        <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除</button>
+        <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
+        <button onclick="printAllLessons()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印 (6頁)</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-6 gap-1.5" id="lesson-selectors"></div>
+  </div>
+
+  <div class="page-a4">
+    <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
+      <div class="flex justify-between items-end">
+        <h1 class="title-large text-slate-800 tracking-wider font-chinese" id="main-title">九上 L1 英文科講義 中英文配對卷</h1>
+        
+        <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+          <div class="flex items-end">
+            <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+            <span class="ml-1 shrink-0">班</span>
+          </div>
+          <div class="flex items-end">
+            <span class="shrink-0">姓名：</span>
+            <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
+        <span class="text-[14px] font-bold text-slate-700 font-chinese">◎ 請將正確英文單字的代號填入括號中。錯字用紅筆訂正，中文、英文各 1 次。</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups-container"></div>
+    <div class="h-1 shrink-0"></div>
+  </div>
+
+  <div id="print-all-container"></div>
+
+  <script>
+    const database = {
+      "L1": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "potato", ch: "馬鈴薯" }, { eng: "fry", ch: "油炸;油煎" }, { eng: "chocolate", ch: "巧克力" },
+          { eng: "candy", ch: "糖果" }, { eng: "pumpkin", ch: "南瓜" }, { eng: "bake", ch: "烘烤" },
+          { eng: "Christmas Eve", ch: "聖誕節前夕;平安夜" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "history", ch: "歷史" }, { eng: "language", ch: "語言" }, { eng: "American", ch: "美國的;美國人" },
+          { eng: "soldier", ch: "士兵;軍人" }, { eng: "national", ch: "國家的;國立的" }, { eng: "king", ch: "國王;王者" },
+          { eng: "celebrate", ch: "慶祝" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "century", ch: "世紀" }, { eng: "stick", ch: "枝條" }, { eng: "inch", ch: "英寸" },
+          { eng: "thick", ch: "粗的;厚的" }, { eng: "bunny", ch: "小兔子" }, { eng: "hairdryer / hair dryer", ch: "吹風機" },
+          { eng: "yet", ch: "還(沒);尚(未)" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "subject", ch: "學科" }, { eng: "topic", ch: "主題" }, { eng: "freeze/froze", ch: "凍結;結冰" },
+          { eng: "main", ch: "主要物" }, { eng: "since", ch: "自...以來" }, { eng: "nobody", ch: "沒有人" },
+          { eng: "wave", ch: "揮(手)" }
+        ]}
+      ],
+      "L2": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "interested", ch: "感興趣的" }, { eng: "tired", ch: "疲勞的" }, { eng: "excited", ch: "感到興奮的" },
+          { eng: "boring", ch: "無聊的;無趣的" }, { eng: "bored", ch: "感到厭煩的" }, { eng: "tiring", ch: "令人疲倦的" },
+          { eng: "surprising", ch: "令人驚訝的" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "delivery", ch: "運送" }, { eng: "page", ch: "頁;網頁" }, { eng: "chart", ch: "圖表" },
+          { eng: "driver", ch: "駕駛;司機" }, { eng: "location", ch: "位置" }, { eng: "tap", ch: "輕觸" },
+          { eng: "button", ch: "按鈕;鈕扣" }, { eng: "surprised", ch: "感到驚訝的" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "offer", ch: "提供" }, { eng: "discount", ch: "折扣" }, { eng: "tip", ch: "給...小費;小費" },
+          { eng: "couch", ch: "沙發" }, { eng: "mind", ch: "介意" }, { eng: "chance", ch: "機會" },
+          { eng: "at least", ch: "至少" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "among", ch: "在...中" }, { eng: "age", ch: "年齡" }, { eng: "reason", ch: "原因" },
+          { eng: "helpful", ch: "有用的" }, { eng: "uniform", ch: "制服" }, { eng: "interest", ch: "興趣;使...感興趣" },
+          { eng: "list", ch: "清單" }
+        ]}
+      ],
+      "L3": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "lawyer", ch: "律師" }, { eng: "engineer", ch: "工程師" }, { eng: "president", ch: "總統" },
+          { eng: "model", ch: "榜樣;模範" }, { eng: "relative", ch: "親戚" }, { eng: "company", ch: "公司" },
+          { eng: "public", ch: "公共的;大眾" }, { eng: "equal", ch: "平等的" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "hard-working", ch: "勤勉的" }, { eng: "brave", ch: "勇敢的" }, { eng: "honest", ch: "誠實的" },
+          { eng: "stupid", ch: "愚蠢的;笨的" }, { eng: "mad", ch: "惱火的" }, { eng: "lovely", ch: "討人喜歡的;漂亮的" },
+          { eng: "pretty", ch: "漂亮的" }, { eng: "born", ch: "出生的;誕生的" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "childhood", ch: "童年" }, { eng: "form", ch: "形成" }, { eng: "expect", ch: "期待;預計" },
+          { eng: "picture", ch: "想像" }, { eng: "present", ch: "禮物;展現" }, { eng: "be filled with", ch: "充滿" },
+          { eng: "hope", ch: "希望" }, { eng: "allow", ch: "允許" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "such as", ch: "例如;像" }, { eng: "everywhere", ch: "到處" }, { eng: "spider", ch: "蜘蛛" },
+          { eng: "comic", ch: "漫畫" }, { eng: "totally", ch: "完全" }, { eng: "understand / understood", ch: "了解" },
+          { eng: "laugh at", ch: "嘲笑" }
+        ]}
+      ],
+      "L4": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "butterfly", ch: "蝴蝶" }, { eng: "hen", ch: "母雞" }, { eng: "blind", ch: "瞎的;盲的" },
+          { eng: "bat", ch: "蝙蝠" }, { eng: "bee", ch: "蜜蜂" }, { eng: "dead", ch: "死的" },
+          { eng: "farm", ch: "農場" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "dictionary", ch: "字典" }, { eng: "notebook (computer)", ch: "筆記型電腦" }, { eng: "e-mail", ch: "電子郵件" },
+          { eng: "glasses", ch: "眼鏡" }, { eng: "idiom", ch: "慣用語" }, { eng: "define", ch: "定義" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "create", ch: "創造" }, { eng: "case", ch: "實例" }, { eng: "combine", ch: "結合;合併" },
+          { eng: "pleasure", ch: "樂趣;榮幸" }, { eng: "by accident", ch: "意外地" }, { eng: "whether", ch: "是否" },
+          { eng: "interview", ch: "面試;採訪" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "lip", ch: "嘴唇" }, { eng: "salesman", ch: "銷售員" }, { eng: "lie", ch: "說謊" },
+          { eng: "trouble", ch: "麻煩" }, { eng: "pain", ch: "疼痛;痛苦" }, { eng: "pray", ch: "祈禱" }
+        ]}
+      ],
+      "L5": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "lollipop", ch: "棒棒糖" }, { eng: "pink", ch: "粉紅色(的)" }, { eng: "purple", ch: "紫色(的)" },
+          { eng: "have a sweet tooth", ch: "愛吃甜食" }, { eng: "popcorn", ch: "爆米花" }, { eng: "pop", ch: "爆開" },
+          { eng: "natural", ch: "天然的" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "foreign", ch: "外國的" }, { eng: "center", ch: "中心;中央" }, { eng: "boss", ch: "老闆" },
+          { eng: "married", ch: "已婚的" }, { eng: "leader", ch: "領導者" }, { eng: "school fair", ch: "園遊會" },
+          { eng: "grown-up", ch: "大人;成年人" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "dentist", ch: "牙醫" }, { eng: "knowledge", ch: "知識" }, { eng: "club", ch: "社團" },
+          { eng: "success", ch: "成功" }, { eng: "mark", ch: "目標;標記" }, { eng: "simple", ch: "單純的;簡單的" },
+          { eng: "-sounding", ch: "聽起來...的" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "rise", ch: "上漲;升高" }, { eng: "belong to", ch: "屬於" }, { eng: "repeat", ch: "重複;複誦" },
+          { eng: "fail", ch: "失敗;不及格" }, { eng: "deal/dealt with", ch: "處理" }, { eng: "fulfill", ch: "執行;實踐" }
+        ]}
+      ],
+      "L6": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "peach", ch: "桃子" }, { eng: "pear", ch: "梨子" }, { eng: "lemon", ch: "檸檬" },
+          { eng: "tomato", ch: "番茄" }, { eng: "honey", ch: "蜂蜜" }, { eng: "sample", ch: "樣品" },
+          { eng: "product", ch: "產品" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "cent", ch: "分(金錢單位)" }, { eng: "pound", ch: "磅" }, { eng: "centimeter", ch: "公分" },
+          { eng: "height", ch: "高度" }, { eng: "level", ch: "高度;程度" }, { eng: "total", ch: "總數(的)" },
+          { eng: "below", ch: "在下面;低於" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "pin", ch: "大頭針;別針" }, { eng: "superglue", ch: "三秒膠" }, { eng: "paste", ch: "漿糊;黏貼" },
+          { eng: "jump rope", ch: "跳繩" }, { eng: "marker", ch: "麥克筆" }, { eng: "paint", ch: "顏料;油漆;(用顏料)畫" },
+          { eng: "sight", ch: "所見之物" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "usual", ch: "通常的" }, { eng: "appear", ch: "似乎;出現" }, { eng: "cheat", ch: "欺騙;作弊" },
+          { eng: "waste", ch: "浪費" }, { eng: "therefore", ch: "因此" }, { eng: "shopkeeper", ch: "店主" },
+          { eng: "come to think of it", ch: "這樣一想" }
+        ]}
+      ]
+    };
+
+    let currentLesson = "L1";
+    let showAnswersState = false;
+    let activeInput = null;
+    const optLetters = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85; 
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function seededShuffle(array, seedStr) {
+      let hash = 0;
+      for (let i = 0; i < seedStr.length; i++) {
+        hash = seedStr.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      let shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.abs((hash + i) % (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function buildFixedGroupHtml(groupData, groupIdx) {
+      const totalWords = groupData.words;
+      const totalCount = totalWords.length; 
+      const half = Math.ceil(totalCount / 2);
+      
+      const partA_Words = totalWords.slice(0, half);
+      const partB_Words = totalWords.slice(half);
+
+      const shuffledA = seededShuffle(partA_Words, `${currentLesson}-${groupIdx}-A`);
+      const shuffledB = seededShuffle(partB_Words, `${currentLesson}-${groupIdx}-B`);
+
+      let rowsHtml = '';
+
+      for (let i = 0; i < 12; i++) {
+        let isPartB = i >= 6;
+        let localIdx = isPartB ? i - 6 : i;
+        
+        let currentLeftList = isPartB ? partB_Words : partA_Words;
+        let currentRightList = isPartB ? shuffledB : shuffledA;
+
+        let leftItem = currentLeftList[localIdx];  
+        let rightItem = currentRightList[localIdx]; 
+
+        let rowClass = "flex items-center justify-between row-item px-1 quiz-row";
+        if (i === 6) {
+          rowClass += " border-t-2 border-dashed border-slate-300 pt-0.5";
+        }
+
+        let leftColHtml = '';
+        if (leftItem) {
+          const correctAnsLetter = optLetters[currentRightList.findIndex(x => x.ch === leftItem.ch)];
+
+          leftColHtml = `
+            <div class="flex items-center flex-grow truncate h-[28px] pr-2 rounded cursor-pointer transition select-none" onclick="setActiveRow(this, '${leftItem.eng.replace(/'/g, "\\'")}')">
+              <span class="text-[14px] font-bold text-slate-700 shrink-0">(</span>
+              <input type="text" maxlength="1" data-ans="${correctAnsLetter}" readonly class="match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none">
+              <span class="text-[14px] font-bold text-slate-700 shrink-0 mr-2">)</span>
+              <span class="font-bold text-slate-400 text-[12px] font-english mr-1.5 shrink-0">${localIdx + 1}.</span>
+              <span class="font-english font-medium text-slate-800 text-[15.5px] tracking-tight truncate word-span leading-none">${leftItem.eng}</span>
+            </div>
+          `;
+        } else {
+          leftColHtml = `<div class="flex-grow h-[28px] opacity-0 pointer-events-none"></div>`;
+        }
+
+        let rightColHtml = '';
+        if (rightItem) {
+          const letterLabel = optLetters[localIdx];
+          
+          let radiusClass = "rounded-none";
+          if (localIdx === 0) radiusClass = "rounded-t";
+          if (localIdx === currentRightList.length - 1 || localIdx === 5) radiusClass = "rounded-b";
+
+          rightColHtml = `
+            <div onclick="selectChineseAnswer('${letterLabel}')" class="flex items-center bg-sky-100 border-x border-sky-300 ${radiusClass} ${localIdx === 0 ? 'border-t' : ''} ${localIdx === currentRightList.length - 1 || localIdx === 5 ? 'border-b' : ''} px-2 w-[115px] h-[30px] shrink-0 shadow-sm cursor-pointer hover:bg-sky-200 transition">
+              <span class="font-bold text-red-600 text-[13px] font-english mr-1 shrink-0">${letterLabel}.</span>
+              <span class="font-chinese text-slate-800 text-[13px] font-medium truncate flex-grow leading-none">${rightItem.ch}</span>
+            </div>
+          `;
+        } else {
+          rightColHtml = `<div class="w-[115px] h-[30px] shrink-0 opacity-0 pointer-events-none"></div>`;
+        }
+
+        rowsHtml += `
+          <div class="${rowClass}">
+            ${leftColHtml}
+            ${rightColHtml}
+          </div>
+        `;
+      }
+
+      return `
+        <div class="bg-white flex flex-col justify-start flex-grow">
+          <div class="flex justify-between items-center bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 mb-1 shrink-0">
+            <div class="flex items-center gap-2">
+              <h3 class="text-[15.5px] font-bold text-slate-800 font-chinese tracking-wide">${groupData.gTitle}</h3>
+              <span id="score-${groupIdx}" class="no-print hidden px-1.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded text-[11px] font-bold font-chinese"></span>
+            </div>
+            
+            <div class="no-print flex gap-1">
+              <button onclick="checkGroupAnswers(${groupIdx}, ${totalCount})" title="檢查批改" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese flex items-center gap-0.5">✅ 檢查</button>
+              <button onclick="clearGroupAnswers(${groupIdx})" title="清空本組" class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded text-[11px] transition border border-slate-300 font-chinese flex items-center gap-0.5">🧼 清空</button>
+              <button onclick="toggleGroupAnswers(${groupIdx})" title="本組解答" class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese flex items-center gap-0.5">💡 解答</button>
+            </div>
+          </div>
+          <div class="flex flex-col flex-grow justify-start">
+            ${rowsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function setActiveRow(element, engWord) {
+      document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      const parentRow = element.closest('.quiz-row');
+      parentRow.classList.add('active-row');
+      activeInput = parentRow.querySelector('.match-input');
+      speakWord(engWord);
+    }
+
+    function selectChineseAnswer(letter) {
+      if (activeInput) {
+        activeInput.value = letter;
+        activeInput.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        
+        const allInputs = Array.from(document.querySelectorAll('.match-input'));
+        const currentIndex = allInputs.indexOf(activeInput);
+        
+        activeInput.closest('.quiz-row').classList.remove('active-row');
+        
+        if (currentIndex !== -1 && currentIndex < allInputs.length - 1) {
+          const nextInput = allInputs[currentIndex + 1];
+          const nextRow = nextInput.closest('.quiz-row');
+          
+          if (nextRow && !nextRow.classList.contains('opacity-0')) {
+            nextRow.classList.add('active-row');
+            activeInput = nextInput;
+          } else {
+            activeInput = null;
+          }
+        } else {
+          activeInput = null;
+        }
+      }
+    }
+
+    function checkGroupAnswers(groupIdx, totalCount) {
+      const groupContainers = document.querySelectorAll('#groups-container > div');
+      if (!groupContainers[groupIdx]) return;
+      
+      const inputs = groupContainers[groupIdx].querySelectorAll('.match-input');
+      let correctScore = 0;
+      let filledCount = 0;
+
+      inputs.forEach(input => {
+        const userAns = input.value.trim().toUpperCase();
+        const correctAns = input.getAttribute('data-ans');
+        
+        if (userAns === '') return; 
+        
+        filledCount++;
+        if (userAns === correctAns) {
+          correctScore++;
+          input.className = "match-input w-5 h-5 text-center font-black text-emerald-700 focus:outline-none bg-emerald-100 rounded text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        } else {
+          input.value = '';
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        }
+      });
+
+      const scoreBadge = document.getElementById(`score-${groupIdx}`);
+      if (scoreBadge) {
+        scoreBadge.innerText = `答對 ${correctScore} / ${totalCount}`;
+        scoreBadge.classList.remove('hidden');
+      }
+    }
+
+    function clearGroupAnswers(groupIdx) {
+      const groupContainers = document.querySelectorAll('#groups-container > div');
+      if (!groupContainers[groupIdx]) return;
+      
+      const inputs = groupContainers[groupIdx].querySelectorAll('.match-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+      });
+      
+      groupContainers[groupIdx].querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      
+      const scoreBadge = document.getElementById(`score-${groupIdx}`);
+      if (scoreBadge) {
+        scoreBadge.innerText = '';
+        scoreBadge.classList.add('hidden');
+      }
+    }
+
+    function toggleGroupAnswers(groupIdx) {
+      const groupContainers = document.querySelectorAll('#groups-container > div');
+      if (!groupContainers[groupIdx]) return;
+      
+      const inputs = groupContainers[groupIdx].querySelectorAll('.match-input');
+      
+      let isAlreadyShowing = false;
+      if (inputs.length > 0 && inputs[0].value === inputs[0].getAttribute('data-ans') && inputs[0].classList.contains('bg-red-50')) {
+        isAlreadyShowing = true;
+      }
+      
+      inputs.forEach(input => {
+        const ans = input.getAttribute('data-ans');
+        if (!isAlreadyShowing) {
+          input.value = ans;
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-red-50 text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        } else {
+          input.value = '';
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        }
+      });
+
+      const scoreBadge = document.getElementById(`score-${groupIdx}`);
+      if (scoreBadge) scoreBadge.classList.add('hidden');
+    }
+
+    function loadLesson(lessonKey) {
+      currentLesson = lessonKey;
+      showAnswersState = false;
+      activeInput = null;
+
+      document.querySelectorAll('.lesson-btn').forEach(btn => {
+        const k = btn.getAttribute('data-lesson');
+        btn.className = (k === lessonKey) ? 
+          "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-red-600 text-white border-red-600 shadow-sm" :
+          "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
+      });
+
+      document.getElementById('main-title').innerText = `九上 ${lessonKey} 英文科講義 中英文配對卷`;
+      const container = document.getElementById('groups-container');
+      container.innerHTML = '';
+
+      const groups = database[lessonKey];
+      groups.forEach((groupData, idx) => {
+        container.innerHTML += buildFixedGroupHtml(groupData, idx);
+      });
+
+      applyMicroScaling();
+    }
+
+    function applyMicroScaling() {
+      document.querySelectorAll('.word-span').forEach(span => {
+        const textLength = span.innerText.length;
+        if (textLength > 20) {
+          span.style.fontSize = "11.5px";
+          span.style.letterSpacing = "-0.7px";
+        } else if (textLength > 14) {
+          span.style.fontSize = "13.5px";
+          span.style.letterSpacing = "-0.3px";
+        } else {
+          span.style.fontSize = "15.5px";
+        }
+      });
+    }
+
+    function initApp() {
+      const selectorContainer = document.getElementById('lesson-selectors');
+      selectorContainer.innerHTML = '';
+      Object.keys(database).forEach(key => {
+        const btn = document.createElement('button');
+        btn.innerText = `九上 ${key}`;
+        btn.setAttribute('data-lesson', key);
+        btn.className = "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese";
+        btn.onclick = () => loadLesson(key);
+        selectorContainer.appendChild(btn);
+      });
+      loadLesson("L1");
+    }
+
+    function toggleAnswers() {
+      showAnswersState = !showAnswersState;
+      document.querySelectorAll('.match-input').forEach(input => {
+        const ans = input.getAttribute('data-ans');
+        if (showAnswersState) {
+          input.value = ans;
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-red-50 text-[14px] p-0 shrink-0 pointer-events-none";
+        } else {
+          input.value = '';
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 pointer-events-none";
+        }
+      });
+      document.querySelectorAll('[id^="score-"]').forEach(badge => badge.classList.add('hidden'));
+    }
+
+    function clearAnswers() {
+      document.querySelectorAll('.match-input').forEach(input => {
+        input.value = '';
+        input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 pointer-events-none";
+      });
+      document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      document.querySelectorAll('[id^="score-"]').forEach(badge => badge.classList.add('hidden'));
+      showAnswersState = false;
+      activeInput = null;
+    }
+
+    function printAllLessons() {
+      const printContainer = document.getElementById('print-all-container');
+      printContainer.innerHTML = '';
+
+      Object.keys(database).forEach(lessonKey => {
+        const page = document.createElement('div');
+        page.className = "print-page";
+
+        const savedLesson = currentLesson;
+        currentLesson = lessonKey;
+        
+        let allGroupsHtml = '';
+        database[lessonKey].forEach((groupData, idx) => {
+          allGroupsHtml += buildFixedGroupHtml(groupData, idx);
+        });
+
+        currentLesson = savedLesson;
+
+        page.innerHTML = `
+          <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
+            <div class="flex justify-between items-end">
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">九上 ${lessonKey} 英文科講義 中英文配對卷</h1>
+              <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+                <div class="flex items-end">
+                  <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+                  <span class="ml-1 shrink-0">班</span>
+                </div>
+                <div class="flex items-end">
+                  <span class="shrink-0">姓名：</span>
+                  <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
+              <span class="text-[14px] font-bold text-slate-700 font-chinese">◎ 請將正確英文單字的代號填入括號中。錯字用紅筆訂正，中文、英文各 1 次。</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden">
+            ${allGroupsHtml}
+          </div>
+          <div class="h-1 shrink-0"></div>
+        `;
+        printContainer.appendChild(page);
+      });
+
+      setTimeout(() => {
+        applyMicroScaling();
+        document.body.classList.add('printing-all');
+        window.print();
+        setTimeout(() => { document.body.classList.remove('printing-all'); }, 600);
+      }, 50);
+    }
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>

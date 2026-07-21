@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>九上 英文科講義 聽力選擇卷 (全新無框穩定版)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+    }
+    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
+    .font-english { font-family: 'Lexend', sans-serif; }
+    
+    /* 嚴格 A4 滿版尺寸 */
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 15px auto;
+      padding: 6mm 8mm; 
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .title-large { font-size: 24px; font-weight: 700; }
+    .info-text { font-size: 16px; font-weight: 500; }
+    
+    .answer-input:focus {
+      border-color: #ef4444; /* 聚焦時改為紅色系提示 */
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+      background-color: #fef2f2;
+    }
+
+    #print-all-container { display: none; }
+    
+    @media print {
+      @page { size: A4; margin: 0; }
+      body { background-color: #ffffff; margin: 0; padding: 0; }
+      .no-print { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body.printing-all .page-a4 { display: none !important; }
+      body.printing-all #print-all-container { display: block !important; width: 210mm; }
+      .page-a4 { box-shadow: none; border: none; margin: 0; padding: 6mm 8mm; }
+      .print-page {
+        width: 210mm;
+        height: 297mm;
+        padding: 6mm 8mm;
+        box-sizing: border-box;
+        background-color: #ffffff;
+        page-break-after: always;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: hidden;
+      }
+      .print-page:last-child { page-break-after: avoid; }
+    }
+  </style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
+    <div class="flex flex-wrap gap-2 items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+        <span class="text-slate-700 font-medium text-sm font-chinese">🎧 提示：點擊英文單字可聽慢速發音。考前點選「預習」；小考點選「📢 小考」。</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
+        <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除</button>
+        <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
+        <button onclick="printAllLessons()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印 (6頁)</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-6 gap-1.5" id="lesson-selectors"></div>
+  </div>
+
+  <div class="page-a4">
+    <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
+      <div class="flex justify-between items-end">
+        <h1 class="title-large text-slate-800 tracking-wider font-chinese" id="main-title">九上 L1 英文科講義 聽力選擇卷</h1>
+        
+        <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+          <div class="flex items-end">
+            <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+            <span class="ml-1 shrink-0">班</span>
+          </div>
+          <div class="flex items-end">
+            <span class="shrink-0">姓名：</span>
+            <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
+        <span class="text-[14px] font-bold text-slate-700 font-chinese">◎錯字用紅筆訂正，中文、英文各 1 次。</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups-container"></div>
+    <div class="h-1 shrink-0"></div>
+  </div>
+
+  <div id="print-all-container"></div>
+
+  <script>
+    const database = {
+      "L1": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "potato", ch: "馬鈴薯" }, { eng: "fry", ch: "油炸;油煎" }, { eng: "chocolate", ch: "巧克力" },
+          { eng: "candy", ch: "糖果" }, { eng: "pumpkin", ch: "南瓜" }, { eng: "bake", ch: "烘烤" },
+          { eng: "Christmas Eve", ch: "聖誕節前夕;平安夜" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "history", ch: "歷史" }, { eng: "language", ch: "語言" }, { eng: "American", ch: "美國的;美國人" },
+          { eng: "soldier", ch: "士兵;軍人" }, { eng: "national", ch: "國家的;國立的" }, { eng: "king", ch: "國王;王者" },
+          { eng: "celebrate", ch: "慶祝" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "century", ch: "世紀" }, { eng: "stick", ch: "枝條" }, { eng: "inch", ch: "英寸" },
+          { eng: "thick", ch: "粗的;厚的" }, { eng: "bunny", ch: "小兔子" }, { eng: "hairdryer / hair dryer", ch: "吹風機" },
+          { eng: "yet", ch: "還(沒);尚(未)" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "subject", ch: "學科" }, { eng: "topic", ch: "主題" }, { eng: "freeze/froze", ch: "凍結;結冰" },
+          { eng: "main", ch: "主要物" }, { eng: "since", ch: "自...以來" }, { eng: "nobody", ch: "沒有人" },
+          { eng: "wave", ch: "揮(手)" }
+        ]}
+      ],
+      "L2": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "interested", ch: "感興趣的" }, { eng: "tired", ch: "疲勞的" }, { eng: "excited", ch: "感到興奮的" },
+          { eng: "boring", ch: "無聊的;無趣的" }, { eng: "bored", ch: "感到厭煩的" }, { eng: "tiring", ch: "令人疲倦的" },
+          { eng: "surprising", ch: "令人驚訝的" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "delivery", ch: "運送" }, { eng: "page", ch: "頁;網頁" }, { eng: "chart", ch: "圖表" },
+          { eng: "driver", ch: "駕駛;司機" }, { eng: "location", ch: "位置" }, { eng: "tap", ch: "輕觸" },
+          { eng: "button", ch: "按鈕;鈕扣" }, { eng: "surprised", ch: "感到驚訝的" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "offer", ch: "提供" }, { eng: "discount", ch: "折扣" }, { eng: "tip", ch: "給...小費;小費" },
+          { eng: "couch", ch: "沙發" }, { eng: "mind", ch: "介意" }, { eng: "chance", ch: "機會" },
+          { eng: "at least", ch: "至少" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "among", ch: "在...中" }, { eng: "age", ch: "年齡" }, { eng: "reason", ch: "原因" },
+          { eng: "helpful", ch: "有用的" }, { eng: "uniform", ch: "制服" }, { eng: "interest", ch: "興趣;使...感興趣" },
+          { eng: "list", ch: "清單" }
+        ]}
+      ],
+      "L3": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "lawyer", ch: "律師" }, { eng: "engineer", ch: "工程師" }, { eng: "president", ch: "總統" },
+          { eng: "model", ch: "榜樣;模範" }, { eng: "relative", ch: "親戚" }, { eng: "company", ch: "公司" },
+          { eng: "public", ch: "公共的;大眾" }, { eng: "equal", ch: "平等的" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "hard-working", ch: "勤勉的" }, { eng: "brave", ch: "勇敢的" }, { eng: "honest", ch: "誠實的" },
+          { eng: "stupid", ch: "愚蠢的;笨的" }, { eng: "mad", ch: "惱火的" }, { eng: "lovely", ch: "討人喜歡的;漂亮的" },
+          { eng: "pretty", ch: "漂亮的" }, { eng: "born", ch: "出生的;誕生的" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "childhood", ch: "童年" }, { eng: "form", ch: "形成" }, { eng: "expect", ch: "期待;預計" },
+          { eng: "picture", ch: "想像" }, { eng: "present", ch: "禮物;展現" }, { eng: "be filled with", ch: "充滿" },
+          { eng: "hope", ch: "希望" }, { eng: "allow", ch: "允許" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "such as", ch: "例如;像" }, { eng: "everywhere", ch: "到處" }, { eng: "spider", ch: "蜘蛛" },
+          { eng: "comic", ch: "漫畫" }, { eng: "totally", ch: "完全" }, { eng: "understand / understood", ch: "了解" },
+          { eng: "laugh at", ch: "嘲笑" }
+        ]}
+      ],
+      "L4": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "butterfly", ch: "蝴蝶" }, { eng: "hen", ch: "母雞" }, { eng: "blind", ch: "瞎的;盲的" },
+          { eng: "bat", ch: "蝙蝠" }, { eng: "bee", ch: "蜜蜂" }, { eng: "dead", ch: "死的" },
+          { eng: "farm", ch: "農場" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "dictionary", ch: "字典" }, { eng: "notebook (computer)", ch: "筆記型電腦" }, { eng: "e-mail", ch: "電子郵件" },
+          { eng: "glasses", ch: "眼鏡" }, { eng: "idiom", ch: "慣用語" }, { eng: "define", ch: "定義" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "create", ch: "創造" }, { eng: "case", ch: "實例" }, { eng: "combine", ch: "結合;合併" },
+          { eng: "pleasure", ch: "樂趣;榮幸" }, { eng: "by accident", ch: "意外地" }, { eng: "whether", ch: "是否" },
+          { eng: "interview", ch: "面試;採訪" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "lip", ch: "嘴唇" }, { eng: "salesman", ch: "銷售員" }, { eng: "lie", ch: "說謊" },
+          { eng: "trouble", ch: "麻煩" }, { eng: "pain", ch: "疼痛;痛苦" }, { eng: "pray", ch: "祈禱" }
+        ]}
+      ],
+      "L5": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "lollipop", ch: "棒棒糖" }, { eng: "pink", ch: "粉紅色(的)" }, { eng: "purple", ch: "紫色(的)" },
+          { eng: "have a sweet tooth", ch: "愛吃甜食" }, { eng: "popcorn", ch: "爆米花" }, { eng: "pop", ch: "爆開" },
+          { eng: "natural", ch: "天然的" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "foreign", ch: "外國的" }, { eng: "center", ch: "中心;中央" }, { eng: "boss", ch: "老闆" },
+          { eng: "married", ch: "已婚的" }, { eng: "leader", ch: "領導者" }, { eng: "school fair", ch: "園遊會" },
+          { eng: "grown-up", ch: "大人;成年人" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "dentist", ch: "牙醫" }, { eng: "knowledge", ch: "知識" }, { eng: "club", ch: "社團" },
+          { eng: "success", ch: "成功" }, { eng: "mark", ch: "目標;標記" }, { eng: "simple", ch: "單純的;簡單的" },
+          { eng: "-sounding", ch: "聽起來...的" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "rise", ch: "上漲;升高" }, { eng: "belong to", ch: "屬於" }, { eng: "repeat", ch: "重複;複誦" },
+          { eng: "fail", ch: "失敗;不及格" }, { eng: "deal/dealt with", ch: "處理" }, { eng: "fulfill", ch: "執行;實踐" }
+        ]}
+      ],
+      "L6": [
+        { gTitle: "◎ 第一組", words: [
+          { eng: "peach", ch: "桃子" }, { eng: "pear", ch: "梨子" }, { eng: "lemon", ch: "檸檬" },
+          { eng: "tomato", ch: "番茄" }, { eng: "honey", ch: "蜂蜜" }, { eng: "sample", ch: "樣品" },
+          { eng: "product", ch: "產品" }
+        ]},
+        { gTitle: "◎ 第二組", words: [
+          { eng: "cent", ch: "分(金錢單位)" }, { eng: "pound", ch: "磅" }, { eng: "centimeter", ch: "公分" },
+          { eng: "height", ch: "高度" }, { eng: "level", ch: "高度;程度" }, { eng: "total", ch: "總數(的)" },
+          { eng: "below", ch: "在下面;低於" }
+        ]},
+        { gTitle: "◎ 第三組", words: [
+          { eng: "pin", ch: "大頭針;別針" }, { eng: "superglue", ch: "三秒膠" }, { eng: "paste", ch: "漿糊;黏貼" },
+          { eng: "jump rope", ch: "跳繩" }, { eng: "marker", ch: "麥克筆" }, { eng: "paint", ch: "顏料;油漆;(用顏料)畫" },
+          { eng: "sight", ch: "所見之物" }
+        ]},
+        { gTitle: "◎ 第四組", words: [
+          { eng: "usual", ch: "通常的" }, { eng: "appear", ch: "似乎;出現" }, { eng: "cheat", ch: "欺騙;作弊" },
+          { eng: "waste", ch: "浪費" }, { eng: "therefore", ch: "因此" }, { eng: "shopkeeper", ch: "店主" },
+          { eng: "come to think of it", ch: "這樣一想" }
+        ]}
+      ]
+    };
+
+    let currentLesson = "L1";
+    let showAnswersState = false;
+    let quizOrders = {}; 
+    let groupAnswerStates = {}; 
+    const chineseTitles = ["第一題", "第二題", "第三題", "第四題", "第五題", "第六題", "第七題", "第八題", "第九題", "第十題", "第十一題", "第十二題"];
+
+    // 種子偽隨機洗牌演算法
+    function seedShuffle(array, seedString) {
+      let h = 0;
+      for (let i = 0; i < seedString.length; i++) {
+        h = Math.imul(31, h) + seedString.charCodeAt(i) | 0;
+      }
+      function seededRandom() {
+        let x = Math.sin(h++) * 10000;
+        return x - Math.floor(x);
+      }
+      let shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(seededRandom() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function initLessonOrders(lessonKey) {
+      const groups = database[lessonKey];
+      groups.forEach((groupData, idx) => {
+        const orderKey = `${lessonKey}-${idx}`;
+        let wordsArray = groupData.words.map(w => w.eng);
+        quizOrders[orderKey] = seedShuffle(wordsArray, orderKey);
+      });
+    }
+
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85; 
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function speakQuizChain(chineseNum, englishText, onDone) {
+      window.speechSynthesis.cancel();
+      const uChinese = new SpeechSynthesisUtterance(chineseNum);
+      uChinese.lang = 'zh-TW';
+      uChinese.onend = function() {
+        setTimeout(() => {
+          const uEng1 = new SpeechSynthesisUtterance(englishText);
+          uEng1.lang = 'en-US';
+          uEng1.rate = 0.85;
+          uEng1.onend = function() {
+            setTimeout(() => {
+              const uEng2 = new SpeechSynthesisUtterance(englishText);
+              uEng2.lang = 'en-US';
+              uEng2.rate = 0.85;
+              if (onDone) uEng2.onend = onDone;
+              window.speechSynthesis.speak(uEng2);
+            }, 1200); 
+          };
+          window.speechSynthesis.speak(uEng1);
+        }, 400);
+      };
+      window.speechSynthesis.speak(uChinese);
+    }
+
+    function startGroupPreview(groupIndex) {
+      const gData = database[currentLesson][groupIndex];
+      const wordsArray = gData.words.map(w => w.eng);
+      executePreviewLoop(wordsArray, 0);
+    }
+
+    function executePreviewLoop(wordsArray, index) {
+      if (index < wordsArray.length) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(wordsArray[index]);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85;
+        utterance.onend = function() {
+          setTimeout(() => { executePreviewLoop(wordsArray, index + 1); }, 1500);
+        };
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function startGroupQuiz(groupIndex) {
+      document.querySelectorAll(`input[data-gidx="${groupIndex}"]`).forEach(input => input.value = '');
+      const orderKey = `${currentLesson}-${groupIndex}`;
+      executeAudioLoop(orderKey, 0);
+    }
+
+    function executeAudioLoop(orderKey, index) {
+      const currentList = quizOrders[orderKey];
+      if (index < currentList.length) {
+        speakQuizChain(chineseTitles[index], currentList[index], () => {
+          setTimeout(() => { executeAudioLoop(orderKey, index + 1); }, 1800); 
+        });
+      }
+    }
+
+    function toggleSingleGroupAnswer(groupIndex) {
+      const stateKey = `${currentLesson}-${groupIndex}`;
+      groupAnswerStates[stateKey] = !groupAnswerStates[stateKey];
+      
+      document.querySelectorAll(`input[data-gidx="${groupIndex}"]`).forEach(input => {
+        const eng = input.getAttribute('data-eng');
+        const orderKey = `${currentLesson}-${groupIndex}`;
+        
+        if (groupAnswerStates[stateKey] || showAnswersState) {
+          if (quizOrders[orderKey]) {
+            input.value = quizOrders[orderKey].indexOf(eng) + 1;
+          } else {
+            input.value = "-";
+          }
+          input.classList.add('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+        } else {
+          input.value = '';
+          input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+        }
+      });
+    }
+
+    function buildGroupHtml(groupData, groupIndex, isPrintMode = false) {
+      const orderKey = `${currentLesson}-${groupIndex}`;
+      let rowsHtml = '';
+      
+      for (let i = 0; i < 12; i++) {
+        const wordItem = groupData.words[i];
+        if (wordItem) {
+          rowsHtml += `
+            <div class="flex items-center px-1 py-1.5 hover:bg-slate-50/80 rounded transition cursor-pointer single-row-item" onclick="speakWord('${wordItem.eng.replace(/'/g, "\\'")}')">
+              <span class="text-slate-800 font-bold mr-1 shrink-0 text-[15px]">(</span>
+              <input type="text" maxlength="2" data-gidx="${groupIndex}" data-eng="${wordItem.eng}" onclick="event.stopPropagation();" class="answer-input w-7 h-5 text-center font-bold text-slate-800 border-b-2 border-slate-400 focus:outline-none bg-transparent shrink-0 text-[15px]">
+              <span class="text-slate-800 font-bold ml-1 shrink-0 text-[15px]">)</span>
+              <span class="ml-2 font-medium font-english truncate flex-grow tracking-tight text-slate-800 word-eng-span" style="max-width: 155px; font-size:16px;">${wordItem.eng}</span>
+              <span class="font-chinese text-slate-500 text-[14px] pl-2 truncate text-right shrink-0 font-medium" style="max-width: 125px;">${wordItem.ch}</span>
+            </div>
+          `;
+        } else {
+          rowsHtml += `
+            <div class="flex items-center px-1 py-1.5 opacity-0 pointer-events-none select-none">
+              <span class="text-[15px]">(</span>
+              <input type="text" class="w-7 h-5 border-b-2 text-[15px]">
+              <span class="text-[15px]">)</span>
+              <span class="ml-2 text-[15px]">Empty</span>
+            </div>
+          `;
+        }
+      }
+
+      const actionButtons = isPrintMode ? '' : `
+        <div class="flex gap-1.5">
+          <button onclick="startGroupPreview(${groupIndex})" class="no-print bg-sky-500/90 hover:bg-sky-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">預習</button>
+          <button onclick="startGroupQuiz(${groupIndex})" class="no-print bg-orange-400/90 hover:bg-orange-500 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">📢 小考</button>
+          <button onclick="toggleSingleGroupAnswer(${groupIndex})" class="no-print bg-emerald-500/90 hover:bg-emerald-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow font-english">√Ans</button>
+        </div>
+      `;
+
+      return `
+        <div class="bg-white flex flex-col justify-start flex-grow">
+          <div class="flex justify-between items-center bg-slate-100/90 border border-slate-300 rounded-lg px-3 py-1.5 mb-2 shrink-0">
+            <h3 class="text-[16px] font-bold text-slate-800 font-chinese tracking-wide">${groupData.gTitle}</h3>
+            ${actionButtons}
+          </div>
+          <div class="flex flex-col flex-grow justify-start pl-1">
+            ${rowsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function loadLesson(lessonKey) {
+      currentLesson = lessonKey;
+      showAnswersState = false;
+      groupAnswerStates = {}; 
+
+      initLessonOrders(lessonKey);
+
+      document.querySelectorAll('.lesson-btn').forEach(btn => {
+        const k = btn.getAttribute('data-lesson');
+        btn.className = (k === lessonKey) ? 
+          "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-red-600 text-white border-red-600 shadow-sm" :
+          "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
+      });
+
+      document.getElementById('main-title').innerText = `九上 ${lessonKey} 英文科講義 聽力選擇卷`;
+      const container = document.getElementById('groups-container');
+      container.innerHTML = '';
+
+      const groups = database[lessonKey];
+      groups.forEach((groupData, idx) => {
+        container.innerHTML += buildGroupHtml(groupData, idx, false);
+      });
+
+      bindInputLogic();
+      applyMicroScaling();
+    }
+
+    function applyMicroScaling() {
+      document.querySelectorAll('.word-eng-span').forEach(span => {
+        const textLength = span.innerText.length;
+        if (textLength > 18) {
+          span.style.fontSize = "12.5px";
+          span.style.letterSpacing = "-0.5px";
+        } else if (textLength > 12) {
+          span.style.fontSize = "14px";
+        } else {
+          span.style.fontSize = "16px";
+        }
+      });
+    }
+
+    function initApp() {
+      const selectorContainer = document.getElementById('lesson-selectors');
+      selectorContainer.innerHTML = '';
+      Object.keys(database).forEach(key => {
+        const btn = document.createElement('button');
+        btn.innerText = `九上 ${key}`;
+        btn.setAttribute('data-lesson', key);
+        btn.className = "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese";
+        btn.onclick = () => loadLesson(key);
+        selectorContainer.appendChild(btn);
+      });
+      loadLesson("L1"); 
+    }
+
+    function bindInputLogic() {
+      const inputsArray = Array.from(document.querySelectorAll('.answer-input'));
+      inputsArray.forEach((input, index) => {
+        input.addEventListener('input', function() {
+          this.value = this.value.replace(/[^0-9]/g, '');
+          const val = parseInt(this.value);
+          if (val < 1 || val > 12) this.value = '';
+          
+          if (this.value !== '' && index < inputsArray.length - 1) {
+            inputsArray[index + 1].focus();
+          }
+        });
+
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Backspace' && this.value === '' && index > 0) {
+            inputsArray[index - 1].focus();
+          }
+        });
+      });
+    }
+
+    function toggleAnswers() {
+      showAnswersState = !showAnswersState;
+      document.querySelectorAll('.answer-input').forEach(input => {
+        const groupIndex = input.getAttribute('data-gidx');
+        const eng = input.getAttribute('data-eng');
+        const orderKey = `${currentLesson}-${groupIndex}`;
+        
+        if (showAnswersState) {
+          if (quizOrders[orderKey]) {
+            input.value = quizOrders[orderKey].indexOf(eng) + 1;
+          } else {
+            input.value = "-";
+          }
+          input.classList.add('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+        } else {
+          input.value = '';
+          input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+        }
+      });
+    }
+
+    function clearAnswers() {
+      groupAnswerStates = {};
+      document.querySelectorAll('.answer-input').forEach(input => {
+        input.value = '';
+        input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+      });
+      showAnswersState = false;
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+
+    function printAllLessons() {
+      const printContainer = document.getElementById('print-all-container');
+      printContainer.innerHTML = '';
+
+      Object.keys(database).forEach(lessonKey => {
+        const page = document.createElement('div');
+        page.className = "print-page";
+
+        initLessonOrders(lessonKey);
+
+        let allGroupsHtml = '';
+        database[lessonKey].forEach((groupData, idx) => {
+          allGroupsHtml += buildGroupHtml(groupData, idx, true);
+        });
+
+        page.innerHTML = `
+          <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
+            <div class="flex justify-between items-end">
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">九上 ${lessonKey} 英文科講義 聽力選擇卷</h1>
+              <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+                <div class="flex items-end">
+                  <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+                  <span class="ml-1 shrink-0">班</span>
+                </div>
+                <div class="flex items-end">
+                  <span class="shrink-0">姓名：</span>
+                  <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
+              <span class="text-[14px] font-bold text-slate-700 font-chinese">◎錯字用紅筆訂正，中文、英文各 1 次。</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden">
+            ${allGroupsHtml}
+          </div>
+          <div class="h-1 shrink-0"></div>
+        `;
+        printContainer.appendChild(page);
+      });
+
+      setTimeout(() => {
+        applyMicroScaling();
+        document.body.classList.add('printing-all');
+        window.print();
+        setTimeout(() => { document.body.classList.remove('printing-all'); }, 600);
+      }, 50);
+    }
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>

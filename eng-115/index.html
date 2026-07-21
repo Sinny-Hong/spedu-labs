@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>課本講義工作區｜Sinny Spedu Labs</title>
-  <link rel="stylesheet" href="../shared/css/workspace.css?v=2.2">
+  <link rel="stylesheet" href="../shared/css/workspace.css?v=2.4">
 </head>
 <body class="grammar-page book-page">
   <button class="mobile-toggle" id="mobileToggle" aria-label="開啟選單">☰</button>
@@ -35,11 +35,12 @@
     </main>
   </div>
 
-  <script src="book-cards.js?v=2.2"></script>
+  <script src="book-cards.js?v=2.4"></script>
   <script>
     const availableFiles = new Set([
       "115-1G7hear.html", "115-1G7match.html", "115-1G7readword.html", "115-1G7write.html",
-      "115-1G8hear.html", "115-1G8match.html", "115-1G8readword.html", "115-1G8write.html"
+      "115-1G8hear.html", "115-1G8match.html", "115-1G8readword.html", "115-1G8write.html",
+      "115-1G9hear.html", "115-1G9match.html", "115-1G9write.html"
     ]);
     const escapeHtml = value => String(value ?? "")
       .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
@@ -69,6 +70,6 @@
       legacyFavorites.forEach(id => localStorage.setItem(`spedu-favorite:${location.pathname}:${id}`, "1"));
     } catch (error) { /* 舊收藏格式無效時不影響頁面 */ }
   </script>
-  <script src="../shared/js/workspace.js?v=2.2"></script>
+  <script src="../shared/js/workspace.js?v=2.4"></script>
 </body>
 </html>

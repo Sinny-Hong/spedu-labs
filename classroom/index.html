@@ -1,309 +1,61 @@
-<!DOCTYPE html>
-<html lang="zh-Hant-TW">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>115 特教班課表與班務管理系統</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Noto Sans TC -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body { 
-      font-family: 'Noto Sans TC', sans-serif; 
-      background-color: #f8fafc; 
-    }
-    /* 平滑滾動與微互動效果 */
-    .hover-card {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .hover-card:hover {
-      transform: translateY(-3px);
-    }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>課表與班務工作區｜Sinny Spedu Labs</title>
+  <link rel="stylesheet" href="../shared/css/workspace.css?v=2.3">
 </head>
-<body class="min-h-screen py-8 px-4 flex flex-col items-center">
+<body class="grammar-page classroom-page">
+  <button class="mobile-toggle" id="mobileToggle" aria-label="開啟選單">☰</button>
+  <div class="workspace-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand-home" href="../index.html" aria-label="回到異想教室首頁"><img src="../assets/logo-banner.png" alt="Sinny Spedu Labs"></a>
+      <div class="workspace-name"><small>CLASSROOM WORKSPACE</small><strong>課表與班務</strong></div>
+      <nav class="category-nav" id="categoryList" aria-label="功能分類">
+        <button class="category-btn active" data-filter="all"><span>全部功能</span><span class="category-count" data-total-count></span></button>
+        <button class="category-btn" data-filter="favorites"><span>我的收藏</span><span class="category-count" data-favorite-count>0</span></button>
+        <p class="category-label">課務分類</p>
+      </nav>
+      <p class="sidebar-note">課表工具與一般快速工具分開管理；點選 Logo 可回首頁。</p>
+    </aside>
 
-  <!-- 標題與引言區 -->
-  <div class="w-full max-w-4xl text-center mb-10">
-    <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 border border-indigo-200 rounded-full mb-3">
-      <span class="flex h-2 w-2 relative">
-        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-        <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-      </span>
-      <span class="text-xs font-semibold text-indigo-700">GitHub: spe-english / 115</span>
-    </div>
-    <h1 class="text-3xl font-extrabold text-slate-800 tracking-wide md:text-4xl">🗓️ 115 特教班課表與班務管理系統</h1>
-    <p class="mt-2 text-slate-500 text-sm max-w-xl mx-auto">提供親師生與特教團隊快速查詢各別課表、每日日誌與點名簿之全方位行政導覽平台。</p>
-    <div class="h-1 w-20 bg-indigo-500 mx-auto mt-4 rounded-full"></div>
+    <main class="main">
+      <header class="topbar">
+        <div class="title-block"><p>SINNY SPEDU LABS</p><h1>課表與班務工作區</h1></div>
+        <a class="home-link" href="../index.html">回到首頁</a>
+      </header>
+      <div class="search-row">
+        <input class="search-box" id="resourceSearch" type="search" placeholder="搜尋學生、班級、教師、教室、日誌或點名…" aria-label="搜尋課表與班務功能">
+        <div class="count-badge" id="resultCount"></div>
+      </div>
+      <h2 class="section-heading">課表工具與班務紀錄</h2>
+      <section class="card-grid" id="classroomCards"></section>
+      <div class="empty-state" id="emptyState">目前沒有符合條件的功能。</div>
+    </main>
   </div>
 
-  <!-- 快速搜尋與過濾列 -->
-  <div class="w-full max-w-4xl mb-8">
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
-      <div class="flex items-center gap-2 text-sm text-slate-600 font-medium">
-        <i class="fa-solid fa-circle-info text-indigo-500 text-base"></i>
-        <span>目前已完成 8 個核心模組，狀態均正常運作中</span>
-      </div>
-      <div class="flex gap-2 w-full sm:w-auto">
-        <input id="searchInput" type="text" placeholder="搜尋課表名稱或英文代碼..." class="w-full sm:w-64 px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-      </div>
-    </div>
-  </div>
-
-  <!-- 主要內容區 -->
-  <div class="w-full max-w-4xl space-y-12" id="cardsContainer">
-
-    <!-- ==================== 🟦 學生與班級課表區 (藍色系) ==================== -->
-    <div class="section-block">
-      <div class="flex items-center gap-2 mb-6 border-b border-blue-200 pb-2">
-        <span class="text-xl font-bold text-blue-700 flex items-center gap-2">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-          班級與個人課表
-        </span>
-      </div>
-      
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <!-- 學生個人課表 (table-student) -->
-        <a href="table-student.html" data-search="學生個人課表 table-student 一人一張" class="card-item block bg-white border-2 border-blue-400 hover:border-blue-500 hover:bg-blue-50/30 rounded-xl p-5 shadow-sm hover-card flex flex-col justify-between h-full">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="px-2.5 py-0.5 text-xs font-bold bg-blue-50 border border-blue-400 text-blue-600 rounded-full">table-student</span>
-              <span class="text-xs font-bold text-blue-600"><i class="fa-solid fa-user-graduate"></i> 一人一張</span>
-            </div>
-            <div class="text-lg font-bold text-slate-800 mb-1">學生個人課表</div>
-            <p class="text-xs text-slate-500 line-clamp-2">提供每位特教班學生的個別化課表查詢，便於學生及家長隨身攜帶與核對。</p>
-          </div>
-          <div class="mt-4 flex items-center justify-between text-blue-600 text-xs font-semibold">
-            <span>立即進入系統</span>
-            <i class="fa-solid fa-arrow-right-long transition-transform group-hover:translate-x-1"></i>
-          </div>
-        </a>
-
-        <!-- 班級課表 (table-class) -->
-        <a href="table-class.html" data-search="班級課表 table-class 給導師放點名簿" class="card-item block bg-white border-2 border-blue-400 hover:border-blue-500 hover:bg-blue-50/30 rounded-xl p-5 shadow-sm hover-card flex flex-col justify-between h-full">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="px-2.5 py-0.5 text-xs font-bold bg-blue-50 border border-blue-400 text-blue-600 rounded-full">table-class</span>
-              <span class="text-xs font-bold text-blue-600"><i class="fa-solid fa-clipboard-user"></i> 導師點名</span>
-            </div>
-            <div class="text-lg font-bold text-slate-800 mb-1">班級課表</div>
-            <p class="text-xs text-slate-500 line-clamp-2">提供特教班導師放置於紙本點名簿、聯絡簿或教室公佈欄使用之標準班級課表。</p>
-          </div>
-          <div class="mt-4 flex items-center justify-between text-blue-600 text-xs font-semibold">
-            <span>立即進入系統</span>
-            <i class="fa-solid fa-arrow-right-long"></i>
-          </div>
-        </a>
-
-        <!-- 總課表 (table-all) -->
-        <a href="table-all.html" data-search="總課表 table-all 全部的師生 全體" class="card-item block bg-white border-2 border-blue-400 hover:border-blue-500 hover:bg-blue-50/30 rounded-xl p-5 shadow-sm hover-card flex flex-col justify-between h-full">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="px-2.5 py-0.5 text-xs font-bold bg-blue-50 border border-blue-400 text-blue-600 rounded-full">table-all</span>
-              <span class="text-xs font-bold text-blue-600"><i class="fa-solid fa-users-viewfinder"></i> 全體師生</span>
-            </div>
-            <div class="text-lg font-bold text-slate-800 mb-1">總課表</div>
-            <p class="text-xs text-slate-500 line-clamp-2">全方位大表！完整統合所有特教老師的排課以及學生的個人抽離/抽空課表總覽。</p>
-          </div>
-          <div class="mt-4 flex items-center justify-between text-blue-600 text-xs font-semibold">
-            <span>立即進入系統</span>
-            <i class="fa-solid fa-arrow-right-long"></i>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <!-- ==================== 🟩 教師與專科教室課表區 (綠色系) ==================== -->
-    <div class="section-block">
-      <div class="flex items-center gap-2 mb-6 border-b border-emerald-200 pb-2">
-        <span class="text-xl font-bold text-emerald-700 flex items-center gap-2">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-          教師授課與空間管理
-        </span>
-      </div>
-      
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <!-- 教師課表 (table-teacher) -->
-        <a href="table-teacher.html" data-search="教師課表 table-teacher 任課教師課表 老師" class="card-item block bg-white border-2 border-emerald-400 hover:border-emerald-500 hover:bg-emerald-50/30 rounded-xl p-5 shadow-sm hover-card flex flex-col justify-between h-full">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="px-2.5 py-0.5 text-xs font-bold bg-emerald-50 border border-emerald-400 text-emerald-600 rounded-full">table-teacher</span>
-              <span class="text-xs font-bold text-emerald-600"><i class="fa-solid fa-chalkboard-user"></i> 任課教師</span>
-            </div>
-            <div class="text-lg font-bold text-slate-800 mb-1">教師課表</div>
-            <p class="text-xs text-slate-500 line-clamp-2">特教班各學科教師與協同任課教師的個別時間課表，方便安排協調教學會議。</p>
-          </div>
-          <div class="mt-4 flex items-center justify-between text-emerald-600 text-xs font-semibold">
-            <span>立即進入系統</span>
-            <i class="fa-solid fa-arrow-right-long"></i>
-          </div>
-        </a>
-
-        <!-- 教室課表 (table-room) -->
-        <a href="table-room.html" data-search="教室課表 table-room 專科教室 空間 資源班 教室" class="card-item block bg-white border-2 border-emerald-400 hover:border-emerald-500 hover:bg-emerald-50/30 rounded-xl p-5 shadow-sm hover-card flex flex-col justify-between h-full">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="px-2.5 py-0.5 text-xs font-bold bg-emerald-50 border border-emerald-400 text-emerald-600 rounded-full">table-room</span>
-              <span class="text-xs font-bold text-emerald-600"><i class="fa-solid fa-door-open"></i> 專科教室</span>
-            </div>
-            <div class="text-lg font-bold text-slate-800 mb-1">教室課表</div>
-            <p class="text-xs text-slate-500 line-clamp-2">專科或特教班專用教室、資源教室的使用課表，避免空間與器材衝突。</p>
-          </div>
-          <div class="mt-4 flex items-center justify-between text-emerald-600 text-xs font-semibold">
-            <span>立即進入系統</span>
-            <i class="fa-solid fa-arrow-right-long"></i>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <!-- ==================== 🟪 每日班務與點名登記 (紫色系) ==================== -->
-    <div class="section-block">
-      <div class="flex items-center gap-2 mb-6 border-b border-purple-200 pb-2">
-        <span class="text-xl font-bold text-purple-700 flex items-center gap-2">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-          每日班務紀錄與出缺席
-        </span>
-      </div>
-      
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <!-- 教室日誌 (table-diary) -->
-        <a href="table-diary.html" data-search="教室日誌 table-diary 老師一人一本 紀錄 日誌" class="card-item block bg-white border-2 border-purple-400 hover:border-purple-500 hover:bg-purple-50/30 rounded-xl p-5 shadow-sm hover-card flex flex-col justify-between h-full">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="px-2.5 py-0.5 text-xs font-bold bg-purple-50 border border-purple-400 text-purple-600 rounded-full">table-diary</span>
-              <span class="text-xs font-bold text-purple-600"><i class="fa-solid fa-book-open"></i> 老師一人一本</span>
-            </div>
-            <div class="text-lg font-bold text-slate-800 mb-1">教室日誌</div>
-            <p class="text-xs text-slate-500 line-clamp-2">專為特教班導師及任課教師設計，用於填寫每日課程進度、學生適應與學習表現記錄（老師一人一本）。</p>
-          </div>
-          <div class="mt-4 flex items-center justify-between text-purple-600 text-xs font-semibold">
-            <span>立即進入系統</span>
-            <i class="fa-solid fa-arrow-right-long"></i>
-          </div>
-        </a>
-
-        <!-- 點名簿 (table-check) -->
-        <a href="table-check.html" data-search="點名簿 table-check 一週一張 出席 簽到" class="card-item block bg-white border-2 border-purple-400 hover:border-purple-500 hover:bg-purple-50/30 rounded-xl p-5 shadow-sm hover-card flex flex-col justify-between h-full">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="px-2.5 py-0.5 text-xs font-bold bg-purple-50 border border-purple-400 text-purple-600 rounded-full">table-check</span>
-              <span class="text-xs font-bold text-purple-600"><i class="fa-solid fa-signature"></i> 一週一張</span>
-            </div>
-            <div class="text-lg font-bold text-slate-800 mb-1">點名簿</div>
-            <p class="text-xs text-slate-500 line-clamp-2">提供個別教師在抽離教學或彈性課堂時，追蹤特教班學生每週出席狀況之互動簽到簿（一週一張）。</p>
-          </div>
-          <div class="mt-4 flex items-center justify-between text-purple-600 text-xs font-semibold">
-            <span>立即進入系統</span>
-            <i class="fa-solid fa-arrow-right-long"></i>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <!-- ==================== 🟧 雲端彙整與管理原始庫 (橘色系) ==================== -->
-    <div class="section-block">
-      <div class="flex items-center gap-2 mb-6 border-b border-orange-200 pb-2">
-        <span class="text-xl font-bold text-orange-700 flex items-center gap-2">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-          雲端整合與開發資源庫
-        </span>
-      </div>
-      
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <!-- Google 試算表 A5 彙整 -->
-        <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=338631519&single=true&output=csv" target="_blank" data-search="A5 彙整 Google 試算表 雲端 csv" class="card-item block bg-white border-2 border-orange-400 hover:border-orange-500 hover:bg-orange-50/30 rounded-xl p-5 shadow-sm hover-card flex flex-col justify-between h-full">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="px-2.5 py-0.5 text-xs font-bold bg-orange-50 border border-orange-400 text-orange-600 rounded-full">Google Sheets</span>
-              <span class="text-xs font-bold text-orange-600"><i class="fa-solid fa-file-excel"></i> A5 彙整</span>
-            </div>
-            <div class="text-lg font-bold text-slate-800 mb-1">A5 彙整試算表</div>
-            <p class="text-xs text-slate-500 line-clamp-2">已發布之線上雲端試算表平台，整合本校特教班最完整的底層排課數據與名單配置（CSV 格式）。</p>
-          </div>
-          <div class="mt-4 flex items-center justify-between text-orange-600 text-xs font-semibold">
-            <span>開啟 Google 試算表 (外部連結)</span>
-            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-          </div>
-        </a>
-
-        <!-- Google 試算表 A3 授課 -->
-        <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=1823409322&single=true&output=csv" target="_blank" data-search="A3 授課 Google 試算表 雲端 csv" class="card-item block bg-white border-2 border-orange-400 hover:border-orange-500 hover:bg-orange-50/30 rounded-xl p-5 shadow-sm hover-card flex flex-col justify-between h-full">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="px-2.5 py-0.5 text-xs font-bold bg-orange-50 border border-orange-400 text-orange-600 rounded-full">Google Sheets</span>
-              <span class="text-xs font-bold text-orange-600"><i class="fa-solid fa-chalkboard"></i> A3 授課</span>
-            </div>
-            <div class="text-lg font-bold text-slate-800 mb-1">A3 授課對照表</div>
-            <p class="text-xs text-slate-500 line-clamp-2">已發布之線上授課教師對照表，記錄每位老師的任課節數、學科安排與配課資訊（CSV 格式）。</p>
-          </div>
-          <div class="mt-4 flex items-center justify-between text-orange-600 text-xs font-semibold">
-            <span>開啟 Google 試算表 (外部連結)</span>
-            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-          </div>
-        </a>
-
-        <!-- GitHub Repository 連結 -->
-        <a href="https://github.com/Sinny-Hong/spe-english/tree/main/" target="_blank" data-search="GitHub spe-english code 專案 原始碼" class="card-item block bg-white border-2 border-orange-400 hover:border-orange-500 hover:bg-orange-50/30 rounded-xl p-5 shadow-sm hover-card flex flex-col justify-between h-full">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="px-2.5 py-0.5 text-xs font-bold bg-orange-50 border border-orange-400 text-orange-600 rounded-full">GitHub Main</span>
-              <span class="text-xs font-bold text-orange-600"><i class="fa-brands fa-github"></i> Repository</span>
-            </div>
-            <div class="text-lg font-bold text-slate-800 mb-1">GitHub 程式原始碼庫</div>
-            <p class="text-xs text-slate-500 line-clamp-2">專案存放空間。包含本首頁 `index` 以及所有 `table` 的網頁原始程式碼庫。</p>
-          </div>
-          <div class="mt-4 flex items-center justify-between text-orange-600 text-xs font-semibold">
-            <span>開啟 GitHub 原始碼目錄 (外部連結)</span>
-            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-          </div>
-        </a>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- 頁尾與聲明 -->
-  <div class="w-full max-w-4xl text-center mt-16 text-xs text-slate-400 border-t border-slate-200 pt-8">
-    <p class="mb-1">© 2026 115 特教班教室課表與班務管理系統. All rights reserved.</p>
-    <p>整合式行政導覽介面 · 提供個別化特教支持</p>
-  </div>
-
-  <!-- 簡易前端即時搜尋邏輯 -->
+  <script src="classroom-cards.js?v=2.3"></script>
   <script>
-    const searchInput = document.getElementById('searchInput');
-    const cards = document.querySelectorAll('.card-item');
-    const sections = document.querySelectorAll('.section-block');
+    const escapeHtml = value => String(value ?? "")
+      .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;").replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
 
-    searchInput.addEventListener('input', function(e) {
-      const searchTerm = e.target.value.toLowerCase().trim();
+    document.querySelector("[data-total-count]").textContent = window.CLASSROOM_DATA.length;
+    document.getElementById("categoryList").insertAdjacentHTML("beforeend",
+      window.CLASSROOM_CATEGORIES.map(category =>
+        `<button class="category-btn" data-filter="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${window.CLASSROOM_DATA.filter(item => item.category === category).length}</span></button>`
+      ).join("")
+    );
 
-      sections.forEach(section => {
-        let hasVisibleCard = false;
-        const sectionCards = section.querySelectorAll('.card-item');
-        
-        sectionCards.forEach(card => {
-          const searchData = card.getAttribute('data-search').toLowerCase();
-          if (searchData.includes(searchTerm)) {
-            card.style.display = 'flex';
-            hasVisibleCard = true;
-          } else {
-            card.style.display = 'none';
-          }
-        });
-
-        // 如果該分類底下沒有任何一張卡片符合，就隱藏整個分類標題
-        if (hasVisibleCard) {
-          section.style.display = 'block';
-        } else {
-          section.style.display = 'none';
-        }
-      });
-    });
+    document.getElementById("classroomCards").innerHTML = window.CLASSROOM_DATA.map(item =>
+      `<article class="resource-card" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}">
+        <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
+        <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p><a class="card-link" href="${escapeHtml(item.filename)}">開啟功能 →</a>
+      </article>`
+    ).join("");
   </script>
-
+  <script src="../shared/js/workspace.js?v=2.3"></script>
 </body>
 </html>
