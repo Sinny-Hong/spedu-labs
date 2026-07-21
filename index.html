@@ -65,23 +65,11 @@
             <section class="tab-page active" id="task">
               <div class="task-card pinned" id="taskCard">
                 <img class="task-watermark" src="assets/watermark-icon.png" alt="" />
-                <div class="task-label" id="taskLabel">📌 老師置頂</div>
-
-                <div class="task-layout">
-                  <div class="task-message">
-                    <h2 id="taskTitle">請拿出「八上單字配對 Lesson 2」</h2>
-                    <p id="taskSubtitle">完成後放在老師桌上。</p>
-                  </div>
-
-                  <div class="qr-placeholder" id="taskQr" aria-label="QR Code 預留區">
-                    <div class="fake-qr"></div>
-                    <span>掃描開始作答</span>
-                  </div>
-                </div>
-
-                <div class="task-note">
-                  <strong>貼心提醒</strong>
-                  <span id="taskReminder">安靜完成、專心思考，有問題舉手問老師。</span>
+                <div class="task-list" id="taskList">
+                  <article class="task-item pinned">
+                    <div class="task-number"><span>📌</span>1.</div>
+                    <div><h2>請拿出「八上單字配對 Lesson 2」</h2><p>完成後放在老師桌上。</p></div>
+                  </article>
                 </div>
               </div>
             </section>
@@ -117,19 +105,21 @@
             </section>
 
             <section class="tab-page" id="missing">
-              <div class="simple-page">
-                <h2>作業缺交</h2>
-                <p>目前為示範資料，之後會改由 Google 試算表自動載入。</p>
-                <div class="name-chips">
-                  <span>03 王小明</span>
-                  <span>08 李小華</span>
-                  <span>12 陳小安</span>
+              <div class="missing-page">
+                <div class="missing-heading">
+                  <div><h2>作業缺交</h2><p>後台勾選代表已交；此處只列出尚未繳交的項目。</p></div>
+                  <span id="missingCount">0 人待補交</span>
+                </div>
+                <div class="grade-board" id="missingBoard">
+                  <section class="grade-column" data-grade="一"><h3>七年級</h3><div class="grade-list">目前沒有缺交資料</div></section>
+                  <section class="grade-column" data-grade="二"><h3>八年級</h3><div class="grade-list">目前沒有缺交資料</div></section>
+                  <section class="grade-column" data-grade="三"><h3>九年級</h3><div class="grade-list">目前沒有缺交資料</div></section>
                 </div>
               </div>
             </section>
 
             <section class="tab-page" id="other">
-              <div class="simple-page">
+              <div class="simple-page" id="otherContent">
                 <h2>其他公告</h2>
                 <p>段考時間、重要日期、臨時提醒與 QR Code 都可以放在這裡。</p>
               </div>

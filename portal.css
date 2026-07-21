@@ -77,6 +77,18 @@ button{cursor:pointer}
   height:100%;border:1px solid #f2d8a6;border-radius:15px;padding:20px 22px;
   position:relative;overflow:hidden;background:linear-gradient(135deg,#fffdfa 0%,#fff 64%,#fff8ed 100%)
 }
+.task-list{height:100%;overflow-y:auto;padding:2px 4px 10px;position:relative;z-index:1}
+.task-item{display:grid;grid-template-columns:54px minmax(0,1fr);gap:8px;padding:17px 18px;border-bottom:1px dashed #e4d8c5;align-items:start}
+.task-item:last-child{border-bottom:0}
+.task-number{padding-top:3px;color:var(--orange);font-size:19px;font-weight:900;white-space:nowrap}
+.task-number span{display:inline-block;width:27px}
+.task-item h2{margin:0;color:var(--navy);font-size:24px;line-height:1.35}
+.task-item p{margin:7px 0 0;color:var(--ink);font-size:17px;line-height:1.5;font-weight:700}
+.task-item .task-reminder{color:var(--muted);font-size:14px;font-weight:600}
+.task-item .task-link{display:inline-block;margin-top:9px;padding:7px 11px;border-radius:8px;background:#fff3dc;color:#a75300;text-decoration:none;font-weight:900;font-size:13px}
+.task-item:not(.pinned) .task-number span{visibility:hidden}
+.task-item.pinned{margin:0 0 6px;border:1px solid #f0d19a;border-radius:13px;background:rgba(255,250,240,.82)}
+.task-item.pinned h2{font-size:31px}
 .task-watermark{
   position:absolute;width:420px;height:420px;object-fit:contain;
   right:18%;top:50%;transform:translateY(-48%);opacity:.055;pointer-events:none;z-index:0
@@ -126,6 +138,18 @@ button{cursor:pointer}
 .simple-page p{font-size:16px;color:var(--muted)}
 .name-chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
 .name-chips span{padding:9px 13px;border-radius:999px;background:#fff3e0;border:1px solid #f7c66f;font-weight:800;font-size:14px}
+.missing-page{height:100%;overflow-y:auto;border:1px solid var(--line);border-radius:14px;background:#fff}
+.missing-heading{position:sticky;top:0;z-index:3;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:15px 18px;background:#fbfcfe;border-bottom:1px solid var(--line)}
+.missing-heading h2{margin:0;color:var(--navy);font-size:23px}.missing-heading p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.missing-heading span{padding:7px 10px;border-radius:999px;background:#fff1d8;color:#a75600;font-weight:900;font-size:13px;white-space:nowrap}
+.grade-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));min-height:calc(100% - 68px)}
+.grade-column{min-width:0;padding:0 13px 22px;border-right:1px solid #e4eaf1}.grade-column:last-child{border-right:0}
+.grade-column h3{position:sticky;top:68px;z-index:2;margin:0 -13px 10px;padding:11px 13px;text-align:center;color:var(--navy);background:#f3f7fb;border-bottom:1px solid var(--line);font-size:18px}
+.grade-list{color:var(--muted);font-size:14px}
+.group-block{margin-bottom:15px}.group-label{margin:8px 0;padding:5px 8px;border-radius:7px;background:#edf4fc;color:var(--navy);font-weight:900;font-size:13px}
+.student-missing{padding:10px 4px;border-bottom:1px dashed #dfe6ef}.student-missing:last-child{border-bottom:0}
+.student-missing h4{margin:0 0 6px;color:var(--ink);font-size:16px}.student-missing ul{margin:0;padding-left:20px;color:#a94f00;font-size:14px;line-height:1.55}
+.other-list{display:grid;gap:12px}.other-item{padding:15px;border:1px solid var(--line);border-left:4px solid var(--orange);border-radius:11px;background:#fff}.other-item h3{margin:0 0 7px;color:var(--navy)}.other-item p{margin:0;color:var(--ink)}
 
 .clock-panel{padding:18px 16px;display:flex;flex-direction:column;gap:16px;overflow:hidden}
 .clock-block{flex:0 0 auto}
@@ -187,10 +211,12 @@ button{cursor:pointer}
   .tabs{overflow-x:auto;display:flex}.tab{min-width:105px}
   .tab-stage{height:auto;min-height:500px}
   .task-card{min-height:470px}
+  .task-item{grid-template-columns:48px;padding:14px 10px}.task-item h2{font-size:21px}.task-item.pinned h2{font-size:27px}
   .task-layout{grid-template-columns:1fr}
   .task-message h2{font-size:28px}.task-message p{font-size:21px}
   .qr-placeholder{width:145px}
   .contact-grid{grid-template-columns:1fr;grid-template-rows:none}
+  .grade-board{grid-template-columns:1fr}.grade-column{border-right:0;border-bottom:1px solid var(--line)}.grade-column h3{position:static;margin:0 -13px 10px}.missing-heading{position:static}
   .info-card{min-height:180px}
   .clock-panel{min-height:520px}
   .footer{position:static;margin-top:12px}
