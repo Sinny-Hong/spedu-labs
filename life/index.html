@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>生活教育｜Sinny Spedu Labs</title><link rel="stylesheet" href="../shared/css/workspace.css"></head>
+<body>
+  <button class="mobile-toggle" id="mobileToggle" aria-label="開啟分類選單">☰</button>
+  <div class="workspace-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand-home" href="../index.html" aria-label="回到異想教室首頁"><img src="../assets/logo-banner.png" alt="Sinny Spedu Labs"></a>
+      <div class="workspace-name"><small>LIFE WORKSPACE</small><strong>生活教育</strong></div>
+      <nav class="category-nav" aria-label="教材分類">
+        <button class="category-btn active" data-filter="all">全部教材</button>
+        <button class="category-btn" data-filter="daily">生活自理</button>
+        <button class="category-btn" data-filter="safety">安全與健康</button>
+        <button class="category-btn" data-filter="social">社交與情緒</button>
+        <button class="category-btn" data-filter="game">互動遊戲</button>
+        <button class="category-btn" data-filter="assessment">能力挑戰評估</button>
+        <button class="category-btn" data-filter="easyread">易讀手冊</button>
+      </nav>
+      <p class="sidebar-note">點擊上方橫標即可回到異想教室首頁。</p>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div class="title-block"><p>SINNY SPEDU LABS</p><h1>生活教育工作區</h1></div><a class="home-link" href="../index.html">回到首頁</a></header>
+      <div class="search-row"><input class="search-box" id="resourceSearch" type="search" placeholder="搜尋生活教育教材…" aria-label="搜尋生活教育教材"><div class="count-badge" id="resultCount"></div></div>
+      <h2 class="section-heading">教材與互動活動</h2>
+      <section class="card-grid">
+        <article class="resource-card" data-category="game"><div class="card-top"><span class="tag">互動遊戲</span><button class="favorite" data-id="detective-scam" aria-label="收藏異想事件簿">★</button></div><h2>異想事件簿｜網路詐騙篇</h2><p>從事件與證物中辨識網路詐騙線索。</p><a class="card-link" href="detective-game.html">開始調查 →</a></article>
+        <article class="resource-card" data-category="safety"><div class="card-top"><span class="tag">安全與健康</span><button class="favorite" data-id="earthquake" aria-label="收藏防震須知">★</button></div><h2>地震時要保護自己</h2><p>易讀版防震須知，協助學生理解避難原則。</p><a class="card-link" href="易讀手冊/地震時要保護自己+易讀版防震須知.pdf">開啟手冊 →</a></article>
+        <article class="resource-card" data-category="daily"><div class="card-top"><span class="tag">生活自理</span><button class="favorite" data-id="medicine" aria-label="收藏用藥手冊">★</button></div><h2>我知道怎麼吃藥</h2><p>以易讀方式認識安全用藥的重要觀念。</p><a class="card-link" href="易讀手冊/我知道怎麼吃藥_用藥易讀手冊.pdf">開啟手冊 →</a></article>
+        <article class="resource-card" data-category="assessment"><div class="card-top"><span class="tag">能力挑戰評估</span><button class="favorite" data-id="life-assessment" aria-label="收藏生活常識能力評估">★</button></div><h2>生活常識能力挑戰</h2><p>評估自我保護、公共規章與基本生活常識。</p><a class="card-link" href="../eng-grammar/exam-lifesocial-v1.html">開始評估 →</a></article>
+        <article class="resource-card is-placeholder" data-category="social"><div class="card-top"><span class="tag">社交與情緒</span></div><h2>社交與情緒教材</h2><p>分類入口已預留，之後新增教材即可放入。</p><span class="card-link">教材準備中</span></article>
+        <article class="resource-card resource-table-card" data-category="easyread">
+          <div class="card-top"><span class="tag">易讀手冊</span><span class="resource-total">28 份</span></div>
+          <h2>易讀手冊資源</h2>
+          <p>直接在本頁選擇手冊，不另開目錄頁。點擊名稱即可開啟 PDF。</p>
+          <div class="resource-list" aria-label="易讀手冊清單">
+            <a href="易讀手冊/地震時要保護自己+易讀版防震須知.pdf"><span>安全與防災</span><strong>地震時要保護自己</strong></a>
+            <a href="易讀手冊/新竹縣消防局易讀版防颱須知.pdf"><span>安全與防災</span><strong>防颱須知</strong></a>
+            <a href="易讀手冊/消防局-臺北市防災易讀手冊「颱風來了怎麼辦」.pdf"><span>安全與防災</span><strong>颱風來了怎麼辦</strong></a>
+            <a href="易讀手冊/臺北市防災易讀手冊_地震來了怎麼辦.pdf"><span>安全與防災</span><strong>地震來了怎麼辦</strong></a>
+            <a href="易讀手冊/水利防災易讀手冊.pdf"><span>安全與防災</span><strong>水利防災易讀手冊</strong></a>
+            <a href="易讀手冊/安安告訴你如何成為防疫小幫手_易讀版.pdf"><span>健康生活</span><strong>如何成為防疫小幫手</strong></a>
+            <a href="易讀手冊/我知道怎麼吃藥_用藥易讀手冊.pdf"><span>健康生活</span><strong>我知道怎麼吃藥</strong></a>
+            <a href="易讀手冊/毒品不行碰.pdf"><span>健康生活</span><strong>毒品不行碰</strong></a>
+            <a href="易讀手冊/1.「性侵害，我說不」-性侵害防治易讀本(先備知識篇).pdf"><span>自我保護</span><strong>性侵害，我說不</strong></a>
+            <a href="易讀手冊/2.「被性侵害後，法律怎麼保護我」-性侵害防治易讀本(司法流程篇).pdf"><span>自我保護</span><strong>法律怎麼保護我</strong></a>
+            <a href="易讀手冊/3.「被性侵害後，我該怎麼辦」-性侵害防治易讀本(資源篇).pdf"><span>自我保護</span><strong>被性侵害後，我該怎麼辦</strong></a>
+            <a href="易讀手冊/4.「被性侵害後，我發現懷孕了，怎麼辦」-性侵害防治易讀本(懷孕篇).pdf"><span>自我保護</span><strong>發現懷孕了，怎麼辦</strong></a>
+            <a href="易讀手冊/5.性侵害防治易讀本4冊合訂版(新).pdf"><span>自我保護</span><strong>性侵害防治合訂版</strong></a>
+            <a href="易讀手冊/家庭暴力防治易讀易懂手冊.pdf"><span>自我保護</span><strong>家庭暴力防治手冊</strong></a>
+            <a href="易讀手冊/我說可以才可以_身心障礙福利機構性侵害防治初級預防易讀版.pdf"><span>自我保護</span><strong>我說可以才可以</strong></a>
+            <a href="易讀手冊/做決定有人幫-認識成年監護與輔助制度.pdf"><span>權益與法律</span><strong>做決定有人幫</strong></a>
+            <a href="易讀手冊/我要去上學_特殊教育法易讀手冊.pdf"><span>教育權益</span><strong>我要去上學</strong></a>
+            <a href="易讀手冊/社工向家長說明手冊(易讀易懂版).pdf"><span>教育權益</span><strong>社工向家長說明手冊</strong></a>
+            <a href="易讀手冊/我要上班了_勞動易讀手冊第一冊.pdf"><span>就業與勞動</span><strong>我要上班了</strong></a>
+            <a href="易讀手冊/我會賺錢了_勞動易讀手冊第二冊.pdf"><span>就業與勞動</span><strong>我會賺錢了</strong></a>
+            <a href="易讀手冊/我會賺錢了_勞動易讀手冊第二冊附錄.pdf"><span>就業與勞動</span><strong>我會賺錢了｜附錄</strong></a>
+            <a href="易讀手冊/我要加班，也要休假_勞動易讀手冊第三冊.pdf"><span>就業與勞動</span><strong>我要加班，也要休假</strong></a>
+            <a href="易讀手冊/我需要幫忙_臺中市身心障礙者鑑定及證明.pdf"><span>福利服務</span><strong>我需要幫忙</strong></a>
+            <a href="易讀手冊/身心障礙福利服務易讀手冊.pdf"><span>福利服務</span><strong>身心障礙福利服務</strong></a>
+            <a href="易讀手冊/身心障礙證明申請易讀版.pdf"><span>福利服務</span><strong>身心障礙證明申請</strong></a>
+            <a href="易讀手冊/臺北市身心障礙者生活狀況調查_就業篇、居住狀況篇與親密關係篇易讀本.pdf"><span>生活資訊</span><strong>身心障礙者生活狀況調查</strong></a>
+            <a href="易讀手冊/臺灣易讀參考指南_讓資訊易讀易懂(2.19MB).pdf"><span>易讀資訊</span><strong>臺灣易讀參考指南</strong></a>
+            <a href="易讀手冊/我要去上學_特殊教育法易讀手冊 (1).pdf"><span>教育權益</span><strong>我要去上學｜備份版本</strong></a>
+          </div>
+        </article>
+      </section>
+      <div class="empty-state" id="emptyState">目前沒有符合條件的教材。</div>
+    </main>
+  </div>
+  <script src="../shared/js/workspace.js"></script>
+</body>
+</html>

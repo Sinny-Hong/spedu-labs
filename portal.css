@@ -58,7 +58,9 @@ button{cursor:pointer}
 .topbar p{margin:7px 0 0;color:var(--muted);font-size:15px}
 .status-group{display:flex;align-items:center;gap:9px;color:#178f4b;font-weight:700;font-size:14px}
 .online-dot{width:9px;height:9px;background:#22c55e;border-radius:50%}
-.ghost-btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 12px;color:var(--ink)}
+.ghost-btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 12px;color:var(--ink);text-decoration:none}
+.main-nav a.teacher-console{margin-top:6px;border:1px solid #f2d49a;background:#fffaf0;color:#9a5100}
+.main-nav a.teacher-console:hover{background:#fff3d8}
 
 .workspace{height:calc(100vh - 126px);display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:16px;align-items:stretch}
 .content-panel,.clock-panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
