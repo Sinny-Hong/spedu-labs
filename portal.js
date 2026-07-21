@@ -37,22 +37,6 @@ fullscreenBtn.addEventListener("click", async () => {
   } catch (error) { console.warn("無法切換全螢幕：", error); }
 });
 
-function speakWord(word, button) {
-  if (!("speechSynthesis" in window)) return alert("此瀏覽器不支援語音播放。");
-  speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(word);
-  utterance.lang = "en-US";
-  utterance.rate = 0.8;
-  button?.classList.add("speaking");
-  utterance.onend = utterance.onerror = () => button?.classList.remove("speaking");
-  speechSynthesis.speak(utterance);
-}
-
-document.addEventListener("click", event => {
-  const button = event.target.closest(".speak-btn");
-  if (button) speakWord(button.dataset.word, button);
-});
-
 const pad = n => String(n).padStart(2, "0");
 const normalize = value => String(value ?? "").trim().replace(/\s+/g, "");
 const truthy = value => ["true","1","yes","y","是","啟用","顯示","v","✓","☑","checked"].includes(normalize(value).toLowerCase());
@@ -113,6 +97,22 @@ function setConnection(state, text) {
   label.textContent=text;
 }
 
+const syncState = { task: "loading", contact: "loading", missing: "loading", other: "loading" };
+
+function setTabSync(key, state) {
+  syncState[key] = state;
+  const dot = document.querySelector(`[data-sync="${key}"]`);
+  if (dot) {
+    dot.classList.remove("loading", "error");
+    if (state !== "success") dot.classList.add(state);
+    dot.title = state === "success" ? "資料已同步" : state === "loading" ? "資料更新中" : "同步失敗，保留上次資料";
+  }
+  const values = Object.values(syncState);
+  if (values.every(value => value === "success")) setConnection("", "資料已同步");
+  else if (values.some(value => value === "loading")) setConnection("loading", "部分資料更新中");
+  else setConnection("offline", "部分資料未同步");
+}
+
 function renderTasks(rows) {
   const headers=(rows[0]||[]).map(normalize);
   const col=name=>headers.indexOf(normalize(name));
@@ -143,7 +143,7 @@ function renderContact(rows) {
   document.getElementById("classContent").innerHTML=renderLines(content);
   document.getElementById("homeworkContent").innerHTML=renderLines(homework);
   document.getElementById("teacherMessage").innerHTML=renderLines(messages);
-  document.getElementById("wordList").innerHTML=words.map(item=>`<li><button class="speak-btn" data-word="${escapeHtml(item.word)}" aria-label="播放 ${escapeHtml(item.word)} 發音">🔊</button><span class="word">${escapeHtml(item.word)}</span><span>${escapeHtml(item.translation)}</span></li>`).join("");
+  document.getElementById("wordList").innerHTML=words.map(item=>`<li><span class="word">${escapeHtml(item.word)}</span><span>${escapeHtml(item.translation)}</span></li>`).join("");
 }
 
 function renderMissing(rows) {
@@ -172,27 +172,26 @@ function renderMissing(rows) {
 function renderOther(rows) {
   const items=rows.slice(1).filter(row=>truthy(row[0])&&normalize(row[1]));
   const box=document.getElementById("otherContent");
-  box.innerHTML=`<h2>其他資訊</h2><div class="other-list">${items.length?items.map(row=>`<article class="other-item"><h3>${escapeHtml(row[1])}</h3><p>${escapeHtml(row[2]||"")}</p>${row[5]?`<a class="task-link" href="${escapeHtml(row[5])}" target="_blank" rel="noopener">開啟連結</a>`:""}</article>`).join(""):"<p>目前沒有啟用的其他資訊。</p>"}</div>`;
+  box.innerHTML=`<h2>其他資訊</h2><div class="other-list">${items.length?items.map((row,index)=>`<article class="other-item"><div class="other-number">${index+1}.</div><div><h3>${escapeHtml(row[1])}</h3><p>${escapeHtml(row[2]||"")}</p>${row[5]?`<a class="task-link" href="${escapeHtml(row[5])}" target="_blank" rel="noopener">開啟連結</a>`:""}</div></article>`).join(""):"<p>目前沒有啟用的其他資訊。</p>"}</div>`;
 }
 
-async function loadAllSheets() {
-  setConnection("loading","資料更新中");
+async function syncOneSheet(key, renderer) {
+  setTabSync(key, "loading");
   try {
-    const [task,contact,missing,other]=await Promise.all([
-      fetchSheet(PORTAL_CONFIG.sheets.task),
-      fetchSheet(PORTAL_CONFIG.sheets.contact),
-      fetchSheet(PORTAL_CONFIG.sheets.missing),
-      fetchSheet(PORTAL_CONFIG.sheets.other)
-    ]);
-    renderTasks(task);
-    renderContact(contact);
-    renderMissing(missing);
-    renderOther(other);
-    setConnection("","資料已同步");
+    const rows = await fetchSheet(PORTAL_CONFIG.sheets[key]);
+    renderer(rows);
+    setTabSync(key, "success");
   } catch(error) {
-    console.warn("試算表載入失敗：",error);
-    setConnection("offline","部分資料未同步");
+    console.warn(`${key} 分頁同步失敗：`, error);
+    setTabSync(key, "error");
   }
+}
+
+function loadAllSheets() {
+  syncOneSheet("task", renderTasks);
+  syncOneSheet("contact", renderContact);
+  syncOneSheet("missing", renderMissing);
+  syncOneSheet("other", renderOther);
 }
 
 updateClock();
