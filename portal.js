@@ -17,6 +17,49 @@ const qrModal = document.getElementById("qrModal");
 const qrImage = document.getElementById("qrImage");
 const qrDirectLink = document.getElementById("qrDirectLink");
 const qrClose = document.getElementById("qrClose");
+const playAllWords = document.getElementById("playAllWords");
+if (window.lucide) lucide.createIcons();
+
+let playingAllWords = false;
+let cancelWordSequence = false;
+
+function speakSingleWord(word, button) {
+  if (!("speechSynthesis" in window) || !word) return Promise.resolve();
+  speechSynthesis.cancel();
+  document.querySelectorAll(".word-button.speaking").forEach(item => item.classList.remove("speaking"));
+  button?.classList.add("speaking");
+  return new Promise(resolve => {
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = "en-US";
+    utterance.rate = 0.78;
+    utterance.onend = utterance.onerror = () => { button?.classList.remove("speaking"); resolve(); };
+    speechSynthesis.speak(utterance);
+  });
+}
+
+async function playWordSequence() {
+  if (playingAllWords) {
+    cancelWordSequence = true;
+    speechSynthesis.cancel();
+    return;
+  }
+  const buttons = [...document.querySelectorAll(".word-button")];
+  if (!buttons.length) return;
+  playingAllWords = true;
+  cancelWordSequence = false;
+  playAllWords.classList.add("playing");
+  playAllWords.querySelector("span").textContent = "停止播放";
+  for (const button of buttons) {
+    if (cancelWordSequence) break;
+    await speakSingleWord(button.dataset.word, button);
+    if (!cancelWordSequence) await new Promise(resolve => setTimeout(resolve, 650));
+  }
+  playingAllWords = false;
+  playAllWords.classList.remove("playing");
+  playAllWords.querySelector("span").textContent = "播放全部";
+}
+
+playAllWords.addEventListener("click", playWordSequence);
 
 function setMobileSidebar(open) {
   sidebar.classList.toggle("mobile-open", open);
@@ -54,6 +97,15 @@ fullscreenBtn.addEventListener("click", async () => {
 });
 
 document.addEventListener("click", event => {
+  const wordButton = event.target.closest(".word-button");
+  if (wordButton) {
+    cancelWordSequence = true;
+    playingAllWords = false;
+    playAllWords.classList.remove("playing");
+    playAllWords.querySelector("span").textContent = "播放全部";
+    speakSingleWord(wordButton.dataset.word, wordButton);
+    return;
+  }
   const qrButton = event.target.closest(".qr-show-btn");
   if (!qrButton) return;
   const url = qrButton.dataset.qrUrl;
@@ -183,7 +235,7 @@ function renderContact(rows) {
   document.getElementById("classContent").innerHTML=renderLines(content);
   document.getElementById("homeworkContent").innerHTML=renderLines(homework);
   document.getElementById("teacherMessage").innerHTML=renderLines(messages);
-  document.getElementById("wordList").innerHTML=words.map(item=>`<li><span class="word">${escapeHtml(item.word)}</span><span>${escapeHtml(item.translation)}</span></li>`).join("");
+  document.getElementById("wordList").innerHTML=words.map(item=>`<li><button class="word word-button" type="button" data-word="${escapeHtml(item.word)}">${escapeHtml(item.word)}</button><span>${escapeHtml(item.translation)}</span></li>`).join("");
 }
 
 function renderMissing(rows) {

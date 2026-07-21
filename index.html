@@ -16,14 +16,14 @@
       </a>
 
       <nav class="main-nav">
-        <a class="active" href="./index.html"><span>⌂</span><b>首頁</b></a>
-        <a href="./eng-115/index.html"><span>▣</span><b>課本講義</b></a>
-        <a href="./eng-grammar/index.html"><span>✎</span><b>生活英文與文法</b></a>
-        <a href="./math/index.html"><span>▦</span><b>數學教材</b></a>
-        <a href="./life/index.html"><span>◒</span><b>生活教育</b></a>
-        <a href="./info/index.html"><span>◎</span><b>升學輔導</b></a>
-        <a href="./classroom/index.html"><span>⌂</span><b>班務管理</b></a>
-        <a class="teacher-console" href="https://docs.google.com/spreadsheets/d/1DWvNNRUklFwKL72E_2XPXLfJfEnm6dyT3We98b6NHnU/edit?usp=sharing" target="_blank" rel="noopener"><span>↗</span><b>公告後台</b></a>
+        <a class="active" href="./index.html"><span><i data-lucide="house"></i></span><b>首頁</b></a>
+        <a href="./eng-115/index.html"><span><i data-lucide="book-open"></i></span><b>課本講義</b></a>
+        <a href="./eng-grammar/index.html"><span><i data-lucide="languages"></i></span><b>生活英文與文法</b></a>
+        <a href="./math/index.html"><span><i data-lucide="calculator"></i></span><b>數學教材</b></a>
+        <a href="./life/index.html"><span><i data-lucide="heart-handshake"></i></span><b>生活教育</b></a>
+        <a href="./info/index.html"><span><i data-lucide="graduation-cap"></i></span><b>升學輔導</b></a>
+        <a href="./classroom/index.html"><span><i data-lucide="calendar-days"></i></span><b>班務管理</b></a>
+        <a class="teacher-console" href="https://docs.google.com/spreadsheets/d/1DWvNNRUklFwKL72E_2XPXLfJfEnm6dyT3We98b6NHnU/edit?usp=sharing" target="_blank" rel="noopener"><span><i data-lucide="clipboard-pen-line"></i></span><b>公告後台</b></a>
       </nav>
 
       <div class="sidebar-footer">
@@ -92,7 +92,7 @@
                 </article>
 
                 <article class="info-card purple">
-                  <h3>本週五個單字</h3>
+                  <h3 class="word-title">本週五個單字 <button class="play-all-words" id="playAllWords" type="button"><i data-lucide="circle-play"></i><span>播放全部</span></button></h3>
                   <ul class="word-list" id="wordList">
                     <li><span class="word">usually</span><span>通常</span></li>
                     <li><span class="word">before</span><span>在……之前</span></li>
@@ -172,6 +172,7 @@
     </div>
   </div>
 
+  <script src="shared/js/lucide.min.js"></script>
   <script src="shared/js/qrcode.min.js"></script>
   <script src="portal.js"></script>
 </body>
