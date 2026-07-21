@@ -8,11 +8,24 @@
   const toggle = document.querySelector('#mobileToggle');
   let category = 'all';
 
+  function isFavorite(card) {
+    return card.querySelector('.favorite')?.classList.contains('active') || false;
+  }
+
+  function updateFavoriteCount() {
+    const favoriteCount = cards.filter(isFavorite).length;
+    document.querySelectorAll('[data-favorite-count]').forEach((item) => {
+      item.textContent = favoriteCount;
+    });
+  }
+
   function filterCards() {
     const query = (search?.value || '').trim().toLocaleLowerCase('zh-Hant');
     let visible = 0;
     cards.forEach((card) => {
-      const categoryMatch = category === 'all' || card.dataset.category === category;
+      const categoryMatch = category === 'all'
+        || (category === 'favorites' && isFavorite(card))
+        || card.dataset.category === category;
       const textMatch = !query || card.textContent.toLocaleLowerCase('zh-Hant').includes(query);
       card.hidden = !(categoryMatch && textMatch);
       if (!card.hidden) visible += 1;
@@ -38,8 +51,11 @@
       const active = button.classList.toggle('active');
       button.setAttribute('aria-pressed', active);
       localStorage.setItem(key, active ? '1' : '0');
+      updateFavoriteCount();
+      if (category === 'favorites') filterCards();
     });
   });
 
+  updateFavoriteCount();
   filterCards();
 })();

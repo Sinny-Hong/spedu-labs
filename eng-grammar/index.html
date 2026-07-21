@@ -4,16 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>生活英文與文法｜Sinny Spedu Labs</title>
-  <link rel="stylesheet" href="../shared/css/workspace.css">
+  <link rel="stylesheet" href="../shared/css/workspace.css?v=2.1">
 </head>
-<body>
+<body class="grammar-page">
   <button class="mobile-toggle" id="mobileToggle" aria-label="開啟分類選單">☰</button>
   <div class="workspace-shell">
     <aside class="sidebar" id="sidebar">
       <a class="brand-home" href="../index.html" aria-label="回到異想教室首頁"><img src="../assets/logo-banner.png" alt="Sinny Spedu Labs"></a>
       <div class="workspace-name"><small>GRAMMAR WORKSPACE</small><strong>生活英文與文法</strong></div>
       <nav class="category-nav" id="categoryList" aria-label="教材分類">
-        <button class="category-btn active" data-filter="all">全部教材</button>
+        <button class="category-btn active" data-filter="all"><span>全部教材</span><span class="category-count" data-total-count></span></button>
+        <button class="category-btn" data-filter="favorites"><span>我的收藏</span><span class="category-count" data-favorite-count>0</span></button>
+        <p class="category-label">教材分類</p>
       </nav>
       <p class="sidebar-note">點擊上方橫標即可回到異想教室首頁。</p>
     </aside>
@@ -33,7 +35,7 @@
     </main>
   </div>
 
-  <script src="grammar-cards.js"></script>
+  <script src="grammar-cards.js?v=2.1"></script>
   <script>
     const unavailableFiles = new Set([
       "grammar_first.html",
@@ -48,9 +50,10 @@
       .replaceAll(">", "&gt;").replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
 
+    document.querySelector("[data-total-count]").textContent = window.GRAMMAR_DATA.length;
     document.getElementById("categoryList").insertAdjacentHTML("beforeend",
       window.GRAMMAR_CATEGORIES.map(category =>
-        `<button class="category-btn" data-filter="${escapeHtml(category)}">${escapeHtml(category)}</button>`
+        `<button class="category-btn" data-filter="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${window.GRAMMAR_DATA.filter(item => item.category === category).length}</span></button>`
       ).join("")
     );
 
@@ -65,6 +68,6 @@
       </article>`;
     }).join("");
   </script>
-  <script src="../shared/js/workspace.js"></script>
+  <script src="../shared/js/workspace.js?v=2.1"></script>
 </body>
 </html>

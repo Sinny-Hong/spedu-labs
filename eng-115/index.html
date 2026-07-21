@@ -1,315 +1,74 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spedu Labs | Book Workspace</title>
-  <!-- Tailwind CSS & FontAwesome -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    /* 太空幾何星空格線背景 (NASA 藍圖風格) */
-    .labs-grid-bg {
-      background-color: #F4F7FB;
-      background-image: 
-        linear-gradient(rgba(15, 23, 42, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px),
-        radial-gradient(circle, rgba(245, 158, 11, 0.04) 1px, transparent 1px),
-        radial-gradient(circle, rgba(59, 130, 246, 0.04) 2px, transparent 2px);
-      background-size: 40px 40px, 40px 40px, 80px 80px, 120px 120px;
-      background-position: 0 0, 0 0, 20px 20px, 40px 40px;
-    }
-    /* 隱藏滾動條但保持滾動功能 */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>課本講義工作區｜Sinny Spedu Labs</title>
+  <link rel="stylesheet" href="../shared/css/workspace.css?v=2.2">
 </head>
-<body class="h-screen flex flex-col overflow-hidden font-sans text-slate-900 bg-slate-50">
-
-  <!-- 頂部 Header -->
-  <header class="h-16 border-t-[4px] border-[#F59E0B] bg-[#FFFDF8] border-b border-slate-200 flex items-center justify-between px-4 z-40 shrink-0">
-    <div class="flex items-center space-x-3">
-      <!-- 漢堡選單 (手機版切換) -->
-      <button id="menu-toggle" class="p-2 rounded-lg hover:bg-slate-100 focus:outline-none lg:hidden">
-        <i class="fa-solid fa-bars text-xl text-slate-600"></i>
-      </button>
-      <!-- Logo 暴力放大至極致飽滿的 48px 高度，不限寬度 -->
-      <img src="line-qrcode.png" alt="Spedu Labs Logo" style="height: 48px; width: auto; max-height: 48px;" class="object-contain" onerror="this.src='https://placehold.co/180x48/FFFDF8/F59E0B?text=SINNY+SPEDU+LABS'">
-      <span class="text-slate-400 font-light">/</span>
-      <span class="text-sm font-semibold tracking-wider text-slate-500 uppercase">Book Workspace</span>
-    </div>
-    <div class="text-xs text-slate-400 font-mono tracking-widest hidden sm:block">WORKSPACE V1.1</div>
-  </header>
-
-  <!-- 主區塊 -->
-  <div class="flex flex-1 overflow-hidden relative">
-
-    <!-- 手機版選單背景遮罩 (Overlay) -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-20 hidden lg:hidden transition-opacity duration-300 opacity-0"></div>
-
-    <!-- 左側 Sidebar (支援桌機與手機懸浮抽屜) -->
-    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 w-[240px] bg-[#F7F8FA] border-r border-slate-200 z-30 flex flex-col transition-all duration-300 -translate-x-full lg:translate-x-0">
-      
-      <!-- 搜尋欄 -->
-      <div class="p-4 border-b border-slate-200">
-        <div class="relative">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-400"></i>
-          <input type="text" id="search-input" placeholder="搜尋教材或檔名..." class="w-full pl-8 pr-3 py-1.5 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-[#F59E0B] transition-colors">
-        </div>
-      </div>
-
-      <!-- 選單按鈕區 -->
-      <div class="flex-1 overflow-y-auto no-scrollbar p-3 space-y-1">
-        <button onclick="filterCategory('all')" id="btn-all" class="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg bg-slate-200/80 text-slate-900 transition-colors">
-          <div class="flex items-center space-x-2.5">
-            <i class="fa-solid fa-folder-open text-amber-500 text-base"></i>
-            <span>全部課本講義</span>
-          </div>
-          <span id="count-all" class="text-xs px-2 py-0.5 rounded-full bg-slate-300 text-slate-700 font-mono">15</span>
-        </button>
-
-        <button onclick="filterCategory('fav')" id="btn-fav" class="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
-          <div class="flex items-center space-x-2.5">
-            <i class="fa-solid fa-star text-amber-500 text-base"></i>
-            <span>我的收藏</span>
-          </div>
-          <span id="count-fav" class="text-xs px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 font-mono">0</span>
-        </button>
-
-        <div class="pt-4 pb-1 px-3 text-[11px] font-bold tracking-wider text-slate-400 uppercase">按年級篩選</div>
-
-        <!-- 動態年級分類按鈕區 -->
-        <div id="category-list" class="space-y-1">
-          <!-- JS 會自動產生 -->
-        </div>
-      </div>
+<body class="grammar-page book-page">
+  <button class="mobile-toggle" id="mobileToggle" aria-label="開啟選單">☰</button>
+  <div class="workspace-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand-home" href="../index.html" aria-label="回到異想教室首頁"><img src="../assets/logo-banner.png" alt="Sinny Spedu Labs"></a>
+      <div class="workspace-name"><small>BOOK WORKSPACE</small><strong>課本講義</strong></div>
+      <nav class="category-nav" id="categoryList" aria-label="教材分類">
+        <button class="category-btn active" data-filter="all"><span>全部教材</span><span class="category-count" data-total-count></span></button>
+        <button class="category-btn" data-filter="favorites"><span>我的收藏</span><span class="category-count" data-favorite-count>0</span></button>
+        <p class="category-label">年級與資源</p>
+      </nav>
+      <p class="sidebar-note">點選上方 Logo 可隨時回到異想教室首頁。</p>
     </aside>
 
-    <!-- 右側主內容 canvas -->
-    <main id="main-content" class="flex-1 overflow-y-auto labs-grid-bg p-4 md:p-6 relative no-scrollbar">
-      
-      <!-- 卡片渲染區 -->
-      <div id="cards-container" class="space-y-8 max-w-7xl mx-auto pb-24">
-        <!-- JS 會根據分類自動產生 -->
+    <main class="main">
+      <header class="topbar">
+        <div class="title-block"><p>SINNY SPEDU LABS</p><h1>課本講義工作區</h1></div>
+        <a class="home-link" href="../index.html">回到首頁</a>
+      </header>
+      <div class="search-row">
+        <input class="search-box" id="resourceSearch" type="search" placeholder="搜尋年級、聽力、配對、拼寫或電子書…" aria-label="搜尋課本講義">
+        <div class="count-badge" id="resultCount"></div>
       </div>
-
-      <!-- 右下角 Spedu Labs 太空人燈泡 w-72 巨型浮水印 (完美置入) -->
-      <div class="fixed bottom-4 right-4 w-64 h-64 pointer-events-none opacity-[0.045] select-none z-0">
-        <img src="spe-icon2.png" alt="Watermark" class="w-full h-full object-contain" onerror="this.style.display='none'">
-      </div>
+      <h2 class="section-heading">教材與電子書</h2>
+      <section class="card-grid" id="bookCards"></section>
+      <div class="empty-state" id="emptyState">目前沒有符合條件的教材。</div>
     </main>
-
   </div>
 
-  <!-- JavaScript 資料庫與互動邏輯 -->
+  <script src="book-cards.js?v=2.2"></script>
   <script>
-    // 預留 3 年級 × 5 大功能 = 15張完整的資料庫
-    const bookData = [
-      { id: "g7_hear", category: "七年級課本講義", badge_left: "聽力", badge_right: "115-1", title: "七上 單字聽力訓練卷", filename: "115-1G7hear.html", themeColor: "#3B82F6" },
-      { id: "g7_match", category: "七年級課本講義", badge_left: "配對", badge_right: "115-1", title: "七上 中英文配對卷", filename: "115-1G7match.html", themeColor: "#10B981" },
-      { id: "g7_write", category: "七年級課本講義", badge_left: "拼寫", badge_right: "115-1", title: "七上 單字拼寫練習卷", filename: "115-1G7write.html", themeColor: "#8B5CF6" },
-      { id: "g7_keyword", category: "七年級課本講義", badge_left: "關鍵字", badge_right: "115-1", title: "七上 課文關鍵字解碼卷", filename: "115-1G7keyword.html", themeColor: "#F59E0B" },
-      { id: "g7_trans", category: "七年級課本講義", badge_left: "翻譯", badge_right: "115-1", title: "七上 課文翻譯與句型卷", filename: "115-1G7trans.html", themeColor: "#F43F5E" },
+    const availableFiles = new Set([
+      "115-1G7hear.html", "115-1G7match.html", "115-1G7readword.html", "115-1G7write.html",
+      "115-1G8hear.html", "115-1G8match.html", "115-1G8readword.html", "115-1G8write.html"
+    ]);
+    const escapeHtml = value => String(value ?? "")
+      .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;").replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
 
-      { id: "g8_hear", category: "八年級課本講義", badge_left: "聽力", badge_right: "115-1", title: "八上 單字聽力訓練卷", filename: "115-1G8hear.html", themeColor: "#3B82F6" },
-      { id: "g8_match", category: "八年級課本講義", badge_left: "配對", badge_right: "115-1", title: "八上 中英文配對卷", filename: "115-1G8match.html", themeColor: "#10B981" },
-      { id: "g8_write", category: "八年級課本講義", badge_left: "拼寫", badge_right: "115-1", title: "八上 單字拼寫練習卷", filename: "115-1G8write.html", themeColor: "#8B5CF6" },
-      { id: "g8_keyword", category: "八年級課本講義", badge_left: "關鍵字", badge_right: "115-1", title: "八上 課文關鍵字解碼卷", filename: "115-1G8keyword.html", themeColor: "#F59E0B" },
-      { id: "g8_trans", category: "八年級課本講義", badge_left: "翻譯", badge_right: "115-1", title: "八上 課文翻譯與句型卷", filename: "115-1G8trans.html", themeColor: "#F43F5E" },
+    document.querySelector("[data-total-count]").textContent = window.BOOK_DATA.length;
+    document.getElementById("categoryList").insertAdjacentHTML("beforeend",
+      window.BOOK_CATEGORIES.map(category =>
+        `<button class="category-btn" data-filter="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${window.BOOK_DATA.filter(item => item.category === category).length}</span></button>`
+      ).join("")
+    );
 
-      { id: "g9_hear", category: "九年級課本講義", badge_left: "聽力", badge_right: "115-1", title: "九上 單字聽力訓練卷", filename: "115-1G9hear.html", themeColor: "#3B82F6" },
-      { id: "g9_match", category: "九年級課本講義", badge_left: "配對", badge_right: "115-1", title: "九上 中英文配對卷", filename: "115-1G9match.html", themeColor: "#10B981" },
-      { id: "g9_write", category: "九年級課本講義", badge_left: "拼寫", badge_right: "115-1", title: "九上 單字拼寫練習卷", filename: "115-1G9write.html", themeColor: "#8B5CF6" },
-      { id: "g9_keyword", category: "九年級課本講義", badge_left: "關鍵字", badge_right: "115-1", title: "九上 課文關鍵字解碼卷", filename: "115-1G9keyword.html", themeColor: "#F59E0B" },
-      { id: "g9_trans", category: "九年級課本講義", badge_left: "翻譯", badge_right: "115-1", title: "九上 課文翻譯與句型卷", filename: "115-1G9trans.html", themeColor: "#F43F5E" }
-    ];
+    document.getElementById("bookCards").innerHTML = window.BOOK_DATA.map(item => {
+      const unavailable = !item.external && !availableFiles.has(item.filename);
+      const action = unavailable
+        ? `<span class="card-link">教材準備中</span>`
+        : `<a class="card-link" href="${escapeHtml(item.filename)}"${item.external ? ' target="_blank" rel="noopener"' : ""}>${item.external ? "開啟電子書 ↗" : "開啟教材 →"}</a>`;
+      return `<article class="resource-card${unavailable ? " is-placeholder" : ""}" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}">
+        <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
+        <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>${action}
+      </article>`;
+    }).join("");
 
-    let favorites = JSON.parse(localStorage.getItem('book_favs')) || [];
-    let currentFilter = 'all';
-
-    const categories = [...new Set(bookData.map(item => item.category))];
-
-    function initSidebar() {
-      const container = document.getElementById('category-list');
-      container.innerHTML = '';
-      categories.forEach(cat => {
-        const count = bookData.filter(i => i.category === cat).length;
-        const color = cat.includes('七') ? '#3B82F6' : cat.includes('八') ? '#10B981' : '#F43F5E';
-        
-        container.innerHTML += `
-          <button onclick="filterCategory('${cat}')" id="btn-${cat}" class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
-            <div class="flex items-center space-x-2.5 min-w-0">
-              <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${color}"></span>
-              <span class="truncate font-medium">${cat}</span>
-            </div>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 font-mono">${count}</span>
-          </button>
-        `;
-      });
-      updateCountBadges();
-    }
-
-    function updateCountBadges() {
-      document.getElementById('count-all').innerText = bookData.length;
-      document.getElementById('count-fav').innerText = favorites.length;
-    }
-
-    const menuToggle = document.getElementById('menu-toggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-
-    function toggleSidebar() {
-      sidebar.classList.toggle('-translate-x-full');
-      overlay.classList.toggle('hidden');
-      setTimeout(() => overlay.classList.toggle('opacity-0'), 50);
-    }
-
-    menuToggle.addEventListener('click', toggleSidebar);
-    overlay.addEventListener('click', toggleSidebar);
-
-    function filterCategory(cat) {
-      currentFilter = cat;
-      const buttons = sidebar.querySelectorAll('button');
-      buttons.forEach(btn => {
-        btn.classList.remove('bg-slate-200/80', 'text-slate-900', 'border-l-4', 'border-[#F59E0B]');
-        btn.classList.add('text-slate-600');
-      });
-
-      const activeBtn = document.getElementById(`btn-${cat}`);
-      if (activeBtn) {
-        activeBtn.classList.add('bg-slate-200/80', 'text-slate-900');
-        if (cat !== 'all' && cat !== 'fav') {
-          activeBtn.classList.add('border-l-4', 'border-[#F59E0B]');
-        }
-      }
-
-      renderCards();
-
-      if (window.innerWidth < 1024) {
-        toggleSidebar();
-      }
-
-      if (cat !== 'all' && cat !== 'fav') {
-        const targetElement = document.getElementById(`section-${cat}`);
-        if (targetElement) {
-          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      } else {
-        document.getElementById('main-content').scrollTop = 0;
-      }
-    }
-
-    function toggleFav(id, event) {
-      event.stopPropagation();
-      const index = favorites.indexOf(id);
-      if (index === -1) {
-        favorites.push(id);
-      } else {
-        favorites.splice(index, 1);
-      }
-      localStorage.setItem('book_favs', JSON.stringify(favorites));
-      updateCountBadges();
-      renderCards();
-    }
-
-    function renderCards() {
-      const container = document.getElementById('cards-container');
-      const searchQuery = document.getElementById('search-input').value.toLowerCase();
-      container.innerHTML = '';
-
-      let filteredData = bookData;
-      if (currentFilter === 'fav') {
-        filteredData = bookData.filter(item => favorites.includes(item.id));
-      } else if (currentFilter !== 'all') {
-        filteredData = bookData.filter(item => item.category === currentFilter);
-      }
-
-      if (searchQuery) {
-        filteredData = filteredData.filter(item => 
-          item.title.toLowerCase().includes(searchQuery) || 
-          item.badge_left.toLowerCase().includes(searchQuery) ||
-          item.filename.toLowerCase().includes(searchQuery)
-        );
-      }
-
-      const activeCats = currentFilter === 'all' || currentFilter === 'fav'
-        ? [...new Set(filteredData.map(item => item.category))]
-        : [currentFilter];
-
-      if (filteredData.length === 0) {
-        container.innerHTML = `
-          <div class="flex flex-col items-center justify-center py-20 text-slate-400">
-            <i class="fa-regular fa-folder-open text-5xl mb-4"></i>
-            <p class="text-sm">沒有找到任何對應的課本講義檔案</p>
-          </div>
-        `;
-        return;
-      }
-
-      activeCats.forEach(cat => {
-        const catData = filteredData.filter(item => item.category === cat);
-        if (catData.length === 0) return;
-
-        const isG7 = cat.includes('七');
-        const isG8 = cat.includes('八');
-        const sectionBg = isG7 ? 'bg-blue-500/5' : isG8 ? 'bg-emerald-500/5' : 'bg-rose-500/5';
-        const titleColor = isG7 ? 'text-blue-700' : isG8 ? 'text-emerald-700' : 'text-rose-700';
-
-        let sectionHtml = `
-          <div id="section-${cat}" class="${sectionBg} border border-slate-200/60 p-6 rounded-2xl transition-all">
-            <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-200">
-              <h2 class="text-lg font-bold flex items-center space-x-2 ${titleColor}">
-                <i class="fa-solid fa-graduation-cap"></i>
-                <span>${cat}</span>
-                <span class="text-xs px-2 py-0.5 rounded-full bg-slate-200/80 text-slate-600 font-mono">${catData.length}</span>
-              </h2>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-        `;
-
-        catData.forEach(item => {
-          const isStarred = favorites.includes(item.id);
-          const starClass = isStarred ? 'fa-solid text-amber-500' : 'fa-regular text-slate-300 hover:text-amber-500';
-
-          sectionHtml += `
-            <div onclick="window.open('${item.filename}', '_blank')" class="group relative bg-white border border-slate-200 hover:border-slate-300 rounded-xl p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition-all cursor-pointer h-[112px]">
-              <!-- 頂部：【聽力/配對】放大實心彩色框(左側) ＋ 學期(右側灰字) -->
-              <div class="flex items-center justify-between mb-1">
-                <span class="px-3 py-0.5 rounded-md text-base font-black border tracking-wider" style="color: ${item.themeColor}; border-color: ${item.themeColor}; background-color: ${item.themeColor}12">
-                  ${item.badge_left}
-                </span>
-                <div class="flex items-center space-x-2">
-                  <span class="text-xs font-semibold text-slate-400 font-mono">${item.badge_right}</span>
-                  <button onclick="toggleFav('${item.id}', event)" class="focus:outline-none p-1 rounded hover:bg-slate-100">
-                    <i class="${starClass} fa-star"></i>
-                  </button>
-                </div>
-              </div>
-              
-              <!-- 中間：描述（中文字） -->
-              <div class="text-slate-600 text-sm font-semibold group-hover:text-slate-900 transition-colors line-clamp-1">
-                ${item.title}
-              </div>
-              
-              <!-- 底部：直接顯示的檔名 -->
-              <div class="text-[11px] text-slate-400 font-mono tracking-wide truncate">
-                ${item.filename}
-              </div>
-            </div>
-          `;
-        });
-
-        sectionHtml += `</div></div>`;
-        container.innerHTML += sectionHtml;
-      });
-    }
-
-    document.getElementById('search-input').addEventListener('input', renderCards);
-
-    window.onload = () => {
-      initSidebar();
-      filterCategory('all');
-    };
+    try {
+      const legacyFavorites = JSON.parse(localStorage.getItem("book_favs") || "[]");
+      legacyFavorites.forEach(id => localStorage.setItem(`spedu-favorite:${location.pathname}:${id}`, "1"));
+    } catch (error) { /* 舊收藏格式無效時不影響頁面 */ }
   </script>
+  <script src="../shared/js/workspace.js?v=2.2"></script>
 </body>
 </html>

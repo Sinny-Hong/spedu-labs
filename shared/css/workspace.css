@@ -93,6 +93,71 @@ a { color: inherit; }
 .empty-state { display: none; padding: 38px; text-align: center; color: var(--muted); background: #fff; border: 1px dashed var(--line); border-radius: 15px; }
 .empty-state.show { display: block; }
 
+/* Grammar workspace keeps its larger catalog compact without changing other workspaces. */
+.grammar-page .category-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #c6d2e0 transparent;
+}
+.grammar-page .category-nav::-webkit-scrollbar { width: 6px; }
+.grammar-page .category-nav::-webkit-scrollbar-thumb { background: #c6d2e0; border-radius: 999px; }
+.grammar-page .category-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+.grammar-page .category-btn::before { flex: 0 0 auto; margin-right: 1px; }
+.grammar-page .category-btn > span:first-of-type { min-width: 0; flex: 1; }
+.grammar-page .category-count {
+  flex: 0 0 auto;
+  min-width: 25px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  color: var(--navy);
+  background: #e8eef5;
+  font-size: 11px;
+  text-align: center;
+}
+.grammar-page .category-btn.active .category-count { color: #9a5200; background: rgba(255,255,255,.82); }
+.grammar-page .category-label {
+  margin: 9px 6px 3px;
+  color: #8b9aaf;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+.grammar-page .sidebar-note { margin-top: 6px; }
+.grammar-page .main { padding-top: 18px; }
+.grammar-page .topbar { margin-bottom: 14px; }
+.grammar-page .search-row { margin-bottom: 14px; }
+.grammar-page .section-heading { margin-bottom: 10px; }
+.grammar-page .card-grid { gap: 11px; }
+.grammar-page .resource-card {
+  min-height: 132px;
+  padding: 13px 15px;
+  border-top-width: 3px;
+  border-radius: 12px;
+  box-shadow: 0 7px 20px rgba(18, 63, 119, .075);
+}
+.grammar-page .tag { padding: 3px 7px; font-size: 11px; }
+.grammar-page .favorite { font-size: 19px; }
+.grammar-page .resource-card h2 { margin: 8px 0 4px; font-size: 17px; }
+.grammar-page .resource-card p {
+  display: -webkit-box;
+  margin-bottom: 8px;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.grammar-page .card-link { font-size: 14px; }
+
 @media (max-width: 1000px) { .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 720px) {
   .workspace-shell { display: block; }
