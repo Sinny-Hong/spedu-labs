@@ -8,9 +8,8 @@
 </head>
 <body>
   <div class="app-shell">
+    <button class="menu-toggle" id="menuToggle" aria-label="開啟選單" aria-expanded="false">☰</button>
     <aside class="sidebar" id="sidebar">
-      <button class="menu-toggle" id="menuToggle" aria-label="收合選單">☰</button>
-
       <a class="brand-block" href="./index.html" aria-label="回到首頁">
         <img src="assets/logo-banner.png" alt="Sinny Spedu Labs" />
         <small>異想教室控制台</small>
@@ -31,6 +30,7 @@
         <span>Every idea lights a life.</span>
       </div>
     </aside>
+    <button class="sidebar-overlay" id="sidebarOverlay" aria-label="關閉選單" hidden></button>
 
     <main class="main-area">
       <header class="topbar">
@@ -162,6 +162,17 @@
     </main>
   </div>
 
+  <div class="qr-modal" id="qrModal" hidden role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
+    <div class="qr-dialog">
+      <button class="qr-close" id="qrClose" aria-label="關閉 QR Code">×</button>
+      <h2 id="qrModalTitle">掃描 QR Code</h2>
+      <div class="qr-image" id="qrImage" aria-label="任務連結 QR Code"></div>
+      <p>使用手機相機掃描，或直接開啟下方連結。</p>
+      <a id="qrDirectLink" href="#" target="_blank" rel="noopener">直接開啟連結</a>
+    </div>
+  </div>
+
+  <script src="shared/js/qrcode.min.js"></script>
   <script src="portal.js"></script>
 </body>
 </html>

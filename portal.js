@@ -12,11 +12,27 @@ const pages = document.querySelectorAll(".tab-page");
 const moreBtn = document.getElementById("moreBtn");
 const moreTools = document.getElementById("moreTools");
 const fullscreenBtn = document.getElementById("fullscreenBtn");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+const qrModal = document.getElementById("qrModal");
+const qrImage = document.getElementById("qrImage");
+const qrDirectLink = document.getElementById("qrDirectLink");
+const qrClose = document.getElementById("qrClose");
+
+function setMobileSidebar(open) {
+  sidebar.classList.toggle("mobile-open", open);
+  sidebarOverlay.hidden = !open;
+  menuToggle.setAttribute("aria-expanded", String(open));
+  menuToggle.setAttribute("aria-label", open ? "關閉選單" : "開啟選單");
+}
 
 menuToggle.addEventListener("click", () => {
-  if (window.innerWidth <= 760) sidebar.classList.toggle("mobile-open");
+  if (window.innerWidth <= 760) setMobileSidebar(!sidebar.classList.contains("mobile-open"));
   else sidebar.classList.toggle("collapsed");
 });
+sidebarOverlay.addEventListener("click", () => setMobileSidebar(false));
+sidebar.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
+  if (window.innerWidth <= 760) setMobileSidebar(false);
+}));
 
 tabs.forEach(tab => tab.addEventListener("click", () => {
   tabs.forEach(item => item.classList.remove("active"));
@@ -36,6 +52,29 @@ fullscreenBtn.addEventListener("click", async () => {
     else await document.exitFullscreen();
   } catch (error) { console.warn("無法切換全螢幕：", error); }
 });
+
+document.addEventListener("click", event => {
+  const qrButton = event.target.closest(".qr-show-btn");
+  if (!qrButton) return;
+  const url = qrButton.dataset.qrUrl;
+  if (!url) return;
+  qrImage.innerHTML = "";
+  new QRCode(qrImage, { text: url, width: 420, height: 420, colorDark: "#0b2f5f", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+  qrDirectLink.href = url;
+  qrModal.hidden = false;
+  document.body.classList.add("modal-open");
+  qrClose.focus();
+});
+
+function closeQrModal() {
+  qrModal.hidden = true;
+  qrImage.innerHTML = "";
+  document.body.classList.remove("modal-open");
+}
+
+qrClose.addEventListener("click", closeQrModal);
+qrModal.addEventListener("click", event => { if (event.target === qrModal) closeQrModal(); });
+document.addEventListener("keydown", event => { if (event.key === "Escape" && !qrModal.hidden) closeQrModal(); });
 
 const pad = n => String(n).padStart(2, "0");
 const normalize = value => String(value ?? "").trim().replace(/\s+/g, "");
@@ -127,7 +166,8 @@ function renderTasks(rows) {
   }
   list.innerHTML=tasks.map((item,index)=>{
     const row=item.row, sub=normalize(row[subtitle]), note=normalize(row[reminder]), link=String(row[url]||"").trim();
-    return `<article class="task-item${item.pinned?' pinned':''}"><div class="task-number"><span>${item.pinned?'📌':''}</span>${index+1}.</div><div><h2>${escapeHtml(row[title])}</h2>${sub?`<p>${escapeHtml(row[subtitle])}</p>`:''}${note?`<p class="task-reminder">提醒：${escapeHtml(row[reminder])}</p>`:''}${link?`<a class="task-link" href="${escapeHtml(link)}" target="_blank" rel="noopener">開啟連結</a>`:''}</div></article>`;
+    const actions = link ? `<div class="task-actions"><a class="task-link" href="${escapeHtml(link)}" target="_blank" rel="noopener">直接開啟</a><button class="qr-show-btn" type="button" data-qr-url="${escapeHtml(link)}">顯示 QR Code</button></div>` : "";
+    return `<article class="task-item${item.pinned?' pinned':''}"><div class="task-number"><span>${item.pinned?'📌':''}</span>${index+1}.</div><div><h2>${escapeHtml(row[title])}</h2>${sub?`<p>${escapeHtml(row[subtitle])}</p>`:''}${note?`<p class="task-reminder">提醒：${escapeHtml(row[reminder])}</p>`:''}${actions}</div></article>`;
   }).join("");
 }
 

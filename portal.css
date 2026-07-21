@@ -22,9 +22,10 @@ button{cursor:pointer}
   transition:.25s ease;z-index:20;overflow:hidden
 }
 .menu-toggle{
-  position:absolute;left:15px;top:14px;width:38px;height:38px;border:0;border-radius:50%;
-  background:var(--navy);color:#fff;font-size:18px;z-index:2
+  position:fixed;left:15px;top:14px;width:38px;height:38px;border:0;border-radius:50%;
+  background:var(--navy);color:#fff;font-size:18px;z-index:30
 }
+.sidebar-overlay{display:none}
 .brand-block{
   padding:60px 18px 13px;text-decoration:none;color:inherit;text-align:center;
   border-bottom:1px solid #edf1f6
@@ -186,6 +187,15 @@ button{cursor:pointer}
 .widget-placeholder h3{margin:0 0 8px;color:#65758d;font-size:17px}
 .widget-placeholder p{margin:0;line-height:1.55;font-size:13px;max-width:220px}
 .footer{position:absolute;left:0;right:0;bottom:3px;text-align:center;color:#98a2b3;font-size:11px;z-index:1}
+.qr-modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:rgba(6,25,50,.74);backdrop-filter:blur(4px)}
+.qr-modal[hidden]{display:none}
+.qr-dialog{position:relative;width:min(92vw,520px);padding:28px;text-align:center;background:#fff;border:3px solid var(--orange);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.32)}
+.qr-dialog h2{margin:0 0 16px;color:var(--navy);font-size:26px}.qr-image{display:grid;place-items:center;width:min(72vw,390px);aspect-ratio:1;margin:auto;padding:12px;background:#fff;border-radius:12px;box-shadow:0 0 0 1px var(--line)}.qr-image img,.qr-image canvas{display:block!important;width:100%!important;height:100%!important;object-fit:contain}
+.qr-dialog p{margin:15px 0 10px;color:var(--muted)}.qr-dialog a{display:inline-block;padding:10px 16px;border-radius:10px;background:var(--navy);color:#fff;text-decoration:none;font-weight:900}
+.qr-close{position:absolute;right:10px;top:8px;width:38px;height:38px;border:0;border-radius:50%;background:#eef3f8;color:var(--navy);font-size:27px;line-height:1}
+.modal-open{overflow:hidden}
+.task-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}.task-actions .task-link,.qr-show-btn{margin-top:0}
+.qr-show-btn{padding:7px 11px;border:1px solid #efca89;border-radius:8px;background:#fff;color:#a75300;font-weight:900;font-size:13px;cursor:pointer}
 
 @media(max-height:820px) and (min-width:761px){
   .main-area{padding-top:12px}
@@ -207,16 +217,20 @@ button{cursor:pointer}
   body{overflow:auto}
   .sidebar{position:fixed;left:0;transform:translateX(-100%);width:238px}
   .sidebar.mobile-open{transform:translateX(0)}
-  .sidebar .menu-toggle{left:252px}
+  .menu-toggle{left:12px;top:12px;z-index:50;box-shadow:0 5px 16px rgba(11,47,95,.22)}
+  .sidebar.mobile-open~.sidebar-overlay{display:block;position:fixed;inset:0;z-index:19;border:0;background:rgba(6,25,50,.42)}
+  .sidebar-overlay[hidden]{display:none}
   .main-area{height:auto;min-height:100vh;padding:18px 13px 20px;overflow:visible}
-  .topbar{height:auto;min-height:78px;padding-left:43px}
+  .topbar{display:block;height:auto;min-height:78px;padding-left:43px}
   .topbar h1{font-size:24px}
+  .status-group{margin-top:11px;justify-content:flex-start;flex-wrap:wrap}
   .status-group span:not(.online-dot){display:none}
   .workspace{height:auto;grid-template-columns:1fr}
   .tabs{overflow-x:auto;display:flex}.tab{min-width:105px}
   .tab-stage{height:auto;min-height:500px}
   .task-card{min-height:470px}
-  .task-item{grid-template-columns:48px;padding:14px 10px}.task-item h2{font-size:21px}.task-item.pinned h2{font-size:27px}
+  .task-item{display:block;padding:14px 12px;min-width:0}.task-number{margin-bottom:8px}.task-item>div:last-child{display:block;min-width:0;width:100%}.task-item h2{width:100%;font-size:21px;writing-mode:horizontal-tb;word-break:normal;overflow-wrap:anywhere;white-space:normal}.task-item.pinned h2{font-size:27px}
+  .task-actions{width:100%}.task-actions .task-link,.qr-show-btn{width:auto;min-width:112px;text-align:center}
   .task-layout{grid-template-columns:1fr}
   .task-message h2{font-size:28px}.task-message p{font-size:21px}
   .qr-placeholder{width:145px}
@@ -225,6 +239,7 @@ button{cursor:pointer}
   .info-card{min-height:180px}
   .clock-panel{min-height:520px}
   .footer{position:static;margin-top:12px}
+  .qr-dialog{padding:24px 16px 20px}.qr-dialog h2{font-size:23px}.qr-image{width:min(78vw,360px)}
 }
 
 
