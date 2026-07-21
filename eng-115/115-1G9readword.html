@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>九上 英文科講義 課文句型翻譯</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+    }
+    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
+    .font-english { font-family: 'Lexend', sans-serif; }
+    
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 15px auto;
+      padding: 6mm 12mm; 
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .title-large { font-size: 21px; font-weight: 700; }
+    .info-text { font-size: 15px; font-weight: 500; }
+    
+    .answer-input:focus {
+      border-color: #3b82f6;
+      background-color: #eff6ff;
+    }
+
+    /* 目標單字：加粗與底線，紅色 */
+    .target-word {
+      color: #ef4444 !important;
+      font-weight: 700 !important;
+      text-decoration: underline !important;
+    }
+
+    #print-all-container { display: none; }
+    
+    @media print {
+      @page { size: A4; margin: 0; }
+      body { background-color: #ffffff; margin: 0; padding: 0; }
+      .no-print { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body.printing-all .page-a4 { display: none !important; }
+      body.printing-all #print-all-container { display: block !important; width: 210mm; }
+      .page-a4 { box-shadow: none; border: none; margin: 0; padding: 6mm 12mm; height: 297mm; }
+      .print-page {
+        width: 210mm;
+        height: 297mm;
+        padding: 6mm 12mm;
+        box-sizing: border-box;
+        background-color: #ffffff;
+        page-break-after: always;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: hidden;
+      }
+      .print-page:last-child { page-break-after: avoid; }
+    }
+  </style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <!-- 頂端控制列（列印時自動隱藏） -->
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
+    <div class="flex flex-wrap gap-2 items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+        <span class="text-slate-700 font-medium text-sm font-chinese">📺 大電視功能：點擊題目高亮並聽發音，點選右方選項即可直接無痕填入答案！</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="toggleAllAnswers()" class="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese flex items-center gap-1">💡 公布 / 隱藏答案</button>
+        <button onclick="clearAllAnswers()" class="px-3.5 py-1.5 bg-slate-600 hover:bg-slate-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese flex items-center gap-1">🧼 重設清除</button>
+        <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
+        <button onclick="printAllLessons()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 全部列印 (6頁)</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-6 gap-1.5" id="lesson-selectors"></div>
+  </div>
+
+  <!-- A4 靜態列印主結構 -->
+  <div class="page-a4">
+    <!-- 頂部標頭與學生資料填寫區 -->
+    <div class="border-b-4 border-double border-slate-400 pb-2 mb-3 shrink-0">
+      <div class="flex justify-between items-end">
+        <div class="flex items-center gap-3">
+          <h1 class="title-large text-slate-800 tracking-wider font-chinese" id="main-title">九上 L1 英文科講義 課文句型翻譯</h1>
+        </div>
+        
+        <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+          <div class="flex items-end">
+            <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+            <span class="ml-1 shrink-0">班</span>
+          </div>
+          <div class="flex items-end">
+            <span class="shrink-0">姓名：</span>
+            <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+          </div>
+        </div>
+      </div>
+      <!-- 說明欄調整：縮減合併為指定的一行 -->
+      <div class="mt-2 flex flex-col justify-start bg-slate-100 px-3 py-1.5 rounded border-l-4 border-slate-500 shrink-0">
+        <span class="text-[13.5px] font-bold text-slate-800 font-chinese">◎ 每題五分，錯字用紅筆訂正，中文、英文各 1次。</span>
+      </div>
+    </div>
+
+    <!-- 題目區域：上下對等雙區塊 -->
+    <div class="flex-grow flex flex-col justify-between overflow-hidden" id="questions-container">
+      <!-- 上半部 (對話篇) -->
+      <div class="flex-grow flex flex-col justify-start" id="part-1-container">
+        <div class="bg-slate-200/60 px-2 py-1 rounded text-[13.5px] font-bold text-slate-700 mb-2 font-chinese shrink-0 flex justify-between items-center">
+          <span id="part-1-title">【上半部：Lesson 1 對話篇】</span>
+          <!-- 區塊專用控制按鈕與分數徽章 -->
+          <div class="no-print flex items-center gap-2">
+            <span id="score-badge-part1" class="hidden px-2 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-extrabold rounded-full border border-emerald-300">答對 0 / 8</span>
+            <button onclick="checkPartAnswers('part1')" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-xs transition shadow-sm">✅ 檢查</button>
+            <button onclick="clearPartAnswers('part1')" class="px-2 py-0.5 bg-slate-600 hover:bg-slate-700 text-white font-bold rounded text-xs transition shadow-sm">🧼 清空</button>
+            <button onclick="togglePartAnswers('part1')" class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded text-xs transition shadow-sm">💡 解答</button>
+          </div>
+        </div>
+        <div class="flex-grow flex flex-col justify-between" id="part-1-list"></div>
+      </div>
+      
+      <!-- 中間虛線分隔 -->
+      <div class="border-t-2 border-dashed border-slate-300 my-2 shrink-0"></div>
+
+      <!-- 下半部 (閱讀篇) -->
+      <div class="flex-grow flex flex-col justify-start" id="part-2-container">
+        <div class="bg-slate-200/60 px-2 py-1 rounded text-[13.5px] font-bold text-slate-700 mb-2 font-chinese shrink-0 flex justify-between items-center">
+          <span id="part-2-title">【下半部：Lesson 1 閱讀篇】</span>
+          <!-- 區塊專用控制按鈕與分數徽章 -->
+          <div class="no-print flex items-center gap-2">
+            <span id="score-badge-part2" class="hidden px-2 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-extrabold rounded-full border border-emerald-300">答對 0 / 8</span>
+            <button onclick="checkPartAnswers('part2')" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-xs transition shadow-sm">✅ 檢查</button>
+            <button onclick="clearPartAnswers('part2')" class="px-2 py-0.5 bg-slate-600 hover:bg-slate-700 text-white font-bold rounded text-xs transition shadow-sm">🧼 清空</button>
+            <button onclick="togglePartAnswers('part2')" class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded text-xs transition shadow-sm">💡 解答</button>
+          </div>
+        </div>
+        <div class="flex-grow flex flex-col justify-between" id="part-2-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="print-all-container"></div>
+
+  <script>
+    // 康軒七上資料庫 (L1 ~ L6)
+    const database = {
+      "L1": {
+        partTitle1: "【上半部：Lesson 1 對話篇】",
+        partTitle2: "【下半部：Lesson 1 閱讀篇】",
+        part1: [
+          { speaker: "Ann", txtPre: "Nick, who's that ", target: "young", txtPost: " man?", tts: "Nick, who's that young man?", ans: "A", opts: ["年輕的", "年老的", "奇怪的"] },
+          { speaker: "Ann", txtPre: "He's tall and ", target: "handsome", txtPost: ".", tts: "He's tall and handsome.", ans: "B", opts: ["矮小的", "英俊的/帥的", "溫柔的"] },
+          { speaker: "Nick", txtPre: "He's our new ", target: "PE", txtPost: " teacher.", tts: "He's our new PE teacher.", ans: "A", opts: ["體育", "英文", "數學"] },
+          { speaker: "Rita", txtPre: "We're in the same ", target: "class", txtPost: " again!", tts: "We're in the same class again!", ans: "B", opts: ["學校", "班級", "辦公室"] },
+          { speaker: "Ann", txtPre: "He's my ", target: "cousin", txtPost: ".", tts: "He's my cousin.", ans: "A", opts: ["堂哥/表哥", "弟弟", "爸爸"] },
+          { speaker: "Ann", txtPre: "Bella is our ", target: "English", txtPost: " teacher!", tts: "Bella is our English teacher!", ans: "B", opts: ["體育", "英文", "國文"] },
+          { speaker: "Ann", txtPre: "What's the ", target: "problem", txtPost: "?", tts: "What's the problem?", ans: "B", opts: ["名字", "問題", "時間"] },
+          { speaker: "Nick", txtPre: "She's a ", target: "strict", txtPost: " teacher, too.", tts: "She's a strict teacher, too.", ans: "A", opts: ["嚴格的", "溫和的", "搞笑的"] }
+        ],
+        part2: [
+          { speaker: "Nick", txtPre: "I'm a junior high school ", target: "student", txtPost: ".", tts: "I'm a junior high school student.", ans: "B", opts: ["老師", "學生", "醫生"] },
+          { speaker: "Nick", txtPre: "I'm from a ", target: "warm", txtPost: " family.", tts: "I'm from a warm family.", ans: "A", opts: ["溫暖的", "寒冷的", "奇怪的"] },
+          { speaker: "Nick", txtPre: "My grandfather is a ", target: "farmer", txtPost: ".", tts: "My grandfather is a farmer.", ans: "A", opts: ["農夫", "廚師", "護理師"] },
+          { speaker: "Nick", txtPre: "My grandmother is a ", target: "cook", txtPost: ".", tts: "My grandmother is a cook.", ans: "B", opts: ["護理師", "廚師", "醫生"] },
+          { speaker: "Nick", txtPre: "He is a tall ", target: "man", txtPost: ".", tts: "He is a tall man.", ans: "A", opts: ["男人", "女人", "小孩"] },
+          { speaker: "Nick", txtPre: "He is a ", target: "nurse", txtPost: ".", tts: "He is a nurse.", ans: "B", opts: ["醫生", "護理師", "農夫"] },
+          { speaker: "Nick", txtPre: "She is a beautiful ", target: "woman", txtPost: ".", tts: "She is a beautiful woman.", ans: "B", opts: ["男人", "女人", "寵物"] },
+          { speaker: "Nick", txtPre: "Abby is our ", target: "pet", txtPost: " pig. She's cute.", tts: "Abby is our pet pig. She's cute.", ans: "A", opts: ["寵物", "玩具", "課本"] }
+        ]
+      },
+      "L2": {
+        partTitle1: "【上半部：Lesson 2 對話篇】",
+        partTitle2: "【下半部：Lesson 2 閱讀篇】",
+        part1: [
+          { speaker: "Bella", txtPre: "These ", target: "dolls", txtPost: " are cute.", tts: "These dolls are cute.", ans: "A", opts: ["玩偶/洋娃娃", "課本", "鞋子"] },
+          { speaker: "Scott", txtPre: "Aren't they the Chinese ", target: "zodiac", txtPost: " animal signs?", tts: "Aren't they the Chinese zodiac animal signs?", ans: "A", opts: ["生肖/黃道帶", "名字", "禮物"] },
+          { speaker: "Bella", txtPre: "Your ", target: "birth", txtPost: " year is 2000.", tts: "Your birth year is 2000.", ans: "A", opts: ["出生", "畢業", "新年"] },
+          { speaker: "Bella", txtPre: "You're a ", target: "dragon", txtPost: ".", tts: "You're a dragon.", ans: "B", opts: ["兔子", "龍", "老虎"] },
+          { speaker: "Bella", txtPre: "A dragon is smart and ", target: "energetic", txtPost: ".", tts: "A dragon is smart and energetic.", ans: "C", opts: ["疲倦的", "膽小的", "充滿活力的"] },
+          { speaker: "Bella", txtPre: "My birth year is 1999. I'm a ", target: "rabbit", txtPost: ".", tts: "My birth year is 1999. I'm a rabbit.", ans: "A", opts: ["兔子", "蛇", "猴子"] },
+          { speaker: "Scott", txtPre: "No wonder you are a ", target: "people person", txtPost: ".", tts: "No wonder you are a people person.", ans: "A", opts: ["人/受歡迎的人", "老師", "動物"] },
+          { speaker: "Bella", txtPre: "Her birth year is 2024. She's a dragon, ", target: "too", txtPost: ".", tts: "Her birth year is 2024. She's a dragon, too.", ans: "A", opts: ["也", "非常", "可是"] }
+        ],
+        part2: [
+          { speaker: "Title", txtPre: "Are they Asian ", target: "elephants", txtPost: "?", tts: "Are they Asian elephants?", ans: "B", opts: ["獅子", "大象", "兔子"] },
+          { speaker: "Story", txtPre: "African elephants are ", target: "different", txtPost: " from Asian elephants.", tts: "African elephants are different from Asian elephants.", ans: "B", opts: ["相同的", "不同的", "巨大的"] },
+          { speaker: "Story", txtPre: "African elephants are very big, and their ", target: "ears", txtPost: " are big, too.", tts: "African elephants are very big, and their ears are big, too.", ans: "C", opts: ["眼睛", "鼻子", "耳朵"] },
+          { speaker: "Story", txtPre: "Asian elephants are small, and their ears are ", target: "short", txtPost: ".", tts: "Asian elephants are small, and their ears are short.", ans: "A", opts: ["短的/矮的", "長的", "大的"] },
+          { speaker: "Story", txtPre: "An African elephant is about 3.2 meters ", target: "tall", txtPost: ".", tts: "An African elephant is about 3.2 meters tall.", ans: "A", opts: ["高的", "胖的", "重的"] },
+          { speaker: "Story", txtPre: "Asian elephants' ", target: "lifespans", txtPost: " are about 60 years.", tts: "Asian elephants' lifespans are about 60 years.", ans: "B", opts: ["身高", "壽命", "食物"] },
+          { speaker: "Story", txtPre: "African elephants' lifespans are about 70 ", target: "years", txtPost: ".", tts: "African elephants' lifespans are about 70 years.", ans: "A", opts: ["年/歲", "月", "天"] }
+        ]
+      },
+      "L3": {
+        partTitle1: "【上半部：Lesson 3 對話篇】",
+        partTitle2: "【下半部：Lesson 3 閱讀篇】",
+        part1: [
+          { speaker: "Scott", txtPre: "Welcome, Bella! Please ", target: "come in", txtPost: ".", tts: "Welcome, Bella! Please come in.", ans: "A", opts: ["進來", "出去", "坐下"] },
+          { speaker: "Bella", txtPre: "Your house is nice and ", target: "quiet", txtPost: ".", tts: "Your house is nice and quiet.", ans: "B", opts: ["吵鬧的", "安靜的", "骯髒的"] },
+          { speaker: "Scott", txtPre: "Thanks, but it's not really my ", target: "style", txtPost: ".", tts: "Thanks, but it's not really my style.", ans: "C", opts: ["顏色", "名字", "風格"] },
+          { speaker: "Bella", txtPre: "Well, what about a ", target: "makeover", txtPost: "?", tts: "Well, what about a makeover?", ans: "B", opts: ["搬家", "大改造/美容", "買新房"] },
+          { speaker: "Bella", txtPre: "Let's get some ideas from ", target: "RoomGPT", txtPost: ".", tts: "Let's get some ideas from RoomGPT.", ans: "A", opts: ["房間AI工具", "電子書", "筆記本"] },
+          { speaker: "Bella", txtPre: "Uh, where is my ", target: "smartphone", txtPost: "?", tts: "Uh, where is my smartphone?", ans: "B", opts: ["電腦", "智慧型手機", "手錶"] },
+          { speaker: "Scott", txtPre: "It's on the ", target: "table", txtPost: ".", tts: "It's on the table.", ans: "A", opts: ["桌子", "椅子", "床上"] },
+          { speaker: "Bella", txtPre: "Step one, ", target: "upload", txtPost: " a photo.", tts: "Step one, upload a photo.", ans: "A", opts: ["上傳", "下載", "刪除"] }
+        ],
+        part2: [
+          { speaker: "Title", txtPre: "Is your ", target: "bed", txtPost: " big and soft, or is it small and hard?", tts: "Is your bed big and soft, or is it small and hard?", ans: "A", opts: ["床", "桌子", "窗戶"] },
+          { speaker: "Title", txtPre: "Is your bed big and soft, or is it small and ", target: "hard", txtPost: "?", tts: "Is your bed big and soft, or is it small and hard?", ans: "A", opts: ["硬的", "軟的", "冰的"] },
+          { speaker: "Story", txtPre: "In fact, beds ", target: "around the world", txtPost: " are different.", tts: "In fact, beds around the world are different.", ans: "A", opts: ["環繞/全世界", "上面", "下面"] },
+          { speaker: "Story", txtPre: "Jenny is an eleven-year-old ", target: "girl", txtPost: ".", tts: "Jenny is an eleven-year-old girl.", ans: "B", opts: ["男孩", "女孩", "老師"] },
+          { speaker: "Story", txtPre: "Her house is an ", target: "igloo", txtPost: ".", tts: "Her house is an igloo.", ans: "A", opts: ["冰屋", "帳篷", "洞穴"] },
+          { speaker: "Story", txtPre: "This is her ", target: "bedroom", txtPost: ".", tts: "This is her bedroom.", ans: "B", opts: ["浴室", "臥室", "廚房"] },
+          { speaker: "Story", txtPre: "It is a big and hard ", target: "ice", txtPost: " bed.", tts: "It is a big and hard ice bed.", ans: "A", opts: ["冰的", "木頭的", "軟的"] },
+          { speaker: "Story", txtPre: "His house is inside a ", target: "cave", txtPost: ".", tts: "His house is inside a cave.", ans: "B", opts: ["冰屋", "洞穴", "學校"] }
+        ]
+      },
+      "L4": {
+        partTitle1: "【上半部：Lesson 4 對話篇】",
+        partTitle2: "【下半部：Lesson 4 閱讀篇】",
+        part1: [
+          { speaker: "Ha-Joon", txtPre: "I can listen to their ", target: "songs", txtPost: " again and again!", tts: "I can listen to their songs again and again!", ans: "A", opts: ["歌/歌曲", "故事", "影片"] },
+          { speaker: "Ann", txtPre: "Check out their ", target: "Instagram", txtPost: ".", tts: "Check out their Instagram.", ans: "B", opts: ["課本", "社群軟體IG", "電視"] },
+          { speaker: "Ann", txtPre: "We can watch their ", target: "live stream", txtPost: ".", tts: "We can watch their live stream.", ans: "A", opts: ["直播", "錄影", "演唱會"] },
+          { speaker: "Ann", txtPre: "Come on, let's cross the ", target: "road", txtPost: ".", tts: "Come on, let's cross the road.", ans: "A", opts: ["道路/馬路", "公園", "學校"] },
+          { speaker: "Rita", txtPre: "Ha-Joon, ", target: "watch out", txtPost: "!", tts: "Ha-Joon, watch out!", ans: "A", opts: ["注意/小心", "睡覺", "跳舞"] },
+          { speaker: "Ha-Joon", txtPre: "Sorry, I'm a real ", target: "phubber", txtPost: ".", tts: "Sorry, I'm a real phubber.", ans: "A", opts: ["低頭族", "運動員", "歌手"] },
+          { speaker: "Rita", txtPre: "Don't look down at your ", target: "phone", txtPost: " all the time.", tts: "Don't look down at your phone all the time.", ans: "A", opts: ["手機", "手錶", "電腦"] },
+          { speaker: "Ha-Joon", txtPre: "In South Korea, some traffic ", target: "lights", txtPost: " are on the ground now.", tts: "In South Korea, some traffic lights are on the ground now.", ans: "A", opts: ["紅綠燈/燈光", "斑馬線", "斑馬"] }
+        ],
+        part2: [
+          { speaker: "Title", txtPre: "Smart ", target: "Designs", txtPost: ".", tts: "Smart Designs.", ans: "A", opts: ["設計", "手機", "街道"] },
+          { speaker: "Story", txtPre: "Smartphone ", target: "users", txtPost: " can download an app.", tts: "Smartphone users can download an app.", ans: "A", opts: ["使用者", "老師", "醫生"] },
+          { speaker: "Story", txtPre: "Smartphone users can ", target: "download", txtPost: " an app on their phones.", tts: "Smartphone users can download an app on their phones.", ans: "A", opts: ["下載", "上傳", "刪除"] },
+          { speaker: "Story", txtPre: "It can ", target: "warn", txtPost: " them about the oncoming cars.", tts: "It can warn them about the oncoming cars.", ans: "A", opts: ["警告/提醒", "邀請", "撞擊"] },
+          { speaker: "Story", txtPre: "It can warn them about the oncoming cars at ", target: "crosswalks", txtPost: "!", tts: "It can warn them about the oncoming cars at crosswalks!", ans: "A", opts: ["斑馬線", "公園", "車道"] },
+          { speaker: "Story", txtPre: "In the USA, phubbers can walk in special phone ", target: "lanes", txtPost: " now.", tts: "In the USA, phubbers can walk in special phone lanes now.", ans: "A", opts: ["車道/小路", "商店", "天橋"] },
+          { speaker: "Story", txtPre: "Smartphone users are only in the ", target: "way", txtPost: " of other phubbers.", tts: "Smartphone users are only in the way of other phubbers.", ans: "A", opts: ["道路/阻礙", "學校", "家"] },
+          { speaker: "Story", txtPre: "Can you see smart designs like these in ", target: "Taiwan", txtPost: ", too?", tts: "Can you see smart designs like these in Taiwan, too?", ans: "A", opts: ["臺灣", "美國", "韓國"] }
+        ]
+      },
+      "L5": {
+        partTitle1: "【上半部：Lesson 5 對話篇】",
+        partTitle2: "【下半部：Lesson 5 閱讀篇】",
+        part1: [
+          { speaker: "Mom", txtPre: "Wake up, Nick. Time for school. ", target: "Wake up", txtPost: ", Nick. Time for school.", tts: "Wake up, Nick. Time for school.", ans: "A", opts: ["醒來", "睡覺", "跑步"] },
+          { speaker: "Nick", txtPre: "I'm looking for my ", target: "watch", txtPost: ".", tts: "I'm looking for my watch.", ans: "A", opts: ["手錶", "手機", "書包"] },
+          { speaker: "Mom", txtPre: " ", target: "Hurry up", txtPost: ".", tts: "Hurry up.", ans: "A", opts: ["快一點/趕快", "慢一點", "停下來"] },
+          { speaker: "Nick", txtPre: "Can I join the ", target: "group", txtPost: " chat tonight?", tts: "Can I join the group chat tonight?", ans: "A", opts: ["團體/群組", "課堂", "遊戲"] },
+          { speaker: "Nick", txtPre: "It's a ", target: "meeting", txtPost: " with students from the USA.", tts: "It's a meeting with students from the USA.", ans: "A", opts: ["會議/集會", "派對", "比賽"] },
+          { speaker: "Nick", txtPre: "It's about our school ", target: "life", txtPost: ".", tts: "It's about our school life.", ans: "A", opts: ["生活", "科目", "老師"] },
+          { speaker: "Nick", txtPre: "I'm ", target: "preparing", txtPost: " for the group chat.", tts: "I'm preparing for the group chat.", ans: "A", opts: ["準備", "放棄", "忘記"] },
+          { speaker: "Rita", txtPre: "What ", target: "day", txtPost: " is today?", tts: "What day is today?", ans: "A", opts: ["星期/日子", "時間", "名字"] }
+        ],
+        part2: [
+          { speaker: "Title", txtPre: "The ", target: "sun", txtPost: " is up. Rise and shine.", tts: "The sun is up. Rise and shine.", ans: "A", opts: ["太陽", "月亮", "星星"] },
+          { speaker: "Story", txtPre: "Today is ", target: "Monday", txtPost: ".", tts: "Today is Monday.", ans: "A", opts: ["星期一", "星期五", "星期日"] },
+          { speaker: "Story", txtPre: "It's seven o'clock in the ", target: "morning", txtPost: " in Taipei.", tts: "It's seven o'clock in the morning in Taipei.", ans: "A", opts: ["早上", "中午", "晚上"] },
+          { speaker: "Story", txtPre: "Daniel is making ", target: "dinner", txtPost: " with his family.", tts: "Daniel is making dinner with his family.", ans: "A", opts: ["晚餐", "早餐", "午餐"] },
+          { speaker: "Story", txtPre: "It's Sunday ", target: "evening", txtPost: " there.", tts: "It's Sunday evening there.", ans: "A", opts: ["早上", "傍晚/晚上", "中午"] },
+          { speaker: "Story", txtPre: "Eric from Paris is ", target: "sleeping", txtPost: ".", tts: "Eric from Paris is sleeping.", ans: "A", opts: ["睡覺", "讀書", "跑步"] },
+          { speaker: "Story", txtPre: "She is on her ", target: "way", txtPost: " to school.", tts: "She is on her way to school.", ans: "A", opts: ["路上/途中", "教室", "家裡"] },
+          { speaker: "Story", txtPre: "Have a ", target: "nice", txtPost: " day!", tts: "Have a nice day!", ans: "A", opts: ["美好的/好的", "糟糕的", "寒冷的"] }
+        ]
+      },
+      "L6": {
+        partTitle1: "【上半部：Lesson 6 對話篇】",
+        partTitle2: "【下半部：Lesson 6 閱讀篇】",
+        part1: [
+          { speaker: "Ann", txtPre: "I can show you around the ", target: "school", txtPost: ".", tts: "I can show you around the school.", ans: "A", opts: ["學校", "醫院", "公園"] },
+          { speaker: "Min-Ho", txtPre: "What's that big blue ", target: "building", txtPost: "?", tts: "What's that big blue building?", ans: "A", opts: ["建築物", "操場", "課桌"] },
+          { speaker: "Ann", txtPre: "Oh, that's the school ", target: "gym", txtPost: ".", tts: "Oh, that's the school gym.", ans: "A", opts: ["體育館", "餐廳", "圖書館"] },
+          { speaker: "Brian", txtPre: "Where's the ", target: "cafeteria", txtPost: "?", tts: "Where's the cafeteria?", ans: "A", opts: ["自助餐廳", "體育館", "教室"] },
+          { speaker: "Ann", txtPre: "We eat lunch in the ", target: "classroom", txtPost: ".", tts: "We eat lunch in the classroom.", ans: "A", opts: ["教室", "操場", "辦公室"] },
+          { speaker: "Min-Ho", txtPre: "Where can I put my ", target: "shoes", txtPost: "?", tts: "Where can I put my shoes?", ans: "A", opts: ["鞋子", "手套", "襪子"] },
+          { speaker: "Min-Ho", txtPre: "Are there any ", target: "shelves", txtPost: " outside the door?", tts: "Are there any shelves outside the door?", ans: "A", opts: ["鞋架/架子", "桌子", "門鈴"] },
+          { speaker: "Min-Ho", txtPre: "I'm still finding my ", target: "feet", txtPost: "!", tts: "I'm still finding my feet!", ans: "A", opts: ["適應新環境/腳", "尋找玩具", "迷路"] }
+        ],
+        part2: [
+          { speaker: "Brian", txtPre: "How are you doing in the ", target: "UK", txtPost: "?", tts: "How are you doing in the UK?", ans: "A", opts: ["英國", "韓國", "臺灣"] },
+          { speaker: "Brian", txtPre: "I'm good, but I'm ", target: "thinking", txtPost: " about you all the time.", tts: "I'm good, but I'm thinking about you all the time.", ans: "A", opts: ["想著/思考", "忘記", "唱歌"] },
+          { speaker: "Brian", txtPre: "There are a lot of ", target: "different", txtPost: " things in Taiwan.", tts: "There are a lot of different things in Taiwan.", ans: "A", opts: ["不同的", "相同的", "有趣的"] },
+          { speaker: "Brian", txtPre: "Don't ", target: "worry", txtPost: " about me.", tts: "Don't worry about me.", ans: "A", opts: ["擔心", "開心", "睡覺"] },
+          { speaker: "Brian", txtPre: "He isn't very ", target: "friendly", txtPost: " to me.", tts: "He isn't very friendly to me.", ans: "A", opts: ["友善的", "壞心的", "奇怪的"] },
+          { speaker: "Brian", txtPre: "Look at the ", target: "V-sign", txtPost: " in our photo.", tts: "Look at the V-sign in our photo.", ans: "A", opts: ["V字手勢", "照片", "衣服"] },
+          { speaker: "Brian", txtPre: "What can I ", target: "do", txtPost: "?", tts: "What can I do?", ans: "A", opts: ["做", "看", "聽"] }
+        ]
+      }
+    };
+
+    // 康軒九上 Lesson 1～6 題庫
+    const grade9Database = {"L1":{"partTitle1":"【Lesson 1 對話篇】","partTitle2":"【Lesson 1 閱讀篇】","part1":[{"speaker":"Carla","txtPre":"Have you been to this ","target":"restaurant","txtPost":" before?","tts":"Have you been to this restaurant before?","ans":"A","opts":["餐廳","學校","公園"]},{"speaker":"Nick","txtPre":"Nobody makes better ","target":"pizzas","txtPost":".","tts":"Nobody makes better pizzas.","ans":"B","opts":["麵包","披薩","蛋糕"]},{"speaker":"Carla","txtPre":"It has been one of the most ","target":"popular","txtPost":" pizza places.","tts":"It has been one of the most popular pizza places.","ans":"A","opts":["熱門的/受歡迎的","昂貴的","奇怪的"]},{"speaker":"Waiter","txtPre":"Have you ","target":"decided","txtPost":" on your order yet?","tts":"Have you decided on your order yet?","ans":"B","opts":["忘記","決定","取消"]},{"speaker":"Carla","txtPre":"Excuse me, we ","target":"ordered","txtPost":" a 9-inch pizza.","tts":"Excuse me, we ordered a 9-inch pizza.","ans":"A","opts":["點餐/訂購","製作","吃掉"]},{"speaker":"Waiter","txtPre":"Let me check with the ","target":"cook","txtPost":".","tts":"Let me check with the cook.","ans":"B","opts":["服務生","廚師","店長"]},{"speaker":"Carla","txtPre":"You just made another ","target":"mistake","txtPost":".","tts":"You just made another mistake.","ans":"A","opts":["錯誤","披薩","朋友"]},{"speaker":"Carla","txtPre":"This time with your pizza ","target":"math","txtPost":"!","tts":"This time with your pizza math!","ans":"A","opts":["數學","英文","歷史"]}],"part2":[{"speaker":"Title","txtPre":"Are French ","target":"Fries","txtPost":" Truly French?","tts":"Are French Fries Truly French?","ans":"B","opts":["漢堡","薯條/炸馬薯條","炸雞"]},{"speaker":"Article","txtPre":"Many people probably haven't heard about this ","target":"fact","txtPost":" yet.","tts":"Many people probably haven't heard about this fact yet.","ans":"A","opts":["事實","故事","秘密"]},{"speaker":"Article","txtPre":"When they could not catch fish, they would cut ","target":"potatoes","txtPost":".","tts":"When they could not catch fish, they would cut potatoes.","ans":"B","opts":["地瓜","馬鈴薯","洋蔥"]},{"speaker":"Article","txtPre":"During World War I, American ","target":"soldiers","txtPost":" tasted this food.","tts":"During World War I, American soldiers tasted this food.","ans":"A","opts":["士兵","廚師","學生"]},{"speaker":"Article","txtPre":"French was the main ","target":"language","txtPost":" there.","tts":"French was the main language there.","ans":"A","opts":["語言","國家","食物"]},{"speaker":"Article","txtPre":"French fries have become popular all over the ","target":"world","txtPost":".","tts":"French fries have become popular all over the world.","ans":"A","opts":["世界","城市","學校"]},{"speaker":"Article","txtPre":"There is a French fry ","target":"museum","txtPost":" in Belgium.","tts":"There is a French fry museum in Belgium.","ans":"A","opts":["博物館","餐廳","工廠"]},{"speaker":"Article","txtPre":"Americans ","target":"celebrate","txtPost":" National French Fry Day.","tts":"Americans celebrate National French Fry Day.","ans":"A","opts":["慶祝","忘記","討厭"]}]},"L2":{"partTitle1":"【Lesson 2 對話篇】","partTitle2":"【Lesson 2 閱讀篇】","part1":[{"speaker":"Bella","txtPre":"I'm tired of sitting on the ","target":"couch","txtPost":".","tts":"I'm tired of sitting on the couch.","ans":"A","opts":["沙發","床","椅子"]},{"speaker":"Bella","txtPre":"I don't think there's any food in the ","target":"fridge","txtPost":".","tts":"I don't think there's any food in the fridge.","ans":"B","opts":["烤箱","冰箱","桌子"]},{"speaker":"Nick","txtPre":"A friend told me about a new food ","target":"delivery","txtPost":" app.","tts":"A friend told me about a new food delivery app.","ans":"A","opts":["外送","遊戲","地圖"]},{"speaker":"Nick","txtPre":"New users get a 50% ","target":"discount","txtPost":"!","tts":"New users get a 50% discount!","ans":"A","opts":["折扣/優惠","禮物","罰款"]},{"speaker":"Bella","txtPre":"Your favorite ","target":"fast food","txtPost":" restaurant is on the list.","tts":"Your favorite fast food restaurant is on the list.","ans":"A","opts":["速食","海鮮","素食"]},{"speaker":"Bella","txtPre":"At least we don't have to go out in the ","target":"rain","txtPost":".","tts":"At least we don't have to go out in the rain.","ans":"A","opts":["雨/下雨","雪","太陽"]},{"speaker":"Nick","txtPre":"It will show us the ","target":"location","txtPost":" of the delivery guy.","tts":"It will show us the location of the delivery guy.","ans":"A","opts":["位置/地點","名字","電話"]},{"speaker":"Nick","txtPre":"I didn't tap on the \"Place ","target":"Order","txtPost":"\" button.","tts":"I didn't tap on the \"Place Order\" button.","ans":"A","opts":["訂單/點餐","地圖","折扣"]}],"part2":[{"speaker":"Article","txtPre":"Food delivery apps make life ","target":"easier","txtPost":".","tts":"Food delivery apps make life easier.","ans":"A","opts":["更輕鬆的/更容易的","更忙碌的","更困難的"]},{"speaker":"Article","txtPre":"Using food delivery apps ","target":"saves","txtPost":" time.","tts":"Using food delivery apps saves time.","ans":"A","opts":["節省","浪費","花費"]},{"speaker":"Article","txtPre":"They can just sit comfortably at their ","target":"offices","txtPost":".","tts":"They can just sit comfortably at their offices.","ans":"A","opts":["辦公室","教室","操場"]},{"speaker":"Article","txtPre":"Many people think that food delivery apps are ","target":"convenient","txtPost":".","tts":"Many people think that food delivery apps are convenient.","ans":"A","opts":["方便的","昂貴的","危險的"]},{"speaker":"Article","txtPre":"That can really help when people are ","target":"sick","txtPost":" or tired.","tts":"That can really help when people are sick or tired.","ans":"A","opts":["生病的","高興的","聰明的"]},{"speaker":"Article","txtPre":"Delivery apps usually offer ","target":"discounts","txtPost":".","tts":"Delivery apps usually offer discounts.","ans":"A","opts":["折扣","菜單","禮物"]},{"speaker":"Article","txtPre":"Food delivery apps offer users more ","target":"choices","txtPost":".","tts":"Food delivery apps offer users more choices.","ans":"A","opts":["選擇","問題","帳單"]},{"speaker":"Article","txtPre":"People can enjoy food with","target":"out","txtPost":" going out.","tts":"People can enjoy food without going out.","ans":"A","opts":["外出","上學","睡覺"]}]},"L3":{"partTitle1":"【Lesson 3 對話篇】","partTitle2":"【Lesson 3 閱讀篇】","part1":[{"speaker":"Mindy","txtPre":"The Girls' Life cover shouldn't be only about ","target":"fashion","txtPost":".","tts":"The Girls' Life cover shouldn't be only about fashion.","ans":"A","opts":["時尚","運動","科技"]},{"speaker":"Nick","txtPre":"My sister loves ","target":"robots","txtPost":" and cars.","tts":"My sister loves robots and cars.","ans":"A","opts":["機器人","洋娃娃","繪本"]},{"speaker":"Mindy","txtPre":"I wanted a Spider-Man ","target":"comic","txtPost":" book.","tts":"I wanted a Spider-Man comic book.","ans":"A","opts":["漫畫","字典","課本"]},{"speaker":"Nick","txtPre":"I hoped to buy a toy ","target":"cooking","txtPost":" set once.","tts":"I hoped to buy a toy cooking set once.","ans":"A","opts":["烹飪/下廚","繪畫","跑步"]},{"speaker":"Nick","txtPre":"I was afraid I would be ","target":"laughed","txtPost":" at by others.","tts":"I was afraid I would be laughed at by others.","ans":"A","opts":["嘲笑","稱讚","邀請"]},{"speaker":"Mindy","txtPre":"Toys don't have a ","target":"gender","txtPost":", do they?","tts":"Toys don't have a gender, do they?","ans":"A","opts":["性別","價格","顏色"]},{"speaker":"Nick","txtPre":"If Barbie can be an ","target":"engineer","txtPost":"...","tts":"If Barbie can be an engineer...","ans":"A","opts":["工程師","歌手","畫家"]},{"speaker":"Mindy","txtPre":"It's time to break these toy ","target":"rules","txtPost":".","tts":"It's time to break these toy rules.","ans":"A","opts":["規則","盒子","名字"]}],"part2":[{"speaker":"Article","txtPre":"A badly hurt woman is taken to a ","target":"hospital","txtPost":".","tts":"A badly hurt woman is taken to a hospital.","ans":"A","opts":["醫院","工廠","郵局"]},{"speaker":"Article","txtPre":"A doctor and a ","target":"nurse","txtPost":" are treating her.","tts":"A doctor and a nurse are treating her.","ans":"A","opts":["護理師","警察","司機"]},{"speaker":"Article","txtPre":"You might have a gender ","target":"stereotype","txtPost":".","tts":"You might have a gender stereotype.","ans":"A","opts":["刻板印象","興趣","專長"]},{"speaker":"Article","txtPre":"Men are expected to do public ","target":"service","txtPost":" jobs.","tts":"Men are expected to do public service jobs.","ans":"A","opts":["服務","娛樂","購物"]},{"speaker":"Article","txtPre":"One toy company is trying to ","target":"break","txtPost":" gender stereotypes.","tts":"One toy company is trying to break gender stereotypes.","ans":"A","opts":["打破/打破瓶頸","建立","學習"]},{"speaker":"Article","txtPre":"Its Barbie doll is known as a ","target":"hard-working","txtPost":" toy.","tts":"Its Barbie doll is known as a hard-working toy.","ans":"A","opts":["勤奮的/努力的","懶惰的","昂貴的"]},{"speaker":"Article","txtPre":"Barbie has had jobs such as a doctor or a ","target":"lawyer","txtPost":".","tts":"Barbie has had jobs such as a doctor or a lawyer.","ans":"A","opts":["律師","廚師","農夫"]},{"speaker":"Article","txtPre":"She is a great role ","target":"model","txtPost":".","tts":"She is a great role model.","ans":"A","opts":["榜樣/模範","玩具","敵人"]}]},"L4":{"partTitle1":"【Lesson 4 對話篇】","partTitle2":"【Lesson 4 閱讀篇】","part1":[{"speaker":"Mom","txtPre":"I need you to come home ","target":"ASAP","txtPost":".","tts":"I need you to come home ASAP.","ans":"A","opts":["儘快","明天","下週"]},{"speaker":"Mom","txtPre":"Aunt Beth had an ","target":"accident","txtPost":" on the farm.","tts":"Aunt Beth had an accident on the farm.","ans":"A","opts":["意外/事故","派對","比賽"]},{"speaker":"Carla","txtPre":"Why is that ","target":"funny","txtPost":", Mom?","tts":"Why is that funny, Mom?","ans":"A","opts":["有趣的/好笑的","難過的","可怕的"]},{"speaker":"Mom","txtPre":"Don't you see the crying face ","target":"emoji","txtPost":"?","tts":"Don't you see the crying face emoji?","ans":"A","opts":["表情符號","簡訊","照片"]},{"speaker":"Carla","txtPre":"This is the ","target":"laughing","txtPost":" emoji, Mom!","tts":"This is the laughing emoji, Mom!","ans":"A","opts":["大笑的","哭泣的","生氣的"]},{"speaker":"Mom","txtPre":"She's in a lot of ","target":"pain","txtPost":".","tts":"She's in a lot of pain.","ans":"A","opts":["疼痛","開心","興奮"]},{"speaker":"Carla","txtPre":"Why are you ","target":"celebrating","txtPost":"?","tts":"Why are you celebrating?","ans":"A","opts":["慶祝","哭泣","睡覺"]},{"speaker":"Mom","txtPre":"It also means ","target":"praying","txtPost":".","tts":"It also means praying.","ans":"A","opts":["祈禱","跳舞","跑步"]}],"part2":[{"speaker":"Article","txtPre":"New words will enter ","target":"dictionaries","txtPost":".","tts":"New words will enter dictionaries.","ans":"A","opts":["字典","報紙","地圖"]},{"speaker":"Article","txtPre":"\"Breakfast\" was ","target":"combined","txtPost":" with \"lunch\".","tts":"\"Breakfast\" was combined with \"lunch\".","ans":"A","opts":["結合","分開","刪除"]},{"speaker":"Article","txtPre":"People changed their eating ","target":"habits","txtPost":".","tts":"People changed their eating habits.","ans":"A","opts":["習慣","時間","地點"]},{"speaker":"Article","txtPre":"The first ","target":"airport","txtPost":" was built in 1909.","tts":"The first airport was built in 1909.","ans":"A","opts":["機場","火車站","碼頭"]},{"speaker":"Article","txtPre":"Other words were made by ","target":"accident","txtPost":".","tts":"Other words were made by accident.","ans":"A","opts":["意外地","故意地","快速地"]},{"speaker":"Article","txtPre":"An Australian guy took a ","target":"photo","txtPost":" of himself.","tts":"An Australian guy took a photo of himself.","ans":"A","opts":["照片","電影","畫作"]},{"speaker":"Article","txtPre":"He hurt his ","target":"lips","txtPost":".","tts":"He hurt his lips.","ans":"A","opts":["嘴唇","眼睛","耳朵"]},{"speaker":"Article","txtPre":"The word selfie was then ","target":"defined","txtPost":" as taking a photo of oneself.","tts":"The word selfie was then defined as taking a photo of oneself.","ans":"A","opts":["下定義","翻譯","刪除"]}]},"L5":{"partTitle1":"【Lesson 5 閱讀篇(一)】","partTitle2":"【Lesson 5 閱讀篇(二)】","part1":[{"speaker":"Article","txtPre":"Zollipops are a kind of ","target":"candy","txtPost":".","tts":"Zollipops are a kind of candy.","ans":"A","opts":["糖果","餅乾","飲料"]},{"speaker":"Article","txtPre":"Zollipops clean your ","target":"teeth","txtPost":".","tts":"Zollipops clean your teeth.","ans":"A","opts":["牙齒","手指","頭髮"]},{"speaker":"Article","txtPre":"They are lollipops with no ","target":"sugar","txtPost":" in them.","tts":"They are lollipops with no sugar in them.","ans":"A","opts":["糖/糖分","鹽","水"]},{"speaker":"Article","txtPre":"They care about the ","target":"health","txtPost":" of their teeth.","tts":"They care about the health of their teeth.","ans":"A","opts":["健康","顏色","大小"]},{"speaker":"Article","txtPre":"They are healthy and ","target":"natural","txtPost":".","tts":"They are healthy and natural.","ans":"A","opts":["天然的","人工的","有毒的"]},{"speaker":"Article","txtPre":"Alina Morse is the ","target":"boss","txtPost":" who owns Zolli Candy.","tts":"Alina Morse is the boss who owns Zolli Candy.","ans":"A","opts":["老闆","員工","客人"]},{"speaker":"Article","txtPre":"When she was asked to tell people about her Zollipops, she answered, \"Amazing. ","target":"Clean","txtPost":". Smiles.\"","tts":"When she was asked to tell people about her Zollipops, she answered, \"Amazing. Clean. Smiles.\"","ans":"A","opts":["乾淨的/潔淨","骯髒的","甜膩的"]},{"speaker":"Article","txtPre":"If you think she might be a middle-aged ","target":"married","txtPost":" woman, she will surprise you.","tts":"If you think she might be a middle-aged married woman, she will surprise you.","ans":"A","opts":["已婚的","單身的","年輕的"]}],"part2":[{"speaker":"Article","txtPre":"Some kids are making their mark in the ","target":"business","txtPost":" world.","tts":"Some kids are making their mark in the business world.","ans":"A","opts":["商業/企業","學校","體育"]},{"speaker":"Article","txtPre":"These young leaders are called \"","target":"kidpreneurs","txtPost":"\".","tts":"These young leaders are called \"kidpreneurs\".","ans":"A","opts":["青少年企業家","運動員","藝術家"]},{"speaker":"Article","txtPre":"A bank clerk gave her a ","target":"lollipop","txtPost":".","tts":"A bank clerk gave her a lollipop.","ans":"A","opts":["棒棒糖","巧克力","冰淇淋"]},{"speaker":"Article","txtPre":"She talked to ","target":"dentists","txtPost":" and doctors.","tts":"She talked to dentists and doctors.","ans":"A","opts":["牙醫","律師","工程師"]},{"speaker":"Article","txtPre":"She failed many times, but she didn't ","target":"give up","txtPost":".","tts":"She failed many times, but she didn't give up.","ans":"A","opts":["放棄","哭泣","生氣"]},{"speaker":"Article","txtPre":"She set up a candy ","target":"company","txtPost":".","tts":"She set up a candy company.","ans":"A","opts":["公司","學校","工場"]},{"speaker":"Article","txtPre":"Alina's ","target":"successful","txtPost":" business is just half the story.","tts":"Alina's successful business is just half the story.","ans":"A","opts":["成功的","失敗的","困難的"]},{"speaker":"Article","txtPre":"She teaches kids how to ","target":"care","txtPost":" for their teeth.","tts":"She teaches kids how to care for their teeth.","ans":"A","opts":["照顧/關心","拔掉","忘記"]}]},"L6":{"partTitle1":"【Lesson 6 對話篇】","partTitle2":"【Lesson 6 閱讀篇】","part1":[{"speaker":"Daughter","txtPre":"We're back from the ","target":"supermarket","txtPost":".","tts":"We're back from the supermarket.","ans":"A","opts":["超級市場","電影院","圖書館"]},{"speaker":"Mom","txtPre":"We saw many products that were on ","target":"sale","txtPost":".","tts":"We saw many products that were on sale.","ans":"A","opts":["特價","停售","展覽"]},{"speaker":"Daughter","txtPre":"One of the clerks gave us free ","target":"samples","txtPost":".","tts":"One of the clerks gave us free samples.","ans":"A","opts":["試吃品/樣品","玩具","禮券"]},{"speaker":"Mom","txtPre":"We also bought some ","target":"cheese","txtPost":" and honey.","tts":"We also bought some cheese and honey.","ans":"A","opts":["起司","蘋果","麵包"]},{"speaker":"Mom","txtPre":"I didn't see any rice on the ","target":"shelves","txtPost":".","tts":"I didn't see any rice on the shelves.","ans":"A","opts":["架子/貨架","地板","箱子"]},{"speaker":"Dad","txtPre":"You weren't looking at the ","target":"bottom","txtPost":" ones.","tts":"You weren't looking at the bottom ones.","ans":"A","opts":["最底部/最下層","最頂層","中間"]},{"speaker":"Mom","txtPre":"Did I follow the eye ","target":"level","txtPost":" rule?","tts":"Did I follow the eye level rule?","ans":"A","opts":["高度/層級","顏色","價格"]},{"speaker":"Dad","txtPre":"Make sure every cent is spent ","target":"wisely","txtPost":".","tts":"Make sure every cent is spent wisely.","ans":"A","opts":["聰明地/明智地","隨意地","快速地"]}],"part2":[{"speaker":"Article","txtPre":"You fall for one of the sales ","target":"tricks","txtPost":".","tts":"You fall for one of the sales tricks.","ans":"A","opts":["陷阱/招數","禮物","活動"]},{"speaker":"Article","txtPre":"Smart store ","target":"owners","txtPost":" get you to buy more.","tts":"Smart store owners get you to buy more.","ans":"A","opts":["店主/老闆","客人","員工"]},{"speaker":"Article","txtPre":"Large ","target":"signs","txtPost":" catch your eye.","tts":"Large signs catch your eye.","ans":"A","opts":["告示牌/標誌","燈光","音響"]},{"speaker":"Article","txtPre":"You're getting a great ","target":"deal","txtPost":"!","tts":"You're getting a great deal!","ans":"A","opts":["划算的交易/便宜","錯誤","禮物"]},{"speaker":"Article","txtPre":"Price signs often say \"","target":"Low","txtPost":" Price\".","tts":"Price signs often say \"Low Price\".","ans":"A","opts":["低的","高的","貴的"]},{"speaker":"Article","txtPre":"It ","target":"fools","txtPost":" you into spending more money.","tts":"It fools you into spending more money.","ans":"A","opts":["愚弄/誘使","幫助","阻止"]},{"speaker":"Article","txtPre":"You feel like you're ","target":"saving","txtPost":" money.","tts":"You feel like you're saving money.","ans":"A","opts":["省錢/儲蓄","浪費","借錢"]},{"speaker":"Article","txtPre":"Be sure to ","target":"watch out","txtPost":" for these tricks.","tts":"Be sure to watch out for these tricks.","ans":"A","opts":["當心/注意","尋找","忘記"]}]}};
+    Object.keys(database).forEach(key => delete database[key]);
+    Object.assign(database, grade9Database);
+    database.L1.part2[0].opts[1] = "薯條/炸馬鈴薯條";
+
+    let currentLesson = "L1";
+    let isShowingAnswers = false;
+
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.65; // 慢速口語發音
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function buildItemHtml(item, globalIndex, relativeIndex) {
+      const sentence = `${item.txtPre}<span class="target-word">${item.target}</span>${item.txtPost}`;
+      
+      const optHtml = item.opts.map((opt, oIdx) => {
+        const label = ["A", "B", "C"][oIdx];
+        return `
+          <div onclick="selectAnswerDirectly(event, this, '${label}')" class="opt-box px-2 py-0.5 rounded transition cursor-pointer hover:bg-slate-100 flex items-center">
+            (${label}) ${opt}
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="flex flex-col leading-tight quiz-row transition py-0.5 rounded px-1" onclick="setActiveRow(this, '${item.tts.replace(/'/g, "\\'")}')">
+          <div class="flex items-start">
+            <span class="text-slate-800 font-bold shrink-0 mt-0.5 text-[15.5px]">(</span>
+            <input type="text" maxlength="1" data-ans="${item.ans}" readonly class="answer-input w-7 h-5 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[14.5px] shrink-0 mx-0.5 pointer-events-none cursor-pointer">
+            <span class="text-slate-800 font-bold shrink-0 mt-0.5 text-[15.5px]">) ${relativeIndex}.</span>
+            <span class="font-medium text-slate-800 font-english text-[15.5px] pl-1 tracking-tight truncate flex-grow cursor-pointer">${sentence}</span>
+          </div>
+          <div class="pl-14 flex gap-12 text-[14px] font-chinese text-slate-500 font-medium shrink-0 mt-0.5">
+            ${optHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectAnswerDirectly(event, optElement, label) {
+      event.stopPropagation(); // 阻止事件冒泡
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // 點選選項不發音
+      }
+      document.querySelectorAll('.quiz-row').forEach(row => {
+        row.classList.remove('bg-yellow-200/90');
+      });
+
+      const row = optElement.closest('.quiz-row');
+      if (row) {
+        const input = row.querySelector('.answer-input');
+        if (input) {
+          input.value = label;
+          input.className = "answer-input w-7 h-5 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[14.5px] shrink-0 mx-0.5 pointer-events-none cursor-pointer";
+        }
+      }
+    }
+
+    function setActiveRow(element, ttsText) {
+      document.querySelectorAll('.quiz-row').forEach(row => {
+        row.classList.remove('bg-yellow-200/90');
+      });
+      element.classList.add('bg-yellow-200/90');
+      speakWord(ttsText);
+    }
+
+    function loadLesson(lessonKey) {
+      currentLesson = lessonKey;
+      isShowingAnswers = false;
+
+      // 隱藏各部分得分徽章
+      document.getElementById('score-badge-part1').classList.add('hidden');
+      document.getElementById('score-badge-part2').classList.add('hidden');
+
+      // 更新上層控制列按鈕
+      document.querySelectorAll('.lesson-btn').forEach(btn => {
+        const k = btn.getAttribute('data-lesson');
+        btn.className = (k === lessonKey) ? 
+          "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-indigo-600 text-white border-indigo-600 shadow-sm" :
+          "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
+      });
+
+      document.getElementById('main-title').innerText = `九上 ${lessonKey} 英文科講義 課文句型翻譯`;
+      
+      const p1List = document.getElementById('part-1-list');
+      const p2List = document.getElementById('part-2-list');
+      p1List.innerHTML = '';
+      p2List.innerHTML = '';
+
+      const data = database[lessonKey];
+
+      // 更新灰條標題
+      document.getElementById('part-1-title').innerText = data.partTitle1;
+      document.getElementById('part-2-title').innerText = data.partTitle2;
+
+      let globalIdx = 1;
+
+      // 渲染上半部
+      data.part1.forEach((item, rIdx) => {
+        p1List.innerHTML += buildItemHtml(item, globalIdx++, rIdx + 1);
+      });
+
+      // 渲染下半部
+      data.part2.forEach((item, rIdx) => {
+        p2List.innerHTML += buildItemHtml(item, globalIdx++, rIdx + 1);
+      });
+    }
+
+    function checkPartAnswers(partId) {
+      const listId = partId === 'part1' ? 'part-1-list' : 'part-2-list';
+      const badgeId = partId === 'part1' ? 'score-badge-part1' : 'score-badge-part2';
+      const listContainer = document.getElementById(listId);
+      if (!listContainer) return;
+      
+      const inputs = listContainer.querySelectorAll('.answer-input');
+      const totalCount = inputs.length;
+      let correctCount = 0;
+      
+      inputs.forEach(input => {
+        const userAns = input.value.trim().toUpperCase();
+        const correctAns = input.getAttribute('data-ans').toUpperCase();
+        
+        if (userAns === correctAns) {
+          correctCount++;
+          // 正確：綠底白字
+          input.className = "answer-input w-7 h-5 text-center font-extrabold bg-emerald-500 text-white border-b-2 border-emerald-600 focus:outline-none uppercase text-[14.5px] shrink-0 mx-0.5 pointer-events-none cursor-pointer rounded shadow-sm";
+        } else {
+          // 錯誤：重設為空
+          input.value = '';
+          input.className = "answer-input w-7 h-5 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[14.5px] shrink-0 mx-0.5 pointer-events-none cursor-pointer";
+        }
+      });
+      
+      const badge = document.getElementById(badgeId);
+      if (badge) {
+        badge.innerText = `答對 ${correctCount} / ${totalCount}`;
+        badge.classList.remove('hidden');
+      }
+    }
+
+    function clearPartAnswers(partId) {
+      const listId = partId === 'part1' ? 'part-1-list' : 'part-2-list';
+      const badgeId = partId === 'part1' ? 'score-badge-part1' : 'score-badge-part2';
+      const listContainer = document.getElementById(listId);
+      if (!listContainer) return;
+      
+      const inputs = listContainer.querySelectorAll('.answer-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.className = "answer-input w-7 h-5 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[14.5px] shrink-0 mx-0.5 pointer-events-none cursor-pointer";
+      });
+      
+      const badge = document.getElementById(badgeId);
+      if (badge) {
+        badge.classList.add('hidden');
+      }
+      
+      listContainer.querySelectorAll('.quiz-row').forEach(row => {
+        row.classList.remove('bg-yellow-200/90');
+      });
+      
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+
+    function togglePartAnswers(partId) {
+      const listId = partId === 'part1' ? 'part-1-list' : 'part-2-list';
+      const badgeId = partId === 'part1' ? 'score-badge-part1' : 'score-badge-part2';
+      const listContainer = document.getElementById(listId);
+      if (!listContainer) return;
+      
+      const inputs = listContainer.querySelectorAll('.answer-input');
+      let currentlyShowing = false;
+      
+      inputs.forEach(input => {
+        if (input.classList.contains('text-red-600')) {
+          currentlyShowing = true;
+        }
+      });
+      
+      const badge = document.getElementById(badgeId);
+      if (badge) badge.classList.add('hidden');
+      
+      inputs.forEach(input => {
+        const ans = input.getAttribute('data-ans');
+        if (!currentlyShowing) {
+          input.value = ans;
+          input.className = "answer-input w-7 h-5 text-center font-extrabold bg-red-50 text-red-600 border-b-2 border-red-400 focus:outline-none uppercase text-[14.5px] shrink-0 mx-0.5 pointer-events-none cursor-pointer rounded";
+        } else {
+          input.value = '';
+          input.className = "answer-input w-7 h-5 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[14.5px] shrink-0 mx-0.5 pointer-events-none cursor-pointer";
+        }
+      });
+    }
+
+    function toggleAllAnswers() {
+      togglePartAnswers('part1');
+      togglePartAnswers('part2');
+    }
+
+    function clearAllAnswers() {
+      clearPartAnswers('part1');
+      clearPartAnswers('part2');
+    }
+
+    function initApp() {
+      const selectorContainer = document.getElementById('lesson-selectors');
+      selectorContainer.innerHTML = '';
+      Object.keys(database).forEach(key => {
+        const btn = document.createElement('button');
+        btn.innerText = `九上 ${key}`;
+        btn.setAttribute('data-lesson', key);
+        btn.className = "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese";
+        btn.onclick = () => loadLesson(key);
+        selectorContainer.appendChild(btn);
+      });
+      loadLesson("L1");
+    }
+
+    function printAllLessons() {
+      const printContainer = document.getElementById('print-all-container');
+      printContainer.innerHTML = '';
+
+      Object.keys(database).forEach(lessonKey => {
+        const page = document.createElement('div');
+        page.className = "print-page";
+
+        let p1Html = '';
+        let p2Html = '';
+        let globalIdx = 1;
+        const data = database[lessonKey];
+
+        data.part1.forEach((item, rIdx) => {
+          p1Html += buildItemHtml(item, globalIdx++, rIdx + 1);
+        });
+
+        data.part2.forEach((item, rIdx) => {
+          p2Html += buildItemHtml(item, globalIdx++, rIdx + 1);
+        });
+
+        page.innerHTML = `
+          <div class="border-b-4 border-double border-slate-400 pb-2 mb-3 shrink-0">
+            <div class="flex justify-between items-end">
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">九上 ${lessonKey} 英文科講義 課文句型翻譯</h1>
+              <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+                <div class="flex items-end">
+                  <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+                  <span class="ml-1 shrink-0">班</span>
+                </div>
+                <div class="flex items-end">
+                  <span class="shrink-0">姓名：</span>
+                  <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 flex flex-col justify-start bg-slate-100 px-3 py-1.5 rounded border-l-4 border-slate-500 shrink-0">
+              <span class="text-[13.5px] font-bold text-slate-800 font-chinese">◎ 每題五分，錯字用紅筆訂正，中文、英文各 1次。</span>
+            </div>
+          </div>
+          <div class="flex-grow flex flex-col justify-between overflow-hidden">
+            <div class="flex-grow flex flex-col justify-start">
+              <div class="bg-slate-200/60 px-2 py-0.5 rounded text-[13.5px] font-bold text-slate-700 mb-2 font-chinese shrink-0">${data.partTitle1}</div>
+              <div class="flex-grow flex flex-col justify-between">${p1Html}</div>
+            </div>
+            <div class="border-t-2 border-dashed border-slate-300 my-2 shrink-0"></div>
+            <div class="flex-grow flex flex-col justify-start">
+              <div class="bg-slate-200/60 px-2 py-0.5 rounded text-[13.5px] font-bold text-slate-700 mb-2 font-chinese shrink-0">${data.partTitle2}</div>
+              <div class="flex-grow flex flex-col justify-between">${p2Html}</div>
+            </div>
+          </div>
+        `;
+        printContainer.appendChild(page);
+      });
+
+      setTimeout(() => {
+        document.body.classList.add('printing-all');
+        window.print();
+        setTimeout(() => { document.body.classList.remove('printing-all'); }, 600);
+      }, 50);
+    }
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>

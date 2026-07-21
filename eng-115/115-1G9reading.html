@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>九上 英文科講義 課文翻譯</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+      margin: 0;
+      padding: 0;
+    }
+    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
+    .font-english { font-family: 'Lexend', sans-serif; }
+    
+    /* 網頁呈現時的 A4 樣式（上下題型採不同題高） */
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 15px auto;
+      padding: 6mm 12mm;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* 大電視選取聚焦特效 */
+    .active-row {
+      background-color: #fef08a !important; 
+      border-radius: 4px;
+    }
+
+    /* 題目與選項預設全黑；按提示後才以紅字標出關鍵字。 */
+    .target-word {
+      color: inherit !important;
+      background-color: transparent !important;
+      text-decoration: none !important;
+    }
+    .target-highlight {
+      background-color: transparent !important;
+      color: #ef4444 !important;
+      font-weight: 700 !important;
+      text-decoration: underline !important;
+      padding: 0;
+    }
+
+    .answer-input:focus {
+      outline: none;
+    }
+
+    /* 選項盒：移除 flex 以免吞掉 inline elements 旁的自然空格 */
+    .opt-box {
+      display: block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      transition: all 0.15s ease-in-out;
+      cursor: pointer;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    .opt-box:hover {
+      background-color: #f1f5f9;
+    }
+    .opt-box.opt-medium { font-size: 13px; line-height: 1.5; }
+    .opt-box.opt-long { font-size: 12px; line-height: 1.5; }
+
+    /* 英翻中只讓 A/B 同列，C 獨占下一列；英文長句選項仍維持單欄。 */
+    .options-ab-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 8px;
+      row-gap: 1px;
+    }
+    .options-ab-row .opt-box:last-child { grid-column: 1 / -1; }
+
+    .questions-layout {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 40fr) auto minmax(0, 60fr);
+      overflow: hidden;
+    }
+    .question-section { min-height: 0; display: flex; flex-direction: column; }
+
+    /* 英翻中較短、中翻英英文選項較長，分別配置題高。 */
+    .quiz-row {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .level2-row { height: 68px; padding: 2px 0; }
+    .level3-row {
+      min-height: 82px;
+      height: auto;
+      padding: 2px 0;
+      justify-content: flex-start;
+    }
+    .level3-row > div:last-child { margin-top: 2px; }
+    .level3-section .opt-box {
+      padding-top: 0;
+      padding-bottom: 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .level3-section .opt-box + .opt-box { margin-top: 0; }
+    .level3-section .opt-box.opt-english-long {
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    #print-all-container { display: none; }
+    
+    @media print {
+      @page { 
+        size: A4; 
+        margin: 0; 
+      }
+      body { 
+        background-color: #ffffff; 
+        margin: 0; 
+        padding: 0; 
+      }
+      .no-print { 
+        display: none !important; 
+      }
+      .page-a4 { 
+        width: 210mm;
+        height: 297mm;
+        box-shadow: none; 
+        border: none; 
+        margin: 0; 
+        padding: 6mm 12mm;
+        page-break-after: always;
+        overflow: hidden;
+      }
+      .page-a4:last-child {
+        page-break-after: avoid;
+      }
+      body.printing-all #all-pages-container { display: none !important; }
+      body.printing-all #print-all-container { display: block !important; width: 210mm; }
+    }
+  </style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <!-- 頂端控制列（列印時自動隱藏） -->
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
+    <div class="flex flex-wrap gap-2 items-center justify-between border-b border-slate-100 pb-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+        <span class="text-slate-700 font-bold text-sm font-chinese">📺 大電視功能：點擊題目區（變黃底）聽慢速語音，直接點右方選項即可自動填入答案！</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="toggleAllAnswers()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese">💡 公布 / 隱藏全頁答案</button>
+        <button onclick="clearAllAnswers()" class="px-3.5 py-1.5 bg-slate-600 hover:bg-slate-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese">🧼 全頁重設清除</button>
+        <button onclick="printCurrentLesson()" class="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese">🖨️ 列印本課（正反面）</button>
+        <button onclick="printAllLessons()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese">🖨️ 全部列印</button>
+      </div>
+    </div>
+    
+    <!-- 導覽切換區：一課一個按鈕，按列印剛好就是正反面 -->
+    <div class="flex flex-col gap-1">
+      <span class="text-xs font-bold text-slate-500 font-chinese">請選擇課程單元：</span>
+      <div class="grid grid-cols-6 gap-2" id="lesson-selectors"></div>
+    </div>
+  </div>
+
+  <!-- 兩頁連續 A4 容器（列印時第一頁為對話、第二頁為閱讀，剛好是一張紙） -->
+  <div id="all-pages-container" class="w-full flex flex-col items-center">
+    <!-- 動態生成第一頁 (對話篇) 與第二頁 (閱讀篇) -->
+  </div>
+  <div id="print-all-container"></div>
+
+  <script>
+    // 康軒國中英語 九上 (G9) 完整 120 題資料庫，移除人名與「中文：」
+    const database = {
+      "L1": {
+        title: "九上 L1 英文科講義",
+        dialogue: {
+          tag: "課文對話翻譯",
+          level2: [
+            { qNum: 1, ans: "B", type: "eng_full", tts: "Have you been to this restaurant before?", keyWord: "before", qTxt: "Have you been to this restaurant before?", opts: ["你以前曾經來過這間飯店嗎？", "你以前曾經來過這間餐廳嗎？", "你以前曾經來過這間披薩店嗎？"], keyA: "飯店", keyB: "餐廳", keyC: "披薩店" },
+            { qNum: 2, ans: "A", type: "eng_full", tts: "Have you decided on your order yet?", keyWord: "decided on", qTxt: "Have you decided on your order yet?", opts: ["您已經決定好要點什麼了嗎？", "您已經準備好要買什麼了嗎？", "您已經享用完您的餐點了嗎？"], keyA: "決定好", keyB: "準備好", keyC: "享用完" },
+            { qNum: 3, ans: "C", type: "eng_full", tts: "I'd like to have a 9-inch Cheese King pizza.", keyWord: "Cheese King", qTxt: "I'd like to have a 9-inch Cheese King pizza.", opts: ["我想要一個九吋的牛肉披薩。", "我想要一個九吋的海鮮披薩。", "我想要一個九吋的起司王披薩。"], keyA: "牛肉", keyB: "海鮮", keyC: "起司王" },
+            { qNum: 4, ans: "A", type: "eng_full", tts: "Let me check with the cook.", keyWord: "check with", qTxt: "Let me check with the cook.", opts: ["讓我跟廚師確認。", "讓我跟廚師道歉。", "讓我跟廚師借錢。"], keyA: "確認", keyB: "道歉", keyC: "借錢" },
+            { qNum: 5, ans: "B", type: "eng_full", tts: "You just made another mistake with your pizza math!", keyWord: "pizza math", qTxt: "You just made another mistake with your pizza math!", opts: ["你剛剛犯了另一個與披薩尺寸有關的錯誤！", "你剛剛犯了另一個與披薩數學有關的錯誤！", "你剛剛犯了另一個與披薩價錢有關的錯誤！"], keyA: "披薩尺寸", keyB: "披薩數學", keyC: "披薩價錢" }
+          ],
+          level3: [
+            { qNum: 6, ans: "A", type: "ch_full", tts: "Yes, I've eaten here before.", keyWord: "用餐", qTxt: "我以前曾經在這裡用餐。", opts: ["Yes, I've eaten here before.", "Yes, I've worked here before.", "Yes, I've lived here before."], keyA: "eaten", keyB: "worked", keyC: "lived" },
+            { qNum: 7, ans: "C", type: "ch_full", tts: "Nobody makes better pizzas.", keyWord: "沒有人", qTxt: "沒有人可以製作出更好的披薩。", opts: ["Everyone makes better pizzas.", "Someone makes better pizzas.", "Nobody makes better pizzas."], keyA: "Everyone", keyB: "Someone", keyC: "Nobody" },
+            { qNum: 8, ans: "B", type: "ch_full", tts: "but you've just brought us two 5-inch pizzas.", keyWord: "拿給", qTxt: "我們點了披薩，但是你剛剛拿給我們兩個五吋披薩。", opts: ["but you've just bought us two 5-inch pizzas.", "but you've just brought us two 5-inch pizzas.", "but you've just baked us two 5-inch pizzas."], keyA: "bought", keyB: "brought", keyC: "baked" },
+            { qNum: 9, ans: "A", type: "ch_full", tts: "Our new cook has gotten one or two orders wrong today.", keyWord: "訂單", qTxt: "我們的新廚師今天已經弄錯了一、兩個訂單。", opts: ["Our new cook has gotten one or two orders wrong today.", "Our new cook has gotten one or two pizzas wrong today.", "Our new cook has gotten one or two tables wrong today."], keyA: "orders", keyB: "pizzas", keyC: "tables" },
+            { qNum: 10, ans: "C", type: "ch_full", tts: "to give you one more inch of pizza for free.", keyWord: "免費", qTxt: "我們已經決定免費多給您一吋披薩。", opts: ["to give you one more inch of pizza for sale.", "to give you one more inch of pizza for fun.", "to give you one more inch of pizza for free."], keyA: "for sale", keyB: "for fun", keyC: "for free" }
+          ]
+        },
+        reading: {
+          tag: "課文閱讀翻譯",
+          level2: [
+            { qNum: 1, ans: "C", type: "eng_full", tts: "However, they didn't give the world French fries.", keyWord: "French fries", qTxt: "However, they didn't give the world French fries.", opts: ["然而，他們並沒有給這世界吹風機。", "然而，他們並沒有給這世界造紙機。", "然而，他們並沒有給這世界薯條。"], keyA: "吹風機", keyB: "造紙機", keyC: "薯條" },
+            { qNum: 2, ans: "A", type: "eng_full", tts: "Many people probably haven't heard about this fact yet.", keyWord: "heard about", qTxt: "Many people probably haven't heard about this fact yet.", opts: ["很多人也許都還沒有聽過這個事實。", "很多人也許都還沒有相信這個事實。", "很多人也許都還沒有忘記這個事實。"], keyA: "聽過", keyB: "相信", keyC: "忘記" },
+            { qNum: 3, ans: "B", type: "eng_full", tts: "It was common for people in the area to catch and fry fish.", keyWord: "catch and fry", qTxt: "It was common for people in the area to catch and fry fish...", opts: ["捕撈魚並煮魚是很普遍的...", "捕撈魚並炸魚是很普遍的...", "捕撈魚並賣魚是很普遍的..."], keyA: "煮", keyB: "炸", keyC: "賣" },
+            { qNum: 4, ans: "A", type: "eng_full", tts: "French was the main language there.", keyWord: "main language", qTxt: "French was the main language there.", opts: ["法語是當地的主要語言。", "法語是當地的第二語言。", "法語是當地的外國語言。"], keyA: "主要語言", keyB: "第二語言", keyC: "外國語言" },
+            { qNum: 5, ans: "C", type: "eng_full", tts: "Since then, French fries have become popular all over the world.", keyWord: "become popular", qTxt: "Since then, French fries have become popular all over the world.", opts: ["從那時起，薯條就消失在世界各地。", "從那時起，薯條就昂貴於世界各地。", "從那時起，薯條就風靡於世界各地。"], keyA: "消失在", keyB: "昂貴於", keyC: "風靡於" }
+          ],
+          level3: [
+            { qNum: 6, ans: "B", type: "ch_full", tts: "Why did you choose the topic?", keyWord: "選擇", qTxt: "你為什麼選擇這個主題？", opts: ["Why did you write the topic?", "Why did you choose the topic?", "Why did you read the topic?"], keyA: "write", keyB: "choose", keyC: "read" },
+            { qNum: 7, ans: "A", type: "ch_full", tts: "when the river froze in the winter.", keyWord: "結冰", qTxt: "當冬天河水結冰時，捕魚變得困難。", opts: ["when the river froze in the winter.", "when the river dried in the winter.", "when the river rose in the winter."], keyA: "froze", keyB: "dried", keyC: "rose" },
+            { qNum: 8, ans: "C", type: "ch_full", tts: "American soldiers tasted this delicious food.", keyWord: "嘗到", qTxt: "美國士兵第一次嘗到這美味的食物。", opts: ["American soldiers bought this delicious food.", "American soldiers cooked this delicious food.", "American soldiers tasted this delicious food."], keyA: "bought", keyB: "cooked", keyC: "tasted" },
+            { qNum: 9, ans: "A", type: "ch_full", tts: "Americans celebrate National French Fry Day on the second Friday of July.", keyWord: "慶祝", qTxt: "美國人在七月的第二個禮拜五慶祝全國薯條日。", opts: ["Americans celebrate National French Fry Day on the second Friday of July.", "Americans enjoy National French Fry Day on the second Friday of July.", "Americans remember National French Fry Day on the second Friday of July."], keyA: "celebrate", keyB: "enjoy", keyC: "remember" },
+            { qNum: 10, ans: "B", type: "ch_full", tts: "Fries in the UK are usually thicker than those in the USA.", keyWord: "粗", qTxt: "英國的薯條通常比美國的粗一點。", opts: ["Fries in the UK are usually longer than those in the USA.", "Fries in the UK are usually thicker than those in the USA.", "Fries in the UK are usually harder than those in the USA."], keyA: "longer", keyB: "thicker", keyC: "harder" }
+          ]
+        }
+      },
+      "L2": {
+        title: "九上 L2 英文科講義",
+        dialogue: {
+          tag: "課文對話翻譯",
+          level2: [
+            { qNum: 1, ans: "C", type: "eng_full", tts: "I'm tired of sitting here on the couch and doing nothing.", keyWord: "tired of", qTxt: "I'm tired of sitting here on the couch and doing nothing.", opts: ["我很喜歡坐在沙發上無所事事。", "我害怕坐在沙發上無所事事。", "我厭倦坐在沙發上無所事事。"], keyA: "很喜歡", keyB: "害怕", keyC: "厭倦" },
+            { qNum: 2, ans: "A", type: "eng_full", tts: "I've always had an interest in new things.", keyWord: "interest in", qTxt: "I've always had an interest in new things.", opts: ["我一直對新事物感興趣。", "我一直對新事物很擅長。", "我一直對新事物感到害怕。"], keyA: "感興趣", keyB: "很擅長", keyC: "感到害怕" },
+            { qNum: 3, ans: "B", type: "eng_full", tts: "I don't mind giving it a chance.", keyWord: "giving it a chance", qTxt: "I don't mind giving it a chance.", opts: ["我不介意多花一點錢。", "我不介意給它一次機會。", "我不介意再等三十分鐘。"], keyA: "多花一點錢", keyB: "給它一次機會", keyC: "再等三十分鐘" },
+            { qNum: 4, ans: "C", type: "eng_full", tts: "I'm as hungry as a horse.", keyWord: "as hungry as a horse", qTxt: "I'm as hungry as a horse...", opts: ["我感到非常難過...", "我感到非常害怕...", "我非常餓（餓得像隻馬）..."], keyA: "非常難過", keyB: "非常害怕", keyC: ["非常餓", "餓得像隻馬"] },
+            { qNum: 5, ans: "A", type: "eng_full", tts: "It will show us the location of the delivery guy.", keyWord: "location", qTxt: "It will show us the location of the delivery guy.", opts: ["它會給我們看到外送員的位置。", "它會給我們看到外送員的名字。", "它會給我們看到外送員的電話。"], keyA: "位置", keyB: "名字", keyC: "電話" }
+          ],
+          level3: [
+            { qNum: 6, ans: "B", type: "ch_full", tts: "I don't think there's any food in the fridge.", keyWord: "冰箱", qTxt: "我不認為冰箱裡有任何食物。", opts: ["I don't think there's any food in the kitchen.", "I don't think there's any food in the fridge.", "I don't think there's any food in the room."], keyA: "kitchen", keyB: "fridge", keyC: "room" },
+            { qNum: 7, ans: "C", type: "ch_full", tts: "New users get a 50% discount!", keyWord: "五折", qTxt: "你猜怎麼樣？新用戶五折耶！", opts: ["New users get a 10% discount!", "New users get a 20% discount!", "New users get a 50% discount!"], keyA: "10% discount", keyB: "20% discount", keyC: "50% discount" },
+            { qNum: 8, ans: "A", type: "ch_full", tts: "Your favorite fast food restaurant is on the list.", keyWord: "速食餐廳", qTxt: "你最愛的速食餐廳在清單上。", opts: ["Your favorite fast food restaurant is on the list.", "Your favorite coffee shop is on the list.", "Your favorite pizza place is on the list."], keyA: "fast food restaurant", keyB: "coffee shop", keyC: "pizza place" },
+            { qNum: 9, ans: "B", type: "ch_full", tts: "At least we don't have to go out in the rain.", keyWord: "出門", qTxt: "至少我們不必在雨中出門。", opts: ["At least we don't have to stay home.", "At least we don't have to go out in the rain.", "At least we don't have to wait here."], keyA: "stay home", keyB: "go out", keyC: "wait here" },
+            { qNum: 10, ans: "C", type: "ch_full", tts: "I didn't tap on the Place Order button.", keyWord: "送出訂單", qTxt: "我沒按下「送出訂單」的按鈕。", opts: ["I didn't tap on the Download App button.", "I didn't tap on the Call Back button.", "I didn't tap on the Place Order button."], keyA: "Download App", keyB: "Call Back", keyC: "Place Order" }
+          ]
+        },
+        reading: {
+          tag: "課文閱讀翻譯",
+          level2: [
+            { qNum: 1, ans: "A", type: "eng_full", tts: "Using food delivery apps saves time.", keyWord: "saves time", qTxt: "Using food delivery apps saves time...", opts: ["使用食物外送應用程式節省時間...", "使用食物外送應用程式浪費金錢...", "使用食物外送應用程式增加麻煩..."], keyA: "節省時間", keyB: "浪費金錢", keyC: "增加麻煩" },
+            { qNum: 2, ans: "C", type: "eng_full", tts: "Many people think that food delivery apps are convenient and helpful.", keyWord: "convenient and helpful", qTxt: "Many people think that food delivery apps are convenient and helpful.", opts: ["許多人認為食物外送應用程式昂貴且危險。", "許多人認為食物外送應用程式複雜且緩慢。", "許多人認為食物外送應用程式既方便又有用。"], keyA: "昂貴且危險", keyB: "複雜且緩慢", keyC: "方便又有用" },
+            { qNum: 3, ans: "B", type: "eng_full", tts: "That can really help when people are sick or tired.", keyWord: "sick or tired", qTxt: "That can really help when people are sick or tired.", opts: ["當人們生病或生氣時...", "當人們生病或疲勞時...", "當人們飢餓或緊張時..."], keyA: "生病或生氣", keyB: "生病或疲勞", keyC: "飢餓或緊張" },
+            { qNum: 4, ans: "A", type: "eng_full", tts: "Food delivery apps offer users more choices.", keyWord: "more choices", qTxt: "Food delivery apps offer users more choices.", opts: ["食物外送應用程式提供用戶更多選擇。", "食物外送應用程式提供用戶更多折價券。", "食物外送應用程式提供用戶更多工作。"], keyA: "更多選擇", keyB: "更多折價券", keyC: "更多工作" },
+            { qNum: 5, ans: "C", type: "eng_full", tts: "In a word, food delivery apps have made our lives easier.", keyWord: "In a word", qTxt: "In a word, food delivery apps have made our lives easier.", opts: ["幸運的是，食物外送應用程式...", "事實上，食物外送應用程式...", "簡而言之，食物外送應用程式..."], keyA: "幸運的是", keyB: "事實上", keyC: "簡而言之" }
+          ],
+          level3: [
+            { qNum: 6, ans: "B", type: "ch_full", tts: "three out of every five young people use food delivery apps.", keyWord: "食物外送應用程式", qTxt: "每五名年輕人就有三人使用食物外送應用程式。", opts: ["three out of every five young people use game apps.", "three out of every five young people use food delivery apps.", "three out of every five young people use map apps."], keyA: "game apps", keyB: "food delivery apps", keyC: "map apps" },
+            { qNum: 7, ans: "A", type: "ch_full", tts: "They can just sit comfortably at their homes.", keyWord: "舒服地", qTxt: "他們可以只要舒服地坐在家中或辦公室。", opts: ["They can just sit comfortably at their homes...", "They can just sit quietly at their homes...", "They can just sit safely at their homes..."], keyA: "comfortably", keyB: "quietly", keyC: "safely" },
+            { qNum: 8, ans: "C", type: "ch_full", tts: "delivery apps usually offer discounts.", keyWord: "折扣", qTxt: "外送應用程式通常提供折扣。", opts: ["delivery apps usually offer gifts.", "delivery apps usually offer jobs.", "delivery apps usually offer discounts."], keyA: "gifts", keyB: "jobs", keyC: "discounts" },
+            { qNum: 9, ans: "B", type: "ch_full", tts: "What's more, some users use food delivery apps.", keyWord: "此外", qTxt: "此外，當天氣不好時，一些用戶會使用應用程式。", opts: ["In fact, some users use food delivery apps...", "What's more, some users use food delivery apps...", "However, some users use food delivery apps..."], keyA: "In fact", keyB: "What's more", keyC: "However" },
+            { qNum: 10, ans: "A", type: "ch_full", tts: "people can enjoy their favorite food without going out.", keyWord: "不用出門", qTxt: "有了它們，人們不用出門即可享用自己最喜歡的食物。", opts: ["people can enjoy their favorite food without going out.", "people can enjoy their favorite food without cooking.", "people can enjoy their favorite food without paying."], keyA: "without going out", keyB: "without cooking", keyC: "without paying" }
+          ]
+        }
+      },
+      "L3": {
+        title: "九上 L3 英文科講義",
+        dialogue: {
+          tag: "課文對話翻譯",
+          level2: [
+            { qNum: 1, ans: "B", type: "eng_full", tts: "Why is the Boys' Life one filled with airplanes?", keyWord: "filled with", qTxt: "Why is the Boys' Life one filled with airplanes...?", opts: ["為什麼封面印滿了飛機...？", "為什麼封面充滿了飛機...？", "為什麼封面畫滿了飛機...？"], keyA: "印滿了", keyB: "充滿了", keyC: "畫滿了" },
+            { qNum: 2, ans: "A", type: "eng_full", tts: "To be honest, my sister loves robots, cars.", keyWord: "To be honest", qTxt: "To be honest, my sister loves robots, cars...", opts: ["說實話，我姊姊喜歡機器人、汽車...", "幸運地，我姊姊喜歡機器人、汽車...", "沒想到，我姊姊喜歡機器人、汽車..."], keyA: "說實話", keyB: "幸運地", keyC: "沒想到" },
+            { qNum: 3, ans: "C", type: "eng_full", tts: "I was afraid I would be laughed at by others.", keyWord: "laughed at", qTxt: "I was afraid I would be laughed at by others.", opts: ["我怕我會被其他人罵。", "我怕我會被其他人處罰。", "我怕我會被其他人嘲笑。"], keyA: "罵", keyB: "處罰", keyC: "嘲笑" },
+            { qNum: 4, ans: "A", type: "eng_full", tts: "Everyone should be allowed to choose their own toys.", keyWord: "allowed to", qTxt: "Everyone should be allowed to choose their own toys.", opts: ["每個人都應該被允許選擇自己的玩具。", "每個人都應該被鼓勵選擇自己的玩具。", "每個人都應該被教導選擇自己的玩具。"], keyA: "允許", keyB: "鼓勵", keyC: "教導" },
+            { qNum: 5, ans: "B", type: "eng_full", tts: "It's time to break these toy rules.", keyWord: "break these toy rules", qTxt: "It's time to break these toy rules...", opts: ["是時候學習這些玩具規則了...", "是時候打破這些玩具規則了...", "是時候建立這些玩具規則了..."], keyA: "學習這些玩具規則", keyB: ["打破", "規則"], keyC: "建立這些玩具規則" }
+          ],
+          level3: [
+            { qNum: 6, ans: "C", type: "ch_full", tts: "shouldn't be only about fashion and hair styles.", keyWord: "只是關於", qTxt: "封面不應該只是關於時尚跟髮型，是嗎？", opts: ["shouldn't be never about fashion and hair styles...", "shouldn't be always about fashion and hair styles...", "shouldn't be only about fashion and hair styles..."], keyA: "never about", keyB: "always about", keyC: "only about" },
+            { qNum: 7, ans: "A", type: "ch_full", tts: "I wanted a Spider-Man comic book when I was little.", keyWord: "蜘蛛人漫畫書", qTxt: "我小時候想要一本蜘蛛人漫畫書。", opts: ["I wanted a Spider-Man comic book when I was little...", "I wanted a Spider-Man toy set when I was little...", "I wanted a Spider-Man poster when I was little..."], keyA: "comic book", keyB: "toy set", keyC: "poster" },
+            { qNum: 8, ans: "B", type: "ch_full", tts: "I hoped to buy a toy cooking set once.", keyWord: "烹飪玩具組", qTxt: "我曾經希望買一套烹飪玩具組。", opts: ["I hoped to buy a science toy set once...", "I hoped to buy a toy cooking set once...", "I hoped to buy a car toy set once..."], keyA: "science toy set", keyB: "toy cooking set", keyC: "car toy set" },
+            { qNum: 9, ans: "C", type: "ch_full", tts: "Toys don't have a gender, do they?", keyWord: "性別", qTxt: "玩具沒有性別，不是嗎？", opts: ["Toys don't have a price, do they?", "Toys don't have a rule, do they?", "Toys don't have a gender, do they?"], keyA: "price", keyB: "rule", keyC: "gender" },
+            { qNum: 10, ans: "A", type: "ch_full", tts: "It asked stores to stop using words like toys for boys.", keyWord: "停止使用", qTxt: "它請商店停止使用像「給男孩的玩具」這樣的字。", opts: ["It asked stores to stop using words like...", "It asked stores to keep using words like...", "It asked stores to try using words like..."], keyA: "stop using", keyB: "keep using", keyC: "try using" }
+          ]
+        },
+        reading: {
+          tag: "課文閱讀翻譯",
+          level2: [
+            { qNum: 1, ans: "B", type: "eng_full", tts: "A doctor and a nurse are treating her.", keyWord: "treating her", qTxt: "A doctor and a nurse are treating her.", opts: ["一位醫生和一位護理師正在照顧她。", "一位醫生和一位護理師正在治療她。", "一位醫生和一位護理師正在送她回家。"], keyA: "照顧她", keyB: "治療她", keyC: "送她回家" },
+            { qNum: 2, ans: "C", type: "eng_full", tts: "Gender stereotypes about jobs are formed in childhood.", keyWord: "formed in childhood", qTxt: "Gender stereotypes about jobs are formed in childhood.", opts: ["關於工作的性別刻板印象在學校裡已經形成。", "關於工作的性別刻板印象在成年後已經形成。", "關於工作的性別刻板印象在童年時期已經形成。"], keyA: "學校裡", keyB: "成年後", keyC: "童年時期" },
+            { qNum: 3, ans: "A", type: "eng_full", tts: "Men are often expected to do public service jobs.", keyWord: "public service", qTxt: "Men are often expected to do public service jobs...", opts: ["男人通常被期待從事公共服務的工作...", "男人通常被期待從事高薪收入的工作...", "男人通常被期待從事危險勞動的工作..."], keyA: "公共服務", keyB: "高薪收入", keyC: "危險勞動" },
+            { qNum: 4, ans: "B", type: "eng_full", tts: "It has helped a lot to make the job market more equal.", keyWord: "more equal", qTxt: "It has helped a lot to make the job market more equal...", opts: ["它大力協助讓就業市場更加熱門...", "它大力協助讓就業市場更加平等...", "它大力協助讓就業市場更加自由..."], keyA: "更加熱門", keyB: "更加平等", keyC: "更加自由" },
+            { qNum: 5, ans: "C", type: "eng_full", tts: "Barbie is a great role model, isn't she?", keyWord: "role model", qTxt: "Barbie is a great role model, isn't she?", opts: ["芭比是一個很好的領導者，不是嗎？", "芭比是一個很好的企業家，不是嗎？", "芭比是一個很好的榜樣，不是嗎？"], keyA: "領導者", keyB: "企業家", keyC: "榜樣" }
+          ],
+          level3: [
+            { qNum: 6, ans: "B", type: "ch_full", tts: "it's possible that you might have a gender stereotype.", keyWord: "性別刻板印象", qTxt: "你可能有性別刻板印象。", opts: ["it's possible that you might have a job stereotype.", "it's possible that you might have a gender stereotype.", "it's possible that you might have a toy stereotype."], keyA: "job stereotype", keyB: "gender stereotype", keyC: "toy stereotype" },
+            { qNum: 7, ans: "A", type: "ch_full", tts: "We learn these stereotypes from parents, relatives, or the media.", keyWord: "媒體", qTxt: "我們從父母、親戚或媒體得知這些刻板印象。", opts: ["We learn these stereotypes from parents, relatives, or the media.", "We learn these stereotypes from parents, relatives, or the schools.", "We learn these stereotypes from parents, relatives, or the stores."], keyA: "media", keyB: "schools", keyC: "stores" },
+            { qNum: 8, ans: "C", type: "ch_full", tts: "women are thought to be better at caring and teaching.", keyWord: "擅長", qTxt: "女人常被認為更擅長照護和教導的工作。", opts: ["women are thought to be more famous at caring and teaching...", "women are thought to be more busy at caring and teaching...", "women are thought to be better at caring and teaching..."], keyA: "more famous", keyB: "more busy", keyC: "better at" },
+            { qNum: 9, ans: "A", type: "ch_full", tts: "One toy company is trying to break gender stereotypes.", keyWord: "打破", qTxt: "一間玩具公司正致力於打破性別刻板印象。", opts: ["One toy company is trying to break gender stereotypes.", "One toy company is trying to change gender stereotypes.", "One toy company is trying to follow gender stereotypes."], keyA: "break", keyB: "change", keyC: "follow" },
+            { qNum: 10, ans: "B", type: "ch_full", tts: "kids learn that their gender does not decide their future jobs.", keyWord: "決定", qTxt: "性別不能決定他們未來的工作。", opts: ["kids learn that their gender does not choose their future jobs.", "kids learn that their gender does not decide their future jobs.", "kids learn that their gender does not stop their future jobs."], keyA: "choose", keyB: "decide", keyC: "stop" }
+          ]
+        }
+      },
+      "L4": {
+        title: "九上 L4 英文科講義",
+        dialogue: {
+          tag: "課文對話翻譯",
+          level2: [
+            { qNum: 1, ans: "A", type: "eng_full", tts: "I need you to come home as soon as possible.", keyWord: "ASAP", qTxt: "I need you to come home ASAP.", opts: ["我需要你儘快（趕快）回家。", "我需要你今晚七點前回家。", "我需要你順便買東西回家。"], keyA: ["儘快", "趕快"], keyB: "今晚七點前", keyC: "順便買東西" },
+            { qNum: 2, ans: "C", type: "eng_full", tts: "Aunt Beth had an accident on the farm.", keyWord: "accident", qTxt: "Aunt Beth had an accident on the farm.", opts: ["伯母在農場裡買了房子。", "伯母在農場裡迷路了。", "伯母在農場裡出了意外。"], keyA: "買了房子", keyB: "迷路了", keyC: "意外" },
+            { qNum: 3, ans: "B", type: "eng_full", tts: "This is the laughing emoji.", keyWord: "laughing emoji", qTxt: "This is the laughing emoji...", opts: ["這是個哭臉表情符號...", "這是個大笑的表情符號...", "這是個擊掌的表情符號..."], keyA: "哭臉", keyB: "大笑", keyC: "擊掌" },
+            { qNum: 4, ans: "A", type: "eng_full", tts: "I was not sure whether you were glad or unhappy.", keyWord: "glad or unhappy", qTxt: "I was not sure whether you were glad or unhappy...", opts: ["我不確定你對於意外感到高興還是難過...", "我不確定你對於意外感到生氣還是害怕...", "我不確定你對於意外感到著急還是平靜..."], keyA: "高興還是難過", keyB: "生氣還是害怕", keyC: "著急還是平靜" },
+            { qNum: 5, ans: "C", type: "eng_full", tts: "I'm praying that Aunt Beth will get better soon.", keyWord: "praying", qTxt: "I'm praying that Aunt Beth will get better soon.", opts: ["我正在祝福 Beth 阿姨快快好起來。", "我正在相信 Beth 阿姨快快好起來。", "我正在祈禱 Beth 阿姨快快好起來。"], keyA: "祝福", keyB: "相信", keyC: "祈禱" }
+          ],
+          level3: [
+            { qNum: 6, ans: "B", type: "ch_full", tts: "I can leave right away.", keyWord: "馬上", qTxt: "我可以馬上離開。", opts: ["I can leave later.", "I can leave right away.", "I can leave slowly."], keyA: "later", keyB: "right away", keyC: "slowly" },
+            { qNum: 7, ans: "A", type: "ch_full", tts: "I'm afraid she's having trouble sleeping.", keyWord: "無法入睡", qTxt: "恐怕她仍無法入睡。", opts: ["I'm afraid she's having trouble sleeping.", "I'm afraid she's feeling very tired.", "I'm afraid she's getting very angry."], keyA: "trouble sleeping", keyB: "feeling very tired", keyC: "getting very angry" },
+            { qNum: 8, ans: "C", type: "ch_full", tts: "She's in a lot of pain.", keyWord: "疼痛", qTxt: "她非常疼痛。", opts: ["She's in a lot of trouble.", "She's in a lot of danger.", "She's in a lot of pain."], keyA: "trouble", keyB: "danger", keyC: "pain" },
+            { qNum: 9, ans: "B", type: "ch_full", tts: "No, I googled the meaning of the emoji.", keyWord: "搜尋", qTxt: "我搜尋了這個表情符號的意思。", opts: ["No, I bought the meaning of the emoji.", "No, I googled the meaning of the emoji.", "No, I changed the meaning of the emoji."], keyA: "bought", keyB: "googled", keyC: "changed" },
+            { qNum: 10, ans: "A", type: "ch_full", tts: "lessons in how to use emojis.", keyWord: "表情符號", qTxt: "我認為我們都需要上幾堂如何使用表情符號的課。", opts: ["lessons in how to use emojis.", "lessons in how to use computers.", "lessons in how to use smartphones."], keyA: "emojis", keyB: "computers", keyC: "smartphones" }
+          ]
+        },
+        reading: {
+          tag: "課文閱讀翻譯",
+          level2: [
+            { qNum: 1, ans: "C", type: "eng_full", tts: "Breakfast was combined with lunch to form the word.", keyWord: "combined with", qTxt: "\"breakfast\" was combined with \"lunch\" to form the word.", opts: ["「早餐」和「午餐」替換而形成這個字。", "「早餐」和「午餐」區分而形成這個字。", "「早餐」和「午餐」結合而形成這個字。"], keyA: "替換", keyB: "區分", keyC: "結合" },
+            { qNum: 2, ans: "B", type: "eng_full", tts: "It first showed up in the late nineteenth century.", keyWord: "showed up", qTxt: "It first showed up in the late 19th century...", opts: ["此字第一次被創造於十九世紀末...", "此字第一次出現於十九世紀末...", "此字第一次進到字典於十九世紀末..."], keyA: "被創造", keyB: "出現", keyC: "進到字典" },
+            { qNum: 3, ans: "A", type: "eng_full", tts: "People found the pleasure of eating two meals at the same time.", keyWord: "pleasure", qTxt: "...people found the pleasure of eating two meals at the same time.", opts: ["人們發現兩餐一起吃的樂趣。", "人們發現兩餐一起吃的好處。", "人們發現兩餐一起吃的習慣。"], keyA: "樂趣", keyB: "好處", keyC: "習慣" },
+            { qNum: 4, ans: "C", type: "eng_full", tts: "Other words were made by accident.", keyWord: "by accident", qTxt: "Other words were made by accident.", opts: ["其他字則是故意地被創造出來的。", "其他字則是慢慢地被創造出來的。", "其他字則是意外地被創造出來的。"], keyA: "故意地", keyB: "慢慢地", keyC: "意外地" },
+            { qNum: 5, ans: "B", type: "eng_full", tts: "It's now commonly used all over the world.", keyWord: "commonly used", qTxt: "It's now commonly used all over the world.", opts: ["如今此字在世界各地被很少使用。", "如今此字在世界各地被廣泛地運用著。", "如今此字在世界各地被錯誤地翻譯。"], keyA: "很少使用", keyB: "廣泛地運用", keyC: "錯誤地翻譯" }
+          ],
+          level3: [
+            { qNum: 6, ans: "A", type: "ch_full", tts: "1,000 of them will enter dictionaries.", keyWord: "字典", qTxt: "每年約有五千四百個新的英文字進到字典中。", opts: ["1,000 of them will enter dictionaries.", "1,000 of them will enter books.", "1,000 of them will enter websites."], keyA: "dictionaries", keyB: "books", keyC: "websites" },
+            { qNum: 7, ans: "C", type: "ch_full", tts: "how people changed their eating habits.", keyWord: "飲食習慣", qTxt: "早午餐的歷史實際上是人們如何改變他們的飲食習慣的故事。", opts: ["how people changed their cooking habits.", "how people changed their living habits.", "how people changed their eating habits."], keyA: "cooking habits", keyB: "living habits", keyC: "eating habits" },
+            { qNum: 8, ans: "B", type: "ch_full", tts: "and uploaded it to the Internet.", keyWord: "上傳", qTxt: "一位澳洲男子拍了一張他自己的照片並上傳至網路。", opts: ["and downloaded it to the Internet.", "and uploaded it to the Internet.", "and sent it to the Internet."], keyA: "downloaded", keyB: "uploaded", keyC: "sent" },
+            { qNum: 9, ans: "A", type: "ch_full", tts: "The word selfie was then defined as taking a photo.", keyWord: "定義", qTxt: "自拍這個字接著就被定義為拍攝自己的照片。", opts: ["The word selfie was then defined as taking a photo...", "The word selfie was then known as taking a photo...", "The word selfie was then called as taking a photo..."], keyA: "defined", keyB: "known", keyC: "called" },
+            { qNum: 10, ans: "C", type: "ch_full", tts: "Can you guess and explain what usie means?", keyWord: "解釋", qTxt: "你能猜到並解釋 usie 是什麼意思嗎？", opts: ["Can you guess and spell what usie means?", "Can you guess and write what usie means?", "Can you guess and explain what usie means?"], keyA: "spell", keyB: "write", keyC: "explain" }
+          ]
+        }
+      },
+      "L5": {
+        title: "九上 L5 英文科講義",
+        dialogue: {
+          tag: "課文對話翻譯",
+          level2: [
+            { qNum: 1, ans: "B", type: "eng_full", tts: "Zollipops are a kind of candy which cleans your teeth.", keyWord: "cleans your teeth", qTxt: "Zollipops are a kind of candy which cleans your teeth.", opts: ["Zollipops 是一種保護你眼睛的糖果。", "Zollipops 是一種清潔你牙齒的糖果。", "Zollipops 是一種增加你熱量的糖果。"], keyA: "保護你眼睛", keyB: "清潔你牙齒", keyC: "增加你熱量" },
+            { qNum: 2, ans: "A", type: "eng_full", tts: "They are loved by people who have a sweet tooth.", keyWord: "sweet tooth", qTxt: "They are loved by people who have a sweet tooth...", opts: ["它們受到愛吃甜食的人們所喜愛...", "它們受到牙痛的人們所喜愛...", "它們受到重視健康的人們所喜愛..."], keyA: "愛吃甜食", keyB: "牙痛", keyC: "重視健康" },
+            { qNum: 3, ans: "C", type: "eng_full", tts: "They are healthy and natural.", keyWord: "healthy and natural", qTxt: "...they are healthy and natural.", opts: ["...它們是便宜又美味的。", "...它們是漂亮又精緻的。", "...它們是健康又天然的。"], keyA: "便宜又美味", keyB: "漂亮又精緻", keyC: "健康又天然" },
+            { qNum: 4, ans: "B", type: "eng_full", tts: "and the number is still on the rise.", keyWord: "on the rise", qTxt: "...and the number is still on the rise.", opts: ["...而且這個數字已經開始下降。", "...而且這個數字仍在上升中。", "...而且這個數字已經保持不變。"], keyA: "開始下降", keyB: "仍在上升中", keyC: "保持不變" },
+            { qNum: 5, ans: "A", type: "eng_full", tts: "Alina Morse is at the center of it all.", keyWord: "at the center of it all", qTxt: "Alina Morse is at the center of it all.", opts: ["Alina Morse 是這一切的中心人物。", "Alina Morse 是這間公司的發明者。", "Alina Morse 是這座城市的成功人物。"], keyA: "中心人物", keyB: "發明者", keyC: "成功人物" }
+          ],
+          level3: [
+            { qNum: 6, ans: "B", type: "ch_full", tts: "When her name is brought up.", keyWord: "提及", qTxt: "當她的名字被提及（談論）時...", opts: ["When her name is remembered...", "When her name is brought up...", "When her name is written..."], keyA: "remembered", keyB: "brought up", keyC: "written" },
+            { qNum: 7, ans: "C", type: "ch_full", tts: "They are lollipops with no sugar in them.", keyWord: "不含糖", qTxt: "它們是不含糖的棒棒糖。", opts: ["They are lollipops with a lot of sugar.", "They are lollipops with natural sugar.", "They are lollipops with no sugar in them."], keyA: "a lot of sugar", keyB: "natural sugar", keyC: "no sugar" },
+            { qNum: 8, ans: "A", type: "ch_full", tts: "The company has made millions of dollars.", keyWord: "賺了數百萬", qTxt: "這間公司自2014年起已賺了數百萬美元。", opts: ["The company has made millions of dollars...", "The company has spent millions of dollars...", "The company has saved millions of dollars..."], keyA: "made millions", keyB: "spent millions", keyC: "saved millions" },
+            { qNum: 9, ans: "B", type: "ch_full", tts: "She is the boss who owns Zolli Candy.", keyWord: "擁有", qTxt: "她是擁有 Zolli Candy 的老闆。", opts: ["She is the boss who starts Zolli Candy.", "She is the boss who owns Zolli Candy.", "She is the boss who helps Zolli Candy."], keyA: "starts", keyB: "owns", keyC: "helps" },
+            { qNum: 10, ans: "C", type: "ch_full", tts: "if you think she might be a middle-aged married woman.", keyWord: "中年", qTxt: "如果你認為她可能是某位中年已婚婦女...", opts: ["if you think she might be an old married woman...", "if you think she might be a young married woman...", "if you think she might be a middle-aged married woman..."], keyA: "old", keyB: "young", keyC: "middle-aged" }
+          ]
+        },
+        reading: {
+          tag: "課文閱讀翻譯",
+          level2: [
+            { qNum: 1, ans: "A", type: "eng_full", tts: "Some kids are really making their mark in the world.", keyWord: "making their mark", qTxt: "Some kids are really making their mark in the world.", opts: ["有些孩童真地在世界上嶄露頭角（留下印記）。", "有些孩童真地在世界上建立公司。", "有些孩童真地在世界上到處旅行。"], keyA: ["嶄露頭角", "留下印記"], keyB: "建立公司", keyC: "到處旅行" },
+            { qNum: 2, ans: "C", type: "eng_full", tts: "These young leaders are called kidpreneurs.", keyWord: "kidpreneurs", qTxt: "These young leaders are called \"kidpreneurs\"...", opts: ["這群年輕的領導者被稱為「青年企業家」。", "這群年輕的領導者被稱為「天才兒童」。", "這群年輕的領導者被稱為「青少年企業家」。"], keyA: "青年企業家", keyB: "天才兒童", keyC: "青少年企業家" },
+            { qNum: 3, ans: "B", type: "eng_full", tts: "Alina kept repeating this question.", keyWord: "repeating", qTxt: "Alina kept repeating this question...", opts: ["Alina 不斷思考這個問題...", "Alina 不斷重複這個問題...", "Alina 不斷詢問這個問題..."], keyA: "思考", keyB: "重複", keyC: "詢問" },
+            { qNum: 4, ans: "A", type: "eng_full", tts: "She looked for information on the Internet.", keyWord: "looked for information", qTxt: "She looked for information on the Internet...", opts: ["她接著上網蒐集（尋找）資訊...", "她接著上網購買零食...", "她接著上網下載遊戲..."], keyA: ["蒐集", "資訊"], keyB: "購買零食", keyC: "下載遊戲" },
+            { qNum: 5, ans: "C", type: "eng_full", tts: "these sweet and healthy treats brought in millions of dollars.", keyWord: "brought in", qTxt: "...these sweet and healthy treats brought in millions of dollars!", opts: ["...這些又甜又健康的零食花費了數百萬！", "...這些又甜又健康的零食節省了數百萬！", "...這些又甜又健康的零食帶來（賺進）了數百萬的收入！"], keyA: "花費了", keyB: "節省了", keyC: ["帶來", "賺進"] }
+          ],
+          level3: [
+            { qNum: 6, ans: "B", type: "ch_full", tts: "turning a business world which used to belong to grown-ups.", keyWord: "屬於", qTxt: "他們把從前屬於大人的企業界變成遊樂場。", opts: ["turning a business world which used to bring to grown-ups...", "turning a business world which used to belong to grown-ups...", "turning a business world which used to sell to grown-ups..."], keyA: "bring", keyB: "belong", keyC: "sell" },
+            { qNum: 7, ans: "A", type: "ch_full", tts: "but her dad said it was bad for her teeth.", keyWord: "對她的牙齒有害", qTxt: "一位行員給了她一枝棒棒糖，但她的父親說那對她的牙齒有害。", opts: ["but her dad said it was bad for her teeth.", "but her dad said it was good for her teeth.", "but her dad said it was sweet for her teeth."], keyA: "bad for her teeth", keyB: "good for her teeth", keyC: "sweet for her teeth" },
+            { qNum: 8, ans: "C", type: "ch_full", tts: "she also talked to dentists and doctors.", keyWord: "牙醫", qTxt: "她也諮詢了熟知有這方面專業知識的牙醫和醫生。", opts: ["she also talked to teachers and doctors...", "she also talked to clerks and doctors...", "she also talked to dentists and doctors..."], keyA: "teachers", keyB: "clerks", keyC: "dentists" },
+            { qNum: 9, ans: "B", type: "ch_full", tts: "She failed many times, but she didn't give up.", keyWord: "放棄", qTxt: "她失敗了很多次，但她沒有放棄。", opts: ["She failed many times, but she didn't give in.", "She failed many times, but she didn't give up.", "She failed many times, but she didn't stop."], keyA: "give in", keyB: "give up", keyC: "stop" },
+            { qNum: 10, ans: "A", type: "ch_full", tts: "All in all, Zollipops are one sweet deal!", keyWord: "總而言之", qTxt: "總而言之，Zollipops 是一個很棒的生意！", opts: ["All in all, Zollipops are one sweet deal!", "In fact, Zollipops are one sweet deal!", "What's more, Zollipops are one sweet deal!"], keyA: "All in all", keyB: "In fact", keyC: "What's more" }
+          ]
+        }
+      },
+      "L6": {
+        title: "九上 L6 英文科講義",
+        dialogue: {
+          tag: "課文對話翻譯",
+          level2: [
+            { qNum: 1, ans: "C", type: "eng_full", tts: "you might fall for one of the sales tricks.", keyWord: "fall for", qTxt: "...you might fall for one of the sales tricks...", opts: ["...你可能發現了促銷陷阱之一。", "...你可能避開了促銷陷阱之一。", "...你可能上當（落入）了促銷陷阱之一。"], keyA: "發現了", keyB: "避開了", keyC: ["上當", "落入"] },
+            { qNum: 2, ans: "B", type: "eng_full", tts: "These catch your eye and send a clear message.", keyWord: "catch your eye", qTxt: "These catch your eye and send a clear message...", opts: ["它們提醒你並傳達一個明確的訊息...", "它們吸引你的目光並傳達一個明確的訊息...", "它們欺騙你並傳達一個明確的訊息..."], keyA: "提醒你", keyB: "吸引你的目光", keyC: "欺騙你" },
+            { qNum: 3, ans: "A", type: "eng_full", tts: "Prices are made to appear much lower than they really are.", keyWord: "appear", qTxt: "Prices are made to appear much lower than they really are.", opts: ["價格本身也被設計成似乎（看起來）比實際低廉。", "價格本身也被設計成計算起來比實際低廉。", "價格本身也被設計成改變得比實際低廉。"], keyA: ["似乎", "看起來"], keyB: "計算起來", keyC: "改變得" },
+            { qNum: 4, ans: "C", type: "eng_full", tts: "This works because it fools you into spending more money.", keyWord: "fools you into", qTxt: "This works because it fools you into spending more money.", opts: ["這招很管用，因為它會阻止你花更多的錢。", "這招很管用，因為它會提醒你花更多的錢。", "這招很管用，因為它會誘使（欺騙）你花更多的錢。"], keyA: "阻止你", keyB: "提醒你", keyC: ["誘使", "欺騙"] },
+            { qNum: 5, ans: "B", type: "eng_full", tts: "you can be a smarter shopper whose money isn't wasted.", keyWord: "smarter shopper", qTxt: "...you can be a smarter shopper whose money isn't wasted.", opts: ["...你就能成為一個省錢的消費者。", "...你就能成為一個更聰明的消費者。", "...你就能成為一個快樂的消費者。"], keyA: "省錢的消費者", keyB: "更聰明的消費者", keyC: "快樂的消費者" }
+          ],
+          level3: [
+            { qNum: 6, ans: "A", type: "ch_full", tts: "Below are some ways smart store owners get you to buy more.", keyWord: "方法", qTxt: "以下是一些聰明的店主讓你買更多的力量或方法。", opts: ["Below are some ways smart store owners get you to buy more.", "Below are some ideas smart store owners get you to buy more.", "Below are some rules smart store owners get you to buy more."], keyA: "ways", keyB: "ideas", keyC: "rules" },
+            { qNum: 7, ans: "C", type: "ch_full", tts: "Look, you're getting a great deal!", keyWord: "撿到便宜", qTxt: "看，你撿到便宜（劃算交易）了！", opts: ["Look, you're getting a low price!", "Look, you're getting a free gift!", "Look, you're getting a great deal!"], keyA: "low price", keyB: "free gift", keyC: "great deal" },
+            { qNum: 8, ans: "B", type: "ch_full", tts: "$5.99 is just one cent cheaper than $6.00.", keyWord: "分錢", qTxt: "5.99元只比6.00元便宜了一分錢。", opts: ["$5.99 is just one dollar cheaper than $6.00.", "$5.99 is just one cent cheaper than $6.00.", "$5.99 is just one point cheaper than $6.00."], keyA: "dollar", keyB: "cent", keyC: "point" },
+            { qNum: 9, ans: "A", type: "ch_full", tts: "price signs often say things like Low Price or Best Deal.", keyWord: "最劃算", qTxt: "標價牌上經常寫著「低價」或「最劃算」。", opts: ["price signs often say things like Low Price or Best Deal.", "price signs often say things like Low Price or Great Sale.", "price signs often say things like Low Price or Free Gift."], keyA: "Best Deal", keyB: "Great Sale", keyC: "Free Gift" },
+            { qNum: 10, ans: "C", type: "ch_full", tts: "be sure to watch out for these sales tricks.", keyWord: "當心", qTxt: "下次你出門購物時，一定要當心這些促銷陷阱。", opts: ["be sure to look at these sales tricks.", "be sure to learn about these sales tricks.", "be sure to watch out for these sales tricks."], keyA: "look at", keyB: "learn about", keyC: "watch out for" }
+          ]
+        },
+        reading: {
+          tag: "課文閱讀翻譯",
+          level2: [
+            { qNum: 1, ans: "B", type: "eng_full", tts: "I thought you were just going to get some rice for the week.", keyWord: "rice for the week", qTxt: "I thought you were just going to get some rice for the week.", opts: ["我以為你們只是去那裡買些這週需要的飲料。", "我以為你們只是去那裡買些這週需要的米。", "我以為你們只是去那裡買些這週需要的起司。"], keyA: "飲料", keyB: "米", keyC: "起司" },
+            { qNum: 2, ans: "A", type: "eng_full", tts: "One of the clerks gave us some free samples to try.", keyWord: "free samples", qTxt: "One of the clerks gave us some free samples to try.", opts: ["那裡有一位店員給了我們一些免費試吃品。", "那裡有一位店員給了我們一些免費折價券。", "那裡有一位店員給了我們一些免費贈品。"], keyA: "免費試吃品", keyB: "免費折價券", keyC: "免費贈品" },
+            { qNum: 3, ans: "C", type: "eng_full", tts: "Are you saying I followed the eye level rule?", keyWord: "eye level rule", qTxt: "Are you saying I followed the eye level rule?", opts: ["你是說我遵守了碰觸高度規則嗎？", "你是說我遵守了最上層高度規則嗎？", "你是說我遵守了視線高度規則嗎？"], keyA: "碰觸高度規則", keyB: "最上層高度規則", keyC: "視線高度規則" },
+            { qNum: 4, ans: "B", type: "eng_full", tts: "Products at this level are more easily noticed and bought.", keyWord: "easily noticed and bought", qTxt: "Products at this level are more easily noticed and bought.", opts: ["在此層的商品較容易被拿取與試吃。", "在此層的商品較容易被注意與購買。", "在此層的商品較容易被忽略與錯過。"], keyA: "拿取與試吃", keyB: "注意與購買", keyC: "忽略與錯過" },
+            { qNum: 5, ans: "A", type: "eng_full", tts: "products which children are interested in are placed here.", keyWord: "placed here", qTxt: "...products which children are interested in are placed here.", opts: ["...孩子感興趣的產品時常被擺放在這裡。", "...孩子感興趣的產品時常被特價出售。", "...孩子感興趣的產品時常被藏最下面。"], keyA: "擺放在這裡", keyB: "特價出售", keyC: "藏最下面" }
+          ],
+          level3: [
+            { qNum: 6, ans: "C", type: "ch_full", tts: "How much did all that cost?", keyWord: "花了多少錢", qTxt: "全部花了多少錢？", opts: ["How much did all that take?", "How much did all that pay?", "How much did all that cost?"], keyA: "take", keyB: "pay", keyC: "cost" },
+            { qNum: 7, ans: "B", type: "ch_full", tts: "we saw many products that were on sale.", keyWord: "特價", qTxt: "我們看到好多在特價的商品。", opts: ["we saw many products that were on time.", "we saw many products that were on sale.", "we saw many products that were on the rise."], keyA: "on time", keyB: "on sale", keyC: "on the rise" },
+            { qNum: 8, ans: "A", type: "ch_full", tts: "I'm looking through all the things you bought.", keyWord: "瀏覽", qTxt: "我正瀏覽你們買的東西。", opts: ["I'm looking through all the things you bought...", "I'm looking for all the things you bought...", "I'm looking at all the things you bought..."], keyA: "looking through", keyB: "looking for", keyC: "looking at" },
+            { qNum: 9, ans: "C", type: "ch_full", tts: "Make sure every cent is spent wisely.", keyWord: "明智地使用", qTxt: "務必確保每一分錢都花在刀口上（明智地使用）。", opts: ["Make sure every cent is spent quickly.", "Make sure every cent is spent carefully.", "Make sure every cent is spent wisely."], keyA: "quickly", keyB: "carefully", keyC: "wisely" },
+            { qNum: 10, ans: "B", type: "ch_full", tts: "Customers seldom look at products at this level.", keyWord: "很少", qTxt: "顧客很少看最上層的商品。", opts: ["Customers often look at products at this level.", "Customers seldom look at products at this level.", "Customers never look at products at this level."], keyA: "often", keyB: "seldom", keyC: "never" }
+          ]
+        }
+      }
+    };
+
+    let currentLesson = "L1";
+    let activeInput = null;
+    let isAnswersRevealed = false;
+
+    function speakWord(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.70; // 慢速發音
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function escapeAttribute(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function getSpeechText(question) {
+      if (question.type === 'eng_full') return question.qTxt;
+      const correctIndex = ['A', 'B', 'C'].indexOf(question.ans);
+      return question.opts[correctIndex] || question.tts || question.qTxt;
+    }
+
+    function highlightOptionKeywords(optionText, keywordData) {
+      const keywords = Array.isArray(keywordData) ? keywordData : [keywordData];
+      return keywords.filter(Boolean).reduce((html, keyword) => {
+        return html.split(keyword).join(`<span class="target-word font-bold">${keyword}</span>`);
+      }, optionText);
+    }
+
+    function buildPageHtml(data, sectionType, lessonKey = currentLesson) {
+      const isDialogue = (sectionType === 'dialogue');
+      const pageData = isDialogue ? data.dialogue : data.reading;
+      const subtitleText = isDialogue ? "課文對話翻譯" : "課文閱讀翻譯";
+      const lessonNumber = lessonKey.replace('L', '');
+      const pageKind = isDialogue ? '對話篇' : '閱讀篇';
+      const displayTitle = `${lessonKey.replace('L', '九上 L')} 英文科講義 ${subtitleText}`;
+
+      let l2Html = '';
+      let l3Html = '';
+
+      // 大題一 (英翻中)
+      pageData.level2.forEach((q, rIdx) => {
+        const sentence = q.qTxt.replace(q.keyWord, `<span class="target-word font-bold tracking-tight">${q.keyWord}</span>`);
+        const optionLayoutClass = q.opts.some(opt => opt.length > 34) ? 'options-single-column' : 'options-ab-row';
+        
+        let optsHtml = '';
+        q.opts.forEach((opt, oIdx) => {
+          const label = ["A", "B", "C"][oIdx];
+          const lengthClass = opt.length >= 28 ? 'opt-long' : (opt.length >= 20 ? 'opt-medium' : '');
+          const keywordData = q[["keyA", "keyB", "keyC"][oIdx]];
+          const highlightedOpt = highlightOptionKeywords(opt, keywordData);
+          optsHtml += `
+            <div onclick="selectAnswer(event, this, '${label}')" data-opt-id="${label}" class="opt-box ${lengthClass}">
+              (${label}) ${highlightedOpt}
+            </div>`;
+        });
+
+        l2Html += `
+          <div class="quiz-row level2-row transition" data-ans="${q.ans}" data-tts="${escapeAttribute(getSpeechText(q))}" onclick="setActiveRow(this)">
+            <div class="flex items-start">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[15px]">(</span>
+              <input type="text" maxlength="1" readonly class="answer-input w-5 h-5 text-center font-bold text-indigo-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 pointer-events-none">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[15px]">) ${q.qNum}.</span>
+              <span class="font-medium text-slate-800 font-english text-[15px] pl-1 select-none flex-grow truncate leading-snug">${sentence}</span>
+            </div>
+            <div class="${optionLayoutClass} pl-10 text-[13px] font-chinese text-slate-500 font-medium shrink-0">
+              ${optsHtml}
+            </div>
+          </div>
+        `;
+      });
+
+      // 大題二 (中翻英)
+      pageData.level3.forEach((q, rIdx) => {
+        const sentence = q.qTxt.replace(q.keyWord, `<span class="target-word font-bold underline decoration-2 decoration-indigo-500 text-indigo-700 font-chinese">${q.keyWord}</span>`);
+        
+        let optsHtml = '';
+        q.opts.forEach((opt, oIdx) => {
+          const label = ["A", "B", "C"][oIdx];
+          const highlightedOpt = opt.replace(q[["keyA", "keyB", "keyC"][oIdx]], `<span class="target-word font-bold text-slate-800 font-english">${q[["keyA", "keyB", "keyC"][oIdx]]}</span>`);
+          const englishLengthClass = opt.length >= 72 ? 'opt-english-long' : '';
+          optsHtml += `
+            <div onclick="selectAnswer(event, this, '${label}')" data-opt-id="${label}" class="opt-box ${englishLengthClass}">
+              (${label}) ${highlightedOpt}
+            </div>`;
+        });
+
+        l3Html += `
+          <div class="quiz-row level3-row transition" data-ans="${q.ans}" data-tts="${escapeAttribute(getSpeechText(q))}" onclick="setActiveRow(this)">
+            <div class="flex items-start">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[15px]">(</span>
+              <input type="text" maxlength="1" readonly class="answer-input w-5 h-5 text-center font-bold text-indigo-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 pointer-events-none">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[15px]">) ${q.qNum}.</span>
+              <span class="font-bold text-slate-700 font-chinese text-[15px] pl-1 select-none flex-grow truncate leading-snug">${sentence}</span>
+            </div>
+            <div class="pl-10 text-[12.5px] font-english text-slate-500 font-medium shrink-0 space-y-0.5">
+              ${optsHtml}
+            </div>
+          </div>
+        `;
+      });
+
+      return `
+        <div class="page-a4">
+          <!-- 頂部標頭與學生資料填寫區 -->
+          <div class="border-b-4 border-double border-slate-400 pb-1.5 mb-1.5 shrink-0">
+            <div class="flex justify-between items-end">
+              <div>
+                <h1 class="text-[24px] font-bold text-slate-800 tracking-wider font-chinese text-left leading-tight">${displayTitle}</h1>
+              </div>
+              <div class="flex gap-4 text-[16px] font-bold text-slate-700 text-right leading-none mb-1 font-chinese">
+                <div>班級：__________</div>
+                <div>姓名：__________</div>
+              </div>
+            </div>
+            <!-- 說明欄 -->
+            <div class="mt-1.5 flex flex-col justify-start bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
+              <span class="text-[14px] font-bold text-slate-800 font-chinese">◎ 每題十分，錯字用紅筆訂正，中文、英文各 1 次。</span>
+            </div>
+          </div>
+
+          <!-- 題目連續區塊（英翻中 43%、中翻英 57%，各 5 題） -->
+          <div class="questions-layout flex-grow">
+            <!-- 大題一 (英翻中) -->
+            <div class="question-section level2-section">
+              <div class="bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded text-[15px] font-bold text-indigo-900 mb-1.5 font-chinese shrink-0 flex justify-between items-center">
+                <span>Lesson ${lessonNumber} ${pageKind} 英翻中</span>
+                <div class="no-print flex items-center gap-1.5">
+                  <span class="score-badge hidden px-1.5 py-0.2 bg-emerald-600 text-white text-[10px] font-bold rounded">答對 0 / 5</span>
+                  <button onclick="checkSectionAnswers(event, this)" class="px-2 py-0.2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-[10px] transition shadow-sm">批改</button>
+                  <button onclick="toggleSectionHint(event, this)" class="px-2 py-0.2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded text-[10px] transition shadow-sm">提示</button>
+                  <button onclick="clearSectionAnswers(event, this)" class="px-2 py-0.2 bg-slate-600 hover:bg-slate-700 text-white font-bold rounded text-[10px] transition shadow-sm">清空</button>
+                  <button onclick="toggleSectionAnswers(event, this)" class="px-2 py-0.2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded text-[10px] transition shadow-sm">解答</button>
+                </div>
+              </div>
+              <div class="space-y-1 pl-1 flex-grow flex flex-col justify-between pb-1">
+                ${l2Html}
+              </div>
+            </div>
+            
+            <!-- 中間虛線分隔 -->
+            <div class="border-t-2 border-dashed border-slate-300 my-1.5 shrink-0"></div>
+
+            <!-- 大題二 (中翻英) -->
+            <div class="question-section level3-section">
+              <div class="bg-purple-50 border border-purple-200 px-2 py-0.5 rounded text-[15px] font-bold text-purple-900 mb-1.5 font-chinese shrink-0 flex justify-between items-center">
+                <span>Lesson ${lessonNumber} ${pageKind} 中翻英<span class="no-print">（點題可聽正確英文）</span></span>
+                <div class="no-print flex items-center gap-1.5">
+                  <span class="score-badge hidden px-1.5 py-0.2 bg-emerald-600 text-white text-[10px] font-bold rounded">答對 0 / 5</span>
+                  <button onclick="checkSectionAnswers(event, this)" class="px-2 py-0.2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-[10px] transition shadow-sm">批改</button>
+                  <button onclick="toggleSectionHint(event, this)" class="px-2 py-0.2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded text-[10px] transition shadow-sm">提示</button>
+                  <button onclick="clearSectionAnswers(event, this)" class="px-2 py-0.2 bg-slate-600 hover:bg-slate-700 text-white font-bold rounded text-[10px] transition shadow-sm">清空</button>
+                  <button onclick="toggleSectionAnswers(event, this)" class="px-2 py-0.2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded text-[10px] transition shadow-sm">解答</button>
+                </div>
+              </div>
+              <div class="pl-1 flex-grow flex flex-col justify-start gap-1">
+                ${l3Html}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 載入指定課單元
+    function loadLesson(lessonKey) {
+      currentLesson = lessonKey;
+      isAnswersRevealed = false;
+      
+      document.querySelectorAll('.lesson-btn').forEach(btn => {
+        const k = btn.getAttribute('data-lesson');
+        btn.className = (k === lessonKey) ? 
+          "lesson-btn py-1.5 rounded-lg text-xs font-bold border transition font-chinese bg-indigo-600 text-white border-indigo-600 shadow-md" :
+          "lesson-btn py-1.5 rounded-lg text-xs font-bold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-indigo-50 border-slate-200 shadow-sm";
+      });
+
+      const container = document.getElementById('all-pages-container');
+      container.innerHTML = '';
+
+      const data = database[lessonKey];
+      // 輸出正面（對話篇）和反面（閱讀篇）
+      container.innerHTML += buildPageHtml(data, 'dialogue', lessonKey);
+      container.innerHTML += buildPageHtml(data, 'reading', lessonKey);
+    }
+
+    // 每列直接攜帶自己的 TTS，避免課別、頁別或陣列索引錯位。
+    function setActiveRow(element) {
+      document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      element.classList.add('active-row');
+      activeInput = element.querySelector('.answer-input');
+
+      const ttsText = element.dataset.tts;
+      if (ttsText) speakWord(ttsText);
+    }
+
+    // 選項防呆直接點擊填入，並自動移動聚焦到下一題
+    function selectAnswer(event, optElement, label) {
+      event.stopPropagation(); // 阻止重複發音
+
+      const row = optElement.closest('.quiz-row');
+      if (row) {
+        const input = row.querySelector('.answer-input');
+        if (input) {
+          input.value = label;
+          input.className = "answer-input w-5 h-5 text-center font-bold text-indigo-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 cursor-pointer pointer-events-none";
+        }
+        row.classList.remove('active-row');
+        
+        // 只把黃底移到下一題，不自動播放，避免聽到下一題卻以為仍是原題。
+        const allRows = Array.from(document.querySelectorAll('.quiz-row'));
+        const currentIdx = allRows.indexOf(row);
+        if (currentIdx !== -1 && currentIdx < allRows.length - 1) {
+          const nextRow = allRows[currentIdx + 1];
+          document.querySelectorAll('.quiz-row').forEach(item => item.classList.remove('active-row'));
+          nextRow.classList.add('active-row');
+          activeInput = nextRow.querySelector('.answer-input');
+        } else {
+          activeInput = null;
+        }
+      }
+    }
+
+    // 局部大題批改 (包含答對題數顯示徽章)
+    function checkSectionAnswers(event, btnElement) {
+      event.stopPropagation();
+      const section = btnElement.closest('.question-section');
+      if (!section) return;
+
+      const rows = section.querySelectorAll('.quiz-row');
+      const totalCount = rows.length;
+      let correctCount = 0;
+
+      rows.forEach(row => {
+        const input = row.querySelector('.answer-input');
+        const userAns = input.value.trim().toUpperCase();
+        const correctAns = row.getAttribute('data-ans');
+
+        if (userAns === '') return;
+
+        if (userAns === correctAns) {
+          correctCount++;
+          input.className = "answer-input w-5 h-5 text-center font-bold text-emerald-700 bg-emerald-100 rounded focus:outline-none uppercase text-[15px] shrink-0 mx-0.5 cursor-pointer pointer-events-none border-b-2 border-emerald-500";
+        } else {
+          input.value = '';
+          input.className = "answer-input w-5 h-5 text-center font-bold text-indigo-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 pointer-events-none";
+        }
+      });
+
+      // 更新與顯示大題答對數
+      const badge = btnElement.parentElement.querySelector('.score-badge');
+      if (badge) {
+        badge.innerText = `答對 ${correctCount} / ${totalCount}`;
+        badge.classList.remove('hidden');
+      }
+    }
+
+    // 局部大題清空重設
+    function clearSectionAnswers(event, btnElement) {
+      event.stopPropagation();
+      const section = btnElement.closest('.question-section');
+      if (!section) return;
+
+      const inputs = section.querySelectorAll('.answer-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.className = "answer-input w-5 h-5 text-center font-bold text-indigo-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 pointer-events-none";
+      });
+
+      const badge = btnElement.parentElement.querySelector('.score-badge');
+      if (badge) {
+        badge.classList.add('hidden');
+      }
+
+      // 移除此區域的高亮與狀態
+      section.querySelectorAll('.quiz-row').forEach(row => {
+        row.classList.remove('bg-yellow-200/90', 'active-row');
+        row.querySelectorAll('.target-word').forEach(el => el.classList.remove('target-highlight'));
+        row.querySelectorAll('.opt-box').forEach(el => el.classList.remove('text-red-500', 'font-bold'));
+      });
+
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+
+    // 提示採所見即所得：畫面紅字會原樣保留到列印結果。
+    function toggleSectionHint(event, btnElement) {
+      event.stopPropagation();
+      const section = btnElement.closest('.question-section');
+      if (!section) return;
+
+      const rows = section.querySelectorAll('.quiz-row');
+      const shouldShow = !section.querySelector('.target-highlight');
+      rows.forEach(row => {
+        const targets = row.querySelectorAll('.target-word');
+
+        targets.forEach(el => el.classList.toggle('target-highlight', shouldShow));
+      });
+    }
+
+    // 局部大題解答顯示/隱藏
+    function toggleSectionAnswers(event, btnElement) {
+      event.stopPropagation();
+      const section = btnElement.closest('.question-section');
+      if (!section) return;
+
+      const inputs = section.querySelectorAll('.answer-input');
+      let currentlyShowing = false;
+      
+      // 檢測是否已公布
+      inputs.forEach(input => {
+        if (input.classList.contains('text-red-600')) {
+          currentlyShowing = true;
+        }
+      });
+
+      const badge = btnElement.parentElement.querySelector('.score-badge');
+      if (badge) badge.classList.add('hidden');
+
+      inputs.forEach(input => {
+        const row = input.closest('.quiz-row');
+        const ans = row.getAttribute('data-ans');
+        if (!currentlyShowing) {
+          input.value = ans;
+          input.className = "answer-input w-5 h-5 text-center font-bold text-red-600 bg-red-50 rounded focus:outline-none uppercase text-[15px] shrink-0 mx-0.5 pointer-events-none cursor-pointer border-b-2 border-red-400";
+        } else {
+          input.value = '';
+          input.className = "answer-input w-5 h-5 text-center font-bold text-indigo-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 pointer-events-none";
+        }
+      });
+    }
+
+    // 全域公布與隱藏解答
+    function toggleAllAnswers() {
+      isAnswersRevealed = !isAnswersRevealed;
+      document.querySelectorAll('.quiz-row').forEach(row => {
+        const input = row.querySelector('.answer-input');
+        const ans = row.getAttribute('data-ans');
+        if (isAnswersRevealed) {
+          input.value = ans;
+          input.className = "answer-input w-5 h-5 text-center font-bold text-red-600 bg-red-50 rounded focus:outline-none uppercase text-[15px] shrink-0 mx-0.5 border-b-2 border-rose-400 pointer-events-none";
+        } else {
+          input.value = '';
+          input.className = "answer-input w-5 h-5 text-center font-bold text-indigo-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 pointer-events-none";
+        }
+      });
+      document.querySelectorAll('.score-badge').forEach(badge => badge.classList.add('hidden'));
+    }
+
+    // 重設清除所有輸入
+    function clearAllAnswers() {
+      document.querySelectorAll('.quiz-row').forEach(row => {
+        row.classList.remove('active-row');
+        const input = row.querySelector('.answer-input');
+        input.value = '';
+        input.className = "answer-input w-5 h-5 text-center font-bold text-indigo-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[15px] shrink-0 mx-0.5 pointer-events-none";
+        
+        row.querySelectorAll('.target-word').forEach(el => el.classList.remove('target-highlight'));
+        row.querySelectorAll('.opt-box').forEach(el => {
+          el.classList.remove('bg-rose-50', 'text-rose-600', 'text-red-500', 'font-bold');
+          const t = el.querySelector('.target-word');
+          if (t) t.classList.remove('target-highlight');
+        });
+      });
+      document.querySelectorAll('.score-badge').forEach(badge => badge.classList.add('hidden'));
+      isAnswersRevealed = false;
+      activeInput = null;
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function printCurrentLesson() {
+      document.body.classList.remove('printing-all');
+      window.print();
+    }
+
+    function printAllLessons() {
+      const printContainer = document.getElementById('print-all-container');
+      printContainer.innerHTML = Object.keys(database).map(lessonKey => {
+        const data = database[lessonKey];
+        return buildPageHtml(data, 'dialogue', lessonKey) + buildPageHtml(data, 'reading', lessonKey);
+      }).join('');
+      document.body.classList.add('printing-all');
+      requestAnimationFrame(() => window.print());
+    }
+
+    window.addEventListener('afterprint', () => {
+      document.body.classList.remove('printing-all');
+      document.getElementById('print-all-container').innerHTML = '';
+    });
+
+    // 初始化課單元導覽列
+    function initApp() {
+      const selectorContainer = document.getElementById('lesson-selectors');
+      selectorContainer.innerHTML = '';
+      
+      for (let i = 1; i <= 6; i++) {
+        const btn = document.createElement('button');
+        btn.innerText = `九上 L${i}`;
+        btn.setAttribute('data-lesson', `L${i}`);
+        btn.className = "lesson-btn py-1.5 rounded-lg text-xs font-bold border transition font-chinese";
+        btn.onclick = () => loadLesson(`L${i}`);
+        selectorContainer.appendChild(btn);
+      }
+      
+      // 預設載入 L1
+      loadLesson("L1");
+    }
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>
