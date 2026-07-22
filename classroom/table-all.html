@@ -124,7 +124,7 @@
         
         <!-- 一行式公文極簡標題 (已移除底部的橫條黑線，日期與版本靠右) -->
         <div class="flex items-baseline justify-between mb-1 leading-none">
-            <span class="text-[14.5px] font-extrabold tracking-wide text-slate-950 timetable-font">
+            <span class="text-[15.5px] font-extrabold tracking-wide text-slate-950 timetable-font">
                 臺南市立新市國民中學 114 學年度第二學期 異想教室總課表
             </span>
             <span class="text-[9.5px] text-slate-700 font-bold timetable-font tracking-tight" id="version-tag">
@@ -379,7 +379,7 @@
             return fallbackPalettes[Math.abs(hash) % fallbackPalettes.length];
         }
 
-        // 修改學生名單：標準雙軌道對齊，字體放大至 11px，行間距保持最密 leading-none
+        // 學生名單維持雙軌道對齊，字體 11.5px，行高保持 leading-none
         function formatStudentsHTML(studentsStr) {
             if (!studentsStr) return "";
             const list = studentsStr.split(/[、,\s]+/).map(s => s.trim()).filter(s => s !== "");
@@ -390,8 +390,8 @@
                 const s2 = list[i+1] || "";
                 html += `
                     <div class="grid grid-cols-2 gap-x-1.5 w-full text-left font-semibold text-slate-900 tracking-tight leading-none mt-px">
-                        <span class="truncate pl-[2px] text-[11px]">${s1}</span>
-                        <span class="truncate pl-[2px] text-[11px]">${s2}</span>
+                        <span class="truncate pl-[2px] text-[11.5px]">${s1}</span>
+                        <span class="truncate pl-[2px] text-[11.5px]">${s2}</span>
                     </div>
                 `;
             }
@@ -424,10 +424,15 @@
                 // 左側作息時間
                 const timeTd = document.createElement('td');
                 timeTd.className = "bg-slate-50 border-r-2 border-slate-950 px-1 py-0";
+                const [startTime, endTime] = pt.time.split('-');
                 timeTd.innerHTML = `
                     <div class="flex flex-col justify-center items-center h-full font-bold">
-                        <div class="text-[10px] text-slate-900 leading-tight">${pt.period}</div>
-                        <div class="text-[8px] text-slate-500 mt-1 scale-90 leading-none font-mono font-medium">${pt.time}</div>
+                        <div class="text-[11px] text-slate-900 leading-none">${pt.period}</div>
+                        <div class="text-[9.5px] text-slate-500 mt-1 leading-none font-mono font-medium">
+                            <div>${startTime}</div>
+                            <div class="text-[8px] my-px">～</div>
+                            <div>${endTime}</div>
+                        </div>
                     </div>
                 `;
                 tr.appendChild(timeTd);
@@ -435,7 +440,7 @@
                 // 星期一至星期五各格
                 for (let dayIdx = 0; dayIdx < 5; dayIdx++) {
                     const td = document.createElement('td');
-                    td.className = "p-px border-r border-slate-400 align-top h-full overflow-hidden";
+                    td.className = "py-px px-[3px] border-r border-slate-400 align-top h-full overflow-hidden";
                     if (dayIdx === 4) td.classList.remove('border-r');
 
                     const cellGroups = matrix[periodIdx][dayIdx];
@@ -445,7 +450,7 @@
                     } else {
                         const wrapper = document.createElement('div');
                         // 緊湊文字組別：僅保留 1px 的組別間距
-                        wrapper.className = `flex flex-col w-full h-full justify-start gap-px`;
+                        wrapper.className = `flex flex-col w-full h-full justify-start gap-[2px]`;
 
                         cellGroups.forEach(group => {
                             const colors = getTeacherColor(group.teacher);
@@ -460,9 +465,9 @@
                                 <span class="mt-[3px] h-[6px] w-[6px] flex-shrink-0 rounded-full ${colors.bar}"></span>
                                 <div class="min-w-0 flex-1">
                                     <!-- 第一列：教師色圓點、科目名稱(老師)、地點 -->
-                                    <div class="flex items-center justify-between text-[11.5px] font-extrabold leading-none tracking-tight ${colors.text}">
+                                    <div class="flex items-center justify-between text-[12px] font-extrabold leading-[1.08] tracking-tight ${colors.text}">
                                         <span class="truncate pr-0.5">${group.groupName}(${displayTeacher})</span>
-                                        <span class="flex-shrink-0 pl-0.5 font-mono font-bold text-[9px] text-slate-700">${compressedLocation}</span>
+                                        <span class="flex-shrink-0 ml-1 pr-px font-mono font-bold text-[9px] text-slate-700">${compressedLocation}</span>
                                     </div>
                                     <!-- 學生名單維持兩人一行、黑色文字 -->
                                     <div class="w-full">
