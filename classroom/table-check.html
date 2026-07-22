@@ -28,7 +28,7 @@
         .page-container {
             width: var(--paper-width);
             height: var(--paper-height);
-            margin: 20px auto;
+            margin: 20px 0;
             padding: 14mm 16mm;
             overflow: hidden;
             background: #fff;
@@ -50,46 +50,53 @@
             line-height: normal;
         }
         .meta-value { display: inline-block; min-width: 80px; padding: 0 8px 1px; border-bottom: 1.5px solid #000; text-align: center; }
-        .week-write-area { display: inline-block; min-width: 108px; padding: 0 8px 1px; border-bottom: 1.5px solid #000; text-align: center; }
-        .timetable-wrap { flex: 1 1 auto; min-height: 0; margin-top: 10px; display: flex; flex-direction: column; }
-        .attendance-table { width: 100%; height: 100%; border: 2.5px solid #000; border-collapse: collapse; table-layout: fixed; }
+        .week-write-area { display: inline-block; min-width: 72px; padding: 0 4px 1px; border-bottom: 1.5px solid #000; text-align: center; }
+        .timetable-wrap { flex: 0 0 auto; margin-top: 0; }
+        .attendance-table { width: 100%; border: 2.5px solid #000; border-collapse: collapse; table-layout: fixed; }
         .attendance-table th, .attendance-table td { border: 1px solid #000; }
         .attendance-table th {
-            height: 25px;
+            height: 28px;
             padding: 2px;
             background: #fafafa;
-            font-size: 14px;
+            font-size: 14.5px;
             font-weight: 700;
             line-height: 1.15;
             text-align: center;
         }
+        .attendance-table thead tr:first-child th { background: #fff; }
         .attendance-table thead tr:last-child th { border-bottom-width: 2px; }
         .attendance-table tbody td {
-            padding: 2px 3px;
+            padding: 1px 2px;
             overflow: hidden;
             vertical-align: middle;
-            font-size: 11px;
-            line-height: 1.12;
+            font-size: 11.5px;
+            line-height: 1.05;
         }
         .attendance-table .period-cell {
             width: 15%;
             padding: 3px 1px;
             vertical-align: middle;
-            font-size: 14px;
+            font-size: 14.5px;
             font-weight: 700;
             line-height: 1.15;
             text-align: center;
         }
-        .period-time { margin-top: 2px; color: #374151; font-size: 12px; font-weight: 400; line-height: 1.08; }
-        .course-group { width: 100%; text-align: left; }
-        .course-group + .course-group { margin-top: 2px; }
-        .course-line { display: block; width: 58%; color: #000; font-size: 10.5px; line-height: 1.12; text-align: left; white-space: normal; }
-        .course-subject { margin-right: 4px; font-size: 11px; font-weight: 700; }
-        .course-teacher { margin-right: 3px; color: #000; font-size: 9.5px; font-weight: 400; }
-        .course-students { color: #000; font-size: 10.5px; font-weight: 400; }
+        .period-time { margin-top: 2px; color: #374151; font-size: 12.5px; font-weight: 400; line-height: 1.08; }
+        .course-row td { height: 88px; }
+        .course-group { width: 100%; text-align: center; }
+        .course-group + .course-group { margin-top: 2px; padding-top: 1px; }
+        .course-subject { font-size: 14.5px; font-weight: 700; line-height: 1.05; }
+        .course-teacher { margin-top: 1px; font-size: 11px; font-weight: 400; line-height: 1.05; }
+        .student-list { margin-top: 2px; font-size: 12.5px; font-weight: 700; line-height: 1.05; }
+        .student-name { white-space: nowrap; }
+        .attendance-table tbody tr.absence-row td { height: 28px; padding: 1px 3px; vertical-align: middle; font-size: 14.5px; line-height: 1; }
+        .absence-label { font-size: 14.5px; font-weight: 700; line-height: 1; text-align: center; }
+        .absence-entry { background: #fff; text-align: left; }
         .empty-cell { color: transparent; }
-        .signature-row { flex: 0 0 auto; margin-top: 7px; padding-right: 5px; font-size: 15px; font-weight: 700; line-height: 1.2; text-align: right; }
-        .signature-space { display: inline-block; width: 55mm; height: 18px; border-bottom: 1.5px solid #000; vertical-align: bottom; }
+        .signature-row { flex: 0 0 auto; display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0; padding: 0 5px; font-size: 15px; font-weight: 700; line-height: 1.2; }
+        .attendance-legend { font-size: 14px; font-weight: 400; white-space: nowrap; }
+        .signature-block { text-align: right; white-space: nowrap; }
+        .signature-space { display: inline-block; width: 55mm; height: 18px; vertical-align: bottom; }
         #print-all-section { display: none; }
         @media (max-width: 1100px) {
             .preview-scroll-wrapper { justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -164,9 +171,9 @@
             </section>
         </aside>
 
-        <section id="preview-panel" class="min-w-0 flex flex-col items-center">
+        <section id="preview-panel" class="min-w-0 flex flex-col items-start">
             <div id="preview-caption" class="no-print text-sm font-semibold text-slate-500 mb-2 self-start">👁️ A4 點名表預覽</div>
-            <div class="preview-scroll-wrapper w-full flex justify-center">
+            <div class="preview-scroll-wrapper w-full flex justify-start">
                 <div id="single-page-container"></div>
             </div>
         </section>
@@ -187,15 +194,14 @@
             { id: "4", name: "第四節", start: "11:05", end: "11:50" },
             { id: "5", name: "第五節", start: "13:15", end: "14:00" },
             { id: "6", name: "第六節", start: "14:10", end: "14:55" },
-            { id: "7", name: "第七節", start: "15:05", end: "15:50" },
-            { id: "8", name: "第八節", start: "16:00", end: "16:45" }
+            { id: "7", name: "第七節", start: "15:05", end: "15:50" }
         ];
         const colorPalette = ["#be123c", "#15803d", "#1d4ed8", "#a21caf", "#b45309", "#0369a1", "#be185d", "#4d7c0f", "#4338ca", "#0f766e"];
 
         let globalRawData = [];
         let attendanceRecords = [];
         let teachersList = [];
-        let versionString = "114-2 更新版";
+        let versionString = "115-1 更新版";
         let scheduleDatabase = {};
 
         function escapeHtml(value) {
@@ -314,14 +320,23 @@
             try {
                 const response = await fetch(`${url}&t=${Date.now()}`);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                parseAndBuildSchedule(await response.text());
+                const loaded = parseAndBuildSchedule(await response.text());
+                if (!loaded) throw new Error("試算表沒有可用的教師課程資料");
             } catch (error) {
                 if (retries > 0) setTimeout(() => fetchWithRetry(url, retries - 1, delay * 2), delay);
                 else {
-                    updateStatus("fallback", "雲端資料載入失敗");
-                    showErrorModal("無法讀取 Google 試算表。請確認網路連線及試算表是否已發布到網路。");
+                    loadFallbackTestData();
                 }
             }
+        }
+
+        function loadFallbackTestData() {
+            const fallbackCSV = [
+                "備註,特教教師,分組,節數,上課地點,時間代碼,時間,學生",
+                ",測試教師,英語一A,1,異想教室,11,星期一第一節,101測試學生、102示範學生"
+            ].join("\n");
+            parseAndBuildSchedule(fallbackCSV);
+            updateStatus("fallback", "雲端資料載入失敗，目前顯示一筆測試資料");
         }
 
         function updateStatus(type, message) {
@@ -345,7 +360,7 @@
 
         function parseAndBuildSchedule(csvText) {
             const rows = parseCSV(csvText);
-            if (rows.length < 2) { showErrorModal("試算表內無有效資料或欄位格式不符。"); return; }
+            if (rows.length < 2) return false;
             globalRawData = rows;
             const noteFound = rows.slice(1).map(row => row[0]?.trim()).find(note => note && !["備註", "改版日期", "列印日期", "改版日期："].includes(note));
             if (noteFound) versionString = noteFound;
@@ -383,14 +398,14 @@
             const regularTeachers = new Set(attendanceRecords.filter(record => !record.itinerant).map(record => record.teacher));
             teachersList = Array.from(regularTeachers).sort((a, b) => a.localeCompare(b, "zh-Hant"));
             if (!teachersList.length && !attendanceRecords.some(record => record.itinerant)) {
-                showErrorModal("在「特教教師」欄位中找不到可用的教師資料。");
-                return;
+                return false;
             }
             populateDropdown();
             document.getElementById("teacher-select").disabled = false;
             document.getElementById("btn-print-attendance").disabled = false;
             updateStatus("success", "與試算表成功連線，資料已同步");
             renderPreview();
+            return true;
         }
 
         function populateDropdown() {
@@ -437,10 +452,14 @@
 
         function generateCourseGroupHTML(course, showTeacher) {
             const color = getGroupColor(course.subject);
-            const teacher = showTeacher ? `<span class="course-teacher">（${escapeHtml(course.teacher)}）</span>` : "";
-            const students = course.students.length ? course.students.map(escapeHtml).join("、") : "（無學生資料）";
+            const teacher = showTeacher ? `<div class="course-teacher" style="color:${color}">（${escapeHtml(course.teacher)}）</div>` : "";
+            const students = course.students.length
+                ? course.students.map(student => `<div class="student-name">${escapeHtml(student)}</div>`).join("")
+                : `<div class="student-name">（無學生資料）</div>`;
             return `<div class="course-group">
-                <div class="course-line"><span class="course-subject" style="color:${color}">${escapeHtml(course.subject)}</span>${teacher}<span class="course-students">${students}</span></div>
+                <div class="course-subject" style="color:${color}">${escapeHtml(course.subject)}</div>
+                ${teacher}
+                <div class="student-list" style="color:${color}">${students}</div>
             </div>`;
         }
 
@@ -448,11 +467,20 @@
             const schedule = getScheduleForTarget(target);
             const showTeacher = target === ITINERANT_VALUE;
             return periodsConfig.map(period => {
-                const cells = Array.from({ length: 5 }, (_, dayIndex) => {
+                const courseCells = Array.from({ length: 5 }, (_, dayIndex) => {
                     const courses = schedule[`${dayIndex + 1}${period.id}`] || [];
                     return `<td>${courses.length ? courses.map(course => generateCourseGroupHTML(course, showTeacher)).join("") : `<span class="empty-cell">－</span>`}</td>`;
                 }).join("");
-                return `<tr><td class="period-cell"><div>${period.name}</div><div class="period-time">${period.start}<br>${period.end}</div></td>${cells}</tr>`;
+                const absenceCells = Array.from({ length: 5 }, () => `<td class="absence-entry">&nbsp;</td>`).join("");
+                return `
+                    <tr class="course-row">
+                        <td class="period-cell"><div>${period.name}</div><div class="period-time">${period.start}<br>${period.end}</div></td>
+                        ${courseCells}
+                    </tr>
+                    <tr class="absence-row">
+                        <td class="absence-label">出缺席</td>
+                        ${absenceCells}
+                    </tr>`;
             }).join("");
         }
 
@@ -461,7 +489,7 @@
             return `<div class="page-container official-doc attendance-page">
                 <div>
                     <h1 class="document-title">臺南市立新市國民中學</h1>
-                    <h2 class="document-subtitle">114學年度第二學期 異想教室教師出缺席點名表</h2>
+                    <h2 class="document-subtitle">115學年度第一學期 異想教室教師出缺席點名表</h2>
                     <div class="document-meta">
                         <div>教師：<span class="meta-value">${escapeHtml(getTargetLabel(target))}</span></div>
                         <div>第<span class="week-write-area">${weekNumber}</span>週</div>
@@ -473,7 +501,10 @@
                         <tbody>${generateTimetableRowsHTML(target)}</tbody>
                     </table>
                 </div>
-                <div class="signature-row">任課教師簽章：<span class="signature-space"></span></div>
+                <div class="signature-row">
+                    <div class="signature-block">任課教師簽章：<span class="signature-space"></span></div>
+                    <div class="attendance-legend">（○全部出席　×缺席　班級姓名）</div>
+                </div>
             </div>`;
         }
 
