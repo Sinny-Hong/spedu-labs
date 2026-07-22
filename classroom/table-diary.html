@@ -3,343 +3,526 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新市國中特教教室日誌系統</title>
+    <title>異想教室－教室日誌</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&display=swap');
-        
+        :root {
+            --paper-width: 210mm;
+            --paper-height: 297mm;
+            --paper-padding-x: 10mm;
+            --paper-padding-y: 9mm;
+        }
+        * { box-sizing: border-box; }
         body {
-            font-family: "標楷體", "KAIU", "DFKai-SB", serif;
-            background-color: #f3f4f6;
+            margin: 0;
+            background: #f1f5f9;
+            color: #0f172a;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
         }
-        
-        /* A4 直式列印規範 */
-        .page-a4 {
-            width: 210mm;
-            min-height: 297mm;
-            padding: 15mm 15mm;
-            margin: 10px auto;
-            background: #ffffff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            box-sizing: border-box;
+        .official-doc {
+            color: #000;
+            font-family: "DFKai-SB", "BiauKai", "Noto Serif TC", serif;
+            line-height: 1.35;
+        }
+        .page-container {
+            width: var(--paper-width);
+            height: var(--paper-height);
+            margin: 20px 0;
+            padding: 14mm 16mm;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, .12);
             position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-
-        /* 產生手寫空間的公文線條 */
-        .diary-table th, .diary-table td {
-            border: 1.5px solid #000000 !important;
-            height: 88px;
-            vertical-align: top;
-            padding: 4px;
-            background-color: #ffffff !important; /* 強制移除底色 */
+        .page-container.attendance-page { justify-content: flex-start; }
+        .document-title { margin: 0; padding: 0; font-size: 22px; font-weight: 700; letter-spacing: 4px; line-height: normal; text-align: center; }
+        .document-subtitle { margin: 4px 0 0; padding: 0; font-size: 20px; font-weight: 700; letter-spacing: 2px; line-height: normal; text-align: center; }
+        .diary-title-row { display: flex; justify-content: flex-end; align-items: baseline; gap: 14px; margin: 0 4px 4px; font-size: 18px; font-weight: 700; line-height: 1.2; text-align: right; white-space: nowrap; }
+        .diary-title { font-size: 20px; letter-spacing: 2px; }
+        .document-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 14px 8px 0;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: normal;
         }
-        
-        .diary-table th {
-            height: 35px !important;
+        .meta-value { display: inline-block; min-width: 80px; padding: 0 8px 1px; border-bottom: 1.5px solid #000; text-align: center; }
+        .week-write-area { display: inline-block; min-width: 36px; padding: 0 2px 1px; border-bottom: 1.5px solid #000; text-align: center; }
+        .timetable-wrap { flex: 0 0 auto; margin-top: 0; }
+        .attendance-table { width: 100%; border: 2.5px solid #000; border-collapse: collapse; table-layout: fixed; }
+        .attendance-table th, .attendance-table td { border: 1px solid #000; }
+        .attendance-table th {
+            height: 28px;
+            padding: 2px;
+            background: #fafafa;
+            font-size: 14.5px;
+            font-weight: 700;
+            line-height: 1.15;
+            text-align: center;
+        }
+        .attendance-table thead tr:first-child th { background: #fff; }
+        .attendance-table thead tr:last-child th { border-bottom-width: 2px; }
+        .attendance-table tbody td {
+            padding: 1px 2px;
+            overflow: hidden;
             vertical-align: middle;
-            font-weight: bold;
+            font-size: 11.5px;
+            line-height: 1.05;
         }
-
-        /* 控制台樣式 */
-        #control-panel {
-            background: #1f2937;
-            color: white;
-            padding: 15px;
-            max-width: 210mm;
-            margin: 0 auto;
-            border-radius: 8px 8px 0 0;
-            font-family: system-ui, -apple-system, sans-serif;
+        .attendance-table .period-cell {
+            width: 15%;
+            padding: 3px 1px;
+            vertical-align: middle;
+            font-size: 14.5px;
+            font-weight: 700;
+            line-height: 1.15;
+            text-align: center;
         }
-
-        /* 列印防護 */
+        .period-time { margin-top: 2px; color: #374151; font-size: 12.5px; font-weight: 400; line-height: 1.08; }
+        .course-row td { height: 100px; padding-top: 5px; }
+        .attendance-table tbody tr.course-row td:not(.period-cell) { vertical-align: top; }
+        .course-group { width: 100%; text-align: center; }
+        .course-group + .course-group { margin-top: 2px; padding-top: 1px; }
+        .course-subject { font-size: 14.5px; font-weight: 700; line-height: 1.05; }
+        .course-teacher { margin-top: 1px; font-size: 11px; font-weight: 400; line-height: 1.05; }
+        .student-list { margin-top: 2px; font-size: 12.5px; font-weight: 700; line-height: 1.05; }
+        .student-name { white-space: nowrap; }
+        .attendance-table tbody tr.absence-row td { height: 28px; padding: 1px 3px; vertical-align: middle; font-size: 14.5px; line-height: 1; }
+        .absence-label { font-size: 14.5px; font-weight: 700; line-height: 1; text-align: center; }
+        .absence-entry { background: #fff; text-align: left; }
+        .empty-cell { color: transparent; }
+        .signature-row { flex: 0 0 auto; display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0; padding: 0 5px; font-size: 15px; font-weight: 700; line-height: 1.2; }
+        .diary-signature { white-space: nowrap; }
+        .diary-sign-space { display: inline-block; width: 29mm; height: 18px; vertical-align: bottom; }
+        #print-all-section { display: none; }
+        @media (max-width: 1100px) {
+            .preview-scroll-wrapper { justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        }
+        @page { size: A4 portrait; margin: 0; }
         @media print {
-            body {
-                background: none;
-            }
-            #control-panel {
-                display: none !important;
-            }
-            .page-a4 {
-                margin: 0;
-                box-shadow: none;
-                width: 210mm;
-                height: 297mm;
+            html, body { width: 210mm; margin: 0 !important; background: #fff !important; }
+            .no-print { display: none !important; }
+            #app-main, #preview-panel, .preview-scroll-wrapper { display: block !important; width: auto !important; max-width: none !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+            .page-container {
+                width: 210mm !important;
+                height: 297mm !important;
+                margin: 0 !important;
+                padding: 14mm 16mm !important;
+                border: 0 !important;
+                box-shadow: none !important;
+                break-after: page;
+                break-inside: avoid;
                 page-break-after: always;
+                page-break-inside: avoid;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
             }
+            .page-container:last-child { break-after: auto; page-break-after: auto; }
+            .page-container.attendance-page { justify-content: flex-start !important; }
+            #single-page-container { display: block !important; }
+            body.print-batch-mode #single-page-container { display: none !important; }
+            body.print-batch-mode #print-all-section { display: block !important; }
+            .attendance-table th { background: #fff !important; }
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
 <body>
+    <header class="no-print bg-slate-900 text-white shadow-md">
+        <div class="max-w-[1500px] mx-auto px-4 py-3 flex items-center gap-3">
+            <div class="bg-emerald-600 p-2 rounded-lg" aria-hidden="true">✓</div>
+            <div>
+                <h1 class="text-lg font-bold tracking-wide">異想教室日誌</h1>
+                <div id="sync-status-badge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-blue-900/50 border border-blue-700 text-blue-300 mt-0.5">
+                    <span id="sync-status-icon" class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                    <span id="sync-status-text">正在讀取雲端資料……</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <div id="control-panel" class="shadow-md">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-2">
-                <span class="font-bold text-yellow-400">選擇填寫教師：</span>
-                <select id="teacher-select" class="bg-gray-700 text-white px-3 py-1.5 rounded border border-gray-600 focus:outline-none focus:border-yellow-400">
-                    <option value="洪欣怡">洪欣怡 老師</option>
-                    <option value="許杏凰">許杏凰 老師</option>
-                    <option value="陳秋錡">陳秋錡 老師</option>
-                    <option value="孫瑞彤">孫瑞彤 老師</option>
-                    <option value="曾筱雯">曾筱雯 老師</option>
+    <main id="app-main" class="max-w-[1500px] mx-auto px-4 mt-6 grid grid-cols-1 xl:grid-cols-[280px_minmax(0,1fr)] gap-6 items-start">
+        <aside class="no-print flex flex-col gap-5 xl:sticky xl:top-6">
+            <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <label for="teacher-select" class="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">👤 教師</label>
+                <select id="teacher-select" class="w-full bg-slate-50 border-2 border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 font-medium focus:outline-none focus:border-emerald-500" disabled>
+                    <option value="">載入中……</option>
                 </select>
-                <span id="sync-status" class="text-xs text-gray-400 ml-2">正在與雲端連線...</span>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded text-sm font-semibold transition-colors">
-                    🖨️ 列印本頁日誌
-                </button>
-            </div>
-        </div>
-    </div>
+            </section>
 
-    <div class="page-a4">
-        <div class="text-center mb-4">
-            <h1 class="text-2xl font-bold tracking-wider" style="font-family: 'Noto Serif TC', serif;">
-                114學年度第二學期 <span id="title-classroom">異想教室</span>日誌
-            </h1>
-            <div class="flex justify-between mt-2 text-base px-2">
-                <div>教師：<span id="info-teacher" class="font-bold text-lg">洪欣怡</span></div>
-                <div>第_______週</div>
+            <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">📅 日期</h2>
+                <div class="space-y-2 text-sm text-slate-700">
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="date-mode" value="blank" checked class="accent-emerald-600">空白（預設）</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="date-mode" value="auto" class="accent-emerald-600">自動帶入日期</label>
+                </div>
+                <label for="semester-start-date" class="block text-xs font-bold text-slate-500 mt-4 mb-2">學期開始日期</label>
+                <input id="semester-start-date" type="date" value="2026-08-31" disabled class="w-full bg-slate-100 border-2 border-slate-200 rounded-lg px-3 py-2 text-slate-700 disabled:text-slate-400 disabled:cursor-not-allowed focus:outline-none focus:border-emerald-500">
+                <p class="mt-2 text-[11px] leading-relaxed text-slate-500">自動模式會將所選日期回推到該週星期一，再連續產生 21 週。</p>
+            </section>
+
+            <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">🖨️ 列印</h2>
+                <button id="btn-print-attendance" type="button" onclick="printAttendanceSheets()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors disabled:bg-slate-400" disabled>產生並開啟瀏覽器列印</button>
+                <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg p-3 text-xs mt-4 leading-relaxed"><strong>列印設定：</strong><br>A4、直向、邊界選擇「無」、比例 100%。可在瀏覽器輸入頁碼或頁碼範圍。</div>
+            </section>
+        </aside>
+
+        <section id="preview-panel" class="min-w-0 flex flex-col items-start">
+            <div id="preview-caption" class="no-print text-sm font-semibold text-slate-500 mb-2 self-start">👁️ A4 教室日誌預覽</div>
+            <div class="preview-scroll-wrapper w-full flex justify-start">
+                <div id="single-page-container"></div>
             </div>
-        </div>
+        </section>
+    </main>
 
-        <table class="w-full diary-table text-sm">
-            <thead>
-                <tr class="text-center">
-                    <th style="width: 10%;">節次</th>
-                    <th style="width: 18%;">星期一</th>
-                    <th style="width: 18%;">星期二</th>
-                    <th style="width: 18%;">星期三</th>
-                    <th style="width: 18%;">星期四</th>
-                    <th style="width: 18%;">星期五</th>
-                </tr>
-            </thead>
-            <tbody id="diary-tbody">
-                </tbody>
-        </table>
-
-        <div class="mt-8 flex justify-between text-base px-4">
-            <div>任課教師：</div>
-            <div>輔導主任：</div>
-            <div>教務主任：</div>
-        </div>
-    </div>
+    <div id="print-all-section"></div>
 
     <script>
-        // A3授課的 Google CSV 發布網址
         const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=1823409322&single=true&output=csv";
-        
-        // 防呆備用本地資料庫（若連線失敗或無對應資料時，直接查表顯示該老師的地點簡稱）
-        const fallbackRooms = {
-            "洪欣怡": "異想C",
-            "許杏凰": "異想E",
-            "陳秋錡": "異想M",
-            "孫瑞彤": "團諮室",
-            "曾筱雯": "直播室"
+        const ALL_TEACHERS_VALUE = "__ALL_TEACHERS__";
+        const ITINERANT_VALUE = "__ITINERANT__";
+        const DEFAULT_START_DATE = "2026-08-31";
+        const WEEKDAYS = ["星期一", "星期二", "星期三", "星期四", "星期五"];
+        const periodsConfig = [
+            { id: "1", name: "第一節", start: "08:20", end: "09:05" },
+            { id: "2", name: "第二節", start: "09:15", end: "10:00" },
+            { id: "3", name: "第三節", start: "10:10", end: "10:55" },
+            { id: "4", name: "第四節", start: "11:05", end: "11:50" },
+            { id: "5", name: "第五節", start: "13:15", end: "14:00" },
+            { id: "6", name: "第六節", start: "14:10", end: "14:55" },
+            { id: "7", name: "第七節", start: "15:05", end: "15:50" }
+        ];
+        const colorPalette = ["#be123c", "#15803d", "#1d4ed8", "#a21caf", "#b45309", "#0369a1", "#be185d", "#4d7c0f", "#4338ca", "#0f766e"];
+
+        let globalRawData = [];
+        let attendanceRecords = [];
+        let teachersList = [];
+        let versionString = "115-1 更新版";
+        let scheduleDatabase = {};
+
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>'"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[char]));
+        }
+
+        function getGroupColor(subject) {
+            if (!subject) return "#000000";
+            let hash = 0;
+            for (let i = 0; i < subject.length; i++) hash = subject.charCodeAt(i) + ((hash << 5) - hash);
+            return colorPalette[Math.abs(hash) % colorPalette.length];
+        }
+
+        function parseLocalDate(value) {
+            const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || DEFAULT_START_DATE);
+            if (!match) return new Date(Date.UTC(2026, 7, 31));
+            return new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+        }
+
+        function addUtcDays(date, days) {
+            const result = new Date(date.getTime());
+            result.setUTCDate(result.getUTCDate() + days);
+            return result;
+        }
+
+        function getMondayOfWeek(date) {
+            const day = date.getUTCDay();
+            const distance = day === 0 ? -6 : 1 - day;
+            return addUtcDays(date, distance);
+        }
+
+        function generate21Weeks(startValue) {
+            const firstMonday = getMondayOfWeek(parseLocalDate(startValue));
+            return Array.from({ length: 21 }, (_, weekIndex) => ({
+                number: weekIndex + 1,
+                dates: Array.from({ length: 5 }, (_, dayIndex) => addUtcDays(firstMonday, weekIndex * 7 + dayIndex))
+            }));
+        }
+
+        function formatMonthDay(date) {
+            return `${date.getUTCMonth() + 1}/${date.getUTCDate()}`;
+        }
+
+        function cleanTeacherName(name) {
+            return String(name || "").replace(/\s*老師\s*$/, "").trim();
+        }
+
+        function isItinerantRecord(record) {
+            return [record.note, record.rawTeacher, record.teacher, record.subject, record.location]
+                .some(value => /巡迴/.test(String(value || "")));
+        }
+
+        function parseCSV(text) {
+            const lines = [];
+            let row = [""];
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const next = text[i + 1];
+                if (char === '"') {
+                    if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
+                    else inQuotes = !inQuotes;
+                } else if (char === "," && !inQuotes) row.push("");
+                else if ((char === "\r" || char === "\n") && !inQuotes) {
+                    if (char === "\r" && next === "\n") i++;
+                    lines.push(row); row = [""];
+                } else row[row.length - 1] += char;
+            }
+            if (row.length > 1 || row[0] !== "") lines.push(row);
+            return lines;
+        }
+
+        function buildItinerantSchedule(records = attendanceRecords) {
+            const merged = {};
+            records.filter(record => record.itinerant).forEach(record => {
+                record.codes.forEach(code => {
+                    if (!merged[code]) merged[code] = [];
+                    merged[code].push(record);
+                });
+            });
+            return merged;
+        }
+
+        function getScheduleForTarget(target) {
+            return target === ITINERANT_VALUE ? buildItinerantSchedule() : (scheduleDatabase[target] || {});
+        }
+
+        function getPrintTargets(selection) {
+            if (selection === ALL_TEACHERS_VALUE) return [...teachersList];
+            if (selection === ITINERANT_VALUE) return [ITINERANT_VALUE];
+            return selection ? [selection] : [];
+        }
+
+        function buildPrintPlan(selection, dateMode, startValue) {
+            const targets = getPrintTargets(selection);
+            const weeks = dateMode === "auto" ? generate21Weeks(startValue) : [null];
+            return targets.flatMap(target => weeks.map(week => ({ target, week })));
+        }
+
+        window.onload = function () {
+            bindControls();
+            fetchWithRetry(csvUrl, 5, 1000);
         };
 
-        let rawDatabase = []; // 存放從 Google 撈回來的原始陣列
+        function bindControls() {
+            document.getElementById("teacher-select").addEventListener("change", renderPreview);
+            document.querySelectorAll('input[name="date-mode"]').forEach(input => input.addEventListener("change", () => {
+                document.getElementById("semester-start-date").disabled = getDateMode() !== "auto";
+                renderPreview();
+            }));
+            document.getElementById("semester-start-date").addEventListener("change", renderPreview);
+        }
 
-        // 節次名稱與時間對照
-        const periodConfig = [
-            { id: 1, name: "第一節", time: "08:20-09:05" },
-            { id: 2, name: "第二節", time: "09:15-10:00" },
-            { id: 3, name: "第三節", time: "10:10-10:55" },
-            { id: 4, name: "第四節", time: "11:05-11:50" },
-            { id: 5, name: "第五節", time: "13:15-14:00" },
-            { id: 6, name: "第六節", time: "14:10-14:55" },
-            { id: 7, name: "第七節", time: "15:05-15:50" }
-        ];
+        async function fetchWithRetry(url, retries, delay) {
+            updateStatus("connecting", `正在連線試算表……（剩餘重試 ${retries} 次）`);
+            try {
+                const response = await fetch(`${url}&t=${Date.now()}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const loaded = parseAndBuildSchedule(await response.text());
+                if (!loaded) throw new Error("試算表沒有可用的教師課程資料");
+            } catch (error) {
+                if (retries > 0) setTimeout(() => fetchWithRetry(url, retries - 1, delay * 2), delay);
+                else {
+                    loadFallbackTestData();
+                }
+            }
+        }
 
-        // 初始化
-        window.addEventListener("DOMContentLoaded", () => {
-            initTableStructure();
-            fetchCloudData();
-            
-            // 監聽下拉選單切換
-            document.getElementById("teacher-select").addEventListener("change", (e) => {
-                renderTeacherDiary(e.target.value);
+        function loadFallbackTestData() {
+            const fallbackCSV = [
+                "備註,特教教師,分組,節數,上課地點,時間代碼,時間,學生",
+                ",測試教師,英語一A,1,異想教室,11,星期一第一節,101測試學生、102示範學生"
+            ].join("\n");
+            parseAndBuildSchedule(fallbackCSV);
+            updateStatus("fallback", "雲端資料載入失敗，目前顯示一筆測試資料");
+        }
+
+        function updateStatus(type, message) {
+            const badge = document.getElementById("sync-status-badge");
+            const icon = document.getElementById("sync-status-icon");
+            const text = document.getElementById("sync-status-text");
+            badge.className = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium mt-0.5 border ";
+            icon.className = "w-2 h-2 rounded-full ";
+            if (type === "success") {
+                badge.classList.add("bg-emerald-900/50", "border-emerald-700", "text-emerald-300");
+                icon.classList.add("bg-emerald-400");
+            } else if (type === "connecting") {
+                badge.classList.add("bg-blue-900/50", "border-blue-700", "text-blue-300");
+                icon.classList.add("bg-blue-400", "animate-pulse");
+            } else {
+                badge.classList.add("bg-amber-950", "border-amber-600", "text-amber-300");
+                icon.classList.add("bg-amber-400");
+            }
+            text.textContent = message;
+        }
+
+        function parseAndBuildSchedule(csvText) {
+            const rows = parseCSV(csvText);
+            if (rows.length < 2) return false;
+            globalRawData = rows;
+            const noteFound = rows.slice(1).map(row => row[0]?.trim()).find(note => note && !["備註", "改版日期", "列印日期", "改版日期："].includes(note));
+            if (noteFound) versionString = noteFound;
+
+            attendanceRecords = [];
+            scheduleDatabase = {};
+            for (let index = 1; index < rows.length; index++) {
+                const row = rows[index];
+                if (row.length < 8) continue;
+                const rawTeacher = row[1]?.trim() || "";
+                const teacher = cleanTeacherName(rawTeacher);
+                const subject = row[2]?.trim() || "";
+                const codes = (row[5]?.trim() || "").split(/[\s,，]+/).map(value => value.trim()).filter(Boolean);
+                if (!teacher || !subject || !codes.length) continue;
+                const record = {
+                    note: row[0]?.trim() || "",
+                    rawTeacher,
+                    teacher,
+                    subject,
+                    periods: row[3]?.trim() || "",
+                    location: row[4]?.trim() || "",
+                    codes,
+                    time: row[6]?.trim() || "",
+                    students: (row[7]?.trim() || "").split(/[\s、,，]+/).map(value => value.trim()).filter(Boolean)
+                };
+                record.itinerant = isItinerantRecord(record);
+                attendanceRecords.push(record);
+                if (!scheduleDatabase[teacher]) scheduleDatabase[teacher] = {};
+                codes.forEach(code => {
+                    if (!scheduleDatabase[teacher][code]) scheduleDatabase[teacher][code] = [];
+                    scheduleDatabase[teacher][code].push(record);
+                });
+            }
+
+            const regularTeachers = new Set(attendanceRecords.filter(record => !record.itinerant).map(record => record.teacher));
+            teachersList = Array.from(regularTeachers).sort((a, b) => a.localeCompare(b, "zh-Hant"));
+            if (!teachersList.length && !attendanceRecords.some(record => record.itinerant)) {
+                return false;
+            }
+            populateDropdown();
+            document.getElementById("teacher-select").disabled = false;
+            document.getElementById("btn-print-attendance").disabled = false;
+            updateStatus("success", "與試算表成功連線，資料已同步");
+            renderPreview();
+            return true;
+        }
+
+        function populateDropdown() {
+            const select = document.getElementById("teacher-select");
+            select.innerHTML = `<option value="${ALL_TEACHERS_VALUE}">全部教師</option>`;
+            teachersList.forEach(teacher => {
+                const option = document.createElement("option");
+                option.value = teacher;
+                option.textContent = teacher;
+                select.appendChild(option);
             });
+            const itineraryOption = document.createElement("option");
+            itineraryOption.value = ITINERANT_VALUE;
+            itineraryOption.textContent = "巡迴輔導";
+            select.appendChild(itineraryOption);
+            select.value = ALL_TEACHERS_VALUE;
+        }
+
+        function getDateMode() {
+            return document.querySelector('input[name="date-mode"]:checked')?.value || "blank";
+        }
+
+        function getTargetLabel(target) {
+            return target === ITINERANT_VALUE ? "巡迴輔導" : target;
+        }
+
+        function renderPreview() {
+            if (!attendanceRecords.length) return;
+            const selection = document.getElementById("teacher-select").value;
+            const previewTarget = selection === ALL_TEACHERS_VALUE ? teachersList[0] : selection;
+            if (!previewTarget) return;
+            const week = getDateMode() === "auto" ? generate21Weeks(document.getElementById("semester-start-date").value)[0] : null;
+            document.getElementById("single-page-container").innerHTML = generateAttendancePageHTML(previewTarget, week);
+            const suffix = selection === ALL_TEACHERS_VALUE ? `（全部教師列印將從 ${getTargetLabel(previewTarget)} 開始）` : "";
+            document.getElementById("preview-caption").textContent = `👁️ A4 教室日誌預覽${suffix}`;
+        }
+
+        function generateDateHeaderHTML(week) {
+            const dates = week ? week.dates.map(formatMonthDay) : ["", "", "", "", ""];
+            return `
+                <tr><th style="width:15%">日期</th>${dates.map(date => `<th style="width:17%">${date}</th>`).join("")}</tr>
+                <tr><th>星期</th>${WEEKDAYS.map(day => `<th>${day}</th>`).join("")}</tr>`;
+        }
+
+        function generateCourseGroupHTML(course) {
+            const color = getGroupColor(course.subject);
+            return `<div class="course-group">
+                <div class="course-subject" style="color:${color}">${escapeHtml(course.subject)}</div>
+            </div>`;
+        }
+
+        function generateTimetableRowsHTML(target) {
+            const schedule = getScheduleForTarget(target);
+            return periodsConfig.map(period => {
+                const courseCells = Array.from({ length: 5 }, (_, dayIndex) => {
+                    const courses = schedule[`${dayIndex + 1}${period.id}`] || [];
+                    return `<td>${courses.length ? courses.map(course => generateCourseGroupHTML(course)).join("") : `<span class="empty-cell">－</span>`}</td>`;
+                }).join("");
+                const absenceCells = Array.from({ length: 5 }, () => `<td class="absence-entry">&nbsp;</td>`).join("");
+                return `
+                    <tr class="course-row">
+                        <td class="period-cell"><div>${period.name}</div><div class="period-time">${period.start}<br>${period.end}</div></td>
+                        ${courseCells}
+                    </tr>
+                    <tr class="absence-row">
+                        <td class="absence-label">缺席</td>
+                        ${absenceCells}
+                    </tr>`;
+            }).join("");
+        }
+
+        function generateAttendancePageHTML(target, week) {
+            const weekNumber = week ? week.number : "";
+            return `<div class="page-container official-doc attendance-page">
+                <div class="diary-title-row">
+                    <span class="diary-title">異想教室日誌</span>
+                    <span>教師：<span class="meta-value">${escapeHtml(getTargetLabel(target))}</span></span>
+                    <span>（第<span class="week-write-area">${weekNumber}</span>週）</span>
+                </div>
+                <div class="timetable-wrap">
+                    <table class="attendance-table">
+                        <thead>${generateDateHeaderHTML(week)}</thead>
+                        <tbody>${generateTimetableRowsHTML(target)}</tbody>
+                    </table>
+                </div>
+                <div class="signature-row">
+                    <div class="diary-signature">任課教師：<span class="diary-sign-space"></span></div>
+                    <div class="diary-signature">輔導主任：<span class="diary-sign-space"></span></div>
+                    <div class="diary-signature">教務主任：<span class="diary-sign-space"></span></div>
+                </div>
+            </div>`;
+        }
+
+        function printAttendanceSheets() {
+            const selection = document.getElementById("teacher-select").value;
+            const dateMode = getDateMode();
+            const plan = buildPrintPlan(selection, dateMode, document.getElementById("semester-start-date").value);
+            if (!plan.length) { showErrorModal("目前沒有可列印的教師資料。"); return; }
+            const section = document.getElementById("print-all-section");
+            section.innerHTML = plan.map(item => generateAttendancePageHTML(item.target, item.week)).join("");
+            document.body.classList.add("print-batch-mode");
+            setTimeout(() => window.print(), 250);
+        }
+
+        window.addEventListener("afterprint", () => {
+            document.body.classList.remove("print-batch-mode");
+            document.getElementById("print-all-section").innerHTML = "";
         });
 
-        // 1. 建立空的 7 節表格架構
-        function initTableStructure() {
-            const tbody = document.getElementById("diary-tbody");
-            tbody.innerHTML = "";
-            
-            periodConfig.forEach(p => {
-                let rowHtml = `<tr data-period="${p.id}">
-                    <td class="text-center font-bold flex flex-col justify-center items-center" style="height:88px; vertical-align:middle; line-height:1.2;">
-                        <div>${p.name}</div>
-                        <div class="text-[11px] font-normal text-gray-500 mt-1">${p.time}</div>
-                    </td>`;
-                for (let day = 1; day <= 5; day++) {
-                    rowHtml += `<td data-day="${day}" class="relative flex flex-col justify-between">
-                        <div class="course-title font-bold text-left leading-tight"></div>
-                        <div class="flex justify-end items-center text-[11px] border-t border-gray-300 pt-1 mt-auto">
-                            <span class="mr-3">缺席：</span>
-                            <span class="border border-black w-3 h-3 inline-block mr-1"></span>
-                            <span class="border border-black w-3 h-3 inline-block mr-1"></span>
-                            <span class="border border-black w-3 h-3 inline-block"></span>
-                        </div>
-                    </td>`;
-                }
-                rowHtml += `</tr>`;
-                tbody.innerHTML += rowHtml;
-            });
-        }
-
-        // 2. 異步撈取 Google 試算表發布的 CSV
-        function fetchCloudData() {
-            const statusEl = document.getElementById("sync-status");
-            // 加入時間戳記破解快取
-            const finalUrl = csvUrl + "&t=" + new Date().getTime();
-
-            fetch(finalUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error("網路連線不穩定");
-                    return response.text();
-                })
-                .then(text => {
-                    parseCSV(text);
-                    statusEl.innerText = "● 雲端資料同步成功";
-                    statusEl.className = "text-xs text-green-400 ml-2";
-                    
-                    // 動態更新下拉選單中的老師名單（保持不重複）
-                    refreshTeacherDropdown();
-                    
-                    // 預設渲染第一個老師
-                    const currentTeacher = document.getElementById("teacher-select").value;
-                    renderTeacherDiary(currentTeacher);
-                })
-                .catch(err => {
-                    console.error(err);
-                    statusEl.innerText = "⚠️ 讀取失敗，已載入本機防呆模板";
-                    statusEl.className = "text-xs text-red-400 ml-2";
-                    // 失敗時依然可以使用預設名單渲染防呆格線
-                    renderTeacherDiary(document.getElementById("teacher-select").value);
-                });
-        }
-
-        // 3. 解析 CSV 成為物件陣列
-        function parseCSV(text) {
-            const lines = text.split("\n").map(line => line.trim()).filter(line => line.length > 0);
-            if (lines.length < 2) return;
-
-            // 抓取表頭
-            const headers = lines[0].split(",").map(h => h.trim().replace(/"/g, ""));
-            
-            // 尋找必要欄位索引
-            const teacherIdx = headers.indexOf("特教教師");
-            const groupIdx = headers.indexOf("分組名稱");
-            const roomIdx = headers.indexOf("上課地點");
-            const timeIdx = headers.indexOf("時間代碼");
-
-            rawDatabase = [];
-
-            for (let i = 1; i < lines.length; i++) {
-                // 精準處理逗號（避免學生名單或多節次逗號爆開）
-                const row = parseCSVLine(lines[i]);
-                if (row.length < headers.length) continue;
-
-                const teacher = row[teacherIdx]?.trim().replace(/"/g, "") || "";
-                const group = row[groupIdx]?.trim().replace(/"/g, "") || "";
-                const room = row[roomIdx]?.trim().replace(/"/g, "") || "";
-                const timeStr = row[timeIdx]?.trim().replace(/"/g, "") || "";
-
-                if (teacher) {
-                    rawDatabase.push({ teacher, group, room, timeStr });
-                }
-            }
-        }
-
-        // 處理包含雙引號與逗號的特殊 CSV 行
-        function parseCSVLine(line) {
-            let arr = [];
-            let current = "";
-            let inQuotes = false;
-            for (let i = 0; i < line.length; i++) {
-                let char = line[i];
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    arr.push(current);
-                    current = "";
-                } else {
-                    current += char;
-                }
-            }
-            arr.push(current);
-            return arr;
-        }
-
-        // 4. 動態更新教師下拉選單（連動優先）
-        function refreshTeacherDropdown() {
-            if (rawDatabase.length === 0) return;
-            
-            // 從資料中萃取出所有不重複的教師名字
-            let teachers = [...new Set(rawDatabase.map(item => item.teacher))].filter(t => t);
-            
-            if (teachers.length > 0) {
-                const select = document.getElementById("teacher-select");
-                const savedValue = select.value; // 保留當前選擇
-                
-                select.innerHTML = "";
-                teachers.forEach(t => {
-                    const option = document.createElement("option");
-                    option.value = t;
-                    option.innerText = t + " 老師";
-                    select.appendChild(option);
-                });
-                
-                // 恢復原本選擇或預設第一個
-                if (teachers.includes(savedValue)) {
-                    select.value = savedValue;
-                }
-            }
-        }
-
-        // 5. 渲染指定老師的教室日誌課表
-        function renderTeacherDiary(teacherName) {
-            // 先清空課表內的所有文字欄位，保留底部缺席框
-            document.querySelectorAll("#diary-tbody .course-title").forEach(div => div.innerText = "");
-            
-            // 更新基本個資顯示
-            document.getElementById("info-teacher").innerText = teacherName;
-            
-            // 找出該教師對應的教室/地點（優先連動雲端，無資料則抓本機防呆）
-            let matchedRoom = fallbackRooms[teacherName] || "特教教室";
-            const teacherCourses = rawDatabase.filter(item => item.teacher === teacherName);
-            if (teacherCourses.length > 0 && teacherCourses[0].room) {
-                matchedRoom = teacherCourses[0].room;
-            }
-            
-            // 轉換顯示名稱（例如 異想C -> 異想教室C）
-            if (matchedRoom.startsWith("異想") && !matchedRoom.endsWith("教室")) {
-                document.getElementById("title-classroom").innerText = `異想教室 ${matchedRoom.replace("異想", "")}`;
-            } else {
-                document.getElementById("title-classroom").innerText = matchedRoom;
-            }
-
-            // 開始將課程倒入表格
-            teacherCourses.forEach(course => {
-                // 解析時間代碼（可能單節 "11"，或多節 "22, 55, 43"）
-                const tokens = course.timeStr.split(",").map(t => t.trim());
-                
-                tokens.forEach(token => {
-                    if (token.length === 2) {
-                        const day = parseInt(token[0]);     // 十位數為星期
-                        const period = parseInt(token[1]);  // 個位數為節次
-                        
-                        // 尋找對應的格子
-                        const cell = document.querySelector(`#diary-tbody tr[data-period="${period}"] td[data-day="${day}"] .course-title`);
-                        if (cell) {
-                            // 寫入組別名稱
-                            cell.innerText = course.group;
-                        }
-                    }
-                });
-            });
+        function showErrorModal(message) {
+            const modal = document.createElement("div");
+            modal.className = "fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] no-print p-4";
+            modal.innerHTML = `<div class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full"><h3 class="text-base font-bold text-slate-900">資料載入出現狀況</h3><p class="text-sm text-slate-600 mt-2 leading-relaxed">${escapeHtml(message)}</p><div class="mt-6 text-right"><button type="button" onclick="this.closest('.fixed').remove()" class="bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-lg">關閉</button></div></div>`;
+            document.body.appendChild(modal);
         }
     </script>
 </body>

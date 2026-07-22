@@ -25,7 +25,7 @@
             width: 210mm;
             height: 297mm;
             padding: 14mm 16mm;
-            margin: 20px auto;
+            margin: 20px 0;
             background: white;
             box-sizing: border-box;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
@@ -361,12 +361,12 @@
         </div>
 
         <!-- 右側：A4 紙張即時預覽區域 -->
-        <div class="lg:col-span-3 flex flex-col items-center">
+        <div class="lg:col-span-3 flex flex-col items-start">
             <div class="text-sm font-semibold text-slate-500 mb-2 flex items-center gap-2 no-print self-start ml-2">
                 <span>👁️</span> 視訊預覽效果 (與 A4 直式紙張 1:1 完全對等)
             </div>
             
-            <div class="preview-scroll-wrapper w-full flex justify-center">
+            <div class="preview-scroll-wrapper w-full flex justify-start">
                 <div id="timetable-preview-container">
                     <!-- 由 JS 動態渲染單一學生課表 -->
                 </div>
@@ -732,7 +732,7 @@
                 <div class="page-container official-doc">
                     <div>
                         <div class="doc-title">臺南市立新市國民中學</div>
-                        <div class="doc-subtitle">114學年度第二學期 異想教室個別學生課表</div>
+                        <div class="doc-subtitle">115學年度第一學期 異想教室個別學生課表</div>
                         
                         <!-- 完全連成單行、去橫槓且動態最大化寬度間隔的基本個資列 -->
                         <div class="student-info-line">

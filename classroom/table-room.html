@@ -25,7 +25,7 @@
             width: 210mm;
             height: 297mm;
             padding: 14mm 16mm;
-            margin: 20px auto;
+            margin: 20px 0;
             background: white;
             box-sizing: border-box;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
@@ -90,13 +90,26 @@
             border-bottom: 2px solid black;
             background-color: #fafafa;
         }
+        @media (max-width: 1100px) {
+            .preview-scroll-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        }
+        @media print {
+            #app-main, #preview-panel, .preview-scroll-wrapper {
+                display: block !important;
+                width: auto !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
 
     <!-- 頂部外圍控制面板 (列印時自動隱藏) -->
-    <div class="no-print bg-slate-900 text-white shadow-md border-b border-slate-800 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+    <header class="no-print bg-slate-900 text-white shadow-md">
+        <div class="max-w-[1500px] mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
             <!-- 標題與資料同步燈號 -->
             <div class="flex items-center gap-3">
                 <div class="bg-indigo-600 p-2 rounded-lg text-white">
@@ -105,7 +118,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-base font-bold tracking-wider">異想教室課表系統 (教室專用)</h1>
+                    <h1 class="text-lg font-bold tracking-wide">新市國中異想教室</h1>
                     <div id="sync-status-badge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-blue-900/50 border border-blue-700 text-blue-300 mt-0.5">
                         <span id="sync-status-icon" class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
                         <span id="sync-status-text">正在讀取雲端試算表...</span>
@@ -114,24 +127,24 @@
             </div>
 
             <!-- 控制選項 -->
-            <div class="flex items-center gap-3 flex-wrap">
+            <div class="hidden">
                 <!-- 下拉選單 -->
                 <div class="flex items-center gap-2">
-                    <label for="room-select" class="text-xs text-slate-300 font-medium">選擇地點：</label>
-                    <select id="room-select" class="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 p-2 min-w-[150px] outline-none" disabled>
+                    <label for="legacy-room-select" class="text-xs text-slate-300 font-medium">選擇地點：</label>
+                    <select id="legacy-room-select" class="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 p-2 min-w-[150px] outline-none" disabled>
                         <option value="">載入中...</option>
                     </select>
                 </div>
 
                 <!-- 列印控制 -->
                 <div class="flex items-center gap-2">
-                    <button id="btn-print-single" onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs px-3 py-2 rounded-lg flex items-center gap-1.5 transition-colors shadow" disabled>
+                    <button id="legacy-btn-print-single" onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs px-3 py-2 rounded-lg flex items-center gap-1.5 transition-colors shadow" disabled>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                         </svg>
                         單頁列印此教室
                     </button>
-                    <button id="btn-print-all" onclick="triggerPrintAll()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs px-3 py-2 rounded-lg flex items-center gap-1.5 transition-colors shadow" disabled>
+                    <button id="legacy-btn-print-all" onclick="triggerPrintAll()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs px-3 py-2 rounded-lg flex items-center gap-1.5 transition-colors shadow" disabled>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v12m0 0l-4-4m4 4l4-4m0 6V7m0 0l-4 4m4-4l4 4m5 2h3a2 2 0 002-2V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4"></path>
                         </svg>
@@ -140,7 +153,23 @@
                 </div>
             </div>
         </div>
-    </div>
+    </header>
+
+    <main id="app-main" class="max-w-[1500px] mx-auto px-4 mt-6 grid grid-cols-1 xl:grid-cols-[280px_minmax(0,1fr)] gap-6 items-start">
+        <aside class="no-print flex flex-col gap-6 xl:sticky xl:top-6">
+            <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">🏫 選擇教室</h2>
+                <select id="room-select" class="w-full bg-slate-50 border-2 border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 font-medium focus:outline-none focus:border-indigo-500 cursor-pointer" disabled><option value="">載入中...</option></select>
+            </section>
+            <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">🖨️ 列印與檔案輸出</h2>
+                <div class="flex flex-col gap-3"><button id="btn-print-single" onclick="window.print()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors" disabled>🖨️ 單頁列印此教室</button><button id="btn-print-all" onclick="triggerPrintAll()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors" disabled>📚 一鍵列印所有教室</button></div>
+                <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg p-3 text-xs mt-4 leading-relaxed"><strong>💡 列印設定：</strong><br>A4／直向，邊界選擇無，並開啟背景圖形。</div>
+            </section>
+        </aside>
+        <section id="preview-panel" class="min-w-0 flex flex-col items-start">
+            <div class="no-print text-sm font-semibold text-slate-500 mb-2 self-start">👁️ A4 教室課表預覽</div>
+            <div class="preview-scroll-wrapper w-full flex justify-start">
 
     <!-- 網頁預覽主呈現區 -->
     <div id="single-page-container">
@@ -149,7 +178,7 @@
             <!-- 頂部官方大標題 -->
             <div class="text-center">
                 <h1 class="text-[22px] font-bold tracking-[4px] m-0 p-0 leading-normal">臺南市立新市國民中學</h1>
-                <h2 class="text-[20px] font-bold tracking-[2px] m-0 p-0 leading-normal mt-1">114學年度第二學期 異想教室課表</h2>
+                <h2 class="text-[20px] font-bold tracking-[2px] m-0 p-0 leading-normal mt-1">115學年度第一學期 異想教室課表</h2>
                 
                 <!-- 教室與版本資訊列 (與教師課表完全對齊) -->
                 <div class="flex justify-between items-center px-2 mt-4 text-[15px] font-bold">
@@ -186,6 +215,9 @@
             <!-- 底部完全空白 -->
         </div>
     </div>
+            </div>
+        </section>
+    </main>
 
     <!-- 批量一鍵列印區 -->
     <div id="print-all-section" class="hidden print:block">
@@ -226,7 +258,7 @@
         // 系統全局變數
         let globalRawData = [];       // CSV 完整原始二維陣列
         let classroomsList = [];      // 排序後的不重複上課地點
-        let versionString = "114-2 更新版"; // 動態讀取之版本字串
+        let versionString = "115-1 更新版"; // 動態讀取之版本字串
         let scheduleDatabase = {};    // 整理後的大腦結構：{ "異想C": { "11": { subject: "國文三A", teacher: "陳秋錡" }, ... } }
 
         // 智慧教室完整名稱格式化 (將 "異想C" 自動轉換成 "異想教室C")
@@ -272,10 +304,18 @@
                         fetchWithRetry(url, retries - 1, delay * 2);
                     }, delay);
                 } else {
-                    updateStatus('fallback', '雲端載入失敗，已啟用本地快取機制');
-                    showErrorModal("無法讀取 Google 試算表。請確認您的網路連線，或試算表是否已正確『發布到網路』。");
+                    loadFallbackTestData();
                 }
             }
+        }
+
+        function loadFallbackTestData() {
+            const fallbackCSV = [
+                "備註,特教教師,分組,節數,上課地點,時間代碼,時間,學生",
+                ",測試教師,英語一A,1,異想教室,11,星期一第一節,101測試學生、102示範學生"
+            ].join("\n");
+            parseAndBuildSchedule(fallbackCSV);
+            updateStatus('fallback', '雲端載入失敗，目前顯示一筆測試資料');
         }
 
         // 狀態燈號更新
@@ -495,7 +535,7 @@
                         <!-- 頂部官方大標題 -->
                         <div class="text-center">
                             <h1 class="text-[22px] font-bold tracking-[4px] m-0 p-0 leading-normal">臺南市立新市國民中學</h1>
-                            <h2 class="text-[20px] font-bold tracking-[2px] m-0 p-0 leading-normal mt-1">114學年度第二學期 異想教室課表</h2>
+                            <h2 class="text-[20px] font-bold tracking-[2px] m-0 p-0 leading-normal mt-1">115學年度第一學期 異想教室課表</h2>
                             
                             <!-- 教室與版本資訊列 -->
                             <div class="flex justify-between items-center px-2 mt-4 text-[15px] font-bold">
