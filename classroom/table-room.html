@@ -26,7 +26,7 @@
             width: 210mm;
             height: 297mm;
             padding: 14mm 16mm;
-            margin: 20px auto;
+            margin: 20px 0;
             background: white;
             box-sizing: border-box;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
@@ -159,10 +159,6 @@
     <main id="app-main" class="max-w-[1500px] mx-auto px-4 mt-6 grid grid-cols-1 xl:grid-cols-[280px_minmax(0,1fr)] gap-6 items-start">
         <aside class="no-print flex flex-col gap-6 xl:sticky xl:top-6">
             <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">📑 選擇課表功能</h2>
-                <select onchange="if (this.value) window.location.href = this.value" class="w-full bg-slate-50 border-2 border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 font-medium focus:outline-none focus:border-indigo-500 cursor-pointer"><option value="table-all.html">全校總課表</option><option value="table-student.html">個別學生課表</option><option value="table-teacher.html">教師課表</option><option value="table-room.html" selected>教室課表</option><option value="table-class.html">班級通知單</option><option value="table-check.html">學生課表檢核</option><option value="table-diary.html">教學日誌</option></select>
-            </section>
-            <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
                 <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">🏫 選擇教室</h2>
                 <select id="room-select" class="w-full bg-slate-50 border-2 border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 font-medium focus:outline-none focus:border-indigo-500 cursor-pointer" disabled><option value="">載入中...</option></select>
             </section>
@@ -172,9 +168,9 @@
                 <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg p-3 text-xs mt-4 leading-relaxed"><strong>💡 列印設定：</strong><br>A4／直向，邊界選擇無，並開啟背景圖形。</div>
             </section>
         </aside>
-        <section id="preview-panel" class="min-w-0 flex flex-col items-center">
+        <section id="preview-panel" class="min-w-0 flex flex-col items-start">
             <div class="no-print text-sm font-semibold text-slate-500 mb-2 self-start">👁️ A4 教室課表預覽</div>
-            <div class="preview-scroll-wrapper w-full flex justify-center">
+            <div class="preview-scroll-wrapper w-full flex justify-start">
 
     <!-- 網頁預覽主呈現區 -->
     <div id="single-page-container">
@@ -183,7 +179,7 @@
             <!-- 頂部官方大標題 -->
             <div class="text-center">
                 <h1 class="text-[22px] font-bold tracking-[4px] m-0 p-0 leading-normal">臺南市立新市國民中學</h1>
-                <h2 class="text-[20px] font-bold tracking-[2px] m-0 p-0 leading-normal mt-1">114學年度第二學期 異想教室課表</h2>
+                <h2 class="text-[20px] font-bold tracking-[2px] m-0 p-0 leading-normal mt-1">115學年度第一學期 異想教室課表</h2>
                 
                 <!-- 教室與版本資訊列 (與教師課表完全對齊) -->
                 <div class="flex justify-between items-center px-2 mt-4 text-[15px] font-bold">
@@ -263,7 +259,7 @@
         // 系統全局變數
         let globalRawData = [];       // CSV 完整原始二維陣列
         let classroomsList = [];      // 排序後的不重複上課地點
-        let versionString = "114-2 更新版"; // 動態讀取之版本字串
+        let versionString = "115-1 更新版"; // 動態讀取之版本字串
         let scheduleDatabase = {};    // 整理後的大腦結構：{ "異想C": { "11": { subject: "國文三A", teacher: "陳秋錡" }, ... } }
 
         // 智慧教室完整名稱格式化 (將 "異想C" 自動轉換成 "異想教室C")
@@ -309,10 +305,18 @@
                         fetchWithRetry(url, retries - 1, delay * 2);
                     }, delay);
                 } else {
-                    updateStatus('fallback', '雲端載入失敗，已啟用本地快取機制');
-                    showErrorModal("無法讀取 Google 試算表。請確認您的網路連線，或試算表是否已正確『發布到網路』。");
+                    loadFallbackTestData();
                 }
             }
+        }
+
+        function loadFallbackTestData() {
+            const fallbackCSV = [
+                "備註,特教教師,分組,節數,上課地點,時間代碼,時間,學生",
+                ",測試教師,英語一A,1,異想教室,11,星期一第一節,101測試學生、102示範學生"
+            ].join("\n");
+            parseAndBuildSchedule(fallbackCSV);
+            updateStatus('fallback', '雲端載入失敗，目前顯示一筆測試資料');
         }
 
         // 狀態燈號更新
@@ -532,7 +536,7 @@
                         <!-- 頂部官方大標題 -->
                         <div class="text-center">
                             <h1 class="text-[22px] font-bold tracking-[4px] m-0 p-0 leading-normal">臺南市立新市國民中學</h1>
-                            <h2 class="text-[20px] font-bold tracking-[2px] m-0 p-0 leading-normal mt-1">114學年度第二學期 異想教室課表</h2>
+                            <h2 class="text-[20px] font-bold tracking-[2px] m-0 p-0 leading-normal mt-1">115學年度第一學期 異想教室課表</h2>
                             
                             <!-- 教室與版本資訊列 -->
                             <div class="flex justify-between items-center px-2 mt-4 text-[15px] font-bold">
