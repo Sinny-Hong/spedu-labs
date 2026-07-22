@@ -111,19 +111,6 @@
         <!-- 左側選單與列印控制 -->
         <aside class="no-print flex flex-col gap-6 xl:sticky xl:top-6">
             <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">📑 選擇課表功能</h2>
-                <div class="relative">
-                    <select id="table-page-select" onchange="if (this.value) window.location.href = this.value" class="w-full bg-slate-50 border-2 border-slate-200 hover:border-slate-400 focus:border-blue-500 rounded-lg px-3 py-2.5 text-slate-800 font-medium transition-colors focus:outline-none appearance-none cursor-pointer">
-                        <option value="table-all.html" selected>全校總課表</option>                    
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
-                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                    </div>
-                </div>
-                <p class="text-xs text-slate-400 mt-2">可直接切換至學生、教師、教室及班級等課表工具。</p>
-            </section>
-
-            <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
                 <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">☁️ 資料同步</h2>
                 <p class="text-xs text-slate-500 leading-relaxed mb-4">資料來源：A3 授課分頁。需要最新內容時可手動重新同步。</p>
                 <button onclick="fetchData(true)" class="w-full flex items-center justify-center gap-2 bg-white border-2 border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-slate-700 font-bold py-2.5 px-4 rounded-lg transition-colors cursor-pointer">
@@ -151,18 +138,18 @@
         </aside>
 
         <!-- 右側 A4 即時預覽 -->
-        <section id="preview-panel" class="min-w-0 flex flex-col items-center">
+        <section id="preview-panel" class="min-w-0 flex flex-col items-start">
             <div class="no-print text-sm font-semibold text-slate-500 mb-2 flex items-center gap-2 self-start">
                 <span>👁️</span> A4 直式列印預覽
             </div>
-            <div class="preview-scroll-wrapper w-full flex justify-center">
+            <div class="preview-scroll-wrapper w-full flex justify-start">
                 <!-- A4 直式主實體頁面 -->
                 <div class="print-page portrait-page bg-white shadow-2xl rounded-sm border border-slate-300 p-5 flex flex-col justify-between overflow-hidden transition-all">
         
         <!-- 一行式公文極簡標題 (已移除底部的橫條黑線，日期與版本靠右) -->
         <div class="flex items-baseline justify-between mb-1 leading-none">
             <span class="text-[15.5px] font-extrabold tracking-wide text-slate-950 timetable-font">
-                臺南市立新市國民中學 114 學年度第二學期 異想教室總課表
+                臺南市立新市國民中學 115 學年度第一學期 異想教室總課表
             </span>
             <span class="text-[9.5px] text-slate-700 font-bold timetable-font tracking-tight" id="version-tag">
                 實施日期: 讀取中... | 版本: 讀取中...
