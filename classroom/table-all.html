@@ -66,61 +66,104 @@
             background: #cbd5e1;
             border-radius: 3px;
         }
+
+        @media (max-width: 1100px) {
+            .preview-scroll-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        @media print {
+            #app-main,
+            #preview-panel,
+            .preview-scroll-wrapper {
+                display: block !important;
+                width: auto !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+        }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col items-center py-6 px-4">
+<body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
 
-    <!-- 頂部控制面板 (列印時自動隱藏) -->
-    <div class="no-print w-full max-w-[210mm] bg-white rounded-2xl shadow-md border border-slate-200/80 p-4 mb-6 transition-all">
-        <div class="flex flex-col gap-4">
-            <!-- 標題與狀態 -->
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-200">
-                        <i data-lucide="grid"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                            全校總課表 <span class="text-xs px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded">A4直式 7節極致版</span>
-                        </h1>
-                        <p class="text-xs text-slate-500 mt-0.5">來源：A3授課分頁 (支援滑鼠右鍵選取複製)</p>
+    <!-- student 風格頂部識別列 -->
+    <header class="no-print bg-slate-900 text-white shadow-md">
+        <div class="max-w-[1500px] mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">📋</span>
+                <div>
+                    <h1 class="text-lg font-bold tracking-wide">新市國中異想教室</h1>
+                    <p class="text-xs text-slate-400">全校總課表智慧列印系統</p>
+                </div>
+            </div>
+            <span id="sync-status" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-300 border border-amber-700">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                連線讀取中...
+            </span>
+        </div>
+    </header>
+
+    <main id="app-main" class="max-w-[1500px] mx-auto px-4 mt-6 grid grid-cols-1 xl:grid-cols-[280px_minmax(0,1fr)] gap-6 items-start">
+        <!-- 左側選單與列印控制 -->
+        <aside class="no-print flex flex-col gap-6 xl:sticky xl:top-6">
+            <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">📑 選擇課表功能</h2>
+                <div class="relative">
+                    <select id="table-page-select" onchange="if (this.value) window.location.href = this.value" class="w-full bg-slate-50 border-2 border-slate-200 hover:border-slate-400 focus:border-blue-500 rounded-lg px-3 py-2.5 text-slate-800 font-medium transition-colors focus:outline-none appearance-none cursor-pointer">
+                        <option value="table-all.html" selected>全校總課表</option>
+                        <option value="table-student.html">個別學生課表</option>
+                        <option value="table-teacher.html">教師課表</option>
+                        <option value="table-room.html">教室課表</option>
+                        <option value="table-class.html">班級通知單</option>
+                        <option value="table-check.html">學生課表檢核</option>
+                        <option value="table-diary.html">教學日誌</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                     </div>
                 </div>
-                <!-- 連線狀態 -->
-                <span id="sync-status" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 border border-amber-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                    連線讀取中...
-                </span>
-            </div>
+                <p class="text-xs text-slate-400 mt-2">可直接切換至學生、教師、教室及班級等課表工具。</p>
+            </section>
 
-            <!-- 操作區 -->
-            <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
-                <!-- 手動重新整理 -->
-                <button onclick="fetchData(true)" class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 hover:text-slate-900 active:scale-95 transition-all">
-                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="sync-icon"></i>
-                    同步資料
+            <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">☁️ 資料同步</h2>
+                <p class="text-xs text-slate-500 leading-relaxed mb-4">資料來源：A3 授課分頁。需要最新內容時可手動重新同步。</p>
+                <button onclick="fetchData(true)" class="w-full flex items-center justify-center gap-2 bg-white border-2 border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-slate-700 font-bold py-2.5 px-4 rounded-lg transition-colors cursor-pointer">
+                    <i data-lucide="refresh-cw" class="w-4 h-4" id="sync-icon"></i>
+                    同步最新資料
                 </button>
+                <div id="error-toast" class="hidden mt-4 p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-800 text-xs flex items-start gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+                    <div><span class="font-bold">連線提示：</span><span id="error-message">雲端載入失敗，已啟用離線預覽模式。</span></div>
+                </div>
+            </section>
 
-                <!-- 一鍵列印 -->
-                <button onclick="window.print()" class="flex items-center gap-1.5 px-4 py-1.5 bg-indigo-600 text-white rounded-xl text-xs font-semibold hover:bg-indigo-700 hover:shadow-lg active:scale-95 transition-all shadow-md shadow-indigo-100">
-                    <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-                    列印 A4 直式總表
+            <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">🖨️ 列印與檔案輸出</h2>
+                <button onclick="window.print()" class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors cursor-pointer">
+                    <span>🖨️</span> 列印 A4 直式總表
                 </button>
+                <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg p-3 text-xs mt-4 leading-relaxed">
+                    <strong>💡 列印小祕訣：</strong><br>
+                    1. 紙張選擇 <strong>A4／直向</strong>。<br>
+                    2. 邊界選擇 <strong>無</strong>。<br>
+                    3. 開啟 <strong>背景圖形</strong>，保留教師色圓點。
+                </div>
+            </section>
+        </aside>
+
+        <!-- 右側 A4 即時預覽 -->
+        <section id="preview-panel" class="min-w-0 flex flex-col items-center">
+            <div class="no-print text-sm font-semibold text-slate-500 mb-2 flex items-center gap-2 self-start">
+                <span>👁️</span> A4 直式列印預覽
             </div>
-        </div>
-    </div>
-
-    <!-- 提示框與錯誤顯示 (列印時隱藏) -->
-    <div id="error-toast" class="no-print hidden w-full max-w-[210mm] mb-4 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs flex items-start gap-3">
-        <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
-        <div>
-            <span class="font-bold">連線提示：</span>
-            <span id="error-message">雲端載入失敗，已啟用離線預覽模式。</span>
-        </div>
-    </div>
-
-    <!-- A4 直式主實體頁面 -->
-    <div class="print-page portrait-page bg-white shadow-2xl rounded-sm border border-slate-300 p-5 flex flex-col justify-between overflow-hidden transition-all">
+            <div class="preview-scroll-wrapper w-full flex justify-center">
+                <!-- A4 直式主實體頁面 -->
+                <div class="print-page portrait-page bg-white shadow-2xl rounded-sm border border-slate-300 p-5 flex flex-col justify-between overflow-hidden transition-all">
         
         <!-- 一行式公文極簡標題 (已移除底部的橫條黑線，日期與版本靠右) -->
         <div class="flex items-baseline justify-between mb-1 leading-none">
@@ -153,7 +196,10 @@
             </table>
         </div>
 
-    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <!-- 數據讀取與渲染邏輯 JS 大腦 -->
     <script>
