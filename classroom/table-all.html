@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -28,7 +29,7 @@
                 width: 210mm !important;
                 height: 297mm !important;
                 margin: 0 !important;
-                padding: 10mm 8mm !important;
+                padding: 5mm !important;
                 box-shadow: none !important;
                 background: white !important;
                 page-break-after: always;
@@ -122,7 +123,7 @@
     <div class="print-page portrait-page bg-white shadow-2xl rounded-sm border border-slate-300 p-5 flex flex-col justify-between overflow-hidden transition-all">
         
         <!-- 一行式公文極簡標題 (已移除底部的橫條黑線，日期與版本靠右) -->
-        <div class="flex items-baseline justify-between mb-2">
+        <div class="flex items-baseline justify-between mb-1 leading-none">
             <span class="text-[14.5px] font-extrabold tracking-wide text-slate-950 timetable-font">
                 臺南市立新市國民中學 114 學年度第二學期 異想教室總課表
             </span>
@@ -136,7 +137,7 @@
             <table class="w-full border-collapse border-2 border-slate-950 text-center timetable-font table-fixed">
                 <!-- 星期標題列 -->
                 <thead>
-                    <tr class="bg-slate-50 h-[24px] border-b-2 border-slate-955 text-slate-950 text-[11px] font-extrabold">
+                    <tr class="bg-slate-50 h-[20px] border-b-2 border-slate-955 text-slate-950 text-[11px] font-extrabold leading-none">
                         <!-- 時間欄佔比 8%，留下 92% 給五天均分 -->
                         <th class="w-[8%] border-r-2 border-slate-950 text-[10px]">節次/時間</th>
                         <th class="w-[18.4%] border-r border-slate-400">星期一</th>
@@ -388,7 +389,7 @@
                 const s1 = list[i] || "";
                 const s2 = list[i+1] || "";
                 html += `
-                    <div class="grid grid-cols-2 gap-x-1.5 w-full text-left font-semibold text-slate-900 tracking-tight leading-none mt-[1.5px]">
+                    <div class="grid grid-cols-2 gap-x-1.5 w-full text-left font-semibold text-slate-900 tracking-tight leading-none mt-px">
                         <span class="truncate pl-[2px] text-[11px]">${s1}</span>
                         <span class="truncate pl-[2px] text-[11px]">${s2}</span>
                     </div>
@@ -422,9 +423,9 @@
                 
                 // 左側作息時間
                 const timeTd = document.createElement('td');
-                timeTd.className = "bg-slate-50 border-r-2 border-slate-950 p-1";
+                timeTd.className = "bg-slate-50 border-r-2 border-slate-950 px-1 py-0";
                 timeTd.innerHTML = `
-                    <div class="flex flex-col justify-center items-center h-full min-h-[50px] font-bold">
+                    <div class="flex flex-col justify-center items-center h-full font-bold">
                         <div class="text-[10px] text-slate-900 leading-tight">${pt.period}</div>
                         <div class="text-[8px] text-slate-500 mt-1 scale-90 leading-none font-mono font-medium">${pt.time}</div>
                     </div>
@@ -434,17 +435,17 @@
                 // 星期一至星期五各格
                 for (let dayIdx = 0; dayIdx < 5; dayIdx++) {
                     const td = document.createElement('td');
-                    td.className = "p-[2px] border-r border-slate-400 align-top h-full overflow-hidden";
+                    td.className = "p-px border-r border-slate-400 align-top h-full overflow-hidden";
                     if (dayIdx === 4) td.classList.remove('border-r');
 
                     const cellGroups = matrix[periodIdx][dayIdx];
 
                     if (cellGroups.length === 0) {
-                        td.innerHTML = `<div class="w-full h-full min-h-[50px]"></div>`;
+                        td.innerHTML = `<div class="w-full h-full"></div>`;
                     } else {
                         const wrapper = document.createElement('div');
-                        // 卡片間距縮小為 gap-[2px] (貼合剛好)，一律垂直順著往下排隊
-                        wrapper.className = `flex flex-col w-full h-full justify-start gap-[2px] min-h-[50px]`;
+                        // 緊湊文字組別：僅保留 1px 的組別間距
+                        wrapper.className = `flex flex-col w-full h-full justify-start gap-px`;
 
                         cellGroups.forEach(group => {
                             const colors = getTeacherColor(group.teacher);
@@ -452,19 +453,18 @@
                             const displayTeacher = formatTeacher(group.teacher);
                             
                             const card = document.createElement('div');
-                            // 縮小卡片內 Padding，行距不變
-                            const padClass = 'py-[2px] px-1';
-                            card.className = `w-full rounded border flex flex-col items-stretch text-left ${colors.bg} ${colors.border} ${colors.text} ${padClass} relative overflow-hidden shadow-sm`;
+                            // 不使用卡片背景、外框、圓角、陰影或上下 padding
+                            card.className = `w-full flex items-start gap-[3px] text-left overflow-hidden`;
                             
                             card.innerHTML = `
-                                <div class="absolute left-0 top-0 bottom-0 w-[3px] ${colors.bar}"></div>
-                                <div class="w-full">
-                                    <!-- 第一列：科目名稱(老師) 地點 (字體加大，老師 11.5px) -->
-                                    <div class="flex items-center justify-between text-[11.5px] font-extrabold leading-tight tracking-tight border-b border-black/10 pb-[1.5px]">
+                                <span class="mt-[3px] h-[6px] w-[6px] flex-shrink-0 rounded-full ${colors.bar}"></span>
+                                <div class="min-w-0 flex-1">
+                                    <!-- 第一列：教師色圓點、科目名稱(老師)、地點 -->
+                                    <div class="flex items-center justify-between text-[11.5px] font-extrabold leading-none tracking-tight ${colors.text}">
                                         <span class="truncate pr-0.5">${group.groupName}(${displayTeacher})</span>
-                                        <span class="flex-shrink-0 bg-black/10 px-1 rounded font-mono font-bold text-[9px]">${compressedLocation}</span>
+                                        <span class="flex-shrink-0 pl-0.5 font-mono font-bold text-[9px] text-slate-700">${compressedLocation}</span>
                                     </div>
-                                    <!-- 學生名單 (標準雙軌道對齊，學生 11px) -->
+                                    <!-- 學生名單維持兩人一行、黑色文字 -->
                                     <div class="w-full">
                                         ${formatStudentsHTML(group.studentsStr)}
                                     </div>
