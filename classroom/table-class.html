@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -38,18 +37,20 @@
 
         .doc-title {
             text-align: center;
-            font-size: 30px;
+            font-size: 28px;
             font-weight: bold;
+            line-height: 1.1;
             letter-spacing: 2.5px;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
             padding-right: 50px; /* 留出右側鋼印寬度，避免標題碰撞 */
             padding-left: 50px;
         }
 
         .doc-subtitle {
             text-align: center;
-            font-size: 20px;
-            margin-bottom: 14px;
+            font-size: 19px;
+            line-height: 1.1;
+            margin-bottom: 6px;
             font-weight: bold;
             letter-spacing: 1px;
         }
@@ -149,11 +150,11 @@
             font-weight: bold;
         }
 
-        /* 班級課表嚴格 4-Row 物理軌道 Grid（高度死守 84px，絕不呼上呼下漂移） */
+        /* 固定物理軌道：原班科目、原班教師、三列抽離課程清單 */
         .course-cell-wrapper {
-            height: 84px; 
+            height: 86px; 
             display: grid;
-            grid-template-rows: 24px 16px 21px 21px; /* 4個嚴格限制高度的物理軌道 */
+            grid-template-rows: 24px 16px 46px;
             align-items: center;
             justify-items: center;
             padding: 1px;
@@ -184,35 +185,40 @@
             width: 100%;
         }
 
-        /* 第三、四軌：精緻圖釘徽章 (完美防溢出與瘦身，靠左排版) */
-        .mini-stamp-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: flex-start;
-            border-left: 3px solid #dc2626; /* 左側圖釘重點色彩豎線 */
-            border-top: 1px solid #e2e8f0;
-            border-right: 1px solid #e2e8f0;
-            border-bottom: 1px solid #e2e8f0;
-            font-weight: bold;
-            padding: 0px 4px;
-            border-radius: 2px;
-            font-size: 11px; /* 精細縮小字型，防止長姓名與科目溢出 */
-            letter-spacing: -0.5px; /* 緊縮字距，最大化橫向空間 */
-            text-align: left;
+        /* 第三軌固定容納三列，不讓抽離人數改變原班課表列高 */
+        .extracted-course-list {
             width: 96%;
-            height: 18px; /* 貼合 21px 軌道 */
-            line-height: 18px;
-            white-space: nowrap;
+            height: 46px;
+            padding-top: 1px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
             overflow: hidden;
-            text-overflow: ellipsis;
             box-sizing: border-box;
         }
 
-        /* 第三、四軌空白墊片，保證空堂時原班位置絕對不飄移 */
-        .stamp-spacer {
-            height: 18px;
+        .extracted-course-item {
             width: 100%;
+            height: 15px;
+            min-height: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 2px;
+            color: #111827;
+            font-weight: 700;
+            font-size: 11.5px;
+            letter-spacing: -0.25px;
+            text-align: left;
+            line-height: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            box-sizing: border-box;
         }
+
+        .extracted-course-bullet { flex: 0 0 auto; color: var(--item-color, #b45309); font-size: 10px; line-height: 1; }
+        .extracted-course-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 
         /* 底部對照表樣式 */
         .student-footer {
@@ -220,9 +226,8 @@
             flex-direction: column;
             align-items: flex-start;
             font-size: 14.5px;
-            border-top: 1.5px solid black;
-            padding-top: 8px;
-            margin-top: 10px;
+            padding-top: 0;
+            margin-top: 6px;
             font-family: "DFKai-SB", "標楷體", "BiauKai", serif !important;
             text-align: left;
         }
@@ -619,22 +624,22 @@
             return { subject: courseStr.trim(), teacher: '' };
         }
 
-        // 圖釘徽章色彩
+        // 抽離課程圓點色彩（只著色圓點，不使用卡片背景）
         function getStampColorStyle(subject) {
-            if (!subject) return 'border-left-color:#dc2626; color:#dc2626; background-color:#fff5f5';
+            if (!subject) return '--item-color:#dc2626;';
             if (subject.includes('國文') || subject.includes('國')) {
-                return 'border-left-color: #dc2626; color: #dc2626; background-color: #fff5f5;'; // 硃砂紅
+                return '--item-color:#dc2626;'; // 硃砂紅
             }
             if (subject.includes('英語') || subject.includes('英文') || subject.includes('英')) {
-                return 'border-left-color: #1e40af; color: #1e40af; background-color: #eff6ff;'; // 晴空藍
+                return '--item-color:#1e40af;'; // 晴空藍
             }
             if (subject.includes('數學') || subject.includes('數')) {
-                return 'border-left-color: #15803d; color: #15803d; background-color: #f0fdf4;'; // 翡翠綠
+                return '--item-color:#15803d;'; // 翡翠綠
             }
             if (subject.includes('生活') || subject.includes('訓練') || subject.includes('社交') || subject.includes('自閉') || subject.includes('溝通') || subject.includes('生管') || subject.includes('社巧')) {
-                return 'border-left-color: #6d28d9; color: #6d28d9; background-color: #f5f3ff;'; // 紫羅蘭
+                return '--item-color:#6d28d9;'; // 紫羅蘭
             }
-            return 'border-left-color: #b45309; color: #b45309; background-color: #fffbeb;'; // 琥珀色
+            return '--item-color:#b45309;'; // 琥珀色
         }
 
         // 班級全景課表 HTML 生成引擎
@@ -755,29 +760,14 @@
                     // 2. 第二軌（原班教師）：固定 height 16px
                     rowHtml += `<div class="orig-teacher">${parsedOrig.teacher || '&nbsp;'}</div>`;
                     
-                    // 3. 第三軌（第一個抽離課程）：固定 height 18px，無人抽離時渲染 spacer 墊底
-                    if (extractedBadgesData.length > 0) {
-                        const b = extractedBadgesData[0];
-                        rowHtml += `
-                            <div class="mini-stamp-badge" style="${b.style}">
-                                ${b.studentName}:${b.subject}
-                            </div>
-                        `;
-                    } else {
-                        rowHtml += `<div class="stamp-spacer">&nbsp;</div>`;
-                    }
-
-                    // 4. 第四軌（第二個抽離課程）：固定 height 18px，無人抽離或少於2人時渲染 spacer 墊底
-                    if (extractedBadgesData.length > 1) {
-                        const b = extractedBadgesData[1];
-                        rowHtml += `
-                            <div class="mini-stamp-badge" style="${b.style}">
-                                ${b.studentName}:${b.subject}
-                            </div>
-                        `;
-                    } else {
-                        rowHtml += `<div class="stamp-spacer">&nbsp;</div>`;
-                    }
+                    // 3. 第三軌：最多三人，固定三列條列，不改變原班課表高度
+                    const extractedListItems = extractedBadgesData.slice(0, 3).map(b => `
+                        <div class="extracted-course-item" style="${b.style}">
+                            <span class="extracted-course-bullet">●</span>
+                            <span class="extracted-course-text">${b.studentName}：${b.subject}</span>
+                        </div>
+                    `).join('');
+                    rowHtml += `<div class="extracted-course-list">${extractedListItems}</div>`;
 
                     rowHtml += `</div>`;
                     rowHtml += `</td>`;
@@ -947,4 +937,3 @@
 </body>
 </html>
 
-```
