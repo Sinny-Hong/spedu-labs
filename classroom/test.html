@@ -1,0 +1,99 @@
+
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>異想教室－其他科成績通知單</title>
+  <style>
+    /* ======= 全域與操作介面 ======= */
+    :root{--ink:#111;--line:#222;--muted:#666;--paper:#fff;--workspace:#ecebe8;--toolbar:272px}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%}
+    body{color:var(--ink);background:var(--workspace);font-family:"Noto Serif TC","PMingLiU","MingLiU",serif}
+    button,input,select,textarea{font:inherit}.app-shell{min-height:100vh}
+    .toolbar{position:fixed;inset:0 auto 0 0;width:var(--toolbar);overflow-y:auto;padding:24px 20px;color:#171717;background:#f7f6f3;border-right:1px solid #aaa;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;z-index:10}
+    .toolbar h1{margin:0 0 6px;font-size:20px}.subtitle{margin:0 0 24px;color:var(--muted);font-size:13px;line-height:1.6}
+    .tool-group{padding:16px 0;border-top:1px solid #c8c8c8}.tool-group:first-of-type{border-top:2px solid #333}
+    .field{display:block;margin-bottom:13px}.field-label{display:block;margin-bottom:6px;font-size:13px;font-weight:700}
+    .field select,.field input[type=search]{width:100%;height:36px;padding:5px 8px;color:#111;background:#fff;border:1px solid #777;border-radius:0}
+    .check-line{display:flex;gap:8px;align-items:center;font-size:14px}.check-line input{width:17px;height:17px;accent-color:#222}
+    .button-stack{display:grid;gap:9px}.tool-button{min-height:38px;padding:8px 10px;color:#111;background:#fff;border:1px solid #333;border-radius:0;cursor:pointer}
+    .tool-button.primary{color:#fff;background:#222}.tool-button:hover{outline:2px solid #777;outline-offset:1px}.tool-button:disabled{opacity:.45;cursor:default}
+    .status{margin:14px 0 0;font-size:12px;line-height:1.55;color:#444}.status.error{color:#8b0000}
+    .workspace{margin-left:var(--toolbar);padding:24px 28px 50px}.paper{width:210mm;min-height:297mm;margin:0 auto;padding:13mm 13mm 14mm;background:var(--paper);box-shadow:0 2px 14px #0003}
+    /* ======= 正式通知單版面 ======= */
+    .teacher-notice{position:relative;margin:0 0 9mm;padding:0;break-inside:avoid;page-break-inside:avoid;background:transparent}.teacher-notice:last-child{margin-bottom:0}
+    .notice-heading{text-align:center}.school-year{margin:0;font-size:12pt;line-height:1.35}.notice-title{margin:0 0 2.5mm;font-size:16pt;line-height:1.3;font-weight:700;letter-spacing:.12em}
+    .title-rule{height:0;margin-bottom:3mm;border-top:1.5px solid var(--line)}.teacher-salutation{margin:0 0 2mm;font-size:11pt;font-weight:700}
+    .grade-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:9.5pt}.grade-table th,.grade-table td{min-height:7mm;padding:1.5mm 1mm;border:1px solid var(--line);text-align:center;vertical-align:middle;line-height:1.25;overflow-wrap:anywhere}
+    .grade-table th{font-weight:700;white-space:nowrap}.col-class{width:9%}.col-seat{width:8%}.col-name{width:14%}.col-subject{width:15%}.col-score{width:14%}.col-withdrawn{width:18%}.col-resource{width:22%}
+    .student-toggle{margin-right:4px;vertical-align:-1px;accent-color:#222}.excluded-row{opacity:.42;text-decoration:line-through}
+    .resource-signature{display:grid;grid-template-columns:auto 1fr;gap:4mm;margin-top:2.5mm;font-size:10.5pt;line-height:1.45}.resource-names{display:flex;flex-wrap:wrap;gap:0 1.5em}
+    .notice-note{margin:2mm 0 0;font-size:9.5pt;line-height:1.5}.footer-note{margin:3mm 0 0;padding-top:2mm;border-top:1px solid #555;font-size:9pt;line-height:1.5}
+    /* ======= 暫存編輯控制 ======= */
+    .edit-tools{display:flex;justify-content:flex-end;gap:5px;margin-bottom:1.5mm;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif}.edit-tools button{padding:3px 8px;background:#fff;border:1px solid #555;cursor:pointer}
+    .teacher-note-editor{width:100%;min-height:52px;margin-top:2mm;padding:7px;resize:vertical;border:1px dashed #777;font-family:"Microsoft JhengHei",sans-serif;font-size:13px}
+    .empty-state,.loading-state{padding:28mm 10mm;text-align:center;color:#555;font-family:"Microsoft JhengHei",sans-serif}
+    @media(max-width:980px){:root{--toolbar:230px}.workspace{padding:18px;overflow-x:auto}}
+    /* ======= A4 列印與 PDF 輸出 ======= */
+    @page{size:A4 portrait;margin:13mm}
+    @media print{html,body{width:210mm;min-height:auto;background:#fff!important}body{-webkit-print-color-adjust:economy;print-color-adjust:economy}.toolbar,.edit-tools,.student-toggle,.teacher-note-editor{display:none!important}.workspace{margin:0;padding:0}.paper{width:auto;min-height:auto;margin:0;padding:0;box-shadow:none}.teacher-notice{break-inside:avoid-page!important;page-break-inside:avoid!important}.teacher-notice[data-print=false],.excluded-row{display:none!important}}
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <aside class="toolbar" aria-label="通知單工具列">
+      <h1>其他科成績通知單</h1>
+      <p class="subtitle">資料由公開試算表即時產生；暫存編輯不會回寫原始資料。</p>
+      <div class="tool-group">
+        <label class="field"><span class="field-label">教師</span><select id="teacher"><option value="all">全部教師</option></select></label>
+        <label class="field"><span class="field-label">搜尋老師</span><input id="search" type="search" placeholder="輸入老師姓名"></label>
+      </div>
+      <div class="tool-group">
+        <label class="field"><span class="field-label">段考</span><select id="period"><option value="first">第一次</option><option value="second">第二次</option><option value="third" selected>第三次</option></select></label>
+      </div>
+      <div class="tool-group"><span class="field-label">編輯模式</span><label class="check-line"><input id="editMode" type="checkbox">開啟</label></div>
+      <div class="tool-group button-stack">
+        <button id="pdf" class="tool-button primary">匯出 PDF／列印</button>
+        <button id="word" class="tool-button">匯出 Word（DOCX）</button>
+        <button id="reload" class="tool-button">重新讀取試算表</button>
+      </div>
+      <p id="status" class="status">正在讀取試算表……</p>
+    </aside>
+    <section class="workspace"><div class="paper"><div id="notices" class="notice-list"><div class="loading-state">正在產生通知單……</div></div></div></section>
+  </main>
+  <script type="module">
+    /* ======= 基本設定與工作階段暫存 ======= */
+    const SHEET_ID="2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk";
+    const API_ORIGIN=location.protocol==="file:"?"https://yixiang-other-subject-notice.sinny0725.chatgpt.site":location.origin;
+    const STORAGE_KEY="other-subject-notice-single-page";
+    const PERIODS={first:"第一次段考",second:"第二次段考",third:"第三次段考"};
+    let rows=[],session=loadSession();
+    const $=selector=>document.querySelector(selector);
+    function loadSession(){try{return{excluded:[],order:[],notes:{},...JSON.parse(sessionStorage.getItem(STORAGE_KEY)||"{}")}}catch{return{excluded:[],order:[],notes:{}}}}
+    function saveSession(){sessionStorage.setItem(STORAGE_KEY,JSON.stringify(session))}
+    function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]))}
+    function display(value){return String(value||"").trim()||"—"}
+
+    /* ======= CSV 解析與 Google 試算表讀取 ======= */
+    function parseCsv(text){const result=[];let row=[],field="",quoted=false;for(let i=0;i<text.length;i++){const char=text[i],next=text[i+1];if(char==='"'&&quoted&&next==='"'){field+='"';i++;continue}if(char==='"'){quoted=!quoted;continue}if(char===","&&!quoted){row.push(field.trim());field="";continue}if((char==="\n"||char==="\r")&&!quoted){if(char==="\r"&&next==="\n")i++;row.push(field.trim());if(row.some(Boolean))result.push(row);row=[];field="";continue}field+=char}row.push(field.trim());if(row.some(Boolean))result.push(row);return result}
+    function toRecords(data){if(!data.length)return[];const headers=data[0].map((value,index)=>value||`未命名${index+1}`);return data.slice(1).map(cells=>Object.fromEntries(headers.map((header,index)=>[header,cells[index]||""])))}
+    function valueOf(record,names){for(const name of names){if(record[name]!==undefined&&String(record[name]).trim())return String(record[name]).trim()}return""}
+    async function fetchSheet(gid){const response=await fetch(`${API_ORIGIN}/api/sheet?gid=${gid}`,{cache:"no-store"});if(!response.ok)throw new Error(`試算表讀取失敗（${response.status}）`);return toRecords(parseCsv(await response.text()))}
+    function isCoreSubject(subject){return /^(國文|國語|英文|英語|數學)$/.test(subject.replace(/\s/g,""))}
+    async function loadData(){const[people,withdrawals]=await Promise.all([fetchSheet("1896534716"),fetchSheet("439972429")]);const peopleMap=new Map(people.map(person=>[`${valueOf(person,["班級"])}|${valueOf(person,["姓名","學生"])}`,person]));return withdrawals.map((record,index)=>{const className=valueOf(record,["原班","班級"]),name=valueOf(record,["學生","姓名"]),person=peopleMap.get(`${className}|${name}`)||{},originalSubject=valueOf(record,["原班科目","科目"]);return{id:`${className}-${name}-${index}`,className,seat:valueOf(record,["座號"])||valueOf(person,["座號"]),name,originalSubject,dailyEvaluation:valueOf(record,["日常評量","平時成績","日常成績"]),withdrawnSubject:valueOf(record,["抽離科目","異想課程","資源班科目"]),resourceTeacher:valueOf(record,["異想班老師","異想授課老師","特教教師"]),originalTeacher:valueOf(record,["原班任課老師","原班老師","任課老師"])} }).filter(row=>row.className&&row.name&&row.originalTeacher&&!isCoreSubject(row.originalSubject))}
+
+    /* ======= 教師分組與通知單畫面 ======= */
+    function groups(){const map=new Map;rows.forEach(row=>{if(!map.has(row.originalTeacher))map.set(row.originalTeacher,[]);map.get(row.originalTeacher).push(row)});const natural=[...map.keys()].sort((a,b)=>a.localeCompare(b,"zh-Hant")),order=[...session.order.filter(name=>map.has(name)),...natural.filter(name=>!session.order.includes(name))];return order.map(teacher=>({teacher,students:map.get(teacher).sort((a,b)=>a.className.localeCompare(b.className,"zh-Hant")||Number(a.seat||999)-Number(b.seat||999))}))}
+    function refreshTeacherOptions(){const current=$("#teacher").value;$("#teacher").innerHTML='<option value="all">全部教師</option>'+groups().map(group=>`<option value="${escapeHtml(group.teacher)}">${escapeHtml(group.teacher)}老師</option>`).join("");$("#teacher").value=[...$("#teacher").options].some(option=>option.value===current)?current:"all"}
+    function render(){const selected=$("#teacher").value,keyword=$("#search").value.trim().toLocaleLowerCase("zh-Hant"),edit=$("#editMode").checked,period=PERIODS[$("#period").value];const filtered=groups().filter(group=>(selected==="all"||group.teacher===selected)&&(!keyword||group.teacher.toLocaleLowerCase("zh-Hant").includes(keyword)));if(!filtered.length){$("#notices").innerHTML='<div class="empty-state">找不到符合條件的老師。</div>';return}$("#notices").innerHTML=filtered.map((group,index)=>{const included=group.students.filter(student=>!session.excluded.includes(student.id)),teachers=[...new Set(included.map(student=>student.resourceTeacher).filter(Boolean))];return `<article class="teacher-notice" data-teacher="${escapeHtml(group.teacher)}" data-print="${included.length?"true":"false"}">${edit?`<div class="edit-tools"><button data-move="-1" ${index===0?"disabled":""}>往上</button><button data-move="1" ${index===filtered.length-1?"disabled":""}>往下</button></div>`:""}<header class="notice-heading"><p class="school-year">114學年度第二學期</p><h2 class="notice-title">${period}成績通知單（其他科）</h2></header><div class="title-rule"></div><p class="teacher-salutation">${escapeHtml(group.teacher)}老師：</p><table class="grade-table"><thead><tr><th class="col-class">班級</th><th class="col-seat">座號</th><th class="col-name">姓名</th><th class="col-subject">原班科目</th><th class="col-score">日常評量</th><th class="col-withdrawn">抽離科目</th><th class="col-resource">異想班老師</th></tr></thead><tbody>${group.students.map(student=>{const excluded=session.excluded.includes(student.id);return`<tr data-id="${escapeHtml(student.id)}" class="${excluded?"excluded-row":""}"><td>${escapeHtml(display(student.className))}</td><td>${escapeHtml(display(student.seat))}</td><td>${edit?`<input class="student-toggle" type="checkbox" ${excluded?"":"checked"} aria-label="${escapeHtml(student.name)}本次列印">`:""}${escapeHtml(student.name)}</td><td>${escapeHtml(display(student.originalSubject))}</td><td>${escapeHtml(display(student.dailyEvaluation))}</td><td>${escapeHtml(display(student.withdrawnSubject))}</td><td>${escapeHtml(display(student.resourceTeacher))}</td></tr>`}).join("")}</tbody></table><div class="resource-signature"><strong>異想班老師：</strong><div class="resource-names">${teachers.map(name=>`<span>${escapeHtml(name)}</span>`).join("")||"—"}</div></div>${session.notes[group.teacher]?`<p class="notice-note"><strong>備註：</strong>${escapeHtml(session.notes[group.teacher])}</p>`:""}${edit?`<textarea class="teacher-note-editor" placeholder="本次暫存備註（不回寫試算表）">${escapeHtml(session.notes[group.teacher]||"")}</textarea>`:""}<p class="footer-note">說明：請原班任課老師填寫日常評量，供異想教室教師進行成績評量與學習輔導參考。</p></article>`}).join("");bindNoticeEvents()}
+    function bindNoticeEvents(){$$(".teacher-notice").forEach(notice=>{const teacher=notice.dataset.teacher;notice.querySelectorAll("tr[data-id]").forEach(row=>{const toggle=()=>{const id=row.dataset.id;session.excluded=session.excluded.includes(id)?session.excluded.filter(value=>value!==id):[...session.excluded,id];saveSession();render()};row.querySelector("input")?.addEventListener("change",toggle);row.addEventListener("contextmenu",event=>{if(!$("#editMode").checked)return;event.preventDefault();toggle()})});notice.querySelectorAll("[data-move]").forEach(button=>button.addEventListener("click",()=>{const order=groups().map(group=>group.teacher),from=order.indexOf(teacher),to=from+Number(button.dataset.move);if(to<0||to>=order.length)return;[order[from],order[to]]=[order[to],order[from]];session.order=order;saveSession();refreshTeacherOptions();render()}));notice.querySelector("textarea")?.addEventListener("input",event=>{session.notes[teacher]=event.target.value;saveSession()})})}
+    function $$(selector){return [...document.querySelectorAll(selector)]}
+
+    /* ======= PDF、Word 與重新讀取 ======= */
+    async function exportWord(){const visible=groups().filter(group=>($("#teacher").value==="all"||group.teacher===$("#teacher").value)&&group.students.some(student=>!session.excluded.includes(student.id)));const response=await fetch(`${API_ORIGIN}/api/export`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({groups:visible,period:$("#period").value,notes:session.notes,excluded:session.excluded})});if(!response.ok)throw new Error("Word 檔案產生失敗");const blob=await response.blob(),anchor=document.createElement("a");anchor.href=URL.createObjectURL(blob);anchor.download=decodeURIComponent(response.headers.get("X-Filename")||"其他科成績通知單.docx");anchor.click();setTimeout(()=>URL.revokeObjectURL(anchor.href),1000)}
+    async function reload(reset=false){$("#status").className="status";$("#status").textContent="正在讀取試算表……";$("#notices").innerHTML='<div class="loading-state">正在產生通知單……</div>';if(reset){session={excluded:[],order:[],notes:{}};sessionStorage.removeItem(STORAGE_KEY)}try{rows=await loadData();refreshTeacherOptions();render();$("#status").textContent=`共 ${groups().length} 位教師、${rows.length} 筆其他科資料。`}catch(error){$("#status").className="status error";$("#status").textContent=error.message;$("#notices").innerHTML=`<div class="empty-state">${escapeHtml(error.message)}<br>請確認網路與試算表發布狀態。</div>`}}
+    ["teacher","period","editMode"].forEach(id=>$(`#${id}`).addEventListener("change",render));$("#search").addEventListener("input",render);$("#pdf").addEventListener("click",()=>window.print());$("#word").addEventListener("click",async()=>{try{await exportWord()}catch(error){alert(error.message)}});$("#reload").addEventListener("click",()=>reload(true));reload();
+  </script>
+</body>
+</html>
