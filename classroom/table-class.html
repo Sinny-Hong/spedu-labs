@@ -218,7 +218,16 @@
         }
 
         .extracted-course-bullet { flex: 0 0 auto; color: var(--item-color, #b45309); font-size: 10px; line-height: 1; }
-        .extracted-course-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+        .extracted-course-text {
+            min-width: 0;
+            padding: 0 3px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background-color: #fef08a;
+            border-radius: 2px;
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+        }
 
         /* 底部對照表樣式 */
         .student-footer {
