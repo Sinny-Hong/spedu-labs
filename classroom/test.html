@@ -42,7 +42,6 @@
     }
     .brand h1 { margin: 0 0 3px; font-size: 20px; }
     .brand p { margin: 0; color: #94a3b8; font-size: 12px; }
-    .top-actions { display: flex; gap: 8px; }
     .layout {
       width: min(1480px, 100%);
       margin: 0 auto;
@@ -118,6 +117,28 @@
       line-height: 1.65;
     }
     .status.error { color: #b91c1c; }
+    .student-filter-list {
+      max-height: 310px;
+      margin-top: 10px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 7px;
+    }
+    .student-filter-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 9px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .student-filter-item:last-child { border-bottom: 0; }
+    .student-filter-item:hover { background: #f8fafc; }
+    .student-filter-item input { width: 17px; height: 17px; accent-color: var(--blue); }
+    .student-filter-item.excluded { color: #94a3b8; text-decoration: line-through; }
+    .filter-summary { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
     .preview-title {
       margin: 0 0 8px 4px;
       color: #64748b;
@@ -154,6 +175,7 @@
       font-weight: 700;
       line-height: 1.25;
     }
+    .teacher-name .name { text-decoration: underline; text-underline-offset: 3px; }
     .grade-table {
       width: 100%;
       margin: 0 auto;
@@ -187,7 +209,6 @@
       font-family: "Microsoft JhengHei", sans-serif;
       font-size: 16px;
     }
-    #print-all-section { display: none; }
     @media (max-width: 1100px) {
       .layout { grid-template-columns: 240px minmax(0, 1fr); padding: 16px; }
       .preview { overflow-x: auto; }
@@ -199,11 +220,8 @@
       .layout { display: block; width: auto; margin: 0; padding: 0; }
       .preview { overflow: visible; }
       .paper { width: auto; min-height: 0; margin: 0; padding: 0; box-shadow: none; }
-      .notice + .notice { break-before: page; page-break-before: always; margin-top: 0; }
-      body.print-all-mode #single-page { display: none !important; }
-      body.print-all-mode #print-all-section { display: block !important; }
-      #print-all-section .paper { break-after: page; page-break-after: always; }
-      #print-all-section .paper:last-child { break-after: auto; page-break-after: auto; }
+      .notice { break-inside: avoid-page !important; page-break-inside: avoid !important; }
+      .notice + .notice { margin-top: 12mm; }
     }
   </style>
 </head>
@@ -211,11 +229,7 @@
   <header class="topbar no-print">
     <div class="brand">
       <h1>異想教室段考成績通知單</h1>
-      <p>115學年度下學期｜Word 原稿版面｜A4 直向列印</p>
-    </div>
-    <div class="top-actions">
-      <button id="topPrint" class="button small green" type="button">🖨️ 列印目前教師</button>
-      <button id="topPrintAll" class="button small" type="button">📚 列印全部教師</button>
+      <p>115學年度｜Word 原稿版面｜A4 直向單面列印</p>
     </div>
   </header>
 
@@ -224,17 +238,31 @@
       <section class="card">
         <h2>📋 通知單選擇</h2>
         <label class="field">
-          <span>收件教師</span>
-          <select id="teacher"><option value="">資料載入中</option></select>
-        </label>
-        <label class="field">
-          <span>段考次別</span>
-          <select id="period">
-            <option value="第一次" selected>第一次段考</option>
-            <option value="第二次">第二次段考</option>
-            <option value="第三次">第三次段考</option>
+          <span>學期與段考</span>
+          <select id="exam">
+            <option value="上學期|第一次" selected>上學期第一次段考</option>
+            <option value="上學期|第二次">上學期第二次段考</option>
+            <option value="上學期|第三次">上學期第三次段考</option>
+            <option value="下學期|第一次">下學期第一次段考</option>
+            <option value="下學期|第二次">下學期第二次段考</option>
+            <option value="下學期|第三次">下學期第三次段考</option>
           </select>
         </label>
+        <label class="field">
+          <span>收件教師</span>
+          <select id="teacher"><option value="all">全部教師</option></select>
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>✅ 學生篩選</h2>
+        <label class="field">
+          <span>搜尋學生</span>
+          <input id="studentSearch" type="search" placeholder="輸入班級、座號或姓名">
+        </label>
+        <div id="studentFilters" class="student-filter-list"></div>
+        <p id="filterSummary" class="filter-summary"></p>
+        <button id="restoreStudents" class="button small slate" style="width:100%;margin-top:10px" type="button">全部恢復</button>
       </section>
 
       <section class="card">
@@ -256,11 +284,10 @@
       <section class="card">
         <h2>🖨️ 列印與資料</h2>
         <div class="button-stack">
-          <button id="printOne" class="button green" type="button">列印目前教師</button>
-          <button id="printAll" class="button" type="button">一鍵列印全部教師</button>
+          <button id="printPage" class="button green" type="button">列印本頁</button>
           <button id="reload" class="button slate" type="button">重新載入資料</button>
         </div>
-        <p class="tip" style="margin-top:12px">列印設定：A4、直向、比例 100%。功能列在列印時會自動隱藏。</p>
+        <p class="tip" style="margin-top:12px"><strong>請使用單面列印。</strong><br>列印設定：A4、直向、比例 100%。畫面顯示什麼就列印什麼，功能列會自動隱藏。</p>
       </section>
 
       <section class="card">
@@ -275,8 +302,6 @@
       </div>
     </section>
   </main>
-  <div id="print-all-section"></div>
-
   <script>
     const SHEET_ID = "2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk";
     const SHEET_CSV_BASE = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?single=true&output=csv&gid=`;
@@ -286,6 +311,7 @@
     let records = [];
     let rowHeight = 1.3;
     let fontSize = 18;
+    let excluded = new Set(JSON.parse(sessionStorage.getItem("score-notice-excluded") || "[]"));
 
     function escapeHtml(value) {
       return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -383,10 +409,10 @@
     }
 
     function noticeHtml(group) {
-      const period = $("#period").value;
+      const [semester, period] = $("#exam").value.split("|");
       return `<article class="notice">
-        <h2 class="notice-title">115學年度 下學期 異想教室${period}段考成績</h2>
-        <p class="teacher-name">${escapeHtml(group.teacher)} 老師：</p>
+        <h2 class="notice-title">115學年度 ${semester} 異想教室${period}段考成績</h2>
+        <p class="teacher-name"><span class="name">${escapeHtml(group.teacher)}</span> 老師：</p>
         <table class="grade-table">
           <thead><tr>
             <th class="col-class">班級</th>
@@ -397,7 +423,7 @@
             <th class="col-withdrawn">抽離課程</th>
             <th class="col-resource">異想教室老師</th>
           </tr></thead>
-          <tbody>${group.students.map(student => `<tr>
+          <tbody>${group.students.filter(student => !excluded.has(student.id)).map(student => `<tr>
             <td>${escapeHtml(student.className)}</td>
             <td>${escapeHtml(student.seat)}</td>
             <td>${escapeHtml(student.name)}</td>
@@ -416,15 +442,58 @@
 
     function refreshTeacherOptions() {
       const list = groups();
-      $("#teacher").innerHTML = list.map(group =>
+      $("#teacher").innerHTML = '<option value="all">全部教師</option>' + list.map(group =>
         `<option value="${escapeHtml(group.teacher)}">${escapeHtml(group.teacher)} 老師</option>`
       ).join("");
+      $("#teacher").value = "all";
     }
 
     function render() {
       const selected = $("#teacher").value;
-      const group = groups().find(item => item.teacher === selected) || groups()[0];
-      $("#notice").innerHTML = group ? noticeHtml(group) : '<div class="empty">找不到可顯示的通知單資料。</div>';
+      const visibleGroups = groups()
+        .filter(group => selected === "all" || group.teacher === selected)
+        .filter(group => group.students.some(student => !excluded.has(student.id)));
+      $("#notice").innerHTML = visibleGroups.length
+        ? visibleGroups.map(noticeHtml).join("")
+        : '<div class="empty">目前沒有可顯示的通知單資料。</div>';
+    }
+
+    function selectedStudents() {
+      const selected = $("#teacher").value;
+      return groups()
+        .filter(group => selected === "all" || group.teacher === selected)
+        .flatMap(group => group.students.map(student => ({ ...student, recipient: group.teacher })));
+    }
+
+    function saveExcluded() {
+      sessionStorage.setItem("score-notice-excluded", JSON.stringify([...excluded]));
+    }
+
+    function renderStudentFilters() {
+      const keyword = normalize($("#studentSearch").value);
+      const students = selectedStudents();
+      const filtered = students.filter(student =>
+        !keyword || normalize(`${student.className}${student.seat}${student.name}${student.originalSubject}${student.recipient}`).includes(keyword)
+      );
+      $("#studentFilters").innerHTML = filtered.length ? filtered.map(student => {
+        const isExcluded = excluded.has(student.id);
+        return `<label class="student-filter-item${isExcluded ? " excluded" : ""}">
+          <input type="checkbox" data-student-id="${escapeHtml(student.id)}" ${isExcluded ? "" : "checked"}>
+          <span>${escapeHtml(student.className)}班 ${escapeHtml(student.seat)}號　${escapeHtml(student.name)}<br><small>${escapeHtml(student.originalSubject)} → ${escapeHtml(student.recipient)}老師</small></span>
+        </label>`;
+      }).join("") : '<div style="padding:12px;color:#64748b;font-size:13px">找不到符合的學生。</div>';
+      const includedCount = students.filter(student => !excluded.has(student.id)).length;
+      $("#filterSummary").textContent = `目前保留 ${includedCount} 人，排除 ${students.length - includedCount} 人。`;
+      $("#studentFilters").querySelectorAll("[data-student-id]").forEach(input => {
+        input.addEventListener("change", event => {
+          const id = event.currentTarget.dataset.studentId;
+          if (event.currentTarget.checked) excluded.delete(id);
+          else excluded.add(id);
+          saveExcluded();
+          render();
+          renderStudentFilters();
+        });
+      });
     }
 
     function setAdjustments() {
@@ -432,21 +501,6 @@
       document.documentElement.style.setProperty("--print-font-size", `${fontSize}pt`);
       $("#rowValue").textContent = `${rowHeight.toFixed(2)} 公分`;
       $("#fontValue").textContent = `${fontSize} pt`;
-    }
-
-    function printCurrent() {
-      document.body.classList.remove("print-all-mode");
-      window.print();
-    }
-
-    function printAll() {
-      const list = groups();
-      if (!list.length) return;
-      $("#print-all-section").innerHTML = list.map(group =>
-        `<div class="paper">${noticeHtml(group)}</div>`
-      ).join("");
-      document.body.classList.add("print-all-mode");
-      setTimeout(() => window.print(), 120);
     }
 
     async function loadData() {
@@ -459,6 +513,7 @@
         records = buildRecords(people, withdrawals);
         refreshTeacherOptions();
         render();
+        renderStudentFilters();
         $("#status").textContent = `已載入 ${groups().length} 位教師、${records.length} 筆學生資料。`;
       } catch (error) {
         $("#status").className = "status error";
@@ -467,21 +522,24 @@
       }
     }
 
-    $("#teacher").addEventListener("change", render);
-    $("#period").addEventListener("change", render);
+    $("#teacher").addEventListener("change", () => {
+      render();
+      renderStudentFilters();
+    });
+    $("#exam").addEventListener("change", render);
+    $("#studentSearch").addEventListener("input", renderStudentFilters);
+    $("#restoreStudents").addEventListener("click", () => {
+      selectedStudents().forEach(student => excluded.delete(student.id));
+      saveExcluded();
+      render();
+      renderStudentFilters();
+    });
     $("#rowDown").addEventListener("click", () => { rowHeight = Math.max(.8, rowHeight - .05); setAdjustments(); });
     $("#rowUp").addEventListener("click", () => { rowHeight = Math.min(2.2, rowHeight + .05); setAdjustments(); });
     $("#fontDown").addEventListener("click", () => { fontSize = Math.max(12, fontSize - 1); setAdjustments(); });
     $("#fontUp").addEventListener("click", () => { fontSize = Math.min(26, fontSize + 1); setAdjustments(); });
-    $("#printOne").addEventListener("click", printCurrent);
-    $("#topPrint").addEventListener("click", printCurrent);
-    $("#printAll").addEventListener("click", printAll);
-    $("#topPrintAll").addEventListener("click", printAll);
+    $("#printPage").addEventListener("click", () => window.print());
     $("#reload").addEventListener("click", loadData);
-    window.addEventListener("afterprint", () => {
-      document.body.classList.remove("print-all-mode");
-      $("#print-all-section").innerHTML = "";
-    });
     setAdjustments();
     loadData();
   </script>
