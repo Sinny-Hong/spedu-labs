@@ -42,6 +42,29 @@
     }
     .brand h1 { margin: 0 0 3px; font-size: 20px; }
     .brand p { margin: 0; color: #94a3b8; font-size: 12px; }
+    .sync-area { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .sync-badge, .count-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid #1d4ed8;
+      border-radius: 999px;
+      color: #bfdbfe;
+      background: #1e3a5f;
+      font-size: 12px;
+    }
+    .count-badge { color: #e2e8f0; background: #1e293b; border-color: #334155; }
+    .sync-dot { width: 9px; height: 9px; flex: 0 0 auto; border-radius: 50%; background: #60a5fa; }
+    .sync-badge.connecting .sync-dot { animation: pulse 1.1s infinite; }
+    .sync-badge.success { color: #a7f3d0; background: #064e3b; border-color: #059669; }
+    .sync-badge.success .sync-dot { background: #34d399; }
+    .sync-badge.fallback { color: #fde68a; background: #713f12; border-color: #d97706; }
+    .sync-badge.fallback .sync-dot { background: #fbbf24; }
+    .sync-badge.error { color: #fecaca; background: #7f1d1d; border-color: #dc2626; }
+    .sync-badge.error .sync-dot { background: #f87171; }
+    @keyframes pulse { 50% { opacity: .3; } }
     .layout {
       width: min(1480px, 100%);
       margin: 0 auto;
@@ -98,18 +121,6 @@
     .button.slate { background: #475569; }
     .button.small { min-height: 36px; font-size: 13px; }
     .button:disabled { opacity: .45; cursor: not-allowed; }
-    .adjuster {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .value-readout {
-      margin: 6px 0 0;
-      color: var(--muted);
-      text-align: center;
-      font-size: 12px;
-    }
     .tip, .status {
       margin: 0;
       color: #475569;
@@ -139,6 +150,18 @@
     .student-filter-item input { width: 17px; height: 17px; accent-color: var(--blue); }
     .student-filter-item.excluded { color: #94a3b8; text-decoration: line-through; }
     .filter-summary { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+    .filter-card { padding: 0; overflow: hidden; }
+    .filter-card summary {
+      padding: 18px;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      cursor: pointer;
+      user-select: none;
+    }
+    .filter-card[open] summary { border-bottom: 1px solid #e2e8f0; }
+    .filter-content { padding: 16px 18px 18px; }
     .preview-title {
       margin: 0 0 8px 4px;
       color: #64748b;
@@ -209,8 +232,16 @@
       font-family: "Microsoft JhengHei", sans-serif;
       font-size: 16px;
     }
-    @media (max-width: 1100px) {
-      .layout { grid-template-columns: 240px minmax(0, 1fr); padding: 16px; }
+    @media (max-width: 900px) {
+      .topbar { position: relative; align-items: flex-start; flex-direction: column; padding: 14px 16px; }
+      .layout { display: flex; flex-direction: column; width: 100%; padding: 14px; }
+      .sidebar { position: static; width: 100%; }
+      .preview { width: 100%; overflow-x: auto; }
+      .preview-title { position: sticky; left: 0; }
+    }
+    @media (max-width: 520px) {
+      .sync-area { width: 100%; align-items: stretch; flex-direction: column; }
+      .sync-badge, .count-badge { width: 100%; border-radius: 7px; }
       .preview { overflow-x: auto; }
     }
     @page { size: A4 portrait; margin: 16mm 12mm; }
@@ -230,6 +261,13 @@
     <div class="brand">
       <h1>異想教室段考成績通知單</h1>
       <p>115學年度｜Word 原稿版面｜A4 直向單面列印</p>
+    </div>
+    <div class="sync-area" aria-live="polite">
+      <div id="syncBadge" class="sync-badge connecting">
+        <span class="sync-dot"></span>
+        <span id="syncText">正在讀取雲端試算表……</span>
+      </div>
+      <div class="count-badge">教師 <strong id="teacherCount">0</strong> 位｜學生 <strong id="studentCount">0</strong> 人</div>
     </div>
   </header>
 
@@ -255,33 +293,6 @@
       </section>
 
       <section class="card">
-        <h2>✅ 學生篩選</h2>
-        <label class="field">
-          <span>搜尋學生</span>
-          <input id="studentSearch" type="search" placeholder="輸入班級、座號或姓名">
-        </label>
-        <div id="studentFilters" class="student-filter-list"></div>
-        <p id="filterSummary" class="filter-summary"></p>
-        <button id="restoreStudents" class="button small slate" style="width:100%;margin-top:10px" type="button">全部恢復</button>
-      </section>
-
-      <section class="card">
-        <h2>↕️ 版面微調</h2>
-        <span style="font-size:14px;font-weight:700">表格每格高度</span>
-        <div class="adjuster">
-          <button id="rowDown" class="button small slate" type="button">− 降低</button>
-          <button id="rowUp" class="button small slate" type="button">＋ 增加</button>
-        </div>
-        <p id="rowValue" class="value-readout">1.30 公分</p>
-        <span style="display:block;margin-top:14px;font-size:14px;font-weight:700">整體字級</span>
-        <div class="adjuster">
-          <button id="fontDown" class="button small slate" type="button">A− 縮小</button>
-          <button id="fontUp" class="button small slate" type="button">A＋ 放大</button>
-        </div>
-        <p id="fontValue" class="value-readout">18 pt</p>
-      </section>
-
-      <section class="card">
         <h2>🖨️ 列印與資料</h2>
         <div class="button-stack">
           <button id="printPage" class="button green" type="button">列印本頁</button>
@@ -290,9 +301,18 @@
         <p class="tip" style="margin-top:12px"><strong>請使用單面列印。</strong><br>列印設定：A4、直向、比例 100%。畫面顯示什麼就列印什麼，功能列會自動隱藏。</p>
       </section>
 
-      <section class="card">
-        <p id="status" class="status">正在載入 Google 試算表資料……</p>
-      </section>
+      <details class="card filter-card">
+        <summary id="filterToggleText">✅ 學生篩選（點此展開）</summary>
+        <div class="filter-content">
+          <label class="field">
+            <span>搜尋學生</span>
+            <input id="studentSearch" type="search" placeholder="輸入班級、座號或姓名">
+          </label>
+          <div id="studentFilters" class="student-filter-list"></div>
+          <p id="filterSummary" class="filter-summary"></p>
+          <button id="restoreStudents" class="button small slate" style="width:100%;margin-top:10px" type="button">全部恢復</button>
+        </div>
+      </details>
     </aside>
 
     <section class="preview">
@@ -309,9 +329,17 @@
     const WITHDRAWALS_GID = "439972429";
     const $ = selector => document.querySelector(selector);
     let records = [];
-    let rowHeight = 1.3;
-    let fontSize = 18;
     let excluded = new Set(JSON.parse(sessionStorage.getItem("score-notice-excluded") || "[]"));
+    const FALLBACK_RECORDS = [{
+      id: "fallback-test-student",
+      className: "測試班",
+      seat: "1",
+      name: "測試學生（僅供測試）",
+      originalSubject: "生活課程",
+      withdrawnSubject: "測試課程",
+      resourceTeacher: "測試授課老師",
+      originalTeacher: "測試收件老師"
+    }];
 
     function escapeHtml(value) {
       return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -388,7 +416,12 @@
           resourceTeacher: valueOf(row, ["異想授課老師", "異想教室老師", "異想老師", "資源班老師"]),
           originalTeacher: valueOf(row, ["原班老師", "原班科目教師", "原班任課老師", "原班教師", "任課老師"])
         };
-      }).filter(item => item.className && item.name && item.originalTeacher);
+      }).filter(item =>
+        item.className &&
+        item.name &&
+        item.originalTeacher &&
+        !/^(國文|國語|英文|英語|數學)$/.test(normalize(item.originalSubject))
+      );
     }
 
     function groups() {
@@ -484,6 +517,7 @@
       }).join("") : '<div style="padding:12px;color:#64748b;font-size:13px">找不到符合的學生。</div>';
       const includedCount = students.filter(student => !excluded.has(student.id)).length;
       $("#filterSummary").textContent = `目前保留 ${includedCount} 人，排除 ${students.length - includedCount} 人。`;
+      $("#filterToggleText").textContent = `✅ 學生篩選（保留 ${includedCount}／排除 ${students.length - includedCount}）`;
       $("#studentFilters").querySelectorAll("[data-student-id]").forEach(input => {
         input.addEventListener("change", event => {
           const id = event.currentTarget.dataset.studentId;
@@ -496,29 +530,31 @@
       });
     }
 
-    function setAdjustments() {
-      document.documentElement.style.setProperty("--row-height", `${rowHeight.toFixed(2)}cm`);
-      document.documentElement.style.setProperty("--print-font-size", `${fontSize}pt`);
-      $("#rowValue").textContent = `${rowHeight.toFixed(2)} 公分`;
-      $("#fontValue").textContent = `${fontSize} pt`;
+    function updateConnectionStatus(type, message) {
+      $("#syncBadge").className = `sync-badge ${type}`;
+      $("#syncText").textContent = message;
+      $("#teacherCount").textContent = groups().length;
+      $("#studentCount").textContent = records.length;
     }
 
     async function loadData() {
-      $("#status").className = "status";
-      $("#status").textContent = "正在載入 Google 試算表資料……";
+      updateConnectionStatus("connecting", "正在讀取雲端試算表……");
       try {
         const [people, withdrawals] = await Promise.all([
           fetchSheet(PEOPLE_GID), fetchSheet(WITHDRAWALS_GID)
         ]);
         records = buildRecords(people, withdrawals);
+        if (!records.length) throw new Error("試算表沒有可用的非國英數成績資料");
         refreshTeacherOptions();
         render();
         renderStudentFilters();
-        $("#status").textContent = `已載入 ${groups().length} 位教師、${records.length} 筆學生資料。`;
+        updateConnectionStatus("success", "雲端連線成功！資料已即時更新。");
       } catch (error) {
-        $("#status").className = "status error";
-        $("#status").textContent = `${error.message}。請確認網路與試算表公開權限。`;
-        $("#notice").innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
+        records = FALLBACK_RECORDS.map(record => ({ ...record }));
+        refreshTeacherOptions();
+        render();
+        renderStudentFilters();
+        updateConnectionStatus("fallback", "雲端載入失敗，目前顯示一筆測試資料");
       }
     }
 
@@ -534,13 +570,8 @@
       render();
       renderStudentFilters();
     });
-    $("#rowDown").addEventListener("click", () => { rowHeight = Math.max(.8, rowHeight - .05); setAdjustments(); });
-    $("#rowUp").addEventListener("click", () => { rowHeight = Math.min(2.2, rowHeight + .05); setAdjustments(); });
-    $("#fontDown").addEventListener("click", () => { fontSize = Math.max(12, fontSize - 1); setAdjustments(); });
-    $("#fontUp").addEventListener("click", () => { fontSize = Math.min(26, fontSize + 1); setAdjustments(); });
     $("#printPage").addEventListener("click", () => window.print());
     $("#reload").addEventListener("click", loadData);
-    setAdjustments();
     loadData();
   </script>
 </body>
