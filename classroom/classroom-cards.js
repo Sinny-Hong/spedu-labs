@@ -9,5 +9,6 @@ window.CLASSROOM_DATA = [
   { id: "diary", category: "班務紀錄", tag: "日誌", title: "教室日誌", desc: "記錄每日課程進度、學生適應與學習表現。", filename: "table-diary.html", themeColor: "#8b5cf6" },
   { id: "check", category: "班務紀錄", tag: "點名", title: "出缺席點名表", desc: "追蹤抽離教學與彈性課堂的學生每週出席狀況。", filename: "table-check.html", themeColor: "#a855f7" },
   { id: "exam-score", category: "班務紀錄", tag: "段考成績", title: "段考成績通知單(非主科)", desc: "依段考與原班任課教師整理其他科成績通知單。", filename: "report_card1.html", themeColor: "#d97706" },
+  { id: "exam-score", category: "班務紀錄", tag: "段考成績", title: "段考成績通知單(英文科)", desc: "依段考與原班任課教師整理英文科成績通知單。", filename: "report_card2.html", themeColor: "#d97706" },
   { id: "student-sheet-admin", category: "後台管理", tag: "限定共用", title: "115學生課表後台試算表", desc: "僅限已加入共用對象的授權帳號開啟與編輯。", filename: "https://docs.google.com/spreadsheets/d/1RUvk22m4pEClx3nqrbn6684t6T_KS8XEB1EXubEw7A4/edit?usp=sharing", themeColor: "#f59e0b", external: true }
 ];
