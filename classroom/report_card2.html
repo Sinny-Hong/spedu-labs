@@ -220,13 +220,39 @@
     .col-exam { width: 13%; }
     .col-teacher { width: 23%; }
 
+    .col-daily { position: relative; }
+
     .daily-ratio {
-      font-size: 0.85em;
-      text-align: right;
-      padding-right: 4px;
-      margin-top: 14px;
-      display: block;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: inline-block;
+      margin: 0;
+      padding: 0.2mm 0.7mm 0.1mm;
+      color: #111827;
+      background: #fde047;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      font-size: 12pt;
+      font-weight: 400;
+      line-height: 1;
+      white-space: nowrap;
     }
+    .ratio-section + .ratio-section { margin-top: 6mm; }
+    .ratio-heading {
+      margin: 0 0 2mm;
+      padding: 1.3mm 2.5mm;
+      border-left: 4px solid #111827;
+      background: #f3f4f6;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      font-size: .7em;
+      font-weight: 700;
+    }
+    .ratio-note {
+      margin: 1.5mm 0 0;
+      font-size: .62em;
+      line-height: 1.45;
+    }
+    .ratio-note p { margin: 0; }
     .notes { margin-top: 3mm; font-size: .65em; line-height: 1.45; }
     .notes p { margin: 0; }
     .empty {
@@ -279,6 +305,13 @@
         <label class="field">
           <span>收件教師（原班英師）</span>
           <select id="teacher"><option value="all">全部教師</option></select>
+        </label>
+        <label class="field">
+          <span>排列方式</span>
+          <select id="viewMode">
+            <option value="class" selected>依班級排列（同班集中）</option>
+            <option value="ratio">依比例排列（50%／100%分區）</option>
+          </select>
         </label>
       </section>
 
@@ -429,41 +462,80 @@
         }));
     }
 
+    function gradeTableHtml(students, showCornerTag = true) {
+      return `<table class="grade-table">
+        <thead><tr>
+          <th class="col-class">班級</th>
+          <th class="col-seat">座號</th>
+          <th class="col-name">姓名</th>
+          <th class="col-withdrawn">抽離課程</th>
+          <th class="col-daily">日常評量</th>
+          <th class="col-exam">定期評量</th>
+          <th class="col-teacher">異想教室老師</th>
+        </tr></thead>
+        <tbody>${students.map(student => {
+          const isFifty = student.pulloutCount < 2;
+          return `<tr>
+            <td>${escapeHtml(student.className)}</td>
+            <td>${escapeHtml(student.seat)}</td>
+            <td>${escapeHtml(student.name)}</td>
+            <td>英文</td>
+            <td class="col-daily">${showCornerTag && isFifty ? '<span class="daily-ratio">佔50%</span>' : ""}</td>
+            <td></td>
+            <td>${escapeHtml(student.resourceTeacher)}</td>
+          </tr>`;
+        }).join("")}</tbody>
+      </table>`;
+    }
+
     function noticeHtml(group) {
       const [year, semester, period] = $("#exam").value.split("|");
+      const students = group.students.filter(student => !excluded.has(student.id));
+      const viewMode = $("#viewMode").value;
+
+      let bodyHtml = "";
+      if (viewMode === "ratio") {
+        const fiftyStudents = students.filter(student => student.pulloutCount < 2);
+        const hundredStudents = students.filter(student => student.pulloutCount >= 2);
+
+        if (fiftyStudents.length) {
+          bodyHtml += `<section class="ratio-section">
+            <h3 class="ratio-heading">日常評量參考比例：50%｜定期評量：100%</h3>
+            ${gradeTableHtml(fiftyStudents, false)}
+            <div class="ratio-note">
+              <p>異想教室上課節數未達原班 50%者，請老師參閱此成績，依 50%比例評定該生日常成績。</p>
+            </div>
+          </section>`;
+        }
+
+        if (hundredStudents.length) {
+          bodyHtml += `<section class="ratio-section">
+            <h3 class="ratio-heading">日常評量評定比例：100%｜定期評量：100%</h3>
+            ${gradeTableHtml(hundredStudents, false)}
+            <div class="ratio-note">
+              <p>異想教室上課節數超過原班 50%者，由異想教室評定 100%日常成績。</p>
+            </div>
+          </section>`;
+        }
+
+        bodyHtml += `<div class="notes">
+          <p>☆依據 104.1.7 特推會決議，請老師參閱此分數作為上傳成績之依據：</p>
+          <p>課程科目與原班符合，段考試題由異想教室出題，故由異想教室評定 100%定期成績。</p>
+        </div>`;
+      } else {
+        bodyHtml = `${gradeTableHtml(students, true)}
+          <div class="notes">
+            <p>☆依據 104.1.7 特推會決議，請老師參閱此分數作為上傳成績之依據：</p>
+            <p>1. 課程科目與原班符合，段考試題由異想教室出題，故由異想教室評定 100%定期成績。</p>
+            <p>2. 異想教室上課節數超過原班 50%者，由異想教室評定 100%日常成績。</p>
+            <p>3. 異想教室上課節數未達原班 50%者，請老師參閱此成績依 50%比例評定該生日常成績。</p>
+          </div>`;
+      }
+
       return `<article class="notice">
         <h2 class="notice-title">${year} ${semester} 異想教室${period}成績</h2>
         <p class="teacher-name"><span class="name">${escapeHtml(group.teacher)}</span> 老師：</p>
-        <table class="grade-table">
-          <thead><tr>
-            <th class="col-class">班級</th>
-            <th class="col-seat">座號</th>
-            <th class="col-name">姓名</th>
-            <th class="col-withdrawn">抽離課程</th>
-            <th class="col-daily">日常評量</th>
-            <th class="col-exam">定期評量</th>
-            <th class="col-teacher">異想教室老師</th>
-          </tr></thead>
-          <tbody>${group.students.filter(student => !excluded.has(student.id)).map(student => {
-            // 平時成績比例判斷：2節或3節標示 100%，0節或1節標示 50%
-            const ratioText = (student.pulloutCount >= 2) ? "佔 100%" : "佔 50%";
-            return `<tr>
-              <td>${escapeHtml(student.className)}</td>
-              <td>${escapeHtml(student.seat)}</td>
-              <td>${escapeHtml(student.name)}</td>
-              <td>英文</td>
-              <td class="col-daily"><span class="daily-ratio">${ratioText}</span></td>
-              <td></td>
-              <td>${escapeHtml(student.resourceTeacher)}</td>
-            </tr>`;
-          }).join("")}</tbody>
-        </table>
-        <div class="notes">
-          <p>☆依據 104.1.7 特推會決議，請老師參閱此分數作為上傳成績之依據：</p>
-          <p>1. 課程科目與原班符合，段考試題由異想教室出題，故由異想教室評定 100%定期成績。</p>
-          <p>2. 異想教室上課節數超過原班 50%者，由異想教室評定 100%日常成績。</p>
-          <p>3. 異想教室上課節數未達原班 50%者，請老師參閱此成績依 50%比例評定該生日常成績。</p>
-        </div>
+        ${bodyHtml}
       </article>`;
     }
 
@@ -556,6 +628,7 @@
       renderStudentFilters();
     });
     $("#exam").addEventListener("change", render);
+    $("#viewMode").addEventListener("change", render);
     $("#studentSearch").addEventListener("input", renderStudentFilters);
     $("#restoreStudents").addEventListener("click", () => {
       selectedStudents().forEach(student => excluded.delete(student.id));
@@ -570,8 +643,3 @@
   </script>
 </body>
 </html>
-
-開始寫作
-
-/pub?single=true&output=csv&gid=240638258
-
