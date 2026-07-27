@@ -129,6 +129,7 @@ button{cursor:pointer}
 .info-card.orange{background:#fffaf3;border-color:#f5d9ad}.info-card.orange h3{color:#e36e00}
 .info-card.purple{background:#faf8ff;border-color:#ddd5f4}.info-card.purple h3{color:#6846b7}
 .word-list{list-style:none;padding:0 0 8px;margin:0;display:grid;gap:3px}
+.info-card[hidden]{display:none}
 .word-list li{display:grid;grid-template-columns:minmax(85px,1fr) minmax(80px,1fr);align-items:center;gap:9px;padding:3px 2px;font-size:17px;line-height:1.35}
 .word-list .word{font-weight:900;color:var(--navy)}
 .word-title{display:flex;align-items:center;justify-content:space-between;gap:10px}

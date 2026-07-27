@@ -1,7 +1,6 @@
 const PORTAL_CONFIG = {
   publishedBase: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRPfdr-4FdSCypU3KXOrp4ujj7zfY74wfY_Ya4-ZkauszV8TbnTqyOZgilPaMT1EDN3e4NkR8rL8-gg/pub?single=true&output=csv&gid=",
   sheets: { task: "1619194793", contact: "878488999", missing: "99671375", other: "1872726724" },
-  semesterStartDate: "",
   refreshMs: 30000
 };
 
@@ -207,13 +206,6 @@ function escapeHtml(value) {
 function updateDateAndWeek(now) {
   const weekdays = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
   document.getElementById("headerDate").textContent = `${now.getMonth()+1} 月 ${now.getDate()} 日　${weekdays[now.getDay()]}`;
-  const weekEl = document.getElementById("schoolWeek");
-  if (!PORTAL_CONFIG.semesterStartDate) return weekEl.hidden = true;
-  const start = new Date(`${PORTAL_CONFIG.semesterStartDate}T00:00:00`);
-  const diffDays = Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate()) - start) / 86400000);
-  const week = Math.floor(diffDays / 7) + 1;
-  if (week >= 1) { weekEl.textContent = `第 ${week} 週`; weekEl.hidden = false; }
-  else weekEl.hidden = true;
 }
 
 function updateClock() {
@@ -292,6 +284,10 @@ function renderTasks(rows) {
 
 function renderContact(rows) {
   const content=[], homework=[], messages=[], words=[];
+  const headers=(rows[0]||[]).map(normalize);
+  const termEnabled=headers.lastIndexOf(normalize("啟用"));
+  const termColumn=headers.indexOf(normalize("學期別"));
+  const weekColumn=headers.indexOf(normalize("目前週次"));
   rows.slice(1).forEach(row=>{
     if(truthy(row[0])&&normalize(row[1]))content.push(row[1]);
     if(truthy(row[2])&&normalize(row[3]))homework.push(row[3]);
@@ -303,6 +299,23 @@ function renderContact(rows) {
   document.getElementById("homeworkContent").innerHTML=renderLines(homework);
   document.getElementById("teacherMessage").innerHTML=renderLines(messages);
   document.getElementById("wordList").innerHTML=words.map(item=>`<li><button class="word word-button" type="button" data-word="${escapeHtml(item.word)}">${escapeHtml(item.word)}</button><span>${escapeHtml(item.translation)}</span></li>`).join("");
+
+  const activeTerms = termEnabled >= 0 && termColumn >= 0 && weekColumn >= 0
+    ? rows.slice(1).filter(row => truthy(row[termEnabled]) && normalize(row[termColumn]) && normalize(row[weekColumn]))
+    : [];
+  const hasActiveTerm = activeTerms.length === 1;
+  const schoolWeek = document.getElementById("schoolWeek");
+  const weeklyWordsCard = document.getElementById("weeklyWordsCard");
+  if (hasActiveTerm) {
+    const activeTerm = activeTerms[0];
+    schoolWeek.textContent = `${String(activeTerm[termColumn]).trim()}・${String(activeTerm[weekColumn]).trim()}`;
+    schoolWeek.hidden = false;
+    weeklyWordsCard.hidden = words.length === 0;
+  } else {
+    schoolWeek.textContent = "";
+    schoolWeek.hidden = true;
+    weeklyWordsCard.hidden = true;
+  }
 }
 
 function renderMissing(rows) {
