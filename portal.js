@@ -174,10 +174,11 @@ document.addEventListener("click", event => {
   }
   const qrButton = event.target.closest(".qr-show-btn");
   if (!qrButton) return;
-  const url = qrButton.dataset.qrUrl;
-  if (!url) return;
+  const url = qrButton.dataset.qrUrl?.trim();
+  if (!url || typeof QRCode === "undefined") return;
   qrImage.innerHTML = "";
-  new QRCode(qrImage, { text: url, width: 420, height: 420, colorDark: "#0b2f5f", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+  const qrSize = Math.min(420, Math.max(180, Math.floor(window.innerWidth * 0.82) - 32));
+  new QRCode(qrImage, { text: url, width: qrSize, height: qrSize, colorDark: "#0b2f5f", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.Q });
   qrDirectLink.href = url;
   qrModal.hidden = false;
   document.body.classList.add("modal-open");

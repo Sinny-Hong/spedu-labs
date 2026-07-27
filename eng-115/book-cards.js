@@ -1,4 +1,4 @@
-window.BOOK_CATEGORIES = ["七年級", "八年級", "九年級", "電子書"];
+window.BOOK_CATEGORIES = ["七年級", "八年級", "九年級", "綜合練習", "電子書"];
 
 window.BOOK_DATA = [
   { id: "g7_hear", category: "七年級", tag: "聽力", title: "七上 單字聽力訓練卷", desc: "115 學年度第一學期課本單字聽力練習", filename: "115-1G7hear.html", themeColor: "#3b82f6" },
@@ -18,6 +18,8 @@ window.BOOK_DATA = [
   { id: "g9_write", category: "九年級", tag: "拼寫", title: "九上 單字拼寫練習卷", desc: "115 學年度第一學期單字拼寫練習", filename: "115-1G9write.html", themeColor: "#8b5cf6" },
   { id: "g9_keyword", category: "九年級", tag: "關鍵字", title: "九上 課文關鍵字解碼卷", desc: "課文重點字詞與閱讀線索練習", filename: "115-1G9readword.html", themeColor: "#f59e0b" },
   { id: "g9_trans", category: "九年級", tag: "翻譯", title: "九上 課文翻譯卷", desc: "課文翻譯與閱讀理解練習", filename: "115-1G9reading.html", themeColor: "#f43f5e" },
+
+  { id: "voc_1200", category: "綜合練習", tag: "朗讀", title: "1200 單字選擇題朗讀", desc: "依題本頁面練習單字發音，支援語速、停頓與題號朗讀設定", filename: "1200voc.html", themeColor: "#336c5a" },
 
   { id: "ebook_hle", category: "電子書", tag: "翰林", title: "翰林國中英語電子書", desc: "開啟 115 學年度上學期翰林國中英語電子書", filename: "https://edisc3.hle.com.tw/edisc_v3/ebook_v2023.html#degree=%E5%9C%8B%E4%B8%AD&cat=%E8%8B%B1%E8%AA%9E&prd=JEN&year=115%E4%B8%8A&grade=%E5%85%A8%E5%B9%B4%E7%B4%9A&tab=tab2", external: true, themeColor: "#f59e0b" },
   { id: "ebook_knsh", category: "電子書", tag: "康軒", title: "康軒國中英語電子書", desc: "開啟 115 學年度第一學期康軒國中英語電子書", filename: "https://digitalmaster.knsh.com.tw/v3/pages/j/index.html#year=1151&field=en&grade=all&item=ebook&bookcase=online", external: true, themeColor: "#0ea5e9" }
