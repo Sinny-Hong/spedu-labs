@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>數學科段考成績通知單產生器</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #64748b;
+      --panel: #ffffff;
+      --page: #ffffff;
+      --workspace: #0f172a;
+      --navy: #1e293b;
+      --blue: #2563eb;
+      --green: #059669;
+      --border: #cbd5e1;
+      --row-height: 1.3cm;
+      --print-font-size: 18pt;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      color: var(--ink);
+      background: #f8fafc;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+    }
+    button, select, input { font: inherit; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      min-height: 72px;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      color: #fff;
+      background: var(--navy);
+      box-shadow: 0 3px 10px #0f172a33;
+    }
+    .brand h1 { margin: 0 0 3px; font-size: 20px; }
+    .brand p { margin: 0; color: #94a3b8; font-size: 12px; }
+    .sync-area { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .sync-badge, .count-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 30px;
+      padding: 5px 12px;
+      border: 1px solid #1d4ed8;
+      border-radius: 999px;
+      color: #bfdbfe;
+      background: #1e3a5f;
+      font-size: 12px;
+    }
+    .count-badge { color: #e2e8f0; background: #0f172a; border-color: #334155; }
+    .sync-dot { width: 9px; height: 9px; flex: 0 0 auto; border-radius: 50%; background: #60a5fa; }
+    .sync-badge.connecting .sync-dot { animation: pulse 1.1s infinite; }
+    .sync-badge.success { color: #a7f3d0; background: #064e3b; border-color: #059669; }
+    .sync-badge.success .sync-dot { background: #34d399; }
+    .sync-badge.fallback { color: #fde68a; background: #713f12; border-color: #d97706; }
+    .sync-badge.fallback .sync-dot { background: #fbbf24; }
+    .sync-badge.error { color: #fecaca; background: #7f1d1d; border-color: #dc2626; }
+    .sync-badge.error .sync-dot { background: #f87171; }
+    @keyframes pulse { 50% { opacity: .3; } }
+    .layout {
+      width: min(1480px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .sidebar {
+      position: sticky;
+      top: 96px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .card {
+      padding: 18px;
+      background: var(--panel);
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px #0f172a12;
+    }
+    .card h2 {
+      margin: 0 0 14px;
+      color: #64748b;
+      font-size: 13px;
+      letter-spacing: .08em;
+    }
+    .field { display: block; margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+    .field span { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 700; }
+    .field select, .field input {
+      width: 100%;
+      height: 40px;
+      padding: 6px 10px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid #94a3b8;
+      border-radius: 7px;
+    }
+    .button-stack { display: grid; gap: 10px; }
+    .button {
+      min-height: 42px;
+      padding: 8px 12px;
+      border: 0;
+      border-radius: 7px;
+      color: #fff;
+      background: var(--blue);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .button.green { background: var(--green); }
+    .button.slate { background: #475569; }
+    .button.small { min-height: 36px; font-size: 13px; }
+    .button:disabled { opacity: .45; cursor: not-allowed; }
+    .tip { margin: 12px 0 0; color: #475569; font-size: 12px; line-height: 1.6; }
+    .student-filter-list {
+      max-height: 280px;
+      margin-top: 10px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 7px;
+    }
+    .student-filter-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 9px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .student-filter-item:last-child { border-bottom: 0; }
+    .student-filter-item:hover { background: #f8fafc; }
+    .student-filter-item input { width: 17px; height: 17px; accent-color: var(--blue); }
+    .student-filter-item.excluded { color: #94a3b8; text-decoration: line-through; }
+    .filter-summary { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+    .filter-card { padding: 0; overflow: hidden; }
+    .filter-card summary {
+      padding: 18px;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      cursor: pointer;
+      user-select: none;
+    }
+    .filter-card[open] summary { border-bottom: 1px solid #e2e8f0; }
+    .filter-content { padding: 16px 18px 18px; }
+    .preview-title {
+      margin: 0 0 8px 4px;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .paper {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 24px;
+      padding: 16mm 12mm;
+      background: var(--page);
+      box-shadow: 0 12px 28px #0f172a2b;
+    }
+    .notice {
+      color: #000;
+      font-family: "DFKai-SB", "BiauKai", "標楷體", "PMingLiU", serif;
+      font-size: var(--print-font-size);
+      line-height: 1.3;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .notice + .notice { margin-top: 16mm; }
+    .notice-title {
+      margin: 0 0 2mm;
+      text-align: center;
+      font-size: 1.05em;
+      font-weight: 400;
+      white-space: nowrap;
+    }
+    .teacher-name {
+      margin: 0 0 2mm 9mm;
+      font-size: 1.18em;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+    .teacher-name .name { text-decoration: underline; text-underline-offset: 3px; }
+    .grade-table {
+      width: 100%;
+      margin: 0 auto;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: .85em;
+    }
+    .grade-table th, .grade-table td {
+      height: var(--row-height);
+      padding: 1mm 1mm;
+      border: 1px solid #000;
+      text-align: center;
+      vertical-align: middle;
+      overflow-wrap: anywhere;
+      font-weight: 400;
+    }
+    .grade-table th { height: auto; min-height: 9mm; white-space: nowrap; }
+    
+    /* 欄位寬度精準配置，防止最後一欄文字溢出 */
+    .col-class { width: 10%; }
+    .col-seat { width: 9%; }
+    .col-name { width: 15%; }
+    .col-withdrawn { width: 15%; }
+    .col-daily { width: 15%; position: relative; }
+    .col-exam { width: 13%; }
+    .col-teacher { width: 23%; }
+
+    .daily-ratio {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: inline-block;
+      margin: 0;
+      padding: 0.2mm 0.7mm 0.1mm;
+      color: #111827;
+      background: #fde047;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      font-size: 12pt;
+      font-weight: 400;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .ratio-section + .ratio-section { margin-top: 6mm; }
+    .ratio-heading {
+      margin: 0 0 2mm;
+      padding: 1.5mm 2.5mm;
+      border-left: 4px solid #111827;
+      background: #f1f5f9;
+      font-size: .72em;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      font-weight: 700;
+    }
+    .ratio-note {
+      margin: 1.8mm 0 0;
+      font-size: .62em;
+      line-height: 1.45;
+    }
+    .ratio-note p { margin: 0; }
+    .notes { margin-top: 3mm; font-size: .65em; line-height: 1.45; }
+    .notes p { margin: 0; }
+    .empty {
+      padding: 60mm 10mm;
+      color: #64748b;
+      text-align: center;
+      font-family: "Microsoft JhengHei", sans-serif;
+      font-size: 16px;
+    }
+    @media print {
+      html, body { width: 210mm; background: #fff; }
+      .no-print { display: none !important; }
+      .layout { display: block; width: auto; margin: 0; padding: 0; }
+      .paper { width: auto; min-height: 0; margin: 0; padding: 0; box-shadow: none; }
+      .notice { break-inside: avoid-page !important; page-break-inside: avoid !important; }
+      .notice + .notice { margin-top: 12mm; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar no-print">
+    <div class="brand">
+      <h1>數學科段考成績通知單產生器</h1>
+      <p>115學年度｜異想教室成績表格格式｜A4 直向單面列印</p>
+    </div>
+    <div class="sync-area" aria-live="polite">
+      <div id="syncBadge" class="sync-badge connecting">
+        <span class="sync-dot"></span>
+        <span id="syncText">正在連線至雲端試算表 A7 抽課分頁……</span>
+      </div>
+      <div class="count-badge">收件教師 <strong id="teacherCount">0</strong> 位｜學生 <strong id="studentCount">0</strong> 人</div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar no-print">
+      <section class="card">
+        <h2>📋 成績單設定</h2>
+        <label class="field">
+          <span>學年度與段考</span>
+          <select id="exam">
+            <option value="115學年度|上學期|第一次">115學年度 上學期 第一次段考</option>
+            <option value="115學年度|上學期|第二次" selected>115學年度 上學期 第二次段考</option>
+            <option value="115學年度|上學期|第三次">115學年度 上學期 第三次段考</option>
+            <option value="115學年度|下學期|第一次">115學年度 下學期 第一次段考</option>
+            <option value="115學年度|下學期|第二次">115學年度 下學期 第二次段考</option>
+            <option value="115學年度|下學期|第三次">115學年度 下學期 第三次段考</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>收件教師（原班數師）</span>
+          <select id="teacher"><option value="all">全部教師</option></select>
+        </label>
+        <label class="field">
+          <span>異想教室數學老師</span>
+          <select id="resourceTeacher"><option value="all">全部教師</option></select>
+        </label>
+        <label class="field">
+          <span>成績排列方式</span>
+          <select id="viewMode">
+            <option value="class" selected>依班級排列（同班集中）</option>
+            <option value="ratio">依比例排列（50%／100%分區）</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>🖨️ 操作與列印</h2>
+        <div class="button-stack">
+          <button id="printPage" class="button green" type="button">列印通知單 (A4)</button>
+          <button id="reload" class="button slate" type="button">即時同步雲端資料</button>
+        </div>
+        <p class="tip">請使用單面列印。<br>列印設定：A4、直向、邊界預設、比例 100%。上方與側邊功能列會自動隱藏。</p>
+      </section>
+
+      <details class="card filter-card">
+        <summary id="filterToggleText">✅ 學生篩選（點此展開）</summary>
+        <div class="filter-content">
+          <label class="field">
+            <span>搜尋學生</span>
+            <input id="studentSearch" type="search" placeholder="搜尋班級、座號或姓名">
+          </label>
+          <div id="studentFilters" class="student-filter-list"></div>
+          <p id="filterSummary" class="filter-summary"></p>
+          <button id="restoreStudents" class="button small slate" style="width:100%;margin-top:10px" type="button">全部恢復顯示</button>
+        </div>
+      </details>
+    </aside>
+
+    <section class="preview">
+      <p class="preview-title no-print">👁️ A4 通知單預覽</p>
+      <div id="single-page" class="paper">
+        <div id="notice"><div class="empty">正在讀取雲端試算表 A7 抽課資料……</div></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SHEET_ID = "2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk";
+    const SHEET_CSV_BASE = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?single=true&output=csv&gid=`;
+    const A7_GID = "240638258";
+
+    const $ = selector => document.querySelector(selector);
+    let records = [];
+    let excluded = new Set(JSON.parse(sessionStorage.getItem("math-score-notice-excluded") || "[]"));
+
+    // 內嵌備份資料：僅留單筆測試用途，確保資料100%來自雲端
+    const FALLBACK_RECORDS = [{
+      id: "fallback-test-1",
+      className: "測試班",
+      seat: "1",
+      name: "測試學生（僅供測試）",
+      originalTeacher: "測試數學老師",
+      resourceTeacher: "特教數學老師",
+      pulloutCount: 2
+    }];
+
+    function escapeHtml(val) {
+      return String(val ?? "").replace(/[&<>"']/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[c]);
+    }
+
+    // 標準 CSV 解析器
+    function parseCsv(text) {
+      const rows = [];
+      let row = [], field = "", quoted = false;
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i], next = text[i + 1];
+        if (char === '"' && quoted && next === '"') { field += '"'; i++; }
+        else if (char === '"') quoted = !quoted;
+        else if (char === "," && !quoted) { row.push(field.trim()); field = ""; }
+        else if ((char === "\n" || char === "\r") && !quoted) {
+          if (char === "\r" && next === "\n") i++;
+          row.push(field.trim());
+          if (row.some(Boolean)) rows.push(row);
+          row = []; field = "";
+        } else field += char;
+      }
+      row.push(field.trim());
+      if (row.some(Boolean)) rows.push(row);
+      return rows;
+    }
+
+    // 依表頭名稱辨識數學欄位，不綁死欄號。
+    function normalizeHeader(value) {
+      return String(value ?? "")
+        .replace(/[\s　:：()（）_\-]/g, "")
+        .toLowerCase();
+    }
+
+    function findHeaderIndex(headers, aliases) {
+      const normalizedHeaders = headers.map(normalizeHeader);
+      for (const alias of aliases) {
+        const index = normalizedHeaders.indexOf(normalizeHeader(alias));
+        if (index >= 0) return index;
+      }
+      return -1;
+    }
+
+    function buildRecordsFromA7Rows(rows) {
+      if (!rows || rows.length < 2) return [];
+
+      const headers = rows[0];
+      const classIndex = findHeaderIndex(headers, ["班級", "原班", "班別"]);
+      const seatIndex = findHeaderIndex(headers, ["座號", "座次"]);
+      const nameIndex = findHeaderIndex(headers, ["學生姓名", "姓名", "學生"]);
+      const pulloutIndex = findHeaderIndex(headers, [
+        "數學抽離", "數學抽離節數", "抽離數學", "數學節數", "數學"
+      ]);
+      const originalTeacherIndex = findHeaderIndex(headers, [
+        "原班數師", "原班數學老師", "原班數學教師", "原班數學任課老師", "數學老師"
+      ]);
+      const resourceTeacherIndex = findHeaderIndex(headers, [
+        "特教數師", "特教數學老師", "異想數師", "異想教室數學老師", "資源班數學老師"
+      ]);
+
+      const missing = [];
+      if (classIndex < 0) missing.push("班級");
+      if (seatIndex < 0) missing.push("座號");
+      if (nameIndex < 0) missing.push("學生姓名");
+      if (pulloutIndex < 0) missing.push("數學抽離");
+      if (originalTeacherIndex < 0) missing.push("原班數師");
+      if (resourceTeacherIndex < 0) missing.push("特教數師");
+      if (missing.length) {
+        throw new Error(`找不到欄位：${missing.join("、")}。請確認 A7抽課表頭名稱。`);
+      }
+
+      const parsedRecords = [];
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i] || [];
+        const className = String(row[classIndex] ?? "").trim();
+        const seat = String(row[seatIndex] ?? "").trim();
+        const name = String(row[nameIndex] ?? "").trim();
+        const pulloutRaw = String(row[pulloutIndex] ?? "").trim();
+        const originalTeacher = String(row[originalTeacherIndex] ?? "").trim();
+        const resourceTeacher = String(row[resourceTeacherIndex] ?? "").trim();
+
+        if (resourceTeacher && originalTeacher && name) {
+          parsedRecords.push({
+            id: `a7-math-${className}-${seat}-${name}-${i}`,
+            className,
+            seat,
+            name,
+            originalTeacher,
+            resourceTeacher,
+            pulloutCount: parseInt(pulloutRaw, 10) || 0
+          });
+        }
+      }
+      return parsedRecords;
+    }
+
+    async function fetchA7SheetData() {
+      const url = `${SHEET_CSV_BASE}${A7_GID}&_=${Date.now()}`;
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`試算表讀取失敗（${response.status}）`);
+      }
+
+      const csvText = await response.text();
+      const rows = parseCsv(csvText);
+      const data = buildRecordsFromA7Rows(rows);
+
+      if (!data.length) {
+        throw new Error("A7抽課分頁已讀取，但找不到符合條件的學生資料");
+      }
+      return data;
+    }
+
+    function filteredRecords() {
+      const selectedResourceTeacher = $("#resourceTeacher")?.value || "all";
+      return records.filter(rec =>
+        selectedResourceTeacher === "all" || rec.resourceTeacher === selectedResourceTeacher
+      );
+    }
+
+    function groups() {
+      const map = new Map();
+      filteredRecords().forEach(rec => {
+        if (!map.has(rec.originalTeacher)) map.set(rec.originalTeacher, []);
+        map.get(rec.originalTeacher).push(rec);
+      });
+      return [...map.entries()]
+        .sort(([a], [b]) => a.localeCompare(b, "zh-Hant"))
+        .map(([teacher, students]) => ({
+          teacher,
+          students: students.sort((a, b) =>
+            a.className.localeCompare(b.className, "zh-Hant") ||
+            Number(a.seat || 999) - Number(b.seat || 999)
+          )
+        }));
+    }
+
+    function gradeTableHtml(students, showRatioInCell = true) {
+      return `<table class="grade-table">
+        <thead><tr>
+          <th class="col-class">班級</th>
+          <th class="col-seat">座號</th>
+          <th class="col-name">姓名</th>
+          <th class="col-withdrawn">抽離課程</th>
+          <th class="col-daily">日常評量</th>
+          <th class="col-exam">定期評量</th>
+          <th class="col-teacher">異想教室老師</th>
+        </tr></thead>
+        <tbody>${students.map(student => {
+          const ratioText = student.pulloutCount < 2 ? "佔50%" : "";
+          return `<tr>
+            <td>${escapeHtml(student.className)}</td>
+            <td>${escapeHtml(student.seat)}</td>
+            <td>${escapeHtml(student.name)}</td>
+            <td>數學</td>
+            <td class="col-daily">${showRatioInCell && ratioText ? `<span class="daily-ratio">${ratioText}</span>` : ""}</td>
+            <td></td>
+            <td>${escapeHtml(student.resourceTeacher)}</td>
+          </tr>`;
+        }).join("")}</tbody>
+      </table>`;
+    }
+
+    function noticeHtml(group) {
+      const [year, semester, period] = $("#exam").value.split("|");
+      const students = group.students.filter(student => !excluded.has(student.id));
+      const viewMode = $("#viewMode").value;
+
+      let bodyHtml = "";
+      if (viewMode === "ratio") {
+        const fiftyStudents = students.filter(student => student.pulloutCount < 2);
+        const hundredStudents = students.filter(student => student.pulloutCount >= 2);
+
+        if (fiftyStudents.length) {
+          bodyHtml += `<section class="ratio-section">
+            <h3 class="ratio-heading">日常評量參考比例：50%｜定期評量：100%</h3>
+            ${gradeTableHtml(fiftyStudents, false)}
+            <div class="ratio-note">
+              <p>異想教室上課節數未達原班 50%者，請老師參閱此成績，依 50%比例評定該生日常成績。</p>
+            </div>
+          </section>`;
+        }
+
+        if (hundredStudents.length) {
+          bodyHtml += `<section class="ratio-section">
+            <h3 class="ratio-heading">日常評量評定比例：100%｜定期評量：100%</h3>
+            ${gradeTableHtml(hundredStudents, false)}
+            <div class="ratio-note">
+              <p>異想教室上課節數超過原班 50%者，由異想教室評定 100%日常成績。</p>
+            </div>
+          </section>`;
+        }
+
+        bodyHtml += `<div class="notes">
+          <p>☆依據 104.1.7 特推會決議，請老師參閱此分數作為上傳成績之依據：</p>
+          <p>課程科目與原班符合，段考試題由異想教室出題，故由異想教室評定 100%定期成績。</p>
+        </div>`;
+      } else {
+        bodyHtml = `${gradeTableHtml(students, true)}
+          <div class="notes">
+            <p>☆依據 104.1.7 特推會決議，請老師參閱此分數作為上傳成績之依據：</p>
+            <p>1. 課程科目與原班符合，段考試題由異想教室出題，故由異想教室評定 100%定期成績。</p>
+            <p>2. 異想教室上課節數超過原班 50%者，由異想教室評定 100%日常成績。</p>
+            <p>3. 異想教室上課節數未達原班 50%者，請老師參閱此成績依 50%比例評定該生日常成績。</p>
+          </div>`;
+      }
+
+      return `<article class="notice">
+        <h2 class="notice-title">${year} ${semester} 異想教室${period}成績</h2>
+        <p class="teacher-name"><span class="name">${escapeHtml(group.teacher)}</span> 老師：</p>
+        ${bodyHtml}
+      </article>`;
+    }
+
+    function refreshResourceTeacherOptions() {
+      const current = $("#resourceTeacher").value;
+      const teachers = [...new Set(records.map(record => record.resourceTeacher).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, "zh-Hant"));
+
+      $("#resourceTeacher").innerHTML =
+        '<option value="all">全部教師</option>' +
+        teachers.map(name =>
+          `<option value="${escapeHtml(name)}">${escapeHtml(name)} 老師</option>`
+        ).join("");
+
+      $("#resourceTeacher").value =
+        teachers.includes(current) ? current : "all";
+    }
+
+    function refreshTeacherOptions(preserveSelection = false) {
+      const current = preserveSelection ? $("#teacher").value : "all";
+      const list = groups();
+
+      $("#teacher").innerHTML = '<option value="all">全部教師</option>' + list.map(group =>
+        `<option value="${escapeHtml(group.teacher)}">${escapeHtml(group.teacher)} 老師</option>`
+      ).join("");
+
+      $("#teacher").value =
+        current === "all" || list.some(group => group.teacher === current)
+          ? current
+          : "all";
+    }
+
+    function render() {
+      const selected = $("#teacher").value;
+      const visibleGroups = groups()
+        .filter(group => selected === "all" || group.teacher === selected)
+        .filter(group => group.students.some(student => !excluded.has(student.id)));
+      $("#notice").innerHTML = visibleGroups.length
+        ? visibleGroups.map(noticeHtml).join("")
+        : '<div class="empty">目前沒有可顯示的通知單資料。</div>';
+    }
+
+    function selectedStudents() {
+      const selected = $("#teacher").value;
+      return groups()
+        .filter(group => selected === "all" || group.teacher === selected)
+        .flatMap(group => group.students.map(student => ({ ...student, recipient: group.teacher })));
+    }
+
+    function saveExcluded() {
+      sessionStorage.setItem("math-score-notice-excluded", JSON.stringify([...excluded]));
+    }
+
+    function renderStudentFilters() {
+      const keyword = String($("#studentSearch").value || "").trim().toLowerCase();
+      const students = selectedStudents();
+      const filtered = students.filter(student =>
+        !keyword || `${student.className}${student.seat}${student.name}${student.recipient}`.toLowerCase().includes(keyword)
+      );
+      $("#studentFilters").innerHTML = filtered.length ? filtered.map(student => {
+        const isExcluded = excluded.has(student.id);
+        return `<label class="student-filter-item${isExcluded ? " excluded" : ""}">
+          <input type="checkbox" data-student-id="${escapeHtml(student.id)}" ${isExcluded ? "" : "checked"}>
+          <span>${escapeHtml(student.className)}班 ${escapeHtml(student.seat)}號 ${escapeHtml(student.name)}<br><small>原班數師：${escapeHtml(student.recipient)} | 抽離 ${student.pulloutCount} 節</small></span>
+        </label>`;
+      }).join("") : '<div style="padding:12px;color:#64748b;font-size:13px">找不到符合條件的學生。</div>';
+
+      const includedCount = students.filter(student => !excluded.has(student.id)).length;
+      $("#filterSummary").textContent = `目前保留 ${includedCount} 人，排除 ${students.length - includedCount} 人。`;
+      $("#filterToggleText").textContent = `✅ 學生篩選（保留 ${includedCount}／排除 ${students.length - includedCount}）`;
+
+      $("#studentFilters").querySelectorAll("[data-student-id]").forEach(input => {
+        input.addEventListener("change", event => {
+          const id = event.currentTarget.dataset.studentId;
+          if (event.currentTarget.checked) excluded.delete(id);
+          else excluded.add(id);
+          saveExcluded();
+          render();
+          renderStudentFilters();
+        });
+      });
+    }
+
+    function updateConnectionStatus(type, message) {
+      $("#syncBadge").className = `sync-badge ${type}`;
+      $("#syncText").textContent = message;
+      $("#teacherCount").textContent = groups().length;
+      $("#studentCount").textContent = filteredRecords().length;
+    }
+
+    async function loadData() {
+      updateConnectionStatus("connecting", "正在連線至雲端試算表 A7 抽課分頁……");
+      try {
+        records = await fetchA7SheetData();
+        refreshResourceTeacherOptions();
+        refreshTeacherOptions();
+        render();
+        renderStudentFilters();
+        updateConnectionStatus("success", "雲端連線成功！已即時同步 A7 抽課最新資料。");
+      } catch (error) {
+        console.warn("雲端讀取失敗，載入測試資料：", error);
+        records = FALLBACK_RECORDS.map(rec => ({ ...rec }));
+        refreshResourceTeacherOptions();
+        refreshTeacherOptions();
+        render();
+        renderStudentFilters();
+        updateConnectionStatus("fallback", `連線失敗，目前顯示測試資料。原因：${error.message}`);
+      }
+    }
+
+    $("#teacher").addEventListener("change", () => {
+      render();
+      renderStudentFilters();
+    });
+    $("#resourceTeacher").addEventListener("change", () => {
+      refreshTeacherOptions(true);
+      render();
+      renderStudentFilters();
+    });
+    $("#exam").addEventListener("change", render);
+    $("#viewMode").addEventListener("change", render);
+    $("#studentSearch").addEventListener("input", renderStudentFilters);
+    $("#restoreStudents").addEventListener("click", () => {
+      selectedStudents().forEach(student => excluded.delete(student.id));
+      saveExcluded();
+      render();
+      renderStudentFilters();
+    });
+    $("#printPage").addEventListener("click", () => window.print());
+    $("#reload").addEventListener("click", loadData);
+
+    loadData();
+  </script>
+</body>
+</html>
