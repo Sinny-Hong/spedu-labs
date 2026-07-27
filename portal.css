@@ -202,6 +202,23 @@ button{cursor:pointer}
 .qr-dialog p{margin:15px 0 10px;color:var(--muted)}.qr-dialog a{display:inline-block;padding:10px 16px;border-radius:10px;background:var(--navy);color:#fff;text-decoration:none;font-weight:900}
 .qr-close{position:absolute;right:10px;top:8px;width:38px;height:38px;border:0;border-radius:50%;background:#eef3f8;color:var(--navy);font-size:27px;line-height:1}
 .modal-open{overflow:hidden}
+.password-modal{position:fixed;inset:0;z-index:110;display:grid;place-items:center;padding:20px;background:rgba(6,25,50,.62);backdrop-filter:blur(5px)}
+.password-modal[hidden]{display:none}
+.password-dialog{position:relative;width:min(430px,100%);padding:34px 32px 30px;border-radius:24px;background:#fff;text-align:center;box-shadow:0 24px 70px rgba(4,22,47,.3)}
+.password-icon{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 14px;border-radius:20px;background:#fff4de;font-size:36px}
+.password-dialog h2{margin:0;color:var(--navy);font-size:27px}
+.password-dialog>p{margin:10px 0 23px;color:var(--muted);font-weight:700;line-height:1.55}
+.password-dialog form{text-align:left}
+.password-dialog label{display:block;margin-bottom:7px;color:var(--navy);font-weight:900}
+.password-field{display:flex;overflow:hidden;border:2px solid #d7e2ec;border-radius:12px;background:#fff;transition:border-color .2s,box-shadow .2s}
+.password-field:focus-within{border-color:#2e70b7;box-shadow:0 0 0 4px rgba(46,112,183,.12)}
+.password-field input{min-width:0;flex:1;padding:13px 14px;border:0;outline:0;font:inherit;font-size:20px;letter-spacing:.18em}
+.password-field button{display:grid;place-items:center;width:50px;border:0;background:#f4f7fa;color:var(--navy);cursor:pointer}
+.password-field button svg{width:21px;height:21px}
+.password-error{margin:8px 2px 0!important;color:#c62828!important;font-size:14px;font-weight:800!important}
+.password-submit{width:100%;margin-top:17px;padding:13px 18px;border:0;border-radius:12px;background:var(--navy);color:#fff;font:inherit;font-weight:900;cursor:pointer;box-shadow:0 7px 18px rgba(11,47,95,.2)}
+.password-submit:hover{background:#154d83}
+.password-close{position:absolute;right:12px;top:10px;width:38px;height:38px;border:0;border-radius:50%;background:#eef3f8;color:var(--navy);font-size:27px;line-height:1;cursor:pointer}
 .task-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}.task-actions .task-link,.qr-show-btn{margin-top:0}
 .qr-show-btn{padding:7px 11px;border:1px solid #efca89;border-radius:8px;background:#fff;color:#a75300;font-weight:900;font-size:13px;cursor:pointer}
 
@@ -248,6 +265,7 @@ button{cursor:pointer}
   .clock-panel{min-height:520px}
   .footer{position:static;margin-top:12px}
   .qr-dialog{padding:24px 16px 20px}.qr-dialog h2{font-size:23px}.qr-image{width:min(78vw,360px)}
+  .password-dialog{padding:30px 20px 24px}.password-dialog h2{font-size:24px}
 }
 
 

@@ -18,10 +18,77 @@ const qrImage = document.getElementById("qrImage");
 const qrDirectLink = document.getElementById("qrDirectLink");
 const qrClose = document.getElementById("qrClose");
 const playAllWords = document.getElementById("playAllWords");
+const classroomLink = document.getElementById("classroomLink");
+const passwordModal = document.getElementById("passwordModal");
+const passwordForm = document.getElementById("passwordForm");
+const classroomPassword = document.getElementById("classroomPassword");
+const passwordError = document.getElementById("passwordError");
+const passwordClose = document.getElementById("passwordClose");
+const passwordToggle = document.getElementById("passwordToggle");
 if (window.lucide) lucide.createIcons();
 
 let playingAllWords = false;
 let cancelWordSequence = false;
+const CLASSROOM_ACCESS_KEY = "speduClassroomAccess";
+const CLASSROOM_PASSWORD_HASH = "4a081bff0bf93d06ee54ff45353e8b65bce23522ae6a45769f5968ff5956356e";
+
+async function hashPassword(value) {
+  const data = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function openPasswordModal() {
+  passwordForm.reset();
+  passwordError.hidden = true;
+  passwordModal.hidden = false;
+  document.body.classList.add("modal-open");
+  requestAnimationFrame(() => classroomPassword.focus());
+}
+
+function closePasswordModal() {
+  passwordModal.hidden = true;
+  passwordForm.reset();
+  passwordError.hidden = true;
+  document.body.classList.remove("modal-open");
+  classroomLink.focus();
+}
+
+classroomLink.addEventListener("click", event => {
+  if (sessionStorage.getItem(CLASSROOM_ACCESS_KEY) === "granted") return;
+  event.preventDefault();
+  openPasswordModal();
+});
+
+passwordForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  const submittedHash = await hashPassword(classroomPassword.value);
+  if (submittedHash !== CLASSROOM_PASSWORD_HASH) {
+    passwordError.hidden = false;
+    classroomPassword.select();
+    return;
+  }
+  sessionStorage.setItem(CLASSROOM_ACCESS_KEY, "granted");
+  window.location.assign(classroomLink.href);
+});
+
+passwordToggle.addEventListener("click", () => {
+  const showing = classroomPassword.type === "text";
+  classroomPassword.type = showing ? "password" : "text";
+  passwordToggle.setAttribute("aria-label", showing ? "顯示密碼" : "隱藏密碼");
+  passwordToggle.setAttribute("aria-pressed", String(!showing));
+  passwordToggle.innerHTML = `<i data-lucide="${showing ? "eye" : "eye-off"}"></i>`;
+  if (window.lucide) lucide.createIcons();
+  classroomPassword.focus();
+});
+
+passwordClose.addEventListener("click", closePasswordModal);
+passwordModal.addEventListener("click", event => {
+  if (event.target === passwordModal) closePasswordModal();
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !passwordModal.hidden) closePasswordModal();
+});
 
 function speakSingleWord(word, button) {
   if (!("speechSynthesis" in window) || !word) return Promise.resolve();

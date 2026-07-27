@@ -22,7 +22,7 @@
         <a href="./math/index.html"><span><i data-lucide="calculator"></i></span><b>數學教材</b></a>
         <a href="./life/index.html"><span><i data-lucide="heart-handshake"></i></span><b>生活教育</b></a>
         <a href="./info/index.html"><span><i data-lucide="graduation-cap"></i></span><b>升學輔導</b></a>
-        <a href="./classroom/index.html"><span><i data-lucide="calendar-days"></i></span><b>班務管理</b></a>
+        <a id="classroomLink" href="./classroom/index.html"><span><i data-lucide="calendar-days"></i></span><b>班務管理</b></a>
         <a class="teacher-console" href="https://docs.google.com/spreadsheets/d/1DWvNNRUklFwKL72E_2XPXLfJfEnm6dyT3We98b6NHnU/edit?usp=sharing" target="_blank" rel="noopener"><span><i data-lucide="clipboard-pen-line"></i></span><b>公告後台</b></a>
       </nav>
 
@@ -169,6 +169,26 @@
       <div class="qr-image" id="qrImage" aria-label="任務連結 QR Code"></div>
       <p>使用手機相機掃描，或直接開啟下方連結。</p>
       <a id="qrDirectLink" href="#" target="_blank" rel="noopener">直接開啟連結</a>
+    </div>
+  </div>
+
+  <div class="password-modal" id="passwordModal" hidden role="dialog" aria-modal="true" aria-labelledby="passwordModalTitle" aria-describedby="passwordModalMessage">
+    <div class="password-dialog">
+      <button class="password-close" id="passwordClose" type="button" aria-label="關閉密碼驗證">×</button>
+      <div class="password-icon" aria-hidden="true">😊</div>
+      <h2 id="passwordModalTitle">班務管理驗證</h2>
+      <p id="passwordModalMessage">本功能目前僅供校內合作夥伴使用</p>
+      <form id="passwordForm">
+        <label for="classroomPassword">請輸入密碼</label>
+        <div class="password-field">
+          <input id="classroomPassword" name="password" type="password" inputmode="numeric" autocomplete="current-password" required />
+          <button id="passwordToggle" type="button" aria-label="顯示密碼" aria-pressed="false">
+            <i data-lucide="eye"></i>
+          </button>
+        </div>
+        <p class="password-error" id="passwordError" role="alert" hidden>密碼錯誤，請重新輸入。</p>
+        <button class="password-submit" type="submit">進入班務管理</button>
+      </form>
     </div>
   </div>
 
