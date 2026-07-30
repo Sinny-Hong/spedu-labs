@@ -22,7 +22,7 @@
       --paper: #fffdfa;
       --white: #ffffff;
       --shadow: 0 16px 42px rgba(18, 52, 81, .10);
-      --radius: 24px;
+      --radius: 20px;
     }
 
     * { box-sizing: border-box; }
@@ -52,7 +52,9 @@
     }
     .skip-link:focus { top: 16px; }
 
-    .mobile-bar { display: none; }
+    .mobile-bar,
+    .mobile-menu { display: none; }
+    .mobile-menu[hidden] { display: none !important; }
     .layout {
       width: min(1180px, calc(100% - 48px));
       margin: 0 auto;
@@ -64,34 +66,31 @@
 
     .sidebar {
       position: sticky;
-      top: 24px;
-      height: calc(100vh - 48px);
-      padding: 30px 20px 24px;
+      top: 12px;
+      height: calc(100vh - 24px);
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
     .brand {
       display: flex;
       gap: 12px;
       align-items: center;
-      margin-bottom: 38px;
+      margin-bottom: 18px;
+      text-decoration: none;
     }
     .brand-mark {
-      width: 44px;
-      height: 44px;
-      display: grid;
-      place-items: center;
+      width: 58px;
+      height: 58px;
       flex: 0 0 auto;
-      border-radius: 14px;
-      background: var(--orange-500);
-      color: var(--white);
-      font-size: 23px;
-      box-shadow: 0 9px 22px rgba(231, 120, 49, .24);
+      object-fit: contain;
+      filter: drop-shadow(0 7px 12px rgba(18, 52, 81, .14));
     }
     .brand strong { display: block; color: var(--blue-950); font-size: 18px; }
     .brand small { display: block; color: var(--muted); letter-spacing: .06em; }
     .nav-title {
-      margin: 0 0 10px 14px;
+      margin: 0 0 6px 14px;
       color: var(--muted);
       font-size: 13px;
       font-weight: 700;
@@ -100,6 +99,13 @@
     .section-nav {
       display: grid;
       gap: 5px;
+    }
+    .sidebar .section-nav {
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: #c8d5dc transparent;
     }
     .section-nav a {
       padding: 10px 14px;
@@ -117,21 +123,23 @@
       transform: translateX(5px);
     }
     .sidebar-note {
-      margin-top: auto;
-      padding: 14px;
+      flex: 0 0 auto;
+      margin-top: 12px;
+      padding: 11px 12px;
       border: 1px solid var(--line);
       border-radius: 14px;
       color: var(--muted);
       background: rgba(255, 255, 255, .7);
-      font-size: 13px;
+      font-size: 12px;
+      line-height: 1.55;
     }
 
     main { min-width: 0; padding: 36px 0 90px; }
     .hero {
       position: relative;
       overflow: hidden;
-      min-height: 520px;
-      padding: 68px clamp(30px, 6vw, 72px);
+      min-height: 400px;
+      padding: 50px clamp(28px, 5vw, 58px);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -169,14 +177,14 @@
     }
     .hero-lead {
       max-width: 660px;
-      margin: 25px 0 0;
+      margin: 18px 0 0;
       color: rgba(255,255,255,.87);
       font-size: clamp(18px, 2.2vw, 22px);
       line-height: 1.7;
     }
     .hero-tag {
       width: fit-content;
-      margin-top: 32px;
+      margin-top: 22px;
       padding: 9px 15px;
       border: 1px solid rgba(255,255,255,.27);
       border-radius: 99px;
@@ -217,29 +225,29 @@
     .cards {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
+      gap: 14px;
     }
     .card {
-      padding: 27px;
+      padding: 20px;
       border: 1px solid var(--line);
-      border-radius: var(--radius);
+      border-radius: 18px;
       background: rgba(255,255,255,.88);
       box-shadow: 0 8px 24px rgba(18,52,81,.055);
     }
     .card.wide { grid-column: 1 / -1; }
     .card-icon {
-      width: 48px;
-      height: 48px;
+      width: 42px;
+      height: 42px;
       display: grid;
       place-items: center;
       margin-bottom: 17px;
       border-radius: 15px;
       color: var(--blue-800);
       background: var(--blue-100);
-      font-size: 23px;
+      font-size: 20px;
     }
     .card.orange .card-icon { color: #9a4718; background: var(--orange-100); }
-    h3 { margin: 0 0 8px; color: var(--blue-950); font-size: 21px; }
+    h3 { margin: 0 0 6px; color: var(--blue-950); font-size: 20px; }
     .card p { margin: 0; color: var(--muted); }
     .card ul { margin: 12px 0 0; padding-left: 1.3em; }
     .card li + li { margin-top: 7px; }
@@ -247,11 +255,11 @@
     .timeline {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
+      gap: 14px;
     }
     .time-card {
       position: relative;
-      padding: 30px;
+      padding: 23px;
       border-radius: var(--radius);
       background: var(--white);
       box-shadow: var(--shadow);
@@ -281,11 +289,11 @@
     .compare {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 18px;
+      gap: 14px;
     }
     .compare-card {
-      min-height: 330px;
-      padding: 32px;
+      min-height: 280px;
+      padding: 24px;
       border-radius: var(--radius);
     }
     .compare-card.paper { color: var(--blue-950); background: var(--blue-100); }
@@ -391,7 +399,8 @@
         background: rgba(255, 253, 250, .94);
         backdrop-filter: blur(12px);
       }
-      .mobile-brand { color: var(--blue-950); font-weight: 900; }
+      .mobile-brand { display: flex; align-items: center; gap: 8px; color: var(--blue-950); font-weight: 900; text-decoration: none; }
+      .mobile-brand img { width: 34px; height: 34px; object-fit: contain; }
       .menu-button {
         padding: 8px 13px;
         border: 0;
@@ -432,12 +441,12 @@
       }
       main { padding-top: 18px; }
       .content-section { scroll-margin-top: 84px; }
-      .hero { min-height: 460px; }
+      .hero { min-height: 360px; }
     }
 
     @media (max-width: 650px) {
       .layout { width: min(100% - 22px, 560px); }
-      .hero { min-height: 500px; padding: 44px 25px; border-radius: 24px; }
+      .hero { min-height: 390px; padding: 34px 25px; border-radius: 24px; }
       h1 { font-size: 42px; }
       .content-section { padding-top: 68px; }
       .section-heading { grid-template-columns: 1fr; gap: 5px; }
@@ -460,10 +469,10 @@
   <a class="skip-link" href="#main">跳到主要內容</a>
 
   <div class="mobile-bar">
-    <div class="mobile-brand">💡 異想教室</div>
+    <a class="mobile-brand" href="index.html" aria-label="回到升學輔導目錄"><img src="../assets/logo-round.png" alt="">異想教室</a>
     <button class="menu-button" type="button" aria-controls="mobile-menu" aria-expanded="false">☰ 本頁目錄</button>
   </div>
-  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true" hidden>
     <button class="close-button" type="button">關閉 ✕</button>
     <nav class="section-nav" aria-label="手機版章節目錄">
       <a href="#about">01 什麼是綜合職能科</a>
@@ -477,13 +486,13 @@
 
   <div class="layout">
     <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true">💡</div>
+      <a class="brand" href="index.html" aria-label="回到升學輔導目錄">
+        <img class="brand-mark" src="../assets/logo-round.png" alt="Sinny Spedu Labs 圓形 Logo">
         <div>
           <strong>異想教室</strong>
           <small>家長升學指南</small>
         </div>
-      </div>
+      </a>
       <p class="nav-title">本頁目錄</p>
       <nav class="section-nav" aria-label="章節目錄">
         <a href="#about">01 什麼是綜合職能科</a>
@@ -660,13 +669,18 @@
     const allNavLinks = [...document.querySelectorAll('.section-nav a[href^="#"]')];
     const sections = [...document.querySelectorAll("[data-section]")];
 
-    function setMenu(open) {
+    function setMenu(open, restoreFocus = true) {
+      if (open) mobileMenu.hidden = false;
       mobileMenu.classList.toggle("open", open);
       mobileMenu.setAttribute("aria-hidden", String(!open));
       menuButton.setAttribute("aria-expanded", String(open));
       document.body.classList.toggle("menu-open", open);
-      if (open) closeButton.focus();
-      else menuButton.focus();
+      if (open) {
+        closeButton.focus();
+      } else {
+        mobileMenu.hidden = true;
+        if (restoreFocus && menuButton.offsetParent !== null) menuButton.focus();
+      }
     }
 
     menuButton.addEventListener("click", () => setMenu(true));
@@ -677,15 +691,11 @@
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && mobileMenu.classList.contains("open")) setMenu(false);
     });
-    allNavLinks.forEach((link) => {
-      link.addEventListener("click", () => {
-        if (mobileMenu.classList.contains("open")) {
-          mobileMenu.classList.remove("open");
-          mobileMenu.setAttribute("aria-hidden", "true");
-          menuButton.setAttribute("aria-expanded", "false");
-          document.body.classList.remove("menu-open");
-        }
-      });
+    allNavLinks.forEach((link) => link.addEventListener("click", () => {
+      if (mobileMenu.classList.contains("open")) setMenu(false, false);
+    }));
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 920 && mobileMenu.classList.contains("open")) setMenu(false, false);
     });
 
     function activateNav(id) {
