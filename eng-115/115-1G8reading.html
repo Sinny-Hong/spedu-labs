@@ -168,7 +168,8 @@
         <button onclick="toggleAllAnswers()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese">💡 公布 / 隱藏全頁答案</button>
         <button onclick="clearAllAnswers()" class="px-3.5 py-1.5 bg-slate-600 hover:bg-slate-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese">🧼 全頁重設清除</button>
         <button onclick="printCurrentLesson()" class="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese">🖨️ 列印本課（正反面）</button>
-        <button onclick="printAllLessons()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese">🖨️ 全部列印</button>
+        <button onclick="printAllLessons(false)" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese">🖨️ 全部列印學生版</button>
+        <button onclick="printAllLessons(true)" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg text-xs transition shadow-md font-chinese">🖨️ 全部列印教師版</button>
       </div>
     </div>
     
@@ -793,12 +794,24 @@
       window.print();
     }
 
-    function printAllLessons() {
+    function printAllLessons(includeAnswers = false) {
       const printContainer = document.getElementById('print-all-container');
       printContainer.innerHTML = Object.keys(database).map(lessonKey => {
         const data = database[lessonKey];
         return buildPageHtml(data, 'dialogue', lessonKey) + buildPageHtml(data, 'reading', lessonKey);
       }).join('');
+      if (includeAnswers) {
+        printContainer.querySelectorAll('.page-a4 h1').forEach(title => {
+          title.textContent += '（教師版）';
+        });
+        printContainer.querySelectorAll('.quiz-row').forEach(row => {
+          const input = row.querySelector('.answer-input');
+          if (input) {
+            input.value = row.getAttribute('data-ans') || '-';
+            input.classList.add('bg-indigo-50', 'text-indigo-700', 'border-indigo-500', 'font-extrabold');
+          }
+        });
+      }
       document.body.classList.add('printing-all');
       requestAnimationFrame(() => window.print());
     }

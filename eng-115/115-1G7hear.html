@@ -79,7 +79,8 @@
         <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
         <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除</button>
         <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
-        <button onclick="printAllLessons()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印 (6頁)</button>
+        <button onclick="printAllLessons(false)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印學生版 (6頁)</button>
+        <button onclick="printAllLessons(true)" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印教師版 (6頁)</button>
       </div>
     </div>
     <div class="grid grid-cols-6 gap-1.5" id="lesson-selectors"></div>
@@ -444,8 +445,8 @@
       document.querySelectorAll('.lesson-btn').forEach(btn => {
         const k = btn.getAttribute('data-lesson');
         btn.className = (k === lessonKey) ? 
-          "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-red-600 text-white border-red-600 shadow-sm" :
-          "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
+          "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-red-600 text-white border-red-600 shadow-sm" :
+          "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
       });
 
       document.getElementById('main-title').innerText = `七上 ${lessonKey} 英文科講義 聽力選擇卷`;
@@ -544,7 +545,7 @@
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     }
 
-    function printAllLessons() {
+    function printAllLessons(includeAnswers = false) {
       const printContainer = document.getElementById('print-all-container');
       printContainer.innerHTML = '';
 
@@ -563,7 +564,7 @@
         page.innerHTML = `
           <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
             <div class="flex justify-between items-end">
-              <h1 class="title-large text-slate-800 tracking-wider font-chinese">七上 ${lessonKey} 英文科講義 聽力選擇卷</h1>
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">七上 ${lessonKey} 英文科講義 聽力選擇卷${includeAnswers ? '（教師版）' : ''}</h1>
               <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
                 <div class="flex items-end">
                   <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
@@ -585,6 +586,16 @@
           <div class="h-1 shrink-0"></div>
         `;
         printContainer.appendChild(page);
+
+        if (includeAnswers) {
+          page.querySelectorAll('.answer-input').forEach(input => {
+            const groupIndex = input.getAttribute('data-gidx');
+            const eng = input.getAttribute('data-eng');
+            const order = quizOrders[`${lessonKey}-${groupIndex}`];
+            input.value = order ? order.indexOf(eng) + 1 : '-';
+            input.classList.add('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+          });
+        }
       });
 
       setTimeout(() => {
