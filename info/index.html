@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>升學輔導工作區｜Sinny Spedu Labs</title>
+  <link rel="stylesheet" href="../shared/css/workspace.css?v=2.7">
+</head>
+<body class="grammar-page info-page">
+  <button class="mobile-toggle" id="mobileToggle" aria-label="開啟選單">☰</button>
+  <div class="workspace-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand-home" href="../index.html" aria-label="回到異想教室首頁"><img src="../assets/logo-banner.png" alt="Sinny Spedu Labs"></a>
+      <div class="workspace-name"><small>GUIDANCE WORKSPACE</small><strong>升學輔導</strong></div>
+      <nav class="category-nav" id="categoryList" aria-label="資源分類">
+        <button class="category-btn active" data-filter="all"><span>全部資源</span><span class="category-count" data-total-count></span></button>
+        <button class="category-btn" data-filter="favorites"><span>我的收藏</span><span class="category-count" data-favorite-count>0</span></button>
+        <p class="category-label">輔導分類</p>
+      </nav>
+      <p class="sidebar-note">點選上方 Logo 可隨時回到異想教室首頁。</p>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="title-block"><p>SINNY SPEDU LABS</p><h1>升學輔導工作區</h1></div>
+        <a class="home-link" href="../index.html">回到首頁</a>
+      </header>
+      <div class="search-row">
+        <input class="search-box" id="resourceSearch" type="search" placeholder="搜尋升學、就業或綜合職能科資源…" aria-label="搜尋升學輔導資源">
+        <div class="count-badge" id="resultCount"></div>
+      </div>
+      <h2 class="section-heading">升學與生涯資源</h2>
+      <section class="card-grid" id="infoCards"></section>
+      <div class="empty-state" id="emptyState">目前沒有符合條件的資源。</div>
+    </main>
+  </div>
+
+  <script src="info-cards.js?v=2.7"></script>
+  <script>
+    const escapeHtml = value => String(value ?? "")
+      .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;").replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+    document.querySelector("[data-total-count]").textContent = window.INFO_DATA.length;
+    document.getElementById("categoryList").insertAdjacentHTML("beforeend",
+      window.INFO_CATEGORIES.map(category =>
+        `<button class="category-btn" data-filter="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${window.INFO_DATA.filter(item => item.category === category).length}</span></button>`
+      ).join("")
+    );
+
+    document.getElementById("infoCards").innerHTML = window.INFO_DATA.map(item =>
+      `<article class="resource-card" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}">
+        <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
+        <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p><a class="card-link" href="${escapeHtml(item.filename)}">開啟介紹 →</a>
+      </article>`
+    ).join("");
+  </script>
+  <script src="../shared/js/workspace.js?v=2.7"></script>
+</body>
+</html>

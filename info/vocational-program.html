@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="異想教室家長升學指南：認識綜合職能科、能力評估、高中實習與升學提醒。">
+  <title>認識綜合職能科｜異想教室</title>
+  <style>
+    :root {
+      --blue-950: #123451;
+      --blue-800: #1d527c;
+      --blue-700: #28688f;
+      --blue-100: #e8f3f8;
+      --orange-600: #e77831;
+      --orange-500: #f18c41;
+      --orange-100: #fff0e4;
+      --yellow-100: #fff7cf;
+      --yellow-500: #e4b923;
+      --ink: #24323d;
+      --muted: #5f6f79;
+      --line: #dce6eb;
+      --paper: #fffdfa;
+      --white: #ffffff;
+      --shadow: 0 16px 42px rgba(18, 52, 81, .10);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 28px; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 92% 4%, rgba(241, 140, 65, .13), transparent 25rem),
+        linear-gradient(180deg, #f7fbfd 0%, var(--paper) 36%, #f7fbfd 100%);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      line-height: 1.75;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; }
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      left: 16px;
+      top: -80px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      background: var(--blue-950);
+      color: var(--white);
+      transition: top .2s;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .mobile-bar { display: none; }
+    .layout {
+      width: min(1180px, calc(100% - 48px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 48px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 24px;
+      height: calc(100vh - 48px);
+      padding: 30px 20px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 38px;
+    }
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 14px;
+      background: var(--orange-500);
+      color: var(--white);
+      font-size: 23px;
+      box-shadow: 0 9px 22px rgba(231, 120, 49, .24);
+    }
+    .brand strong { display: block; color: var(--blue-950); font-size: 18px; }
+    .brand small { display: block; color: var(--muted); letter-spacing: .06em; }
+    .nav-title {
+      margin: 0 0 10px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .12em;
+    }
+    .section-nav {
+      display: grid;
+      gap: 5px;
+    }
+    .section-nav a {
+      padding: 10px 14px;
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: color .2s, background .2s, transform .2s;
+    }
+    .section-nav a:hover { color: var(--blue-800); background: var(--blue-100); }
+    .section-nav a.active {
+      color: var(--white);
+      background: var(--blue-800);
+      transform: translateX(5px);
+    }
+    .sidebar-note {
+      margin-top: auto;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .7);
+      font-size: 13px;
+    }
+
+    main { min-width: 0; padding: 36px 0 90px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 520px;
+      padding: 68px clamp(30px, 6vw, 72px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-radius: 34px;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 90% 18%, rgba(255,255,255,.17) 0 7%, transparent 7.5%),
+        radial-gradient(circle at 80% 70%, rgba(241,140,65,.95) 0 15%, transparent 15.5%),
+        linear-gradient(135deg, var(--blue-950), var(--blue-700));
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -90px;
+      bottom: -110px;
+      border: 28px solid rgba(255,255,255,.10);
+      border-radius: 50%;
+    }
+    .eyebrow {
+      margin: 0 0 18px;
+      color: #ffd6b8;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .14em;
+    }
+    h1 {
+      max-width: 700px;
+      margin: 0;
+      font-size: clamp(42px, 6vw, 72px);
+      line-height: 1.12;
+      letter-spacing: -.03em;
+    }
+    .hero-lead {
+      max-width: 660px;
+      margin: 25px 0 0;
+      color: rgba(255,255,255,.87);
+      font-size: clamp(18px, 2.2vw, 22px);
+      line-height: 1.7;
+    }
+    .hero-tag {
+      width: fit-content;
+      margin-top: 32px;
+      padding: 9px 15px;
+      border: 1px solid rgba(255,255,255,.27);
+      border-radius: 99px;
+      background: rgba(255,255,255,.10);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .content-section {
+      scroll-margin-top: 28px;
+      padding: 88px 0 0;
+    }
+    .section-heading {
+      display: grid;
+      grid-template-columns: 70px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+      margin-bottom: 26px;
+    }
+    .section-number {
+      color: var(--orange-500);
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+    h2 {
+      margin: -5px 0 8px;
+      color: var(--blue-950);
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.25;
+    }
+    .section-intro {
+      max-width: 720px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .card {
+      padding: 27px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.88);
+      box-shadow: 0 8px 24px rgba(18,52,81,.055);
+    }
+    .card.wide { grid-column: 1 / -1; }
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 17px;
+      border-radius: 15px;
+      color: var(--blue-800);
+      background: var(--blue-100);
+      font-size: 23px;
+    }
+    .card.orange .card-icon { color: #9a4718; background: var(--orange-100); }
+    h3 { margin: 0 0 8px; color: var(--blue-950); font-size: 21px; }
+    .card p { margin: 0; color: var(--muted); }
+    .card ul { margin: 12px 0 0; padding-left: 1.3em; }
+    .card li + li { margin-top: 7px; }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .time-card {
+      position: relative;
+      padding: 30px;
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+    .time-label {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      color: var(--white);
+      background: var(--orange-600);
+      font-size: 14px;
+      font-weight: 900;
+    }
+    .time-card h3 { font-size: 26px; }
+    .time-card p { margin: 8px 0 0; color: var(--muted); }
+    .notice {
+      margin-top: 18px;
+      padding: 17px 20px;
+      border-left: 5px solid var(--blue-700);
+      border-radius: 5px 14px 14px 5px;
+      color: var(--blue-950);
+      background: var(--blue-100);
+      font-weight: 700;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .compare-card {
+      min-height: 330px;
+      padding: 32px;
+      border-radius: var(--radius);
+    }
+    .compare-card.paper { color: var(--blue-950); background: var(--blue-100); }
+    .compare-card.practice { color: #6d3819; background: var(--orange-100); }
+    .compare-label {
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .1em;
+    }
+    .compare-card h3 { margin-top: 14px; font-size: 28px; }
+    .compare-card ul { margin: 18px 0 0; padding-left: 1.3em; }
+    .compare-card li + li { margin-top: 8px; }
+
+    .quote {
+      margin-top: 20px;
+      padding: 28px 32px;
+      border-radius: var(--radius);
+      color: var(--white);
+      background: var(--blue-950);
+      font-size: 21px;
+      font-weight: 800;
+      text-align: center;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 15px;
+    }
+    .step {
+      padding: 24px;
+      border-top: 5px solid var(--orange-500);
+      border-radius: 8px 8px 20px 20px;
+      background: var(--white);
+      box-shadow: 0 8px 24px rgba(18,52,81,.06);
+    }
+    .step small { color: var(--orange-600); font-weight: 900; letter-spacing: .09em; }
+    .step h3 { margin-top: 8px; }
+    .step p { margin: 0; color: var(--muted); }
+
+    .highlight {
+      padding: clamp(30px, 5vw, 48px);
+      border-radius: 30px;
+      color: var(--white);
+      background: linear-gradient(135deg, var(--blue-950), var(--blue-700));
+      box-shadow: var(--shadow);
+    }
+    .highlight h3 { color: var(--white); font-size: 29px; }
+    .highlight p { max-width: 720px; margin: 10px 0 0; color: rgba(255,255,255,.85); }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .pill {
+      padding: 9px 14px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 999px;
+      background: rgba(255,255,255,.11);
+      font-weight: 700;
+    }
+
+    .warning {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(34px, 6vw, 60px);
+      border: 2px solid var(--yellow-500);
+      border-radius: 30px;
+      background: var(--yellow-100);
+      box-shadow: 0 14px 34px rgba(116, 88, 0, .10);
+    }
+    .warning-label {
+      margin: 0 0 12px;
+      color: #896b00;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .12em;
+    }
+    .warning h2 { max-width: 650px; color: #554300; }
+    .warning p { max-width: 730px; margin: 18px 0 0; color: #635726; font-size: 18px; }
+    .warning strong { color: #3f3200; }
+
+    footer {
+      margin-top: 80px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 920px) {
+      html { scroll-padding-top: 88px; }
+      body.menu-open { overflow: hidden; }
+      .layout { width: min(100% - 30px, 760px); display: block; }
+      .sidebar { display: none; }
+      .mobile-bar {
+        position: sticky;
+        z-index: 50;
+        top: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 253, 250, .94);
+        backdrop-filter: blur(12px);
+      }
+      .mobile-brand { color: var(--blue-950); font-weight: 900; }
+      .menu-button {
+        padding: 8px 13px;
+        border: 0;
+        border-radius: 11px;
+        color: var(--white);
+        background: var(--blue-800);
+        cursor: pointer;
+      }
+      .mobile-menu {
+        position: fixed;
+        z-index: 60;
+        inset: 0;
+        display: none;
+        padding: 74px 22px 24px;
+        background: rgba(18, 52, 81, .96);
+      }
+      .mobile-menu.open { display: block; }
+      .mobile-menu nav { display: grid; gap: 8px; }
+      .mobile-menu a {
+        padding: 13px 16px;
+        border-radius: 12px;
+        color: var(--white);
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 800;
+      }
+      .mobile-menu a.active { color: var(--blue-950); background: var(--white); }
+      .close-button {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        padding: 8px 14px;
+        border: 1px solid rgba(255,255,255,.4);
+        border-radius: 10px;
+        color: var(--white);
+        background: transparent;
+        cursor: pointer;
+      }
+      main { padding-top: 18px; }
+      .content-section { scroll-margin-top: 84px; }
+      .hero { min-height: 460px; }
+    }
+
+    @media (max-width: 650px) {
+      .layout { width: min(100% - 22px, 560px); }
+      .hero { min-height: 500px; padding: 44px 25px; border-radius: 24px; }
+      h1 { font-size: 42px; }
+      .content-section { padding-top: 68px; }
+      .section-heading { grid-template-columns: 1fr; gap: 5px; }
+      .section-number { font-size: 14px; }
+      .cards, .timeline, .compare, .steps { grid-template-columns: 1fr; }
+      .card.wide { grid-column: auto; }
+      .compare-card { min-height: auto; }
+      .quote { padding: 24px 20px; font-size: 18px; }
+      footer { display: block; }
+      footer span { display: block; margin-top: 7px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要內容</a>
+
+  <div class="mobile-bar">
+    <div class="mobile-brand">💡 異想教室</div>
+    <button class="menu-button" type="button" aria-controls="mobile-menu" aria-expanded="false">☰ 本頁目錄</button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <button class="close-button" type="button">關閉 ✕</button>
+    <nav class="section-nav" aria-label="手機版章節目錄">
+      <a href="#about">01 什麼是綜合職能科</a>
+      <a href="#schedule">02 報名與評估時間</a>
+      <a href="#assessment">03 評估內容</a>
+      <a href="#learning">04 高中學習與實習</a>
+      <a href="#future">05 證照與未來出路</a>
+      <a href="#reminder">06 重要提醒</a>
+    </nav>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">💡</div>
+        <div>
+          <strong>異想教室</strong>
+          <small>家長升學指南</small>
+        </div>
+      </div>
+      <p class="nav-title">本頁目錄</p>
+      <nav class="section-nav" aria-label="章節目錄">
+        <a href="#about">01 什麼是綜合職能科</a>
+        <a href="#schedule">02 報名與評估時間</a>
+        <a href="#assessment">03 評估內容</a>
+        <a href="#learning">04 高中學習與實習</a>
+        <a href="#future">05 證照與未來出路</a>
+        <a href="#reminder">06 重要提醒</a>
+      </nav>
+      <div class="sidebar-note">本頁提供家長快速理解；實際招生規定與日期，請以當學年度簡章及學校通知為準。</div>
+    </aside>
+
+    <main id="main">
+      <header class="hero">
+        <p class="eyebrow">異想教室｜家長升學指南</p>
+        <h1>認識<br>綜合職能科</h1>
+        <p class="hero-lead">它不是「不用讀書」，而是一條更重視生活適應、工作能力與個別支持的學習道路。</p>
+        <div class="hero-tag">給正在陪孩子思考高中方向的家長</div>
+      </header>
+
+      <section class="content-section" id="about" data-section>
+        <div class="section-heading">
+          <div class="section-number">01</div>
+          <div>
+            <h2>什麼是綜合職能科？</h2>
+            <p class="section-intro">綜合職能科設置在高中職，採集中式特教班的學習方式，兼顧基本學科、生活適應、社會互動與職業能力。</p>
+          </div>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">📘</div>
+            <h3>基本學習</h3>
+            <p>仍會學習實用的國文、英文、數學等內容，重點是能在生活中理解與運用。</p>
+          </article>
+          <article class="card orange">
+            <div class="card-icon" aria-hidden="true">🧭</div>
+            <h3>生活與社會適應</h3>
+            <p>練習自我照顧、人際互動、交通安全、問題處理與日常生活中的責任。</p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">🧰</div>
+            <h3>職業能力</h3>
+            <p>從不同實作課程探索興趣，培養理解指令、完成任務、使用工具與工作態度。</p>
+          </article>
+          <article class="card orange">
+            <div class="card-icon" aria-hidden="true">🤝</div>
+            <h3>包班陪伴</h3>
+            <p>採包班制，導師較能從學習、生活與適應等不同面向，持續了解並陪伴學生。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section" id="schedule" data-section>
+        <div class="section-heading">
+          <div class="section-number">02</div>
+          <div>
+            <h2>報名與評估時間</h2>
+            <p class="section-intro">家長不需要獨自摸索流程，異想教室會依當年度時程通知並協助準備。</p>
+          </div>
+        </div>
+        <div class="timeline">
+          <article class="time-card">
+            <span class="time-label">國三｜十二月底</span>
+            <h3>收到報名通知</h3>
+            <p>由異想教室通知家長相關資訊，說明流程並協助確認需要準備的資料。</p>
+          </article>
+          <article class="time-card">
+            <span class="time-label">四月中旬｜週六上午</span>
+            <h3>參加能力評估</h3>
+            <p>家長需接送孩子到考場，中午再接孩子回家；老師會在考場等候學生與家長、協助熟悉流程。</p>
+          </article>
+        </div>
+        <div class="notice">日期可能隨年度調整，請以當學年度正式簡章及異想教室通知為準。</div>
+      </section>
+
+      <section class="content-section" id="assessment" data-section>
+        <div class="section-heading">
+          <div class="section-number">03</div>
+          <div>
+            <h2>能力評估考什麼？</h2>
+            <p class="section-intro">評估不只看考卷分數，也會觀察孩子能不能理解、操作與完成實際任務。</p>
+          </div>
+        </div>
+        <div class="compare">
+          <article class="compare-card paper">
+            <div class="compare-label">PAPER｜紙筆評估</div>
+            <h3>看得懂、想得出來</h3>
+            <ul>
+              <li>實用中文與英文</li>
+              <li>時間、金錢、數量等生活數學</li>
+              <li>安全、責任、人際與生活判斷</li>
+            </ul>
+          </article>
+          <article class="compare-card practice">
+            <div class="compare-label">PRACTICE｜操作評估</div>
+            <h3>聽得懂、實際做得到</h3>
+            <ul>
+              <li>理解並依序完成指令</li>
+              <li>分類、排列、清點與收納</li>
+              <li>雙手操作及簡單工具使用</li>
+              <li>遇到問題時檢查與求助</li>
+            </ul>
+          </article>
+        </div>
+        <div class="quote">綜合職能科相當熱門，面對的是全臺南市資源班學生共同報考；前幾個志願通常需要有較好的評估表現。</div>
+      </section>
+
+      <section class="content-section" id="learning" data-section>
+        <div class="section-heading">
+          <div class="section-number">04</div>
+          <div>
+            <h2>高中怎麼學？如何實習？</h2>
+            <p class="section-intro">從校內學習逐步走向真實職場，在老師陪伴下認識自己的優勢，也練習適應工作環境。</p>
+          </div>
+        </div>
+        <div class="steps">
+          <article class="step">
+            <small>高一</small>
+            <h3>建立基礎</h3>
+            <p>兼顧基本學科、生活適應與不同職業課程，逐步探索興趣與能力。</p>
+          </article>
+          <article class="step">
+            <small>高二起</small>
+            <h3>半天實習</h3>
+            <p>老師親自帶學生前往實習場所，以每次半天的方式接觸真實工作環境。</p>
+          </article>
+          <article class="step">
+            <small>陪伴與溝通</small>
+            <h3>協助融入</h3>
+            <p>老師會向職場說明孩子的個性、優勢與需要協助之處，幫助孩子更快適應。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section" id="future" data-section>
+        <div class="section-heading">
+          <div class="section-number">05</div>
+          <div>
+            <h2>證照與未來出路</h2>
+            <p class="section-intro">每位學生的方向不同，學校會依能力、興趣、課程與實習經驗，協助思考適合的下一步。</p>
+          </div>
+        </div>
+        <div class="highlight">
+          <h3>學習不只為了考試，也為了更獨立的未來</h3>
+          <p>學校會視課程與學生能力提供考照輔導；過去學長姐曾取得機車駕照，以及烘焙、烹飪等相關證照。畢業後可依個人狀況銜接就業、升學或其他轉銜服務。</p>
+          <div class="pill-row" aria-label="可能發展方向">
+            <span class="pill">證照練習</span>
+            <span class="pill">職場實習</span>
+            <span class="pill">就業轉銜</span>
+            <span class="pill">繼續升學</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section" id="reminder" data-section>
+        <div class="warning">
+          <p class="warning-label">家長一定要記得</p>
+          <h2>請同時填寫原班升學志願！</h2>
+          <p>綜合職能科與原班升學是<strong>不同的升學管道</strong>，可以同時進行。收到不同管道的錄取通知後，再從中選擇孩子最喜歡、也最適合的學校，不要因為只準備一種管道而少了一個選擇。</p>
+        </div>
+      </section>
+
+      <footer>
+        <strong>💡 異想教室｜家長升學指南</strong>
+        <span>實際招生與評估規定以當學年度正式資訊為準。</span>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const menuButton = document.querySelector(".menu-button");
+    const closeButton = document.querySelector(".close-button");
+    const mobileMenu = document.querySelector(".mobile-menu");
+    const allNavLinks = [...document.querySelectorAll('.section-nav a[href^="#"]')];
+    const sections = [...document.querySelectorAll("[data-section]")];
+
+    function setMenu(open) {
+      mobileMenu.classList.toggle("open", open);
+      mobileMenu.setAttribute("aria-hidden", String(!open));
+      menuButton.setAttribute("aria-expanded", String(open));
+      document.body.classList.toggle("menu-open", open);
+      if (open) closeButton.focus();
+      else menuButton.focus();
+    }
+
+    menuButton.addEventListener("click", () => setMenu(true));
+    closeButton.addEventListener("click", () => setMenu(false));
+    mobileMenu.addEventListener("click", (event) => {
+      if (event.target === mobileMenu) setMenu(false);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && mobileMenu.classList.contains("open")) setMenu(false);
+    });
+    allNavLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        if (mobileMenu.classList.contains("open")) {
+          mobileMenu.classList.remove("open");
+          mobileMenu.setAttribute("aria-hidden", "true");
+          menuButton.setAttribute("aria-expanded", "false");
+          document.body.classList.remove("menu-open");
+        }
+      });
+    });
+
+    function activateNav(id) {
+      allNavLinks.forEach((link) => {
+        const active = link.getAttribute("href") === `#${id}`;
+        link.classList.toggle("active", active);
+        if (active) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      });
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible) activateNav(visible.target.id);
+    }, { rootMargin: "-15% 0px -58% 0px", threshold: [0, .1, .3, .6] });
+
+    sections.forEach((section) => observer.observe(section));
+    activateNav(sections[0].id);
+  </script>
+</body>
+</html>
