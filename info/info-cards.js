@@ -45,5 +45,14 @@ window.INFO_DATA = [
     desc: "帶家長核對基本資料、整理在校表現，並依步驟完成志願序。",
     filename: "placement-application-guide.html",
     themeColor: "#dc6658"
+  },
+  {
+    id: "ability-assessment-guide",
+    category: "升學與就業",
+    tag: "綜合職能科",
+    title: "能力評估準備指南",
+    desc: "認識評估內容與操作能力，從日常生活累積孩子的實際能力。",
+    filename: "ability-assessment-guide.html",
+    themeColor: "#0f8f83"
   }
 ];
