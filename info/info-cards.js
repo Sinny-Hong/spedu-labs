@@ -18,5 +18,14 @@ window.INFO_DATA = [
     desc: "用圖卡認識普通型高中、技高職群與綜合型高中的學習特色。",
     filename: "career-guide.html",
     themeColor: "#28688f"
+  },
+  {
+    id: "admission-pathways",
+    category: "升學與就業",
+    tag: "升學管道",
+    title: "國中畢業升學管道",
+    desc: "快速認識一般升學、適性輔導安置及身心障礙學生可申請的協助。",
+    filename: "admission-pathways.html",
+    themeColor: "#38a169"
   }
 ];

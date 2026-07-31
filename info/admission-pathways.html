@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="提供家長快速認識國中畢業後的一般升學管道、身心障礙學生適性輔導安置及特殊應考服務。">
+  <title>國中畢業升學管道｜異想教室</title>
+  <style>
+    :root {
+      --blue-950: #123451;
+      --blue-800: #1d527c;
+      --blue-700: #28688f;
+      --blue-100: #e8f3f8;
+      --orange-600: #e77831;
+      --orange-500: #f18c41;
+      --orange-100: #fff0e4;
+      --green-700: #29785b;
+      --green-100: #e7f5ef;
+      --yellow-100: #fff7cf;
+      --ink: #24323d;
+      --muted: #5f6f79;
+      --line: #dce6eb;
+      --paper: #fffdfa;
+      --white: #fff;
+      --shadow: 0 16px 42px rgba(18, 52, 81, .1);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 92% 4%, rgba(241,140,65,.13), transparent 25rem),
+        linear-gradient(180deg, #f7fbfd 0%, var(--paper) 36%, #f7fbfd 100%);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      line-height: 1.75;
+    }
+    a { color: inherit; }
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      left: 16px;
+      top: -80px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      color: var(--white);
+      background: var(--blue-950);
+    }
+    .skip-link:focus { top: 16px; }
+    .layout {
+      width: min(1180px, calc(100% - 48px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 48px;
+      align-items: start;
+    }
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      height: calc(100vh - 24px);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 18px;
+      text-decoration: none;
+    }
+    .brand img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      filter: drop-shadow(0 7px 12px rgba(18,52,81,.14));
+    }
+    .brand strong { display: block; color: var(--blue-950); font-size: 18px; }
+    .brand small { display: block; color: var(--muted); letter-spacing: .06em; }
+    .nav-title {
+      margin: 0 0 6px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .12em;
+    }
+    .section-nav {
+      min-height: 0;
+      display: grid;
+      gap: 5px;
+      overflow-y: auto;
+    }
+    .section-nav a {
+      padding: 10px 14px;
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .section-nav a:hover { color: var(--blue-800); background: var(--blue-100); }
+    .section-nav a.active { color: var(--white); background: var(--blue-800); }
+    .sidebar-note {
+      margin-top: auto;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--muted);
+      background: rgba(255,255,255,.72);
+      font-size: 12px;
+    }
+    main { min-width: 0; padding: 36px 0 90px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 400px;
+      padding: 50px clamp(28px, 5vw, 58px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-radius: 34px;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 90% 18%, rgba(255,255,255,.17) 0 7%, transparent 7.5%),
+        radial-gradient(circle at 80% 70%, rgba(241,140,65,.95) 0 15%, transparent 15.5%),
+        linear-gradient(135deg, var(--blue-950), var(--blue-700));
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -90px;
+      bottom: -110px;
+      border: 28px solid rgba(255,255,255,.1);
+      border-radius: 50%;
+    }
+    .eyebrow {
+      margin: 0 0 18px;
+      color: #ffd6b8;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .14em;
+    }
+    h1 {
+      max-width: 720px;
+      margin: 0;
+      font-size: clamp(42px, 6vw, 70px);
+      line-height: 1.12;
+      letter-spacing: -.03em;
+    }
+    .hero-lead {
+      max-width: 700px;
+      margin: 18px 0 0;
+      color: rgba(255,255,255,.88);
+      font-size: clamp(17px, 2.2vw, 21px);
+    }
+    .hero-tag {
+      width: fit-content;
+      margin-top: 22px;
+      padding: 9px 15px;
+      border: 1px solid rgba(255,255,255,.27);
+      border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .content-section { padding: 84px 0 0; }
+    .section-heading {
+      display: grid;
+      grid-template-columns: 70px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+      margin-bottom: 26px;
+    }
+    .section-number {
+      color: var(--orange-500);
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+    h2 {
+      margin: -5px 0 8px;
+      color: var(--blue-950);
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.25;
+    }
+    .section-intro { max-width: 760px; margin: 0; color: var(--muted); font-size: 18px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 15px;
+    }
+    .card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.9);
+      box-shadow: 0 8px 24px rgba(18,52,81,.055);
+    }
+    .card.wide { grid-column: 1 / -1; }
+    .card-top {
+      margin-bottom: 14px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      color: var(--blue-800);
+      background: var(--blue-100);
+      font-size: 21px;
+    }
+    .owner {
+      padding: 5px 10px;
+      border-radius: 999px;
+      color: var(--green-700);
+      background: var(--green-100);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    h3 { margin: 0 0 7px; color: var(--blue-950); font-size: 21px; }
+    .card p { margin: 0; color: var(--muted); }
+    .card ul { margin: 11px 0 0; padding-left: 1.25em; }
+    .card li + li { margin-top: 6px; }
+    .key-point {
+      margin-top: 15px;
+      padding: 10px 13px;
+      border-radius: 12px;
+      color: #8b481f;
+      background: var(--orange-100);
+      font-weight: 800;
+    }
+    .placement {
+      padding: 28px;
+      border: 2px solid rgba(41,120,91,.24);
+      border-radius: 22px;
+      background: linear-gradient(135deg, var(--green-100), rgba(255,255,255,.92));
+    }
+    .placement h3 { font-size: 25px; }
+    .placement .owner { display: inline-block; margin-bottom: 14px; }
+    .comparison {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--white);
+      box-shadow: 0 8px 24px rgba(18,52,81,.055);
+    }
+    .comparison-row {
+      display: grid;
+      grid-template-columns: 150px repeat(2, minmax(0, 1fr));
+    }
+    .comparison-row + .comparison-row { border-top: 1px solid var(--line); }
+    .comparison-row > div { padding: 16px 18px; }
+    .comparison-row > div + div { border-left: 1px solid var(--line); }
+    .comparison-head { color: var(--white); background: var(--blue-800); font-weight: 800; }
+    .comparison-label { color: var(--blue-950); background: var(--blue-100); font-weight: 800; }
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .service-item {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--blue-100);
+      color: var(--blue-950);
+      font-weight: 700;
+    }
+    .notice {
+      margin-top: 22px;
+      padding: 22px;
+      border-left: 5px solid var(--orange-500);
+      border-radius: 4px 16px 16px 4px;
+      background: var(--orange-100);
+    }
+    .notice h3 { margin-bottom: 10px; }
+    .notice ul { margin: 0; padding-left: 1.25em; }
+    .official-link {
+      width: fit-content;
+      margin-top: 22px;
+      padding: 12px 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      color: var(--white);
+      background: var(--blue-800);
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 8px 18px rgba(29,82,124,.2);
+    }
+    .official-link:hover { background: var(--blue-950); }
+    .teacher-note {
+      padding: clamp(25px, 4vw, 38px);
+      border-radius: 26px;
+      background: linear-gradient(135deg, var(--yellow-100), #fffdf3);
+      box-shadow: var(--shadow);
+    }
+    .teacher-note h3 { font-size: clamp(25px, 4vw, 34px); }
+    .teacher-note strong { color: #934516; }
+    .annual-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .back-link {
+      width: fit-content;
+      margin: 45px auto 0;
+      padding: 11px 18px;
+      display: block;
+      border-radius: 999px;
+      color: var(--blue-800);
+      background: var(--blue-100);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .mobile-bar { display: none; }
+    @media (max-width: 900px) {
+      .layout { width: min(100% - 28px, 760px); display: block; }
+      .sidebar { display: none; }
+      .mobile-bar {
+        position: sticky;
+        z-index: 20;
+        top: 0;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255,255,255,.94);
+        backdrop-filter: blur(10px);
+      }
+      .mobile-bar a { color: var(--blue-950); font-weight: 800; text-decoration: none; }
+      main { padding-top: 20px; }
+      .hero { min-height: 360px; border-radius: 26px; }
+    }
+    @media (max-width: 650px) {
+      .layout { width: min(100% - 20px, 560px); }
+      .hero { min-height: 330px; padding: 34px 25px; }
+      h1 { font-size: clamp(39px, 13vw, 56px); }
+      .hero-lead { font-size: 16px; }
+      .content-section { padding-top: 64px; }
+      .section-heading { grid-template-columns: 1fr; gap: 6px; }
+      .cards, .service-grid { grid-template-columns: 1fr; }
+      .card.wide { grid-column: auto; }
+      .comparison-row { grid-template-columns: 105px minmax(0, 1fr); }
+      .comparison-row > div { padding: 13px 12px; }
+      .comparison-row > div:nth-child(3) { grid-column: 2; border-top: 1px solid var(--line); }
+      .comparison-head > div:first-child { display: none; }
+      .comparison-head { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .comparison-head > div:nth-child(3) { grid-column: auto; border-top: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要內容</a>
+  <header class="mobile-bar">
+    <a href="index.html">← 升學輔導</a>
+    <strong>升學管道</strong>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html" aria-label="回到升學輔導目錄">
+        <img src="../assets/logo-round.png" alt="">
+        <span><strong>異想教室</strong><small>升學輔導</small></span>
+      </a>
+      <p class="nav-title">本頁內容</p>
+      <nav class="section-nav" aria-label="頁面章節">
+        <a href="#general">01 一般升學管道</a>
+        <a href="#placement">02 適性輔導安置</a>
+        <a href="#comparison">03 兩種管道比較</a>
+        <a href="#support">04 可申請的協助</a>
+        <a href="#exam-service">05 特殊應考服務</a>
+        <a href="#reminder">06 異想老師提醒</a>
+      </nav>
+      <p class="sidebar-note">招生規定可能逐年調整，實際資格、名額與時程請以當年度招生簡章及校內通知為準。</p>
+    </aside>
+
+    <main id="main">
+      <section class="hero">
+        <p class="eyebrow">ADMISSION PATHWAYS</p>
+        <h1>國中畢業後<br>有哪些升學管道？</h1>
+        <p class="hero-lead">學生可依興趣、能力及升學規劃選擇不同方式。符合資格的身心障礙學生，還可申請適性輔導安置等特殊升學管道。</p>
+        <span class="hero-tag">給家長的快速閱讀指南</span>
+      </section>
+
+      <section class="content-section" id="general" data-section>
+        <div class="section-heading">
+          <span class="section-number">01</span>
+          <div><h2>一般升學管道</h2><p class="section-intro">先了解各項升學方式，再依孩子的需求規劃合適方向。</p></div>
+        </div>
+        <div class="cards">
+          <article class="card wide">
+            <div class="card-top"><span class="card-icon">🏫</span><span class="owner">負責單位：教務處</span></div>
+            <h3>免試入學（大免）</h3>
+            <p>國中畢業後最主要的升學方式，依就學區辦理免試入學。符合資格的身心障礙學生，可依當年度招生簡章申請會考總積分加分（外加名額）及特殊應考服務。</p>
+            <p class="key-point">先選學校，再選科系。</p>
+          </article>
+          <article class="card">
+            <div class="card-top"><span class="card-icon">📍</span><span class="owner">教務處</span></div>
+            <h3>優先免試入學（優免）</h3>
+            <p>鼓勵學生就近入學，由各就學區依規定辦理。</p>
+          </article>
+          <article class="card">
+            <div class="card-top"><span class="card-icon">✓</span><span class="owner">教務處</span></div>
+            <h3>完全免試入學（完免）</h3>
+            <p>部分高中職辦理，不採計國中教育會考成績。</p>
+          </article>
+          <article class="card">
+            <div class="card-top"><span class="card-icon">★</span><span class="owner">教務處</span></div>
+            <h3>特色招生</h3>
+            <p>提供具有特殊才能或專長的學生報考，例如數理班、體育班、藝術才能班及專業群科特色招生等。符合資格的身心障礙學生，亦可依規定申請總積分加分（外加名額）。</p>
+          </article>
+          <article class="card">
+            <div class="card-top"><span class="card-icon">5</span><span class="owner">教務處</span></div>
+            <h3>五專免試入學</h3>
+            <p>五專招生採獨立招生作業，需依招生簡章另外報名。</p>
+          </article>
+          <article class="card wide">
+            <div class="card-top"><span class="card-icon">🛠</span><span class="owner">負責單位：輔導室</span></div>
+            <h3>實用技能學程</h3>
+            <p>以技藝與實作課程為主，適合對技職學習有興趣的學生。本網站僅作簡單介紹，如有相關問題可向輔導室洽詢。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section" id="placement" data-section>
+        <div class="section-heading">
+          <span class="section-number">02</span>
+          <div><h2>身心障礙學生適性輔導安置</h2><p class="section-intro">符合資格的學生可依興趣、能力及需求選填志願。</p></div>
+        </div>
+        <div class="placement">
+          <span class="owner">負責單位：資源班（特教組）</span>
+          <h3>另一種可以同步準備的升學管道</h3>
+          <p>適性輔導安置提供符合資格的身心障礙學生另一種升學選擇，選填方式與一般升學不同。</p>
+          <p class="key-point">先選職群，再選學校。</p>
+          <a class="official-link" href="vocational-program.html">了解適性輔導安置相關內容 →</a>
+        </div>
+      </section>
+
+      <section class="content-section" id="comparison" data-section>
+        <div class="section-heading">
+          <span class="section-number">03</span>
+          <div><h2>一般升學與適性輔導安置有什麼不同？</h2><p class="section-intro">兩者的負責單位、選填順序與辦理依據不同。</p></div>
+        </div>
+        <div class="comparison" role="table" aria-label="一般升學與適性輔導安置比較">
+          <div class="comparison-row comparison-head" role="row">
+            <div role="columnheader">比較項目</div><div role="columnheader">一般升學</div><div role="columnheader">適性輔導安置</div>
+          </div>
+          <div class="comparison-row" role="row">
+            <div class="comparison-label" role="rowheader">負責單位</div><div role="cell">教務處</div><div role="cell">異想教室（特教組）</div>
+          </div>
+          <div class="comparison-row" role="row">
+            <div class="comparison-label" role="rowheader">選填順序</div><div role="cell">先選學校，再選科系</div><div role="cell">先選職群，再選學校</div>
+          </div>
+          <div class="comparison-row" role="row">
+            <div class="comparison-label" role="rowheader">辦理依據</div><div role="cell">依一般免試入學方式辦理</div><div role="cell">依身心障礙學生適性輔導安置簡章辦理</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section" id="support" data-section>
+        <div class="section-heading">
+          <span class="section-number">04</span>
+          <div><h2>身心障礙學生可申請哪些協助？</h2><p class="section-intro">符合資格者可依當年度簡章與報名規定提出申請。</p></div>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <div class="card-top"><span class="card-icon">＋</span></div>
+            <h3>會考加分（外加名額）</h3>
+            <p>持有身心障礙證明（手冊）或經鑑輔會鑑定符合資格者，參加免試入學或特色招生時，可依當年度招生簡章申請總積分加分，並以外加名額方式錄取。</p>
+          </article>
+          <article class="card">
+            <div class="card-top"><span class="card-icon">✎</span></div>
+            <h3>國中教育會考特殊應考服務</h3>
+            <p>符合資格的學生，可於報名國中教育會考時申請特殊應考服務，以協助學生在公平的環境下應試。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section" id="exam-service" data-section>
+        <div class="section-heading">
+          <span class="section-number">05</span>
+          <div><h2>常見的特殊應考服務</h2><p class="section-intro">實際核定項目仍由試務單位依申請資料審查決定。</p></div>
+        </div>
+        <div class="service-grid">
+          <div class="service-item">延長作答時間</div>
+          <div class="service-item">放大試卷（放大試題本）</div>
+          <div class="service-item">英語聽力座位安排</div>
+          <div class="service-item">經核定的輔具使用</div>
+          <div class="service-item">特殊試場安排</div>
+          <div class="service-item">報讀服務</div>
+          <div class="service-item">其他經核定之應考服務</div>
+        </div>
+        <div class="notice">
+          <h3>申請前請注意</h3>
+          <ul>
+            <li>應考服務須於國中教育會考報名時一併提出申請。</li>
+            <li>是否核定及服務內容，由試務單位依申請資料審查決定。</li>
+            <li>特殊試場通常不是單人試場，可能安排於大教室或禮堂，並適度拉大考生座位間距。</li>
+            <li>部分服務可能安排至不同考場應試，請家長留意准考證及試務通知。</li>
+          </ul>
+        </div>
+        <a class="official-link" href="https://cap.rcpet.edu.tw/index.html" target="_blank" rel="noopener">國中教育會考官方網站 ↗</a>
+        <p class="annual-note">官方網站提供當年度會考簡章、問與答、重要日程及最新公告。</p>
+      </section>
+
+      <section class="content-section" id="reminder" data-section>
+        <div class="teacher-note">
+          <h3>💡 異想老師的小提醒</h3>
+          <p>許多家長會以為，只要參加「適性輔導安置」，就不用準備一般升學。其實兩者並不衝突。</p>
+          <p><strong>一般升學（教務處）與適性輔導安置（資源班）可以同時準備、同時報名。</strong>等各管道錄取結果公布後，再依孩子的興趣、能力及未來發展，選擇最適合的升學方式。</p>
+        </div>
+      </section>
+
+      <a class="back-link" href="index.html">← 回到升學輔導目錄</a>
+    </main>
+  </div>
+
+  <script>
+    const sections = [...document.querySelectorAll("[data-section]")];
+    const links = [...document.querySelectorAll(".section-nav a")];
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      links.forEach(link => link.classList.toggle("active", link.hash === `#${visible.target.id}`));
+    }, { rootMargin: "-18% 0px -65% 0px", threshold: [0, .2, .5] });
+    sections.forEach(section => observer.observe(section));
+  </script>
+</body>
+</html>
