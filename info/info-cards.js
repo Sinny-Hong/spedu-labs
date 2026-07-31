@@ -27,5 +27,14 @@ window.INFO_DATA = [
     desc: "快速認識一般升學、適性輔導安置及身心障礙學生可申請的協助。",
     filename: "admission-pathways.html",
     themeColor: "#38a169"
+  },
+  {
+    id: "placement-guide",
+    category: "升學與就業",
+    tag: "適性安置",
+    title: "認識適性輔導安置",
+    desc: "了解申請資格、志願選填、兩類安置流程與家長常見問題。",
+    filename: "placement-guide.html",
+    themeColor: "#8b5cf6"
   }
 ];

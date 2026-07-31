@@ -52,7 +52,7 @@
     document.getElementById("infoCards").innerHTML = window.INFO_DATA.map(item =>
       `<article class="resource-card" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}">
         <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
-        <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p><a class="card-link" href="${escapeHtml(item.filename)}" target="_blank" rel="noopener">開啟介紹 ↗</a>
+        <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p><a class="card-link" href="${escapeHtml(item.filename)}">開啟介紹 →</a>
       </article>`
     ).join("");
   </script>
