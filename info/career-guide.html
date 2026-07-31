@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="用圖卡認識普通型高中、技術型高中各職群及綜合型高中的學習特色、核心技能與適合特質。">
+  <title>高中職群介紹｜異想教室</title>
+  <style>
+    :root {
+      --blue-950: #123451;
+      --blue-800: #1d527c;
+      --blue-700: #28688f;
+      --blue-100: #e8f3f8;
+      --orange-600: #e77831;
+      --orange-500: #f18c41;
+      --orange-100: #fff0e4;
+      --ink: #24323d;
+      --muted: #5f6f79;
+      --line: #dce6eb;
+      --paper: #fffdfa;
+      --white: #fff;
+      --shadow: 0 16px 42px rgba(18, 52, 81, .1);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 92% 4%, rgba(241, 140, 65, .13), transparent 25rem),
+        linear-gradient(180deg, #f7fbfd 0%, var(--paper) 36%, #f7fbfd 100%);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      line-height: 1.7;
+    }
+    body.modal-open { overflow: hidden; }
+    button, input { font: inherit; }
+    a { color: inherit; }
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      left: 16px;
+      top: -80px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      color: var(--white);
+      background: var(--blue-950);
+    }
+    .skip-link:focus { top: 16px; }
+    .layout {
+      width: min(1240px, calc(100% - 48px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 44px;
+      align-items: start;
+    }
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      height: calc(100vh - 24px);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+    }
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 18px;
+      text-decoration: none;
+    }
+    .brand img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      filter: drop-shadow(0 7px 12px rgba(18, 52, 81, .14));
+    }
+    .brand strong { display: block; color: var(--blue-950); font-size: 18px; }
+    .brand small { display: block; color: var(--muted); letter-spacing: .06em; }
+    .nav-title {
+      margin: 0 0 7px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .12em;
+    }
+    .section-nav { display: grid; gap: 5px; }
+    .section-nav button {
+      width: 100%;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 12px;
+      color: var(--muted);
+      background: transparent;
+      text-align: left;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .section-nav button:hover { color: var(--blue-800); background: var(--blue-100); }
+    .section-nav button.active { color: var(--white); background: var(--blue-800); }
+    .sidebar-note {
+      margin-top: auto;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .72);
+      font-size: 12px;
+    }
+    main { min-width: 0; padding: 36px 0 90px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 350px;
+      padding: 48px clamp(28px, 5vw, 58px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-radius: 34px;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 88% 18%, rgba(255,255,255,.17) 0 7%, transparent 7.5%),
+        radial-gradient(circle at 80% 72%, rgba(241,140,65,.95) 0 15%, transparent 15.5%),
+        linear-gradient(135deg, var(--blue-950), var(--blue-700));
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      right: -85px;
+      bottom: -110px;
+      border: 28px solid rgba(255,255,255,.1);
+      border-radius: 50%;
+    }
+    .eyebrow {
+      margin: 0 0 14px;
+      color: #ffd6b8;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .14em;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 6vw, 70px);
+      line-height: 1.12;
+      letter-spacing: -.03em;
+    }
+    .hero-lead {
+      max-width: 680px;
+      margin: 18px 0 0;
+      color: rgba(255,255,255,.88);
+      font-size: clamp(17px, 2.2vw, 21px);
+    }
+    .hero-tag {
+      width: fit-content;
+      margin-top: 20px;
+      padding: 8px 15px;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .toolbar {
+      position: sticky;
+      z-index: 8;
+      top: 0;
+      margin: 34px 0 24px;
+      padding: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid rgba(220,230,235,.9);
+      border-radius: 18px;
+      background: rgba(255,253,250,.92);
+      box-shadow: 0 8px 22px rgba(18,52,81,.07);
+      backdrop-filter: blur(10px);
+    }
+    .search {
+      min-width: 0;
+      flex: 1;
+      padding: 11px 15px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--ink);
+      background: var(--white);
+      outline: none;
+    }
+    .search:focus { border-color: var(--blue-700); box-shadow: 0 0 0 3px rgba(40,104,143,.13); }
+    .result-count {
+      flex: 0 0 auto;
+      padding: 7px 12px;
+      border-radius: 999px;
+      color: var(--blue-800);
+      background: var(--blue-100);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .career-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,255,255,.9);
+      box-shadow: 0 9px 26px rgba(18,52,81,.07);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .career-card:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(18,52,81,.12); }
+    .card-button {
+      width: 100%;
+      padding: 0;
+      border: 0;
+      color: inherit;
+      background: transparent;
+      text-align: left;
+      cursor: zoom-in;
+    }
+    .card-button img {
+      width: 100%;
+      aspect-ratio: 512 / 432;
+      display: block;
+      object-fit: cover;
+      background: #f5f0dc;
+    }
+    .card-meta {
+      padding: 15px 17px 17px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-meta h2 { margin: 0; color: var(--blue-950); font-size: 20px; }
+    .card-meta span {
+      flex: 0 0 auto;
+      color: var(--orange-600);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .empty {
+      display: none;
+      padding: 54px 20px;
+      border: 1px dashed var(--line);
+      border-radius: 20px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .empty.show { display: block; }
+    .back-link {
+      width: fit-content;
+      margin: 42px auto 0;
+      padding: 11px 18px;
+      display: block;
+      border-radius: 999px;
+      color: var(--blue-800);
+      background: var(--blue-100);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .modal {
+      position: fixed;
+      z-index: 50;
+      inset: 0;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+      background: rgba(10, 29, 43, .84);
+      backdrop-filter: blur(6px);
+    }
+    .modal[hidden] { display: none; }
+    .modal-panel {
+      position: relative;
+      width: min(1100px, 96vw);
+      max-height: 94vh;
+      display: grid;
+      justify-items: center;
+    }
+    .modal img {
+      max-width: 100%;
+      max-height: calc(94vh - 74px);
+      border-radius: 16px;
+      object-fit: contain;
+      box-shadow: 0 24px 70px rgba(0,0,0,.34);
+    }
+    .modal-title { margin: 10px 0 0; color: var(--white); font-size: 18px; font-weight: 800; }
+    .modal-close {
+      position: absolute;
+      z-index: 2;
+      right: 10px;
+      top: 10px;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 50%;
+      color: var(--blue-950);
+      background: rgba(255,255,255,.92);
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .modal-nav {
+      position: fixed;
+      top: 50%;
+      width: 48px;
+      height: 58px;
+      border: 0;
+      border-radius: 14px;
+      color: var(--blue-950);
+      background: rgba(255,255,255,.88);
+      font-size: 30px;
+      cursor: pointer;
+    }
+    .modal-prev { left: 18px; }
+    .modal-next { right: 18px; }
+    .mobile-bar { display: none; }
+
+    @media (max-width: 900px) {
+      .layout { width: min(100% - 28px, 760px); display: block; }
+      .sidebar { display: none; }
+      .mobile-bar {
+        position: sticky;
+        z-index: 20;
+        top: 0;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255,255,255,.94);
+        backdrop-filter: blur(10px);
+      }
+      .mobile-bar a { color: var(--blue-950); font-weight: 800; text-decoration: none; }
+      main { padding-top: 20px; }
+      .hero { min-height: 320px; border-radius: 26px; }
+    }
+    @media (max-width: 650px) {
+      .layout { width: min(100% - 20px, 560px); }
+      .hero { min-height: 290px; padding: 34px 25px; }
+      h1 { font-size: clamp(39px, 13vw, 56px); }
+      .hero-lead { font-size: 16px; }
+      .toolbar { margin-top: 22px; }
+      .gallery { grid-template-columns: 1fr; gap: 15px; }
+      .career-card { border-radius: 16px; }
+      .card-meta { padding: 13px 15px 15px; }
+      .modal { padding: 10px; }
+      .modal-nav { top: auto; bottom: 18px; }
+      .modal-prev { left: calc(50% - 62px); }
+      .modal-next { right: calc(50% - 62px); }
+      .modal-title { padding-bottom: 68px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .career-card { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要內容</a>
+  <header class="mobile-bar">
+    <a href="index.html">← 升學輔導</a>
+    <strong>高中職群介紹</strong>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html" aria-label="回到升學輔導目錄">
+        <img src="../assets/logo-round.png" alt="">
+        <span><strong>異想教室</strong><small>升學輔導</small></span>
+      </a>
+      <p class="nav-title">快速瀏覽</p>
+      <nav class="section-nav" aria-label="職群分類">
+        <button class="active" type="button" data-filter="全部">全部圖卡</button>
+        <button type="button" data-filter="普通與綜合">普通與綜合高中</button>
+        <button type="button" data-filter="工業">工業類職群</button>
+        <button type="button" data-filter="服務與設計">服務、設計與藝術</button>
+        <button type="button" data-filter="農業與海事">農業與海事職群</button>
+        <button type="button" data-filter="商業與語文">商業與語文職群</button>
+      </nav>
+      <p class="sidebar-note">點選圖卡可放大閱讀；使用鍵盤左右方向鍵可切換上一張或下一張。</p>
+    </aside>
+
+    <main id="main">
+      <section class="hero">
+        <p class="eyebrow">CAREER CLUSTER GUIDE</p>
+        <h1>高中<br>職群介紹</h1>
+        <p class="hero-lead">從學習內容、核心技能到適合特質，用圖卡快速認識不同升學方向，找到值得進一步探索的選擇。</p>
+        <span class="hero-tag">共 18 種升學方向</span>
+      </section>
+
+      <div class="toolbar">
+        <input class="search" id="search" type="search" placeholder="搜尋職群名稱…" aria-label="搜尋職群名稱">
+        <span class="result-count" id="resultCount" aria-live="polite">18 張</span>
+      </div>
+
+      <section class="gallery" id="gallery" aria-label="高中職群圖卡"></section>
+      <p class="empty" id="empty">找不到符合條件的圖卡，請換個關鍵字試試看。</p>
+      <a class="back-link" href="index.html">← 回到升學輔導目錄</a>
+    </main>
+  </div>
+
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <div class="modal-panel">
+      <button class="modal-close" id="modalClose" type="button" aria-label="關閉放大圖卡">×</button>
+      <img id="modalImage" src="" alt="">
+      <p class="modal-title" id="modalTitle"></p>
+    </div>
+    <button class="modal-nav modal-prev" id="modalPrev" type="button" aria-label="上一張">‹</button>
+    <button class="modal-nav modal-next" id="modalNext" type="button" aria-label="下一張">›</button>
+  </div>
+
+  <script>
+    const careers = [
+      { title: "普通型高中", category: "普通與綜合" },
+      { title: "動力機械群", category: "工業" },
+      { title: "機械群", category: "工業" },
+      { title: "電機與電子群", category: "工業" },
+      { title: "化工群", category: "工業" },
+      { title: "外語群", category: "商業與語文" },
+      { title: "餐旅群", category: "服務與設計" },
+      { title: "家政群", category: "服務與設計" },
+      { title: "設計群", category: "服務與設計" },
+      { title: "食品群", category: "服務與設計" },
+      { title: "藝術群", category: "服務與設計" },
+      { title: "農業群", category: "農業與海事" },
+      { title: "水產群", category: "農業與海事" },
+      { title: "海事群", category: "農業與海事" },
+      { title: "土木與建築群", category: "工業" },
+      { title: "美容造型群", category: "服務與設計" },
+      { title: "綜合型高中", category: "普通與綜合" },
+      { title: "商業與管理群", category: "商業與語文" }
+    ].map((item, index) => ({
+      ...item,
+      index,
+      src: `career-cards/career_card_${String(index + 1).padStart(2, "0")}.jpg`
+    }));
+
+    const gallery = document.getElementById("gallery");
+    const search = document.getElementById("search");
+    const resultCount = document.getElementById("resultCount");
+    const empty = document.getElementById("empty");
+    const filterButtons = [...document.querySelectorAll("[data-filter]")];
+    const modal = document.getElementById("modal");
+    const modalImage = document.getElementById("modalImage");
+    const modalTitle = document.getElementById("modalTitle");
+    let activeCategory = "全部";
+    let visibleCareers = careers;
+    let currentIndex = 0;
+    let lastTrigger = null;
+
+    const escapeHtml = value => String(value)
+      .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+    function render() {
+      const keyword = search.value.trim().toLocaleLowerCase("zh-Hant");
+      visibleCareers = careers.filter(item =>
+        (activeCategory === "全部" || item.category === activeCategory) &&
+        item.title.toLocaleLowerCase("zh-Hant").includes(keyword)
+      );
+      gallery.innerHTML = visibleCareers.map(item => `
+        <article class="career-card">
+          <button class="card-button" type="button" data-index="${item.index}" aria-label="放大查看${escapeHtml(item.title)}圖卡">
+            <img src="${item.src}" alt="${escapeHtml(item.title)}介紹圖卡" loading="lazy" width="512" height="432">
+            <span class="card-meta">
+              <h2>${escapeHtml(item.title)}</h2>
+              <span>點選放大 ↗</span>
+            </span>
+          </button>
+        </article>
+      `).join("");
+      resultCount.textContent = `${visibleCareers.length} 張`;
+      empty.classList.toggle("show", visibleCareers.length === 0);
+    }
+
+    function showModal(index, trigger) {
+      const item = careers[index];
+      currentIndex = index;
+      lastTrigger = trigger || lastTrigger;
+      modalImage.src = item.src;
+      modalImage.alt = `${item.title}介紹圖卡`;
+      modalTitle.textContent = item.title;
+      modal.hidden = false;
+      document.body.classList.add("modal-open");
+      document.getElementById("modalClose").focus();
+    }
+
+    function stepModal(direction) {
+      const position = visibleCareers.findIndex(item => item.index === currentIndex);
+      const next = (position + direction + visibleCareers.length) % visibleCareers.length;
+      showModal(visibleCareers[next].index);
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+      modalImage.src = "";
+      document.body.classList.remove("modal-open");
+      lastTrigger?.focus();
+    }
+
+    filterButtons.forEach(button => button.addEventListener("click", () => {
+      activeCategory = button.dataset.filter;
+      filterButtons.forEach(item => item.classList.toggle("active", item === button));
+      render();
+      window.scrollTo({ top: document.querySelector(".toolbar").offsetTop - 12, behavior: "smooth" });
+    }));
+    search.addEventListener("input", render);
+    gallery.addEventListener("click", event => {
+      const trigger = event.target.closest("[data-index]");
+      if (trigger) showModal(Number(trigger.dataset.index), trigger);
+    });
+    document.getElementById("modalClose").addEventListener("click", closeModal);
+    document.getElementById("modalPrev").addEventListener("click", () => stepModal(-1));
+    document.getElementById("modalNext").addEventListener("click", () => stepModal(1));
+    modal.addEventListener("click", event => { if (event.target === modal) closeModal(); });
+    document.addEventListener("keydown", event => {
+      if (modal.hidden) return;
+      if (event.key === "Escape") closeModal();
+      if (event.key === "ArrowLeft") stepModal(-1);
+      if (event.key === "ArrowRight") stepModal(1);
+    });
+    render();
+  </script>
+</body>
+</html>
