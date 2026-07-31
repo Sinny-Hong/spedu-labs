@@ -36,5 +36,14 @@ window.INFO_DATA = [
     desc: "了解申請資格、志願選填、兩類安置流程與家長常見問題。",
     filename: "placement-guide.html",
     themeColor: "#8b5cf6"
+  },
+  {
+    id: "placement-application-guide",
+    category: "升學與就業",
+    tag: "報名懶人包",
+    title: "其他障礙報名表填寫指南",
+    desc: "帶家長核對基本資料、整理在校表現，並依步驟完成志願序。",
+    filename: "placement-application-guide.html",
+    themeColor: "#dc6658"
   }
 ];
