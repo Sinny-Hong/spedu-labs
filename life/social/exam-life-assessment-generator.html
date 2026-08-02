@@ -228,8 +228,9 @@
     }
     function makeHeader(){
       const header=document.createElement("header"); header.className="exam-header";
-      const answers=state.questions.map((q,i)=>`${i+1}.${q[FIELDS.answer]||'?'}`).join("　");
-      header.innerHTML=`<div class="exam-heading"><span class="exam-title">能力評估練習卷</span><span class="paper-kind">${paperType(DATA_CONFIG.targetPaper)}</span><span class="form-badge">${DATA_CONFIG.targetPaper}</span></div><div class="student-info"><span>班級：____________</span><span>姓名：________________</span></div><div class="version-note">◎每題 10 分，滿分 100 分${state.version==='teacher'?`<span class="answer-key">答案：${escapeHtml(answers)}</span>`:''}</div>`;
+      const answers=state.questions.map(q=>q[FIELDS.answer]||'?');
+      const shortAnswers=`(1-5) ${answers.slice(0,5).join(" ")}　(6-10) ${answers.slice(5,10).join(" ")}`;
+      header.innerHTML=`<div class="exam-heading"><span class="exam-title">能力評估練習卷</span><span class="paper-kind">${paperType(DATA_CONFIG.targetPaper)}</span><span class="form-badge">${DATA_CONFIG.targetPaper}</span></div><div class="student-info"><span>班級：____________</span><span>姓名：________________</span></div><div class="version-note">※每題 10 分，滿分 100 分${state.version==='teacher'?`<span class="answer-key">簡答：${escapeHtml(shortAnswers)}</span>`:''}</div>`;
       return header;
     }
     function makeImage(question){
