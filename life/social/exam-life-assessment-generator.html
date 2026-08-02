@@ -63,8 +63,9 @@
     .answer-box.teacher { font-weight:900; color:#111827; }
     .source-id { display:none; margin-left:2mm; color:#64748b; font-size:7.5pt; font-weight:400; }
     body.show-ids .source-id { display:inline; }
-    .options { display:grid; grid-template-columns:1fr 1fr; gap:.35mm 7mm; margin:.65mm 0 0 18mm; font-size:12pt; line-height:1.25; }
-    .option { break-inside:avoid; }
+    .options { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.35mm 3mm; margin:.65mm 0 0 18mm; font-size:12pt; line-height:1.25; }
+    .options.long-options { grid-template-columns:1fr 1fr; gap:.35mm 7mm; }
+    .option { min-width:0; break-inside:avoid; }
     .question-image-wrap { display:flex; margin:2mm 0 1mm 10mm; }
     .question-image-wrap.left { float:left; margin:2mm 5mm 2mm 10mm; }
     .question-image-wrap.right { float:right; margin:2mm 0 2mm 5mm; }
@@ -101,9 +102,9 @@
   <div class="app">
     <aside class="controls">
       <h1>能力評估練習卷</h1>
-      <p class="subtitle">第一階段原型｜公開試算表固定卷載入</p>
+
       <div class="controls-grid">
-        <div class="field"><label for="paper-type">卷別</label><select id="paper-type" disabled><option>綜合卷</option></select></div>
+        <div class="field"><label for="paper-type">卷別</label><select id="paper-type"><option value="C">國文卷</option><option value="E">英文卷</option><option value="M">數學卷</option><option value="S">社會卷</option><option value="A" selected>綜合卷</option></select></div>
         <div class="field"><label for="paper-id">卷號</label><select id="paper-id"><option value="AG01">AG01</option></select></div>
         <div class="field">
           <span class="group-label">版本</span>
@@ -115,10 +116,11 @@
         <div class="actions">
           <button class="btn btn-secondary" id="reload-btn" type="button">重新載入資料</button>
           <button class="btn btn-primary" id="print-btn" type="button">列印目前卷</button>
+          <button class="btn btn-secondary" id="batch-print-btn" type="button">批次列印此卷別</button>
         </div>
         <label class="dev-toggle"><input id="show-ids" type="checkbox"><span>顯示原始題目編號<br><small>列印時一律隱藏</small></span></label>
         <div class="status-panel">
-          <h2>資料狀態</h2>
+          <h2>資料摘要</h2>
           <div class="status-list" id="status-list"></div>
           <div class="page-warning" id="page-warning" hidden></div>
           <div class="errors" id="errors"></div>
@@ -146,7 +148,7 @@
       }
     };
     const FIELDS = { id:"題目編號", stem:"題幹", a:"選項A", b:"選項B", c:"選項C", d:"選項D", answer:"答案", correction:"訂正關鍵句", image:"圖片檔名", imagePosition:"圖片位置", groupId:"題組編號", groupMaterial:"題組材料", indivisible:"不可拆分", formId:"卷號", formQuestions:"題目編號" };
-    const state = { datasets:{}, questions:[], errors:[], version:"student", pageCount:0 };
+    const state = { datasets:{}, questions:[], errors:[], version:"student", pageCount:0, paperPrefix:"A", batchPrinting:false };
     const statusList = document.getElementById("status-list");
     const errorsEl = document.getElementById("errors");
     const warningEl = document.getElementById("page-warning");
@@ -183,16 +185,29 @@
       return `${DATA_CONFIG.imageBasePath}${encodeURIComponent(filename)}`;
     }
     function populatePaperOptions(){
-      const select=document.getElementById("paper-id"); const forms=state.datasets.forms||[];
+      const select=document.getElementById("paper-id"); const forms=(state.datasets.forms||[]).filter(row=>String(row[FIELDS.formId]||"").startsWith(state.paperPrefix));
       select.innerHTML=forms.map(row=>`<option value="${escapeHtml(row[FIELDS.formId])}">${escapeHtml(row[FIELDS.formId])}</option>`).join("");
       select.value=DATA_CONFIG.targetPaper;
-      document.getElementById("paper-type").innerHTML=`<option>${paperType(DATA_CONFIG.targetPaper)}</option>`;
+      document.getElementById("paper-type").value=state.paperPrefix;
     }
     function validateQuestion(question,id){
       if(!question) return [`找不到題目：${id}`]; const problems=[];
       for(const field of [FIELDS.stem,FIELDS.a,FIELDS.b,FIELDS.c,FIELDS.d]) if(!String(question[field]||"").trim()) problems.push(`${id} 缺少${field}`);
       if(!/^[ABCD]$/.test(String(question[FIELDS.answer]||"").trim())) problems.push(`${id} 缺少答案`);
       return problems;
+    }
+    function questionsForPaper(paperId,reportProblems=true){
+      const form=(state.datasets.forms||[]).find(row=>row[FIELDS.formId]===paperId);
+      if(!form){ if(reportProblems) addError(`找不到卷號：${paperId}`); return []; }
+      const ids=String(form[FIELDS.formQuestions]||"").split(",").map(v=>v.trim()).filter(Boolean);
+      if(reportProblems&&ids.length!==10) addError(`${paperId} 題目數量不是 10 題`);
+      const indexes={}; for(const key of ["chinese","english","math","social"]) indexes[key]=new Map((state.datasets[key]||[]).map(row=>[row[FIELDS.id],row]));
+      const questions=ids.map(id=>{ const key=subjectKey(id); const question=key?indexes[key].get(id):null; if(reportProblems) validateQuestion(question,id).forEach(addError); return question?{...question,_id:id}:null; }).filter(Boolean);
+      if(reportProblems&&questions.length!==ids.length) addError(`找到題目：${questions.length}／${ids.length}`);
+      return questions;
+    }
+    function preloadQuestionImages(questions){
+      return Promise.all(questions.filter(q=>q[FIELDS.image]).map(q=>new Promise(resolve=>{ const img=new Image(); img.onload=img.onerror=resolve; img.src=imageUrl(q); })));
     }
     async function loadAllData(){
       state.errors=[]; state.datasets={}; state.questions=[]; warningEl.hidden=true; renderStatus(true); renderErrors();
@@ -204,20 +219,16 @@
         if(state.datasets.forms) requireFields(state.datasets.forms,DATA_CONFIG.sheets.forms.name,[FIELDS.formId,FIELDS.formQuestions]);
         if(Object.keys(state.datasets).length!==5) throw new Error("五個必要工作表未全部載入");
         populatePaperOptions();
-        const form=state.datasets.forms.find(row=>row[FIELDS.formId]===DATA_CONFIG.targetPaper);
-        if(!form) throw new Error(`找不到卷號：${DATA_CONFIG.targetPaper}`);
-        const ids=String(form[FIELDS.formQuestions]||"").split(",").map(v=>v.trim()).filter(Boolean);
-        if(ids.length!==10) addError(`${DATA_CONFIG.targetPaper} 題目數量不是 10 題`);
-        const indexes={}; for(const key of ["chinese","english","math","social"]) indexes[key]=new Map(state.datasets[key].map(row=>[row[FIELDS.id],row]));
-        state.questions=ids.map(id=>{ const key=subjectKey(id); const question=key?indexes[key].get(id):null; validateQuestion(question,id).forEach(addError); return question?{...question,_id:id}:null; }).filter(Boolean);
-        if(state.questions.length!==ids.length) addError(`找到題目：${state.questions.length}／${ids.length}`);
+        state.questions=questionsForPaper(DATA_CONFIG.targetPaper,true);
+        await preloadQuestionImages(state.questions);
       }catch(error){ addError(error.message); }
       renderErrors(); renderStatus(false); renderPaper();
     }
     function renderStatus(loading=false){
-      const labels=["chinese","english","math","social","forms"].map(key=>{ const config=DATA_CONFIG.sheets[key]; const loaded=state.datasets[key]; return `<div class="status-row"><span>${config.name}</span><span class="${loading?'waiting':loaded?'ok':'bad'}">${loading?'載入中':loaded?`已載入${key==='forms'?'':`（${loaded.length}題）`}`:'失敗'}</span></div>`; });
-      const imageCount=state.questions.filter(q=>q[FIELDS.image]).length; const missingAnswers=state.questions.filter(q=>!/^[ABCD]$/.test(q[FIELDS.answer]||"")).length; const missingCorrections=state.questions.filter(q=>!String(q[FIELDS.correction]||"").trim()).length;
-      labels.push(`<div class="status-row"><span>${DATA_CONFIG.targetPaper}</span><span>${state.questions.length?`共 ${state.questions.length} 題`:'—'}</span></div>`,`<div class="status-row"><span>找到題目</span><span>${state.questions.length}／10</span></div>`,`<div class="status-row"><span>圖片題</span><span>${imageCount} 題</span></div>`,`<div class="status-row"><span>缺少答案</span><span>${missingAnswers} 題</span></div>`,`<div class="status-row"><span>缺少訂正關鍵句</span><span>${missingCorrections} 題</span></div>`,`<div class="status-row"><span>實際頁數</span><span>${state.pageCount||'—'}</span></div>`);
+      if(loading){ statusList.innerHTML='<div class="status-row"><span>題庫資料</span><span class="waiting">載入中</span></div>'; return; }
+      const questionTotal=["chinese","english","math","social"].reduce((sum,key)=>sum+(state.datasets[key]?.length||0),0);
+      const formTotal=state.datasets.forms?.length||0; const imageCount=state.questions.filter(q=>q[FIELDS.image]).length;
+      const labels=[`<div class="status-row"><span>題庫資料</span><span class="ok">${questionTotal} 題／${formTotal} 卷</span></div>`,`<div class="status-row"><span>目前試卷</span><span>${DATA_CONFIG.targetPaper}（${state.questions.length} 題）</span></div>`,`<div class="status-row"><span>圖片</span><span>${imageCount} 題</span></div>`,`<div class="status-row"><span>頁數</span><span>${state.pageCount||'—'} 頁</span></div>`];
       statusList.innerHTML=labels.join("");
     }
     function makePage(pageNumber){
@@ -242,7 +253,7 @@
       const block=document.createElement("article"); block.className="question-block"; block.dataset.question=question._id;
       const line=document.createElement("div"); line.className="question-line"; const answer=state.version==='teacher'?(question[FIELDS.answer]||'?'):'　'; line.innerHTML=`<span class="answer-box ${state.version==='teacher'?'teacher':''}">（${escapeHtml(answer)}）${number}.</span><div>${escapeHtml(question[FIELDS.stem])}<small class="source-id">${escapeHtml(question._id)}</small></div>`; block.appendChild(line);
       const image=makeImage(question); if(image&&String(question[FIELDS.imagePosition]).includes('上方')) block.insertBefore(image,line); else if(image) block.appendChild(image);
-      const options=document.createElement("div"); options.className="options"; ["A","B","C","D"].forEach(letter=>{ const div=document.createElement("div"); div.className="option"; div.textContent=`（${letter}）${question[FIELDS[letter.toLowerCase()]]||question[`選項${letter}`]||''}`; options.appendChild(div); }); block.appendChild(options); return block;
+      const options=document.createElement("div"); options.className="options"; const optionValues=["A","B","C","D"].map(letter=>String(question[FIELDS[letter.toLowerCase()]]||question[`選項${letter}`]||'')); if(optionValues.some(value=>value.length>15)||optionValues.join("").length>50) options.classList.add("long-options"); optionValues.forEach((value,index)=>{ const div=document.createElement("div"); div.className="option"; div.textContent=`（${"ABCD"[index]}）${value}`; options.appendChild(div); }); block.appendChild(options); return block;
     }
     function buildUnits(){
       const units=[]; let index=0;
@@ -261,11 +272,27 @@
       if(state.pageCount>2){ warningEl.textContent=`${DATA_CONFIG.targetPaper} 內容超過 A4 正反兩面，請調整卷號題目組合。`; warningEl.hidden=false; }
       renderErrors(); renderStatus(false);
     }
+    async function showPaper(paperId){
+      DATA_CONFIG.targetPaper=paperId; state.questions=questionsForPaper(paperId,true); await preloadQuestionImages(state.questions); populatePaperOptions(); renderErrors(); renderPaper();
+    }
+    async function printBatch(){
+      if(state.batchPrinting) return; const button=document.getElementById("batch-print-btn"); button.disabled=true; button.textContent="準備批次列印…"; state.batchPrinting=true;
+      const originalPaper=DATA_CONFIG.targetPaper; const originalQuestions=state.questions; const allPages=[];
+      try{
+        const forms=(state.datasets.forms||[]).filter(row=>String(row[FIELDS.formId]||"").startsWith(state.paperPrefix));
+        for(const form of forms){ DATA_CONFIG.targetPaper=form[FIELDS.formId]; state.questions=questionsForPaper(DATA_CONFIG.targetPaper,false); await preloadQuestionImages(state.questions); renderPaper(); allPages.push(...Array.from(previewStack.children)); }
+        previewStack.replaceChildren(...allPages); await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))); window.print();
+      }finally{
+        DATA_CONFIG.targetPaper=originalPaper; state.questions=originalQuestions; populatePaperOptions(); renderPaper(); button.disabled=false; button.textContent="批次列印此卷別"; state.batchPrinting=false;
+      }
+    }
     document.querySelectorAll('input[name="version"]').forEach(input=>input.addEventListener("change",event=>{state.version=event.target.value;renderPaper();}));
     document.getElementById("show-ids").addEventListener("change",event=>document.body.classList.toggle("show-ids",event.target.checked));
-    document.getElementById("paper-id").addEventListener("change",event=>{DATA_CONFIG.targetPaper=event.target.value;loadAllData();});
+    document.getElementById("paper-type").addEventListener("change",async event=>{state.paperPrefix=event.target.value;const first=(state.datasets.forms||[]).find(row=>String(row[FIELDS.formId]||"").startsWith(state.paperPrefix));if(first)await showPaper(first[FIELDS.formId]);});
+    document.getElementById("paper-id").addEventListener("change",event=>showPaper(event.target.value));
     document.getElementById("reload-btn").addEventListener("click",loadAllData);
     document.getElementById("print-btn").addEventListener("click",()=>window.print());
+    document.getElementById("batch-print-btn").addEventListener("click",printBatch);
     window.addEventListener("resize",()=>{clearTimeout(window.__layoutTimer);window.__layoutTimer=setTimeout(renderPaper,150);});
     loadAllData();
   </script>
