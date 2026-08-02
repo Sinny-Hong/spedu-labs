@@ -63,8 +63,8 @@
     .answer-box.teacher { font-weight:900; color:#111827; }
     .source-id { display:none; margin-left:2mm; color:#64748b; font-size:7.5pt; font-weight:400; }
     body.show-ids .source-id { display:inline; }
-    .options { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.35mm 3mm; margin:.65mm 0 0 18mm; font-size:12pt; line-height:1.25; }
-    .options.long-options { grid-template-columns:1fr 1fr; gap:.35mm 7mm; }
+    .options { display:grid; grid-template-columns:1fr 1fr; gap:.35mm 7mm; margin:.65mm 0 0 18mm; font-size:12pt; line-height:1.25; }
+    .options.four-options { grid-template-columns:repeat(4,minmax(0,1fr)); gap:.35mm 3mm; }
     .option { min-width:0; break-inside:avoid; }
     .question-image-wrap { display:flex; margin:2mm 0 1mm 10mm; }
     .question-image-wrap.left { float:left; margin:2mm 5mm 2mm 10mm; }
@@ -253,7 +253,7 @@
       const block=document.createElement("article"); block.className="question-block"; block.dataset.question=question._id;
       const line=document.createElement("div"); line.className="question-line"; const answer=state.version==='teacher'?(question[FIELDS.answer]||'?'):'　'; line.innerHTML=`<span class="answer-box ${state.version==='teacher'?'teacher':''}">（${escapeHtml(answer)}）${number}.</span><div>${escapeHtml(question[FIELDS.stem])}<small class="source-id">${escapeHtml(question._id)}</small></div>`; block.appendChild(line);
       const image=makeImage(question); if(image&&String(question[FIELDS.imagePosition]).includes('上方')) block.insertBefore(image,line); else if(image) block.appendChild(image);
-      const options=document.createElement("div"); options.className="options"; const optionValues=["A","B","C","D"].map(letter=>String(question[FIELDS[letter.toLowerCase()]]||question[`選項${letter}`]||'')); if(optionValues.some(value=>value.length>15)||optionValues.join("").length>50) options.classList.add("long-options"); optionValues.forEach((value,index)=>{ const div=document.createElement("div"); div.className="option"; div.textContent=`（${"ABCD"[index]}）${value}`; options.appendChild(div); }); block.appendChild(options); return block;
+      const options=document.createElement("div"); options.className="options"; const optionValues=["A","B","C","D"].map(letter=>String(question[FIELDS[letter.toLowerCase()]]||question[`選項${letter}`]||'')); const isShortMathPaper=DATA_CONFIG.targetPaper.startsWith("M")&&!optionValues.some(value=>value.length>15)&&optionValues.join("").length<=50; if(isShortMathPaper) options.classList.add("four-options"); optionValues.forEach((value,index)=>{ const div=document.createElement("div"); div.className="option"; div.textContent=`（${"ABCD"[index]}）${value}`; options.appendChild(div); }); block.appendChild(options); return block;
     }
     function buildUnits(){
       const units=[]; let index=0;
