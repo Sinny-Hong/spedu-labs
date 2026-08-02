@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>能力評估練習卷產生器</title>
+  <style>
+    :root { --ink:#1f2937; --muted:#64748b; --line:#cbd5e1; --panel:#f8fafc; --accent:#315b7d; --danger:#b91c1c; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#d9dde2; font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif; }
+    button, select, input { font:inherit; }
+    .app { min-height:100vh; display:grid; grid-template-columns:300px minmax(0,1fr); }
+    .controls { position:sticky; top:0; height:100vh; overflow:auto; padding:22px 18px; background:#fff; border-right:1px solid #d5dbe3; box-shadow:3px 0 14px rgba(15,23,42,.08); z-index:10; }
+    .controls h1 { margin:0 0 6px; font-size:22px; color:#244c6a; }
+    .controls .subtitle { margin:0 0 20px; color:var(--muted); font-size:13px; line-height:1.55; }
+    .field { margin:0 0 15px; }
+    .field label, .group-label { display:block; margin-bottom:6px; font-size:13px; font-weight:700; color:#475569; }
+    select { width:100%; padding:10px 11px; border:1px solid #b9c4d0; border-radius:8px; background:#fff; }
+    .segmented { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    .segmented label { cursor:pointer; }
+    .segmented input { position:absolute; opacity:0; }
+    .segmented span { display:block; padding:9px; text-align:center; border:1px solid #b9c4d0; border-radius:8px; background:#fff; font-weight:700; }
+    .segmented input:checked + span { color:#fff; background:var(--accent); border-color:var(--accent); }
+    .actions { display:grid; gap:9px; margin:18px 0; }
+    .btn { border:0; border-radius:8px; padding:11px 13px; cursor:pointer; font-weight:800; }
+    .btn-primary { color:#fff; background:var(--accent); }
+    .btn-secondary { color:#244c6a; background:#e8f0f6; border:1px solid #b8ccda; }
+    .dev-toggle { display:flex; gap:9px; align-items:flex-start; padding:11px; border-radius:8px; background:#f1f5f9; font-size:13px; line-height:1.45; }
+    .status-panel { margin-top:18px; padding-top:15px; border-top:1px solid #dbe2e9; }
+    .status-panel h2 { margin:0 0 10px; font-size:15px; }
+    .status-list { display:grid; gap:5px; font-size:12px; }
+    .status-row { display:flex; justify-content:space-between; gap:8px; }
+    .ok { color:#047857; font-weight:700; }
+    .bad { color:var(--danger); font-weight:700; }
+    .waiting { color:#946200; }
+    .errors { margin-top:12px; padding:10px; color:#8b1a1a; background:#fff1f2; border:1px solid #fecdd3; border-radius:8px; font-size:12px; line-height:1.5; }
+    .errors:empty { display:none; }
+    .page-warning { margin-top:12px; padding:10px; color:#8a4b08; background:#fff7ed; border:2px solid #fb923c; border-radius:8px; font-size:13px; font-weight:800; }
+    .page-warning[hidden] { display:none; }
+    .workspace { min-width:0; overflow:auto; padding:28px 30px 70px; }
+    .preview-stack { display:flex; flex-direction:column; align-items:center; gap:24px; min-width:820px; }
+    .a4 { width:210mm; height:297mm; position:relative; overflow:hidden; background:#fff; box-shadow:0 6px 20px rgba(15,23,42,.19); }
+    .page-inner { height:100%; padding:9mm 11mm 9mm; display:flex; flex-direction:column; }
+    .exam-header { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:3mm 6mm; align-items:center; margin-bottom:1.4mm; }
+    
+    .exam-heading { display:flex; align-items:center; gap:2mm; white-space:nowrap; }
+    .exam-title { font-family:serif; font-size:20pt; line-height:1.15; font-weight:900; letter-spacing:.035em; }
+    .paper-kind { font-size:12pt; font-weight:900; }
+    .form-badge { display:inline-block; padding:1mm 3mm; border-radius:2px; color:#fff; background:#173f67; font-size:11pt; line-height:1.15; font-weight:900; letter-spacing:.08em; }
+    
+    .student-info { display:flex; gap:2mm; justify-content:flex-end; align-items:center; white-space:nowrap; font-size:12pt; font-weight:700; }
+    
+    .version-note { grid-column:1/-1; padding:1.2mm 3mm; border-radius:2px; background:#e2e8f0; color:#1e3a5f; font-size:10.5pt; line-height:1.25; font-weight:900; }
+    .answer-key { margin-left:4mm; color:#7c2d12; }
+    .mini-header { display:flex; justify-content:space-between; padding-bottom:2.5mm; margin-bottom:3.5mm; border-bottom:1px solid #94a3b8; font-size:9.5pt; font-weight:700; color:#475569; }
+    .page-content { flex:1; min-height:0; overflow:hidden; }
+    .question-unit { break-inside:avoid; page-break-inside:avoid; }
+    .group-unit { padding:1mm 0; break-inside:avoid; page-break-inside:avoid; }
+    .group-material { margin-bottom:1mm; padding:1.5mm 2.5mm; border:1px solid #94a3b8; background:#f8fafc; white-space:pre-wrap; font-size:12.5pt; line-height:1.3; }
+    .question-block { padding:.9mm 0 1.5mm; break-inside:avoid; page-break-inside:avoid; }
+    .question-line { display:grid; grid-template-columns:auto 1fr; gap:1.5mm; align-items:start; font-size:13.5pt; line-height:1.25; font-weight:650; }
+    .answer-box { white-space:nowrap; font-family:serif; font-weight:700; }
+    .answer-box.teacher { font-weight:900; color:#111827; }
+    .source-id { display:none; margin-left:2mm; color:#64748b; font-size:7.5pt; font-weight:400; }
+    body.show-ids .source-id { display:inline; }
+    .options { display:grid; grid-template-columns:1fr 1fr; gap:.35mm 7mm; margin:.65mm 0 0 18mm; font-size:12pt; line-height:1.25; }
+    .option { break-inside:avoid; }
+    .question-image-wrap { display:flex; margin:2mm 0 1mm 10mm; }
+    .question-image-wrap.left { float:left; margin:2mm 5mm 2mm 10mm; }
+    .question-image-wrap.right { float:right; margin:2mm 0 2mm 5mm; }
+    .question-image { display:block; max-width:95mm; max-height:42mm; width:auto; height:auto; object-fit:contain; }
+    .image-error { color:#b91c1c; font-size:9pt; font-weight:700; }
+    .correction-student { margin-top:1.5mm; padding-top:1mm; break-inside:avoid; page-break-inside:avoid; }
+    .stamp { display:inline-block; padding:1mm 3mm; border:3px double #7f1d1d; color:#7f1d1d; font-size:13pt; font-weight:900; letter-spacing:.2em; transform:rotate(-1deg); }
+    .correction-teacher { margin-top:1.5mm; padding-top:1.5mm; border-top:1px dashed #64748b; break-inside:avoid; page-break-inside:avoid; }
+    .correction-teacher h3 { margin:0 0 2mm; font-size:11pt; }
+    .correction-list { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:repeat(5,auto); grid-auto-flow:column; column-gap:10mm; margin:0; padding-left:6mm; font-size:10pt; line-height:1.2; }
+    .correction-list li { margin-bottom:.8mm; }
+    .loading-card { margin:35mm auto; width:130mm; padding:12mm; text-align:center; color:#475569; border:1px solid #cbd5e1; border-radius:8px; }
+    @media (max-width:1050px) {
+      .app { display:block; }
+      .controls { position:relative; width:auto; height:auto; border-right:0; border-bottom:1px solid #d5dbe3; }
+      .controls-grid { display:grid; grid-template-columns:repeat(2,minmax(180px,1fr)); gap:0 16px; }
+      .status-panel { grid-column:1/-1; }
+      .workspace { padding:22px 12px 50px; }
+    }
+    @page { size:A4 portrait; margin:0; }
+    @media print {
+      html, body { width:210mm; margin:0; padding:0; background:#fff !important; }
+      .controls, .page-warning, .errors { display:none !important; }
+      .app, .workspace { display:block; margin:0; padding:0; background:#fff !important; }
+      .preview-stack { display:block; min-width:0; }
+      .a4 { width:210mm; height:297mm; margin:0; box-shadow:none; break-after:page; page-break-after:always; }
+      .a4:last-child { break-after:auto; page-break-after:auto; }
+      .source-id { display:none !important; }
+      * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="controls">
+      <h1>能力評估練習卷</h1>
+      <p class="subtitle">第一階段原型｜公開試算表固定卷載入</p>
+      <div class="controls-grid">
+        <div class="field"><label for="paper-type">卷別</label><select id="paper-type" disabled><option>綜合卷</option></select></div>
+        <div class="field"><label for="paper-id">卷號</label><select id="paper-id"><option value="AG01">AG01</option></select></div>
+        <div class="field">
+          <span class="group-label">版本</span>
+          <div class="segmented">
+            <label><input type="radio" name="version" value="student" checked><span>學生版</span></label>
+            <label><input type="radio" name="version" value="teacher"><span>教師版</span></label>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary" id="reload-btn" type="button">重新載入資料</button>
+          <button class="btn btn-primary" id="print-btn" type="button">列印目前卷</button>
+        </div>
+        <label class="dev-toggle"><input id="show-ids" type="checkbox"><span>顯示原始題目編號<br><small>列印時一律隱藏</small></span></label>
+        <div class="status-panel">
+          <h2>資料狀態</h2>
+          <div class="status-list" id="status-list"></div>
+          <div class="page-warning" id="page-warning" hidden></div>
+          <div class="errors" id="errors"></div>
+        </div>
+      </div>
+    </aside>
+    <main class="workspace">
+      <div class="preview-stack" id="preview-stack"><section class="a4"><div class="loading-card">正在準備公開題庫資料…</div></section></div>
+    </main>
+  </div>
+  <script>
+    "use strict";
+    // ===== 集中設定：公開試算表、工作表與圖片位置 =====
+    const DATA_CONFIG = {
+      publicationId: "2PACX-1vTKfM2Yx-ulG_gVMWIumP2siX4HHi5ppJ5pQTtYWlqE0nC2w24V1XvDkCgvaFq3qTfTmn7Jx-ccb-LU",
+      imageBasePath: "images/",
+      imagePaths: { math:"math-assets/NEW-IMG-", chinese:"chinese-assets/" },
+      targetPaper: "AG01",
+      sheets: {
+        chinese: { name: "國文題庫", gid: "248211879", prefix: "C" },
+        english: { name: "英文題庫", gid: "1347121101", prefix: "E" },
+        math: { name: "數學題庫", gid: "1351295025", prefix: "M" },
+        social: { name: "社會題庫", gid: "52070805", prefix: "S" },
+        forms: { name: "卷號設定", gid: "1779352440" }
+      }
+    };
+    const FIELDS = { id:"題目編號", stem:"題幹", a:"選項A", b:"選項B", c:"選項C", d:"選項D", answer:"答案", correction:"訂正關鍵句", image:"圖片檔名", imagePosition:"圖片位置", groupId:"題組編號", groupMaterial:"題組材料", indivisible:"不可拆分", formId:"卷號", formQuestions:"題目編號" };
+    const state = { datasets:{}, questions:[], errors:[], version:"student", pageCount:0 };
+    const statusList = document.getElementById("status-list");
+    const errorsEl = document.getElementById("errors");
+    const warningEl = document.getElementById("page-warning");
+    const previewStack = document.getElementById("preview-stack");
+
+    function csvUrl(gid) { return `https://docs.google.com/spreadsheets/d/e/${DATA_CONFIG.publicationId}/pub?gid=${gid}&single=true&output=csv` }
+    function parseCsv(text) {
+      const rows=[]; let row=[], field="", quoted=false;
+      for(let i=0;i<text.length;i++) { const ch=text[i]; if(quoted){ if(ch==='"'&&text[i+1]==='"'){field+='"';i++;} else if(ch==='"'){quoted=false;} else field+=ch; } else if(ch==='"'){quoted=true;} else if(ch===','){row.push(field);field="";} else if(ch==='\n'){row.push(field.replace(/\r$/, ""));rows.push(row);row=[];field="";} else field+=ch; }
+      if(field.length||row.length){row.push(field.replace(/\r$/, ""));rows.push(row);}
+      const headers=(rows.shift()||[]).map((h,i)=>i===0?h.replace(/^\uFEFF/,"").trim():h.trim());
+      return rows.filter(r=>r.some(v=>v!=="")).map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??""])));
+    }
+    async function loadSheet(config) {
+      const response=await fetch(csvUrl(config.gid),{cache:"no-store"});
+      if(!response.ok) throw new Error(`${config.name} 讀取失敗（HTTP ${response.status}）`);
+      const rows=parseCsv(await response.text());
+      if(!rows.length) throw new Error(`${config.name} 沒有資料`);
+      return rows;
+    }
+    function requireFields(rows, sheetName, fields) {
+      const headers=Object.keys(rows[0]||{}); const missing=fields.filter(f=>!headers.includes(f));
+      if(missing.length) throw new Error(`${sheetName} 缺少欄位：${missing.join("、")}`);
+    }
+    function addError(message){ if(!state.errors.includes(message)) state.errors.push(message); }
+    function renderErrors(){ errorsEl.innerHTML=state.errors.map(e=>`<div>• ${escapeHtml(e)}</div>`).join(""); }
+    function escapeHtml(value){ return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch])); }
+    function subjectKey(id){ return ({C:"chinese",E:"english",M:"math",S:"social"})[id.charAt(0)] }
+    function paperType(id){ return ({C:"國文卷",E:"英文卷",M:"數學卷",S:"社會卷",A:"綜合卷"})[String(id||"").charAt(0)]||"能力評估卷" }
+    function imageUrl(question){
+      const id=String(question._id||""); const filename=String(question[FIELDS.image]||"");
+      if(id.startsWith("M")) return `${DATA_CONFIG.imagePaths.math}${id.slice(1)}.png`;
+      if(id.startsWith("C")) return `${DATA_CONFIG.imagePaths.chinese}${encodeURIComponent(filename)}`;
+      return `${DATA_CONFIG.imageBasePath}${encodeURIComponent(filename)}`;
+    }
+    function populatePaperOptions(){
+      const select=document.getElementById("paper-id"); const forms=state.datasets.forms||[];
+      select.innerHTML=forms.map(row=>`<option value="${escapeHtml(row[FIELDS.formId])}">${escapeHtml(row[FIELDS.formId])}</option>`).join("");
+      select.value=DATA_CONFIG.targetPaper;
+      document.getElementById("paper-type").innerHTML=`<option>${paperType(DATA_CONFIG.targetPaper)}</option>`;
+    }
+    function validateQuestion(question,id){
+      if(!question) return [`找不到題目：${id}`]; const problems=[];
+      for(const field of [FIELDS.stem,FIELDS.a,FIELDS.b,FIELDS.c,FIELDS.d]) if(!String(question[field]||"").trim()) problems.push(`${id} 缺少${field}`);
+      if(!/^[ABCD]$/.test(String(question[FIELDS.answer]||"").trim())) problems.push(`${id} 缺少答案`);
+      return problems;
+    }
+    async function loadAllData(){
+      state.errors=[]; state.datasets={}; state.questions=[]; warningEl.hidden=true; renderStatus(true); renderErrors();
+      const entries=Object.entries(DATA_CONFIG.sheets);
+      const settled=await Promise.allSettled(entries.map(async([key,config])=>[key,await loadSheet(config)]));
+      settled.forEach((result,index)=>{ const [key,config]=entries[index]; if(result.status==="fulfilled") state.datasets[key]=result.value[1]; else addError(result.reason?.message||`${config.name} 讀取失敗`); });
+      try{
+        for(const key of ["chinese","english","math","social"]) if(state.datasets[key]) requireFields(state.datasets[key],DATA_CONFIG.sheets[key].name,Object.values(FIELDS).slice(0,13));
+        if(state.datasets.forms) requireFields(state.datasets.forms,DATA_CONFIG.sheets.forms.name,[FIELDS.formId,FIELDS.formQuestions]);
+        if(Object.keys(state.datasets).length!==5) throw new Error("五個必要工作表未全部載入");
+        populatePaperOptions();
+        const form=state.datasets.forms.find(row=>row[FIELDS.formId]===DATA_CONFIG.targetPaper);
+        if(!form) throw new Error(`找不到卷號：${DATA_CONFIG.targetPaper}`);
+        const ids=String(form[FIELDS.formQuestions]||"").split(",").map(v=>v.trim()).filter(Boolean);
+        if(ids.length!==10) addError(`${DATA_CONFIG.targetPaper} 題目數量不是 10 題`);
+        const indexes={}; for(const key of ["chinese","english","math","social"]) indexes[key]=new Map(state.datasets[key].map(row=>[row[FIELDS.id],row]));
+        state.questions=ids.map(id=>{ const key=subjectKey(id); const question=key?indexes[key].get(id):null; validateQuestion(question,id).forEach(addError); return question?{...question,_id:id}:null; }).filter(Boolean);
+        if(state.questions.length!==ids.length) addError(`找到題目：${state.questions.length}／${ids.length}`);
+      }catch(error){ addError(error.message); }
+      renderErrors(); renderStatus(false); renderPaper();
+    }
+    function renderStatus(loading=false){
+      const labels=["chinese","english","math","social","forms"].map(key=>{ const config=DATA_CONFIG.sheets[key]; const loaded=state.datasets[key]; return `<div class="status-row"><span>${config.name}</span><span class="${loading?'waiting':loaded?'ok':'bad'}">${loading?'載入中':loaded?`已載入${key==='forms'?'':`（${loaded.length}題）`}`:'失敗'}</span></div>`; });
+      const imageCount=state.questions.filter(q=>q[FIELDS.image]).length; const missingAnswers=state.questions.filter(q=>!/^[ABCD]$/.test(q[FIELDS.answer]||"")).length; const missingCorrections=state.questions.filter(q=>!String(q[FIELDS.correction]||"").trim()).length;
+      labels.push(`<div class="status-row"><span>${DATA_CONFIG.targetPaper}</span><span>${state.questions.length?`共 ${state.questions.length} 題`:'—'}</span></div>`,`<div class="status-row"><span>找到題目</span><span>${state.questions.length}／10</span></div>`,`<div class="status-row"><span>圖片題</span><span>${imageCount} 題</span></div>`,`<div class="status-row"><span>缺少答案</span><span>${missingAnswers} 題</span></div>`,`<div class="status-row"><span>缺少訂正關鍵句</span><span>${missingCorrections} 題</span></div>`,`<div class="status-row"><span>實際頁數</span><span>${state.pageCount||'—'}</span></div>`);
+      statusList.innerHTML=labels.join("");
+    }
+    function makePage(pageNumber){
+      const page=document.createElement("section"); page.className="a4"; page.dataset.page=pageNumber;
+      const inner=document.createElement("div"); inner.className="page-inner";
+      if(pageNumber===1) inner.appendChild(makeHeader()); else { const mini=document.createElement("div"); mini.className="mini-header"; mini.innerHTML=`<span>${DATA_CONFIG.targetPaper}</span><span>第 ${pageNumber} 頁</span>`; inner.appendChild(mini); }
+      const content=document.createElement("div"); content.className="page-content"; inner.appendChild(content); page.appendChild(inner); return page;
+    }
+    function makeHeader(){
+      const header=document.createElement("header"); header.className="exam-header";
+      const answers=state.questions.map((q,i)=>`${i+1}.${q[FIELDS.answer]||'?'}`).join("　");
+      header.innerHTML=`<div class="exam-heading"><span class="exam-title">能力評估練習卷</span><span class="paper-kind">${paperType(DATA_CONFIG.targetPaper)}</span><span class="form-badge">${DATA_CONFIG.targetPaper}</span></div><div class="student-info"><span>班級：____________</span><span>姓名：________________</span></div><div class="version-note">◎每題 10 分，滿分 100 分${state.version==='teacher'?`<span class="answer-key">答案：${escapeHtml(answers)}</span>`:''}</div>`;
+      return header;
+    }
+    function makeImage(question){
+      if(!question[FIELDS.image]) return null; const wrap=document.createElement("div"); const pos=question[FIELDS.imagePosition]||"題幹下方"; wrap.className=`question-image-wrap ${pos.includes('左')?'left':pos.includes('右')?'right':''}`;
+      const img=document.createElement("img"); img.className="question-image"; img.alt=`題目圖片 ${question[FIELDS.image]}`; img.src=imageUrl(question);
+      img.addEventListener("error",()=>{ wrap.innerHTML=`<span class="image-error">圖片載入失敗：${escapeHtml(question[FIELDS.image])}</span>`; addError(`圖片載入失敗：${question[FIELDS.image]}`); renderErrors(); }); wrap.appendChild(img); return wrap;
+    }
+    function makeQuestion(question,number){
+      const block=document.createElement("article"); block.className="question-block"; block.dataset.question=question._id;
+      const line=document.createElement("div"); line.className="question-line"; const answer=state.version==='teacher'?(question[FIELDS.answer]||'?'):'　'; line.innerHTML=`<span class="answer-box ${state.version==='teacher'?'teacher':''}">（${escapeHtml(answer)}）${number}.</span><div>${escapeHtml(question[FIELDS.stem])}<small class="source-id">${escapeHtml(question._id)}</small></div>`; block.appendChild(line);
+      const image=makeImage(question); if(image&&String(question[FIELDS.imagePosition]).includes('上方')) block.insertBefore(image,line); else if(image) block.appendChild(image);
+      const options=document.createElement("div"); options.className="options"; ["A","B","C","D"].forEach(letter=>{ const div=document.createElement("div"); div.className="option"; div.textContent=`（${letter}）${question[FIELDS[letter.toLowerCase()]]||question[`選項${letter}`]||''}`; options.appendChild(div); }); block.appendChild(options); return block;
+    }
+    function buildUnits(){
+      const units=[]; let index=0;
+      while(index<state.questions.length){ const q=state.questions[index]; if(q[FIELDS.groupId]){ const groupId=q[FIELDS.groupId]; const wrapper=document.createElement("section"); wrapper.className="question-unit group-unit"; const material=document.createElement("div"); material.className="group-material"; material.textContent=q[FIELDS.groupMaterial]||`題組 ${groupId}：尚未提供題組材料`; wrapper.appendChild(material); while(index<state.questions.length&&state.questions[index][FIELDS.groupId]===groupId){wrapper.appendChild(makeQuestion(state.questions[index],index+1));index++;} units.push(wrapper); } else { const wrapper=document.createElement("section"); wrapper.className="question-unit"; wrapper.appendChild(makeQuestion(q,index+1)); units.push(wrapper); index++; } }
+      const correction=document.createElement("section"); correction.className=state.version==='teacher'?"question-unit correction-teacher":"question-unit correction-student";
+      if(state.version==='teacher'){ correction.innerHTML="<h3>訂正關鍵句</h3>"; const ol=document.createElement("ol"); ol.className="correction-list"; state.questions.forEach((q,i)=>{const li=document.createElement("li"); li.textContent=String(q[FIELDS.correction]||"").trim()||`第 ${i+1} 題：尚未建立訂正關鍵句`;ol.appendChild(li);}); correction.appendChild(ol); } else correction.innerHTML='<span class="stamp">訂正區</span>';
+      units.push(correction); return units;
+    }
+    function renderPaper(){
+      previewStack.innerHTML=""; warningEl.hidden=true;
+      if(!state.questions.length){ previewStack.innerHTML='<section class="a4"><div class="loading-card">無法建立試卷，請查看左側錯誤訊息。</div></section>'; state.pageCount=0; renderStatus(false); return; }
+      const pages=[makePage(1),makePage(2),makePage(3)]; pages.forEach(p=>{p.style.visibility="hidden";previewStack.appendChild(p);});
+      let pageIndex=0; const units=buildUnits();
+      for(const unit of units){ let content=pages[pageIndex].querySelector(".page-content"); content.appendChild(unit); if(content.scrollHeight>content.clientHeight+1){ content.removeChild(unit); pageIndex++; if(pageIndex>=pages.length){ addError("內容超過可量測頁數"); break; } content=pages[pageIndex].querySelector(".page-content"); content.appendChild(unit); if(content.scrollHeight>content.clientHeight+1) addError(`單一題目或題組過高，無法置入一頁：${unit.dataset.question||'訂正區'}`); } }
+      state.pageCount=pageIndex+1; pages.forEach((p,i)=>{if(i<state.pageCount)p.style.visibility="visible";else p.remove();});
+      if(state.pageCount>2){ warningEl.textContent=`${DATA_CONFIG.targetPaper} 內容超過 A4 正反兩面，請調整卷號題目組合。`; warningEl.hidden=false; }
+      renderErrors(); renderStatus(false);
+    }
+    document.querySelectorAll('input[name="version"]').forEach(input=>input.addEventListener("change",event=>{state.version=event.target.value;renderPaper();}));
+    document.getElementById("show-ids").addEventListener("change",event=>document.body.classList.toggle("show-ids",event.target.checked));
+    document.getElementById("paper-id").addEventListener("change",event=>{DATA_CONFIG.targetPaper=event.target.value;loadAllData();});
+    document.getElementById("reload-btn").addEventListener("click",loadAllData);
+    document.getElementById("print-btn").addEventListener("click",()=>window.print());
+    window.addEventListener("resize",()=>{clearTimeout(window.__layoutTimer);window.__layoutTimer=setTimeout(renderPaper,150);});
+    loadAllData();
+  </script>
+</body>
+</html>
