@@ -49,13 +49,16 @@
       ).join("")
     );
 
-    document.getElementById("classroomCards").innerHTML = window.CLASSROOM_DATA.map(item =>
-      `<article class="resource-card" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}">
+    document.getElementById("classroomCards").innerHTML = window.CLASSROOM_DATA.map(item => {
+      const action = item.available === false
+        ? '<span class="card-link">功能準備中</span>'
+        : `<a class="card-link" href="${escapeHtml(item.filename)}"${item.external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${escapeHtml(item.linkLabel || (item.external ? '開啟試算表 ↗' : '開啟功能 →'))}</a>`;
+      return `<article class="resource-card${item.available === false ? ' is-placeholder' : ''}" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}">
         <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
-        <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p><a class="card-link" href="${escapeHtml(item.filename)}"${item.external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${escapeHtml(item.linkLabel || (item.external ? '開啟試算表 ↗' : '開啟功能 →'))}</a>
-      </article>`
-    ).join("");
+        <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>${action}
+      </article>`;
+    }).join("");
   </script>
-  <script src="../shared/js/workspace.js?v=2.3"></script>
+  <script src="../shared/js/workspace.js?v=2.4"></script>
 </body>
 </html>
