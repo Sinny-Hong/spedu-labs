@@ -1,0 +1,2419 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生活數學能力評估 - 互動語音教學系統</title>
+    <!-- 引入 Tailwind CSS 進行現代化視覺設計 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Google 字體與 Font Awesome 圖標 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f4f8;
+        }
+        /* 答題正確的啵啵與閃爍動畫 */
+        @keyframes correct-pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        .correct-animate {
+            animation: correct-pop 0.4s ease-in-out;
+        }
+        /* 煙火與得分彈出框特效 */
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            top: 0;
+            opacity: 0;
+            animation: fall 3s infinite ease-out;
+        }
+        @keyframes fall {
+            0% { top: -10px; transform: translateX(0) rotate(0deg); opacity: 1; }
+            100% { top: 100%; transform: translateX(100px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="min-height-screen flex flex-col justify-between text-slate-800 p-2 md:p-6">
+
+    <div id="app-container" class="w-full max-w-5xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden flex flex-col">
+        <!-- 頂部導覽列與標題 -->
+        <header class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-4 md:p-6 text-center shadow-md relative">
+            <div class="absolute top-4 left-4 hidden md:flex items-center gap-2"><span class="bg-emerald-500 text-white text-xs px-2 py-1 rounded-full font-bold">100 題互動題庫</span></div>
+            <h1 class="text-xl md:text-3xl font-extrabold tracking-wide flex items-center justify-center gap-2"><i class="fa-solid fa-calculator"></i> 生活數學能力評估</h1>
+            <p class="text-sm md:text-base text-emerald-100 mt-1 font-medium">每單元 10 題｜語音報讀｜即時解析｜支援手機與離線使用</p>
+        </header>
+
+        <!-- 控制與設定區（可摺疊） -->
+        <div class="bg-slate-50 border-b border-slate-200 p-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <!-- 學習模式切換 -->
+                <div class="flex items-center gap-2 bg-white p-1 rounded-lg shadow-sm border border-slate-200">
+                    <button id="mode-study-btn" onclick="switchMode('study')" class="px-4 py-1.5 rounded-md font-bold text-sm transition-all duration-200 bg-blue-600 text-white shadow-sm">
+                        <i class="fa-solid fa-book-open mr-1"></i> 即時學習模式
+                    </button>
+                    <button id="mode-test-btn" onclick="switchMode('test')" class="px-4 py-1.5 rounded-md font-bold text-sm transition-all duration-200 text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-file-signature mr-1"></i> 模擬測驗模式
+                    </button>
+                </div>
+
+                <!-- 單元選擇與進度統計 -->
+                <div class="flex items-center gap-2">
+                    <label for="unit-select" class="font-bold text-slate-700 hidden sm:inline"><i class="fa-solid fa-cubes text-blue-500 mr-1"></i>選擇單元:</label>
+                    <select id="unit-select" onchange="changeUnit(this.value)" class="bg-white border border-slate-300 rounded-lg px-3 py-1.5 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <!-- 由 JS 動態產生十個單元 -->
+                    </select>
+                </div>
+
+                <!-- 展開/收合語音控制按鈕 -->
+                <button onclick="toggleVoicePanel()" class="text-sm font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                    <i class="fa-solid fa-sliders"></i> <span id="voice-panel-toggle-text">設定語音/語速</span>
+                </button>
+            </div>
+
+            <!-- 語音控制面板 (預設展開，可收合) -->
+            <div id="voice-settings-panel" class="mt-4 p-4 bg-white rounded-xl border border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-300">
+                <div class="flex flex-col gap-1">
+                    <label for="voice-select" class="text-sm font-bold text-slate-600"><i class="fa-solid fa-comment-dots mr-1 text-slate-400"></i>選擇唸讀聲音:</label>
+                    <select id="voice-select" onchange="updateVoice()" class="bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500"></select>
+                </div>
+                <div class="flex flex-col gap-1 justify-center">
+                    <div class="flex justify-between items-center text-sm font-bold text-slate-600">
+                        <span><i class="fa-solid fa-gauge-high mr-1 text-slate-400"></i>唸讀速度:</span>
+                        <span id="speed-value" class="text-blue-600">0.9x</span>
+                    </div>
+                    <input id="speed-control" type="range" min="0.5" max="1.5" step="0.1" value="0.9" oninput="updateSpeed(this.value)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                </div>
+                <!-- 自動報讀與重新唸讀 -->
+                <div class="flex items-center justify-around gap-2 pt-2 md:pt-0">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="auto-read-toggle" checked class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <span class="ml-2 text-sm font-bold text-slate-600">下一題自動唸題目</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 單元進度與計分面板 -->
+        <div class="bg-blue-50/50 p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="bg-indigo-100 text-indigo-800 text-sm font-black px-3 py-1 rounded-lg" id="unit-title-display">
+                    單元一 (第1~10題)
+                </span>
+                <span class="text-sm font-bold text-slate-500" id="progress-text">
+                    進度: 1 / 10 題
+                </span>
+            </div>
+            
+            <!-- 進度小圓點指標 -->
+            <div class="flex items-center gap-1.5" id="progress-dots-container">
+                <!-- 10個點由 JS 動態生成 -->
+            </div>
+
+            <!-- 即時得分顯示 -->
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-bold text-slate-600">目前分數:</span>
+                <span id="current-score-display" class="text-2xl font-black text-emerald-600 bg-emerald-100 px-3 py-0.5 rounded-lg border border-emerald-200">0</span>
+            </div>
+        </div>
+
+        <!-- 主作答與播放區 -->
+        <main class="flex-grow p-4 md:p-8 flex flex-col justify-between min-h-[350px]">
+            <!-- 題目區域 -->
+            <div>
+                <div class="flex items-start gap-4 mb-6">
+                    <button id="replay-btn" onclick="speakCurrentQuestion()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white p-3 md:p-4 rounded-xl shadow-md flex items-center justify-center gap-2 flex-shrink-0 transition-all duration-150" title="唸出題目與選項">
+                        <i class="fa-solid fa-volume-high text-xl md:text-2xl"></i>
+                        <span class="text-sm font-bold hidden md:inline">報讀題目</span>
+                    </button>
+                    <div class="flex-grow">
+                        <!-- 當前題目的前言（如果有） -->
+                        <div id="preamble-text" class="hidden mb-3 p-3 bg-amber-50 border-l-4 border-amber-400 text-amber-900 rounded-r-lg font-medium text-sm md:text-base"></div>
+                        <!-- 題目文字 -->
+                        <h2 id="question-text" class="text-lg md:text-2xl font-bold leading-relaxed text-slate-800">
+                            載入中...
+                        </h2>
+                    </div>
+                </div>
+
+                <!-- 選項清單 -->
+                <div id="question-image-container" class="hidden mb-5 p-3 bg-white border-2 border-slate-200 rounded-xl text-center"><img id="question-image" class="max-h-56 mx-auto object-contain" alt="數學題目圖示"></div>
+                <div id="options-list" class="space-y-3 md:space-y-4">
+                    <!-- 選項按鈕由 JS 動態生成 -->
+                </div>
+            </div>
+
+            <!-- 回饋提示區 (僅在即時學習模式顯示) -->
+            <div id="feedback-alert" class="hidden mt-6 p-4 rounded-xl border flex items-start gap-3 transition-all duration-300">
+                <div id="feedback-icon-container" class="text-2xl mt-0.5"></div>
+                <div>
+                    <h4 id="feedback-title" class="font-extrabold text-base md:text-lg"></h4>
+                    <p id="feedback-desc" class="text-sm md:text-base mt-1 text-slate-600"></p>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部控制按鈕 -->
+        <nav class="bg-slate-50 border-t border-slate-200 p-4 flex justify-between items-center gap-4">
+            <button id="prev-btn" onclick="prevQuestion()" class="px-5 py-3 rounded-xl font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 disabled:opacity-50 disabled:pointer-events-none transition-all duration-150">
+                <i class="fa-solid fa-arrow-left mr-1"></i> 上一題
+            </button>
+
+            <!-- 測驗模式下的提交按鈕，平常隱藏 -->
+            <button id="submit-quiz-btn" onclick="calculateAndShowReport(true)" class="hidden px-6 py-3 rounded-xl font-extrabold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition-all duration-150 animate-pulse">
+                <i class="fa-solid fa-paper-plane mr-1"></i> 提交單元測驗
+            </button>
+
+            <button id="next-btn" onclick="nextQuestion()" class="px-5 py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none transition-all duration-150">
+                下一題 <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </nav>
+
+        <!-- 頁尾 -->
+        <footer class="bg-slate-100 border-t border-slate-200 p-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
+            <button id="download-btn" onclick="downloadOfflineVersion()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-150 shadow-sm"><i class="fa-solid fa-cloud-arrow-down"></i> 下載離線版本</button>
+            <p class="text-xs text-slate-500 font-medium">生活數學能力評估｜100 題互動語音題庫</p>
+        </footer>
+    </div>
+
+    <!-- 學習成果報告 Modal -->
+    <div id="report-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden transform scale-95 transition-all duration-300 relative">
+            
+            <!-- 裝飾性背景煙火特效容器 -->
+            <div id="modal-confetti" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+            <div class="p-6 text-center">
+                <div class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-inner animate-bounce">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                
+                <h3 class="text-2xl font-black text-slate-800" id="report-title">單元學習成果報告</h3>
+                <p class="text-slate-500 font-bold mt-1 text-sm" id="report-subtitle">恭喜你完成了這個單元的挑戰！</p>
+                
+                <!-- 成績看板 -->
+                <div class="my-6 bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col items-center justify-center">
+                    <span class="text-sm font-bold text-slate-500 uppercase tracking-widest">單元得分</span>
+                    <span class="text-6xl font-black text-indigo-600 mt-2" id="report-score">0 <span class="text-2xl font-bold text-slate-400">分</span></span>
+                    
+                    <div class="grid grid-cols-2 gap-4 w-full mt-6 pt-4 border-t border-slate-200 text-sm">
+                        <div class="text-left bg-emerald-50 p-3 rounded-xl border border-emerald-100">
+                            <p class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check mr-1"></i>答對題數</p>
+                            <p class="text-xl font-black text-emerald-800 mt-1" id="report-correct-count">0 題</p>
+                        </div>
+                        <div class="text-left bg-rose-50 p-3 rounded-xl border border-rose-100">
+                            <p class="text-rose-700 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i>答錯題數</p>
+                            <p class="text-xl font-black text-rose-800 mt-1" id="report-wrong-count">0 題</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 評語與語音讚美 -->
+                <p id="report-comment" class="text-lg font-extrabold text-indigo-900 mb-6 px-4 py-2 bg-indigo-50 rounded-lg inline-block"></p>
+
+                <!-- 互動按鈕 -->
+                <div class="flex flex-col gap-2">
+                    <button onclick="retryCurrentUnit()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-3 px-4 rounded-xl transition-all duration-150">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> 重新挑戰本單元
+                    </button>
+                    <button id="next-unit-btn" onclick="goToNextUnit()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3.5 px-4 rounded-xl transition-all duration-150 shadow-lg">
+                        解鎖下一單元 <i class="fa-solid fa-circle-arrow-right ml-1"></i>
+                    </button>
+                    <button onclick="closeReportModal()" class="w-full text-slate-500 hover:text-slate-700 font-bold text-sm py-2">
+                        關閉報告
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 題目資料庫加上正確答案 index (0 為第一個選項，1 為第二個，依此類推)
+        const questions = [
+          {
+                    "section": "整數與數量",
+                    "displayId": "1",
+                    "question": "1. 在 5,407 中，數字 4 代表多少？",
+                    "options": [
+                              "(1) 4",
+                              "(2) 40",
+                              "(3) 400",
+                              "(4) 4,000"
+                    ],
+                    "answer": 2,
+                    "explanation": "4 位在百位，因此代表 400。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "整數與數量",
+                    "displayId": "2",
+                    "question": "2. 下列哪一個大小關係正確？",
+                    "options": [
+                              "(1) 3,089＞3,098",
+                              "(2) 4,210＜4,201",
+                              "(3) 6,305＞6,053",
+                              "(4) 9,999＜9,909"
+                    ],
+                    "answer": 2,
+                    "explanation": "比較千位、百位、十位後，6,305 大於 6,053。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "四則運算",
+                    "displayId": "3",
+                    "question": "3. 275＋□＝600，□是多少？",
+                    "options": [
+                              "(1) 225",
+                              "(2) 325",
+                              "(3) 375",
+                              "(4) 875"
+                    ],
+                    "answer": 1,
+                    "explanation": "600－275＝325。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "四則運算",
+                    "displayId": "4",
+                    "question": "4. 804－267＝多少？",
+                    "options": [
+                              "(1) 437",
+                              "(2) 527",
+                              "(3) 547",
+                              "(4) 537"
+                    ],
+                    "answer": 3,
+                    "explanation": "804－267＝537。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "四則運算",
+                    "displayId": "5",
+                    "question": "5. 36×7＝多少？",
+                    "options": [
+                              "(1) 212",
+                              "(2) 242",
+                              "(3) 252",
+                              "(4) 262"
+                    ],
+                    "answer": 2,
+                    "explanation": "36×7＝252。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "四則運算",
+                    "displayId": "6",
+                    "question": "6. 864÷8＝多少？",
+                    "options": [
+                              "(1) 108",
+                              "(2) 118",
+                              "(3) 128",
+                              "(4) 138"
+                    ],
+                    "answer": 0,
+                    "explanation": "864÷8＝108。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "7",
+                    "question": "7. 一本筆記本 18 元，買 3 本後再買一枝 26 元的筆，共要付多少元？",
+                    "options": [
+                              "(1) 70",
+                              "(2) 80",
+                              "(3) 90",
+                              "(4) 100"
+                    ],
+                    "answer": 1,
+                    "explanation": "18×3＋26＝54＋26＝80 元。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "8",
+                    "question": "8. 每輛遊覽車有 42 個座位，5 輛共有 210 個座位。坐了 187 人後，還有幾個空位？",
+                    "options": [
+                              "(1) 13",
+                              "(2) 17",
+                              "(3) 21",
+                              "(4) 23"
+                    ],
+                    "answer": 3,
+                    "explanation": "42×5＝210，210－187＝23。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "9",
+                    "question": "9. 96 顆糖果平均裝成 8 袋，每袋有幾顆？",
+                    "options": [
+                              "(1) 8",
+                              "(2) 10",
+                              "(3) 12",
+                              "(4) 14"
+                    ],
+                    "answer": 2,
+                    "explanation": "96÷8＝12。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "10",
+                    "question": "10. 小安帶 450 元，買了 128 元的文具和 175 元的書，還剩多少元？",
+                    "options": [
+                              "(1) 147",
+                              "(2) 157",
+                              "(3) 247",
+                              "(4) 303"
+                    ],
+                    "answer": 0,
+                    "explanation": "450－128－175＝147 元。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "時間與單位",
+                    "displayId": "11",
+                    "question": "11. 4 個人各喝 2 瓶 600 毫升的水，共喝了多少？",
+                    "options": [
+                              "(1) 2公升400毫升",
+                              "(2) 3公升600毫升",
+                              "(3) 4公升200毫升",
+                              "(4) 4公升800毫升"
+                    ],
+                    "answer": 3,
+                    "explanation": "4×2×600＝4,800 毫升，也就是 4 公升 800 毫升。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "時間與單位",
+                    "displayId": "12",
+                    "question": "12. 電影上午 8 時 35 分開始，片長 50 分鐘，幾時結束？",
+                    "options": [
+                              "(1) 上午9時15分",
+                              "(2) 上午9時25分",
+                              "(3) 上午9時35分",
+                              "(4) 上午10時25分"
+                    ],
+                    "answer": 1,
+                    "explanation": "8 時 35 分再過 50 分鐘是 9 時 25 分。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "時間與單位",
+                    "displayId": "13",
+                    "question": "13. 2 公斤 350 公克加上 850 公克，共是多少？",
+                    "options": [
+                              "(1) 2公斤1,200公克",
+                              "(2) 2公斤800公克",
+                              "(3) 3公斤200公克",
+                              "(4) 3公斤350公克"
+                    ],
+                    "answer": 2,
+                    "explanation": "350＋850＝1,200 公克，合併為 3 公斤 200 公克。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "金錢應用",
+                    "displayId": "14",
+                    "question": "14. 一件外套 680 元，付 1,000 元，應找回多少元？",
+                    "options": [
+                              "(1) 320",
+                              "(2) 380",
+                              "(3) 420",
+                              "(4) 1,680"
+                    ],
+                    "answer": 0,
+                    "explanation": "1,000－680＝320 元。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "時間與單位",
+                    "displayId": "15",
+                    "question": "15. 一條緞帶長 2 公尺 40 公分，剪掉 75 公分後，還剩多少？",
+                    "options": [
+                              "(1) 1公尺25公分",
+                              "(2) 1公尺45公分",
+                              "(3) 1公尺55公分",
+                              "(4) 1公尺65公分"
+                    ],
+                    "answer": 3,
+                    "explanation": "2 公尺 40 公分是 240 公分；240－75＝165 公分。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "分數小數百分率",
+                    "displayId": "16",
+                    "question": "16. 一個長方形平均分成 8 份，其中 3 份塗色。塗色部分占全部的多少？",
+                    "options": [
+                              "(1) 3/8",
+                              "(2) 5/8",
+                              "(3) 3/5",
+                              "(4) 8/3"
+                    ],
+                    "answer": 0,
+                    "explanation": "全部有 8 等份，其中 3 份塗色，所以是 3/8。",
+                    "difficulty": "易",
+                    "image": "math-assets/NEW-IMG-016.png",
+                    "imageAlt": "長方形分成8等份，其中3份塗色"
+          },
+          {
+                    "section": "分數小數百分率",
+                    "displayId": "17",
+                    "question": "17. 2.75＋1.6＝多少？",
+                    "options": [
+                              "(1) 3.35",
+                              "(2) 4.15",
+                              "(3) 4.35",
+                              "(4) 4.75"
+                    ],
+                    "answer": 2,
+                    "explanation": "2.75＋1.60＝4.35。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "分數小數百分率",
+                    "displayId": "18",
+                    "question": "18. 全班有 40 人，其中 25% 戴眼鏡。戴眼鏡的有幾人？",
+                    "options": [
+                              "(1) 5",
+                              "(2) 10",
+                              "(3) 15",
+                              "(4) 25"
+                    ],
+                    "answer": 1,
+                    "explanation": "40×25%＝10 人。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "分數小數百分率",
+                    "displayId": "19",
+                    "question": "19. 下列哪一個敘述正確？",
+                    "options": [
+                              "(1) 2/7＞5/7",
+                              "(2) 4/9＜1/9",
+                              "(3) 3/8＝5/8",
+                              "(4) 5/9＞3/9"
+                    ],
+                    "answer": 3,
+                    "explanation": "分母相同時，分子較大，分數較大，因此 5/9＞3/9。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "20",
+                    "question": "20. 下列哪一個物品最接近直角？",
+                    "options": [
+                              "(1) 張開的扇子形成的角",
+                              "(2) 課本封面的角",
+                              "(3) 時鐘一點鐘的兩指針夾角",
+                              "(4) 斜放梯子與地面的夾角"
+                    ],
+                    "answer": 1,
+                    "explanation": "課本封面的角通常是 90 度直角。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "21",
+                    "question": "21. 一個長方形長 8 公分、寬 5 公分，它的周長是多少？",
+                    "options": [
+                              "(1) 13公分",
+                              "(2) 20公分",
+                              "(3) 26公分",
+                              "(4) 40公分"
+                    ],
+                    "answer": 2,
+                    "explanation": "周長＝（8＋5）×2＝26 公分。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "22",
+                    "question": "22. 一個正方體有幾個面？",
+                    "options": [
+                              "(1) 6",
+                              "(2) 8",
+                              "(3) 10",
+                              "(4) 12"
+                    ],
+                    "answer": 0,
+                    "explanation": "正方體有 6 個正方形的面。",
+                    "difficulty": "易",
+                    "image": "math-assets/NEW-IMG-022.png",
+                    "imageAlt": "正方體示意圖"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "23",
+                    "question": "23. 下列哪一個圖形一定有一條對稱軸？",
+                    "options": [
+                              "(1) 一般平行四邊形",
+                              "(2) 不等邊三角形",
+                              "(3) 任意梯形",
+                              "(4) 等腰三角形"
+                    ],
+                    "answer": 3,
+                    "explanation": "等腰三角形由頂角到底邊中點的直線是對稱軸。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "24",
+                    "question": "24. 飲料店四天售出杯數為：星期一12杯、星期二18杯、星期三15杯、星期四20杯。哪一天最多？",
+                    "options": [
+                              "(1) 星期一",
+                              "(2) 星期二",
+                              "(3) 星期三",
+                              "(4) 星期四"
+                    ],
+                    "answer": 3,
+                    "explanation": "20 最大，所以星期四售出最多。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "四天資料：星期一12杯、星期二18杯、星期三15杯、星期四20杯"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "25",
+                    "question": "25. 長條圖顯示甲班回收 4 公斤、乙班 7 公斤、丙班 5 公斤。三班共回收多少公斤？",
+                    "options": [
+                              "(1) 12",
+                              "(2) 16",
+                              "(3) 18",
+                              "(4) 20"
+                    ],
+                    "answer": 1,
+                    "explanation": "4＋7＋5＝16 公斤。",
+                    "difficulty": "易",
+                    "image": "math-assets/NEW-IMG-025.png",
+                    "imageAlt": "三根長條：甲4、乙7、丙5公斤"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "26",
+                    "question": "26. 圖書館借出的書中，故事書占 50%。若共借出 80 本，故事書有幾本？",
+                    "options": [
+                              "(1) 20",
+                              "(2) 30",
+                              "(3) 40",
+                              "(4) 50"
+                    ],
+                    "answer": 2,
+                    "explanation": "80×50%＝40 本。",
+                    "difficulty": "中",
+                    "image": "math-assets/NEW-IMG-026.png",
+                    "imageAlt": "圓形圖中故事書占二分之一，標示50%"
+          },
+          {
+                    "section": "規律與推理",
+                    "displayId": "27",
+                    "question": "27. 依照規律，3、6、12、24，下一個數是多少？",
+                    "options": [
+                              "(1) 48",
+                              "(2) 36",
+                              "(3) 30",
+                              "(4) 27"
+                    ],
+                    "answer": 0,
+                    "explanation": "每個數都是前一個數的 2 倍，所以 24×2＝48。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "規律與推理",
+                    "displayId": "28",
+                    "question": "28. 將 0.8、0.08、0.88 由小到大排列，何者正確？",
+                    "options": [
+                              "(1) 0.8、0.08、0.88",
+                              "(2) 0.88、0.8、0.08",
+                              "(3) 0.08、0.88、0.8",
+                              "(4) 0.08、0.8、0.88"
+                    ],
+                    "answer": 3,
+                    "explanation": "補成相同位數後為 0.80、0.08、0.88，因此順序是 0.08、0.8、0.88。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "29",
+                    "question": "29. 麵包每個 25 元，買 3 個；牛奶每瓶 30 元，買 2 瓶。合計多少元？",
+                    "options": [
+                              "(1) 105",
+                              "(2) 125",
+                              "(3) 135",
+                              "(4) 165"
+                    ],
+                    "answer": 2,
+                    "explanation": "25×3＋30×2＝75＋60＝135 元。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "30",
+                    "question": "30. 甲組 15 人錄取 12 人；乙組 20 人錄取 14 人；丙組 20 人錄取 18 人。哪一組錄取率最高？",
+                    "options": [
+                              "(1) 甲組",
+                              "(2) 丙組",
+                              "(3) 乙組",
+                              "(4) 三組相同"
+                    ],
+                    "answer": 1,
+                    "explanation": "甲組 80%，乙組 70%，丙組 90%，所以丙組最高。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "甲組12/15、乙組14/20、丙組18/20"
+          },
+          {
+                    "section": "日期與日曆",
+                    "displayId": "31",
+                    "question": "31. 如果今天是 8 月 31 日，明天是幾月幾日？",
+                    "options": [
+                              "(1) 9月1日",
+                              "(2) 8月32日",
+                              "(3) 9月2日",
+                              "(4) 10月1日"
+                    ],
+                    "answer": 0,
+                    "explanation": "8 月只有 31 天，下一天是 9 月 1 日。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "日期與日曆",
+                    "displayId": "32",
+                    "question": "32. 運動會在 11 月 23 日，今天是 11 月 8 日，再過幾天舉行？",
+                    "options": [
+                              "(1) 13",
+                              "(2) 15",
+                              "(3) 21",
+                              "(4) 31"
+                    ],
+                    "answer": 1,
+                    "explanation": "23－8＝15 天。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "日期與日曆",
+                    "displayId": "33",
+                    "question": "33. 電子鐘顯示 18：45，用十二小時制表示是什麼時間？",
+                    "options": [
+                              "(1) 上午6時45分",
+                              "(2) 下午8時45分",
+                              "(3) 下午6時45分",
+                              "(4) 上午8時45分"
+                    ],
+                    "answer": 2,
+                    "explanation": "18 時減去 12 時是下午 6 時，因此是下午 6 時 45 分。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "日期與日曆",
+                    "displayId": "34",
+                    "question": "34. 下午 1 時 20 分開始上課，下午 3 時 5 分下課，共上課多久？",
+                    "options": [
+                              "(1) 1小時25分",
+                              "(2) 1小時35分",
+                              "(3) 2小時15分",
+                              "(4) 1小時45分"
+                    ],
+                    "answer": 3,
+                    "explanation": "1 時 20 分到 2 時 20 分是 1 小時，再到 3 時 5 分是 45 分，共 1 小時 45 分。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "時間與單位",
+                    "displayId": "35",
+                    "question": "35. 2 公尺 5 公分和 205 公分相比，結果如何？",
+                    "options": [
+                              "(1) 2公尺5公分較長",
+                              "(2) 兩者一樣長",
+                              "(3) 205公分較短",
+                              "(4) 無法比較"
+                    ],
+                    "answer": 1,
+                    "explanation": "2 公尺 5 公分＝205 公分。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "分數小數百分率",
+                    "displayId": "36",
+                    "question": "36. 7.305 的正確讀法是哪一個？",
+                    "options": [
+                              "(1) 七點三零五",
+                              "(2) 七點三十五",
+                              "(3) 七百三十五",
+                              "(4) 七點零三五"
+                    ],
+                    "answer": 0,
+                    "explanation": "小數點後各位依序讀出，所以讀作七點三零五。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "四則運算",
+                    "displayId": "37",
+                    "question": "37. 157÷12 的商和餘數是多少？",
+                    "options": [
+                              "(1) 商12，餘13",
+                              "(2) 商14，餘1",
+                              "(3) 商13，餘1",
+                              "(4) 商13，餘12"
+                    ],
+                    "answer": 2,
+                    "explanation": "12×13＝156，157－156＝1，因此商 13、餘 1。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "38",
+                    "question": "38. 教室有 6 張桌子，每張桌子要配 4 張椅子。現在有 19 張椅子，還需要幾張？",
+                    "options": [
+                              "(1) 3",
+                              "(2) 4",
+                              "(3) 6",
+                              "(4) 5"
+                    ],
+                    "answer": 3,
+                    "explanation": "共需要 6×4＝24 張，24－19＝5 張。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "金錢應用",
+                    "displayId": "39",
+                    "question": "39. 一雙鞋原價 800 元，特價是原價的 75%，特價多少元？",
+                    "options": [
+                              "(1) 200",
+                              "(2) 600",
+                              "(3) 625",
+                              "(4) 875"
+                    ],
+                    "answer": 1,
+                    "explanation": "800×75%＝600 元。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "分數小數百分率",
+                    "displayId": "40",
+                    "question": "40. 調果汁時，果汁和水的杯數比是 2：3。用了 10 杯果汁，應加入幾杯水？",
+                    "options": [
+                              "(1) 6",
+                              "(2) 10",
+                              "(3) 15",
+                              "(4) 30"
+                    ],
+                    "answer": 2,
+                    "explanation": "10 是 2 的 5 倍，因此水是 3×5＝15 杯。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "分數小數百分率",
+                    "displayId": "41",
+                    "question": "41. 1/4＋2/4＝多少？",
+                    "options": [
+                              "(1) 3/4",
+                              "(2) 3/8",
+                              "(3) 2/4",
+                              "(4) 1/2"
+                    ],
+                    "answer": 0,
+                    "explanation": "同分母分數相加，分母不變，分子 1＋2＝3。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "四則運算",
+                    "displayId": "42",
+                    "question": "42. 10－3.68＝多少？",
+                    "options": [
+                              "(1) 6.22",
+                              "(2) 6.28",
+                              "(3) 7.32",
+                              "(4) 6.32"
+                    ],
+                    "answer": 3,
+                    "explanation": "10.00－3.68＝6.32。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "分數小數百分率",
+                    "displayId": "43",
+                    "question": "43. 一盒有 24 顆巧克力，小華吃了其中的 3/8。他吃了幾顆？",
+                    "options": [
+                              "(1) 3",
+                              "(2) 8",
+                              "(3) 9",
+                              "(4) 16"
+                    ],
+                    "answer": 2,
+                    "explanation": "24÷8×3＝9 顆。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "44",
+                    "question": "44. 一塊長方形地墊長 12 公尺、寬 7 公尺，面積是多少平方公尺？",
+                    "options": [
+                              "(1) 38",
+                              "(2) 84",
+                              "(3) 96",
+                              "(4) 168"
+                    ],
+                    "answer": 1,
+                    "explanation": "長方形面積＝12×7＝84 平方公尺。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "45",
+                    "question": "45. 一個正方形的周長是 36 公分，一邊長多少公分？",
+                    "options": [
+                              "(1) 9",
+                              "(2) 8",
+                              "(3) 12",
+                              "(4) 18"
+                    ],
+                    "answer": 0,
+                    "explanation": "正方形四邊等長，36÷4＝9 公分。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "46",
+                    "question": "46. 圖中哪一組直線互相垂直？",
+                    "options": [
+                              "(1) 兩條平行的水平線",
+                              "(2) 兩條方向相同的斜線",
+                              "(3) 兩條交叉但不是直角的線",
+                              "(4) 一條水平線和一條鉛直線相交"
+                    ],
+                    "answer": 3,
+                    "explanation": "水平線和鉛直線相交形成直角，兩線互相垂直。",
+                    "difficulty": "易",
+                    "image": "math-assets/NEW-IMG-046.png",
+                    "imageAlt": "四組線段示意，D組為水平線與鉛直線相交"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "47",
+                    "question": "47. 下列哪一個圖形只有一組對邊平行？",
+                    "options": [
+                              "(1) 正方形",
+                              "(2) 長方形",
+                              "(3) 梯形",
+                              "(4) 平行四邊形"
+                    ],
+                    "answer": 2,
+                    "explanation": "梯形只有一組對邊平行。",
+                    "difficulty": "中",
+                    "image": "math-assets/NEW-IMG-047.png",
+                    "imageAlt": "正方形、長方形、梯形、平行四邊形示意"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "48",
+                    "question": "48. 一個長方體由每層 3×2 個小正方體疊成，共有 2 層。總共有幾個小正方體？",
+                    "options": [
+                              "(1) 6",
+                              "(2) 12",
+                              "(3) 10",
+                              "(4) 18"
+                    ],
+                    "answer": 1,
+                    "explanation": "每層 3×2＝6 個，2 層共有 6×2＝12 個。",
+                    "difficulty": "中",
+                    "image": "math-assets/NEW-IMG-048.png",
+                    "imageAlt": "3乘2排列的小正方體，共2層"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "49",
+                    "question": "49. 四天走路步數分別是 3,000、5,000、4,000、4,000 步，平均每天走幾步？",
+                    "options": [
+                              "(1) 4,000",
+                              "(2) 4,500",
+                              "(3) 5,000",
+                              "(4) 16,000"
+                    ],
+                    "answer": 0,
+                    "explanation": "總數 16,000 步，16,000÷4＝4,000 步。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "50",
+                    "question": "50. 資料 2、3、3、4、5 中，出現次數最多的數是多少？",
+                    "options": [
+                              "(1) 2",
+                              "(2) 4",
+                              "(3) 5",
+                              "(4) 3"
+                    ],
+                    "answer": 3,
+                    "explanation": "3 出現 2 次，其他數各出現 1 次。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "51",
+                    "question": "51. 某地星期一降雨量 42 毫米，星期二 68 毫米。星期二比星期一多幾毫米？",
+                    "options": [
+                              "(1) 16",
+                              "(2) 24",
+                              "(3) 26",
+                              "(4) 110"
+                    ],
+                    "answer": 2,
+                    "explanation": "68－42＝26 毫米。",
+                    "difficulty": "易",
+                    "image": "math-assets/NEW-IMG-051.png",
+                    "imageAlt": "兩根長條：星期一42、星期二68毫米"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "52",
+                    "question": "52. 圓形圖中，搭公車的人占 25%。共有 120 人接受調查，搭公車的有幾人？",
+                    "options": [
+                              "(1) 25",
+                              "(2) 30",
+                              "(3) 40",
+                              "(4) 90"
+                    ],
+                    "answer": 1,
+                    "explanation": "120×25%＝30 人。",
+                    "difficulty": "中",
+                    "image": "math-assets/NEW-IMG-052.png",
+                    "imageAlt": "交通方式圓形圖，公車區塊標示25%"
+          },
+          {
+                    "section": "規律與推理",
+                    "displayId": "53",
+                    "question": "53. 依照規律，5、8、11、14，下一個數是多少？",
+                    "options": [
+                              "(1) 17",
+                              "(2) 18",
+                              "(3) 20",
+                              "(4) 28"
+                    ],
+                    "answer": 0,
+                    "explanation": "每次增加 3，所以 14＋3＝17。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "金錢應用",
+                    "displayId": "54",
+                    "question": "54. 下列哪一組錢不是 100 元？",
+                    "options": [
+                              "(1) 2個50元",
+                              "(2) 5個20元",
+                              "(3) 10個10元",
+                              "(4) 3個20元加3個10元"
+                    ],
+                    "answer": 3,
+                    "explanation": "3×20＋3×10＝90 元，其餘都是 100 元。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "整數與數量",
+                    "displayId": "55",
+                    "question": "55. 398＋205 的答案最接近下列哪一個數？",
+                    "options": [
+                              "(1) 400",
+                              "(2) 500",
+                              "(3) 600",
+                              "(4) 700"
+                    ],
+                    "answer": 2,
+                    "explanation": "398 約 400，205 約 200，合計約 600；精確值是 603。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "56",
+                    "question": "56. 上午賣出 48 份便當，下午比上午少賣 17 份。全天共賣出多少份？",
+                    "options": [
+                              "(1) 65",
+                              "(2) 79",
+                              "(3) 83",
+                              "(4) 113"
+                    ],
+                    "answer": 1,
+                    "explanation": "下午賣 48－17＝31 份，全天 48＋31＝79 份。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "金錢應用",
+                    "displayId": "57",
+                    "question": "57. 成人票每張 120 元，兒童票每張 80 元。買 2 張成人票和 3 張兒童票，共多少元？",
+                    "options": [
+                              "(1) 320",
+                              "(2) 400",
+                              "(3) 440",
+                              "(4) 480"
+                    ],
+                    "answer": 3,
+                    "explanation": "120×2＋80×3＝240＋240＝480 元。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "58",
+                    "question": "58. 145 顆雞蛋每 12 顆裝一盒，最多裝滿幾盒？還剩幾顆？",
+                    "options": [
+                              "(1) 12盒，剩1顆",
+                              "(2) 11盒，剩13顆",
+                              "(3) 13盒，剩1顆",
+                              "(4) 12盒，剩12顆"
+                    ],
+                    "answer": 0,
+                    "explanation": "12×12＝144，因此可裝滿 12 盒，剩 1 顆。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "規律與推理",
+                    "displayId": "59",
+                    "question": "59. 小美先向北走，再向東走。她最後位在出發點的哪個方向？",
+                    "options": [
+                              "(1) 西北方",
+                              "(2) 西南方",
+                              "(3) 東北方",
+                              "(4) 東南方"
+                    ],
+                    "answer": 2,
+                    "explanation": "向北再向東，最後在出發點的東北方。",
+                    "difficulty": "易",
+                    "image": "math-assets/NEW-IMG-059.png",
+                    "imageAlt": "方格地圖及北方箭頭，路線先北後東"
+          },
+          {
+                    "section": "規律與推理",
+                    "displayId": "60",
+                    "question": "60. 阿安比小北高，小北比小成高。三人中誰最高？",
+                    "options": [
+                              "(1) 小北",
+                              "(2) 阿安",
+                              "(3) 小成",
+                              "(4) 無法判斷"
+                    ],
+                    "answer": 1,
+                    "explanation": "阿安＞小北＞小成，所以阿安最高。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "整數與數量",
+                    "displayId": "61",
+                    "question": "61. 4,682 最接近哪一個整千數？",
+                    "options": [
+                              "(1) 5,000",
+                              "(2) 4,000",
+                              "(3) 4,600",
+                              "(4) 4,700"
+                    ],
+                    "answer": 0,
+                    "explanation": "4,682 距離 5,000 為 318，距離 4,000 為 682，所以較接近 5,000。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "整數與數量",
+                    "displayId": "62",
+                    "question": "62. 下列哪一個數是偶數？",
+                    "options": [
+                              "(1) 135",
+                              "(2) 248",
+                              "(3) 317",
+                              "(4) 529"
+                    ],
+                    "answer": 1,
+                    "explanation": "248 的個位數是 8，可以被 2 整除。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "四則運算",
+                    "displayId": "63",
+                    "question": "63. □×9＝567，□是多少？",
+                    "options": [
+                              "(1) 53",
+                              "(2) 56",
+                              "(3) 63",
+                              "(4) 73"
+                    ],
+                    "answer": 2,
+                    "explanation": "567÷9＝63。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "四則運算",
+                    "displayId": "64",
+                    "question": "64. 18＋6×4＝多少？",
+                    "options": [
+                              "(1) 96",
+                              "(2) 48",
+                              "(3) 72",
+                              "(4) 42"
+                    ],
+                    "answer": 3,
+                    "explanation": "先算乘法 6×4＝24，再算 18＋24＝42。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "四則運算",
+                    "displayId": "65",
+                    "question": "65. 1,260÷7＝多少？",
+                    "options": [
+                              "(1) 180",
+                              "(2) 170",
+                              "(3) 160",
+                              "(4) 150"
+                    ],
+                    "answer": 0,
+                    "explanation": "1,260÷7＝180。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "整數與數量",
+                    "displayId": "66",
+                    "question": "66. 802－397 的答案最接近哪個數？",
+                    "options": [
+                              "(1) 300",
+                              "(2) 400",
+                              "(3) 500",
+                              "(4) 600"
+                    ],
+                    "answer": 1,
+                    "explanation": "802 約 800、397 約 400，差約 400；精確值為 405。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "金錢應用",
+                    "displayId": "67",
+                    "question": "67. 5 枝相同的原子筆共 75 元，每枝多少元？",
+                    "options": [
+                              "(1) 10",
+                              "(2) 12",
+                              "(3) 15",
+                              "(4) 20"
+                    ],
+                    "answer": 2,
+                    "explanation": "75÷5＝15 元。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "68",
+                    "question": "68. 倉庫原有 350 箱飲料，上午運出 86 箱，下午又運出 94 箱，還剩幾箱？",
+                    "options": [
+                              "(1) 264",
+                              "(2) 256",
+                              "(3) 180",
+                              "(4) 170"
+                    ],
+                    "answer": 3,
+                    "explanation": "350－86－94＝170 箱。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "69",
+                    "question": "69. 72 人參加活動，每 9 人一組，可以分成幾組？",
+                    "options": [
+                              "(1) 8",
+                              "(2) 9",
+                              "(3) 63",
+                              "(4) 81"
+                    ],
+                    "answer": 0,
+                    "explanation": "72÷9＝8 組。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "日期與日曆",
+                    "displayId": "70",
+                    "question": "70. 小美上午工作 3 小時，下午工作 4 小時 30 分鐘，全天工作多久？",
+                    "options": [
+                              "(1) 6小時30分",
+                              "(2) 7小時30分",
+                              "(3) 8小時",
+                              "(4) 8小時30分"
+                    ],
+                    "answer": 1,
+                    "explanation": "3 小時＋4 小時 30 分＝7 小時 30 分。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "日期與日曆",
+                    "displayId": "71",
+                    "question": "71. 今天是星期二，7 天後是星期幾？",
+                    "options": [
+                              "(1) 星期一",
+                              "(2) 星期三",
+                              "(3) 星期二",
+                              "(4) 星期日"
+                    ],
+                    "answer": 2,
+                    "explanation": "每 7 天星期循環一次，所以仍是星期二。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "日期與日曆",
+                    "displayId": "72",
+                    "question": "72. 下列哪一個月份一定有 31 天？",
+                    "options": [
+                              "(1) 四月",
+                              "(2) 六月",
+                              "(3) 九月",
+                              "(4) 十月"
+                    ],
+                    "answer": 3,
+                    "explanation": "十月有 31 天；四月、六月、九月都是 30 天。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "日期與日曆",
+                    "displayId": "73",
+                    "question": "73. 火車原定 10 時 15 分到站，提早 20 分鐘到站，實際幾時到？",
+                    "options": [
+                              "(1) 9時55分",
+                              "(2) 10時5分",
+                              "(3) 10時25分",
+                              "(4) 9時45分"
+                    ],
+                    "answer": 0,
+                    "explanation": "10 時 15 分往前 20 分鐘是 9 時 55 分。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "金錢應用",
+                    "displayId": "74",
+                    "question": "74. 書包原價 500 元，打八折後付 500 元，應找回多少元？",
+                    "options": [
+                              "(1) 50",
+                              "(2) 100",
+                              "(3) 150",
+                              "(4) 400"
+                    ],
+                    "answer": 1,
+                    "explanation": "500×80%＝400，500－400＝100 元。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "時間與單位",
+                    "displayId": "75",
+                    "question": "75. 下列哪一個最重？",
+                    "options": [
+                              "(1) 950公克",
+                              "(2) 1公斤20公克",
+                              "(3) 1公斤5公克",
+                              "(4) 990公克"
+                    ],
+                    "answer": 1,
+                    "explanation": "1 公斤 20 公克＝1,020 公克，是最大值。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "時間與單位",
+                    "displayId": "76",
+                    "question": "76. 一桶水有 5 公升，倒出 1 公升 750 毫升，還剩多少？",
+                    "options": [
+                              "(1) 3公升150毫升",
+                              "(2) 4公升250毫升",
+                              "(3) 3公升250毫升",
+                              "(4) 3公升750毫升"
+                    ],
+                    "answer": 2,
+                    "explanation": "5,000－1,750＝3,250 毫升，即 3 公升 250 毫升。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "分數小數百分率",
+                    "displayId": "77",
+                    "question": "77. 40 顆球的 3/5 是幾顆？",
+                    "options": [
+                              "(1) 24",
+                              "(2) 15",
+                              "(3) 8",
+                              "(4) 32"
+                    ],
+                    "answer": 0,
+                    "explanation": "40÷5×3＝24。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "四則運算",
+                    "displayId": "78",
+                    "question": "78. 1.5×4＝多少？",
+                    "options": [
+                              "(1) 4.5",
+                              "(2) 6",
+                              "(3) 6.5",
+                              "(4) 60"
+                    ],
+                    "answer": 1,
+                    "explanation": "1.5×4＝6。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "分數小數百分率",
+                    "displayId": "79",
+                    "question": "79. 250 元的 20% 是多少元？",
+                    "options": [
+                              "(1) 20",
+                              "(2) 40",
+                              "(3) 50",
+                              "(4) 200"
+                    ],
+                    "answer": 2,
+                    "explanation": "250×20%＝50 元。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "分數小數百分率",
+                    "displayId": "80",
+                    "question": "80. 下列哪個分數和 1/2 相等？",
+                    "options": [
+                              "(1) 1/3",
+                              "(2) 2/3",
+                              "(3) 3/5",
+                              "(4) 4/8"
+                    ],
+                    "answer": 3,
+                    "explanation": "4/8 約分後是 1/2。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "81",
+                    "question": "81. 正方形邊長 6 公分，面積是多少平方公分？",
+                    "options": [
+                              "(1) 36",
+                              "(2) 24",
+                              "(3) 12",
+                              "(4) 6"
+                    ],
+                    "answer": 0,
+                    "explanation": "6×6＝36 平方公分。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "82",
+                    "question": "82. 長方形周長 30 公分，長 9 公分，寬是多少？",
+                    "options": [
+                              "(1) 5",
+                              "(2) 6",
+                              "(3) 12",
+                              "(4) 21"
+                    ],
+                    "answer": 1,
+                    "explanation": "長加寬是 30÷2＝15，寬為 15－9＝6 公分。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "83",
+                    "question": "83. 120 度的角是哪一種角？",
+                    "options": [
+                              "(1) 直角",
+                              "(2) 銳角",
+                              "(3) 鈍角",
+                              "(4) 平角"
+                    ],
+                    "answer": 2,
+                    "explanation": "120 度大於 90 度且小於 180 度，是鈍角。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "幾何圖形",
+                    "displayId": "84",
+                    "question": "84. 一個正方體有幾條稜？",
+                    "options": [
+                              "(1) 6",
+                              "(2) 8",
+                              "(3) 10",
+                              "(4) 12"
+                    ],
+                    "answer": 3,
+                    "explanation": "正方體共有 12 條稜。",
+                    "difficulty": "中",
+                    "image": "math-assets/NEW-IMG-084.png",
+                    "imageAlt": "標示正方體的面、頂點與稜"
+          },
+          {
+                    "section": "規律與推理",
+                    "displayId": "85",
+                    "question": "85. 方格圖上，從起點向右 3 格、再向上 2 格，終點位在起點的哪個方向？",
+                    "options": [
+                              "(1) 東北方",
+                              "(2) 西北方",
+                              "(3) 東南方",
+                              "(4) 西南方"
+                    ],
+                    "answer": 0,
+                    "explanation": "向右是東、向上是北，因此終點在東北方。",
+                    "difficulty": "易",
+                    "image": "math-assets/NEW-IMG-085.png",
+                    "imageAlt": "方格圖，路線向右3格再向上2格"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "86",
+                    "question": "86. 圖表中每個星號代表 2 人。某組有 6 個星號，代表幾人？",
+                    "options": [
+                              "(1) 8",
+                              "(2) 12",
+                              "(3) 6",
+                              "(4) 3"
+                    ],
+                    "answer": 1,
+                    "explanation": "6×2＝12 人。",
+                    "difficulty": "易",
+                    "image": "math-assets/NEW-IMG-086.png",
+                    "imageAlt": "圖例：一個星號代表2人；某組畫6個星號"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "87",
+                    "question": "87. 水果銷售表顯示蘋果 18 箱、香蕉 25 箱、橘子 17 箱，共售出幾箱？",
+                    "options": [
+                              "(1) 43",
+                              "(2) 50",
+                              "(3) 60",
+                              "(4) 70"
+                    ],
+                    "answer": 2,
+                    "explanation": "18＋25＋17＝60 箱。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "88",
+                    "question": "88. 折線圖顯示週一 12 度、週二 16 度，溫度上升幾度？",
+                    "options": [
+                              "(1) 2",
+                              "(2) 3",
+                              "(3) 5",
+                              "(4) 4"
+                    ],
+                    "answer": 3,
+                    "explanation": "16－12＝4 度。",
+                    "difficulty": "易",
+                    "image": "math-assets/NEW-IMG-088.png",
+                    "imageAlt": "折線圖兩點：週一12度、週二16度"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "89",
+                    "question": "89. 圓形圖中閱讀占 35%、運動占 25%，其餘是休息。休息占多少？",
+                    "options": [
+                              "(1) 40%",
+                              "(2) 50%",
+                              "(3) 60%",
+                              "(4) 65%"
+                    ],
+                    "answer": 0,
+                    "explanation": "100%－35%－25%＝40%。",
+                    "difficulty": "中",
+                    "image": "math-assets/NEW-IMG-089.png",
+                    "imageAlt": "圓形圖標示閱讀35%、運動25%、休息未標"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "90",
+                    "question": "90. 甲投進 8 球共投 10 球；乙投進 12 球共投 20 球。誰的命中率較高？",
+                    "options": [
+                              "(1) 乙",
+                              "(2) 甲",
+                              "(3) 一樣高",
+                              "(4) 無法比較"
+                    ],
+                    "answer": 1,
+                    "explanation": "甲為 80%，乙為 60%，所以甲較高。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "規律與推理",
+                    "displayId": "91",
+                    "question": "91. 2、5、10、17，下一個數是多少？",
+                    "options": [
+                              "(1) 24",
+                              "(2) 25",
+                              "(3) 26",
+                              "(4) 27"
+                    ],
+                    "answer": 2,
+                    "explanation": "依序加 3、5、7，下一次加 9，所以 17＋9＝26。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "規律與推理",
+                    "displayId": "92",
+                    "question": "92. 圖案依紅、黃、藍、紅、黃、藍排列，第 8 個是什麼顏色？",
+                    "options": [
+                              "(1) 紅",
+                              "(2) 藍",
+                              "(3) 綠",
+                              "(4) 黃"
+                    ],
+                    "answer": 3,
+                    "explanation": "第 7 個是紅，第 8 個是黃。",
+                    "difficulty": "易",
+                    "image": "math-assets/NEW-IMG-092.png",
+                    "imageAlt": "紅黃藍三色圖形循環排列"
+          },
+          {
+                    "section": "規律與推理",
+                    "displayId": "93",
+                    "question": "93. 小杰比小英早到，小英比小文早到。誰最晚到？",
+                    "options": [
+                              "(1) 小文",
+                              "(2) 小英",
+                              "(3) 小杰",
+                              "(4) 無法判斷"
+                    ],
+                    "answer": 0,
+                    "explanation": "順序是小杰、小英、小文，所以小文最晚。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "金錢應用",
+                    "displayId": "94",
+                    "question": "94. 要付 185 元，下列哪一種付法剛好？",
+                    "options": [
+                              "(1) 1張100元和4個20元",
+                              "(2) 1張100元、4個20元和1個5元",
+                              "(3) 2張100元",
+                              "(4) 9個20元"
+                    ],
+                    "answer": 1,
+                    "explanation": "100＋80＋5＝185 元。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "95",
+                    "question": "95. 每盒彩色筆 45 元，買 4 盒；再買 70 元畫紙，共多少元？",
+                    "options": [
+                              "(1) 180",
+                              "(2) 205",
+                              "(3) 250",
+                              "(4) 320"
+                    ],
+                    "answer": 2,
+                    "explanation": "45×4＋70＝180＋70＝250 元。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "時間與單位",
+                    "displayId": "96",
+                    "question": "96. 水箱可裝 20 公升，已有 13 公升 500 毫升，還可加多少？",
+                    "options": [
+                              "(1) 5公升500毫升",
+                              "(2) 6公升",
+                              "(3) 7公升500毫升",
+                              "(4) 6公升500毫升"
+                    ],
+                    "answer": 3,
+                    "explanation": "20,000－13,500＝6,500 毫升，即 6 公升 500 毫升。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "97",
+                    "question": "97. 腳踏車每小時行 12 公里，行 3 小時共幾公里？",
+                    "options": [
+                              "(1) 36",
+                              "(2) 15",
+                              "(3) 4",
+                              "(4) 48"
+                    ],
+                    "answer": 0,
+                    "explanation": "12×3＝36 公里。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "圖表與資料",
+                    "displayId": "98",
+                    "question": "98. 三天分別賣出 24、30、36 杯飲料，平均每天賣幾杯？",
+                    "options": [
+                              "(1) 28",
+                              "(2) 30",
+                              "(3) 32",
+                              "(4) 90"
+                    ],
+                    "answer": 1,
+                    "explanation": "（24＋30＋36）÷3＝30 杯。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "生活應用",
+                    "displayId": "99",
+                    "question": "99. 一盒彩球送出 28 顆後還剩 47 顆，原來有幾顆？",
+                    "options": [
+                              "(1) 19",
+                              "(2) 65",
+                              "(3) 75",
+                              "(4) 85"
+                    ],
+                    "answer": 2,
+                    "explanation": "28＋47＝75 顆。",
+                    "difficulty": "易",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          },
+          {
+                    "section": "金錢應用",
+                    "displayId": "100",
+                    "question": "100. 甲店每本 32 元，買 5 本；乙店同樣 5 本共 150 元。哪一家較便宜，便宜多少？",
+                    "options": [
+                              "(1) 甲店，便宜10元",
+                              "(2) 甲店，便宜20元",
+                              "(3) 乙店，便宜5元",
+                              "(4) 乙店，便宜10元"
+                    ],
+                    "answer": 3,
+                    "explanation": "甲店 32×5＝160 元，乙店 150 元，所以乙店便宜 10 元。",
+                    "difficulty": "中",
+                    "image": null,
+                    "imageAlt": "數學題目圖示"
+          }
+];
+
+        // 核心狀態管理
+        let currentUnitIndex = 0;              // 目前單元 (0 ~ 9 對應單元 1 ~ 10)
+        let currentQuestionInUnit = 0;         // 在單元中的題號 (0 ~ 9)
+        let quizMode = 'study';                // 'study' (即時回饋學習) or 'test' (模擬測驗計分)
+        let userAnswers = Array(10).fill(null); // 當前單元使用者作答紀錄 (長度10)
+        let hasCheckedAnswer = Array(10).fill(false); // 即時學習模式下該題是否已被判定對錯
+
+        // Web Speech API 語音控制
+        const synth = window.speechSynthesis;
+        let utterance = new SpeechSynthesisUtterance();
+        utterance.lang = 'zh-TW';
+        utterance.rate = 0.9;
+        let voices = [];
+
+        // DOM 元素快取
+        const preambleEl = document.getElementById('preamble-text');
+        const questionEl = document.getElementById('question-text');
+        const questionImageContainer = document.getElementById('question-image-container');
+        const questionImage = document.getElementById('question-image');
+        const optionsEl = document.getElementById('options-list');
+        const unitSelectEl = document.getElementById('unit-select');
+        const voiceSelectEl = document.getElementById('voice-select');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitQuizBtn = document.getElementById('submit-quiz-btn');
+        const speedControl = document.getElementById('speed-control');
+        const speedValue = document.getElementById('speed-value');
+        const autoReadToggle = document.getElementById('auto-read-toggle');
+        const feedbackAlertEl = document.getElementById('feedback-alert');
+        const feedbackTitleEl = document.getElementById('feedback-title');
+        const feedbackDescEl = document.getElementById('feedback-desc');
+        const feedbackIconContainer = document.getElementById('feedback-icon-container');
+        const currentScoreDisplay = document.getElementById('current-score-display');
+        const unitTitleDisplay = document.getElementById('unit-title-display');
+        const progressTextEl = document.getElementById('progress-text');
+        const progressDotsContainer = document.getElementById('progress-dots-container');
+
+        // 載入語音裝置
+        function populateVoiceList() {
+            voices = synth.getVoices().filter(v => v.lang.startsWith('zh'));
+            voiceSelectEl.innerHTML = '';
+            
+            if (!voices.length) {
+                voiceSelectEl.appendChild(new Option('找不到中文語音(TTS)', ''));
+                return;
+            }
+            
+            voices.forEach((v, i) => {
+                const opt = new Option(v.name, i);
+                voiceSelectEl.appendChild(opt);
+            });
+
+            // 預設選擇合適的台灣中文發音
+            let defaultVoiceIdx = voices.findIndex(v => v.name.includes('Yating') && v.lang === 'zh-TW');
+            if (defaultVoiceIdx === -1) defaultVoiceIdx = voices.findIndex(v => v.name.includes('Google') && v.name.includes('國語'));
+            if (defaultVoiceIdx === -1) defaultVoiceIdx = voices.findIndex(v => v.lang === 'zh-TW' || v.lang === 'zh_TW');
+            if (defaultVoiceIdx === -1) defaultVoiceIdx = 0;
+
+            if (voices[defaultVoiceIdx]) {
+                utterance.voice = voices[defaultVoiceIdx];
+                voiceSelectEl.selectedIndex = defaultVoiceIdx;
+            }
+        }
+
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = populateVoiceList;
+        }
+
+        // 切換語音設定面板顯示狀態
+        function toggleVoicePanel() {
+            const panel = document.getElementById('voice-settings-panel');
+            const txt = document.getElementById('voice-panel-toggle-text');
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                txt.textContent = '收合語音設定';
+            } else {
+                panel.classList.add('hidden');
+                txt.textContent = '設定語音/語速';
+            }
+        }
+
+        // 更新語速
+        function updateSpeed(val) {
+            const s = parseFloat(val);
+            utterance.rate = s;
+            speedValue.textContent = `${s.toFixed(1)}x`;
+            if (synth.speaking) {
+                speakText(utterance.text);
+            }
+        }
+
+        // 更新發音人
+        function updateVoice() {
+            const idx = voiceSelectEl.value;
+            if (voices[idx]) {
+                utterance.voice = voices[idx];
+                speakCurrentQuestion();
+            }
+        }
+
+        // 初始化單元下拉選單
+        function initUnits() {
+            unitSelectEl.innerHTML = '';
+            for (let i = 0; i < 10; i++) {
+                const startNum = i * 10 + 1;
+                const endNum = (i + 1) * 10;
+                const opt = new Option(`單元 ${i + 1} (第 ${startNum} ~ ${endNum} 題)`, i);
+                unitSelectEl.appendChild(opt);
+            }
+            populateVoiceList();
+            loadUnit(0);
+        }
+
+        // 載入指定的單元 (0-9)
+        function loadUnit(unitIdx) {
+            synth.cancel();
+            currentUnitIndex = parseInt(unitIdx, 10);
+            currentQuestionInUnit = 0;
+            userAnswers = Array(10).fill(null);
+            hasCheckedAnswer = Array(10).fill(false);
+            
+            unitSelectEl.value = currentUnitIndex;
+            unitTitleDisplay.textContent = `單元 ${currentUnitIndex + 1} (第 ${currentUnitIndex * 10 + 1} ~ ${(currentUnitIndex + 1) * 10} 題)`;
+            
+            renderQuestion();
+            updateScoreBoard();
+        }
+
+        // 切換單元
+        function changeUnit(val) {
+            loadUnit(val);
+        }
+
+        // 切換模式：即時學習 vs 模擬測驗
+        function switchMode(mode) {
+            quizMode = mode;
+            synth.cancel();
+            
+            const studyBtn = document.getElementById('mode-study-btn');
+            const testBtn = document.getElementById('mode-test-btn');
+            
+            if (mode === 'study') {
+                studyBtn.className = "px-4 py-1.5 rounded-md font-bold text-sm transition-all duration-200 bg-blue-600 text-white shadow-sm";
+                testBtn.className = "px-4 py-1.5 rounded-md font-bold text-sm transition-all duration-200 text-slate-600 hover:bg-slate-100";
+            } else {
+                testBtn.className = "px-4 py-1.5 rounded-md font-bold text-sm transition-all duration-200 bg-indigo-600 text-white shadow-sm";
+                studyBtn.className = "px-4 py-1.5 rounded-md font-bold text-sm transition-all duration-200 text-slate-600 hover:bg-slate-100";
+            }
+            
+            // 重新載入當前單元以重設答題狀況
+            loadUnit(currentUnitIndex);
+        }
+
+        // 取得當前題目在全題庫中的實際 Index
+        function getGlobalIndex() {
+            return currentUnitIndex * 10 + currentQuestionInUnit;
+        }
+
+        // 繪製或更新當前題目
+        function renderQuestion() {
+            const globalIdx = getGlobalIndex();
+            const q = questions[globalIdx];
+            
+            // 設定前言
+            if (q.preamble) {
+                preambleEl.textContent = q.preamble;
+                preambleEl.style.display = 'block';
+            } else {
+                preambleEl.style.display = 'none';
+            }
+
+            // 設定題目文字 (例如 11. 網購時...)
+            questionEl.textContent = q.question;
+            if (q.image) { questionImage.src = q.image; questionImage.alt = q.imageAlt || '數學題目圖示'; questionImageContainer.classList.remove('hidden'); } else { questionImage.removeAttribute('src'); questionImageContainer.classList.add('hidden'); }
+            
+            // 繪製選項
+            optionsEl.innerHTML = '';
+            q.options.forEach((optText, optIdx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 md:p-5 rounded-xl border-2 border-slate-200 bg-white hover:bg-blue-50/50 hover:border-blue-300 font-bold text-base md:text-lg transition-all duration-150 flex items-center justify-between shadow-sm group";
+                
+                // 選項文字
+                const textSpan = document.createElement('span');
+                textSpan.textContent = optText;
+                textSpan.className = "flex-grow pr-4";
+                btn.appendChild(textSpan);
+
+                // 狀態 icon 佔位
+                const iconContainer = document.createElement('span');
+                iconContainer.className = "flex-shrink-0 text-xl w-8 h-8 flex items-center justify-center rounded-full";
+                btn.appendChild(iconContainer);
+
+                // 點擊選項邏輯
+                btn.onclick = () => selectOption(optIdx);
+
+                // 依照不同模式或狀態套用特定樣式
+                applyStyleToOption(btn, optIdx, iconContainer);
+
+                optionsEl.appendChild(btn);
+            });
+
+            // 更新按鈕狀態
+            prevBtn.disabled = currentQuestionInUnit === 0;
+            
+            // 在「測驗模式」下，最後一題不顯示下一題，改為顯示提交測驗
+            if (quizMode === 'test' && currentQuestionInUnit === 9) {
+                nextBtn.classList.add('hidden');
+                submitQuizBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitQuizBtn.classList.add('hidden');
+                nextBtn.disabled = currentQuestionInUnit === 9 && quizMode === 'study'; // 即時模式下最後一題時，下一題按鈕不可用（需從報告看分數）
+            }
+
+            // 更新進度與回饋面板
+            updateProgressIndicators();
+            renderFeedbackPanel();
+
+            // 如果開啟了自動報讀，自動發聲
+            if (autoReadToggle.checked) {
+                speakCurrentQuestion();
+            }
+        }
+
+        // 根據作答狀態為選項套用視覺樣式
+        function applyStyleToOption(btn, optIdx, iconContainer) {
+            const globalIdx = getGlobalIndex();
+            const q = questions[globalIdx];
+            const chosen = userAnswers[currentQuestionInUnit];
+            const checked = hasCheckedAnswer[currentQuestionInUnit];
+            const correctIdx = q.answer;
+
+            if (quizMode === 'study') {
+                // 【即時學習模式】
+                if (checked) {
+                    btn.disabled = true; // 已判定就不可再選
+                    if (optIdx === correctIdx) {
+                        // 正確選項亮綠燈
+                        btn.className = "w-full text-left p-4 md:p-5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold text-base md:text-lg transition-all duration-150 flex items-center justify-between shadow-sm correct-animate";
+                        iconContainer.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i>`;
+                    } else if (optIdx === chosen) {
+                        // 選錯的選項亮紅燈
+                        btn.className = "w-full text-left p-4 md:p-5 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-900 font-bold text-base md:text-lg transition-all duration-150 flex items-center justify-between shadow-sm";
+                        iconContainer.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+                    } else {
+                        // 其他沒選的普通選項變半透明
+                        btn.className = "w-full text-left p-4 md:p-5 rounded-xl border border-slate-200 bg-white font-bold text-base md:text-lg opacity-40 flex items-center justify-between";
+                    }
+                } else if (chosen === optIdx) {
+                    // 還沒確認，但目前點選的
+                    btn.className = "w-full text-left p-4 md:p-5 rounded-xl border-2 border-blue-500 bg-blue-50/50 font-bold text-base md:text-lg flex items-center justify-between shadow-inner";
+                }
+            } else {
+                // 【模擬測驗模式】
+                // 只會顯示目前選取的項目，不透露正確答案
+                if (chosen === optIdx) {
+                    btn.className = "w-full text-left p-4 md:p-5 rounded-xl border-2 border-indigo-600 bg-indigo-50/50 text-indigo-900 font-bold text-base md:text-lg flex items-center justify-between shadow-inner";
+                    iconContainer.innerHTML = `<i class="fa-solid fa-circle text-indigo-600 text-xs"></i>`;
+                }
+            }
+        }
+
+        // 使用者點選選項
+        function selectOption(optIdx) {
+            synth.cancel();
+            const globalIdx = getGlobalIndex();
+            const q = questions[globalIdx];
+            
+            // 記錄當前題目的選擇
+            userAnswers[currentQuestionInUnit] = optIdx;
+
+            if (quizMode === 'study') {
+                // 即時學習模式：立刻判定對錯並播放專屬語音
+                if (!hasCheckedAnswer[currentQuestionInUnit]) {
+                    hasCheckedAnswer[currentQuestionInUnit] = true;
+                    const isCorrect = (optIdx === q.answer);
+                    
+                    // 更新畫面上按鈕狀態與計分板
+                    renderQuestion();
+                    updateScoreBoard();
+                    
+                    // 即時回饋語音
+                    let feedbackSpeech = "";
+                    if (isCorrect) {
+                        feedbackSpeech = "答對了！太棒了！";
+                    } else {
+                        // 告訴學生正確答案內容
+                        const correctTextClean = q.options[q.answer].replace(/^\(\d+\)/, ''); // 移除 (1) 這種編號
+                        feedbackSpeech = `答錯囉，最恰當的做法應該是：${correctTextClean}`;
+                    }
+                    speakText(feedbackSpeech);
+
+                    // 自動在 1.5 秒後，如果不是最後一題，則提示點擊下一題 (或可手動切換)
+                    // 為了教學流暢度，讓使用者自己點擊「下一題」能看得更清楚
+                }
+            } else {
+                // 模擬測驗模式：僅更新 UI 顯示所選
+                renderQuestion();
+            }
+        }
+
+        // 更新進度條點點
+        function updateProgressIndicators() {
+            progressTextEl.textContent = `進度: ${currentQuestionInUnit + 1} / 10 題`;
+            progressDotsContainer.innerHTML = '';
+            
+            for (let i = 0; i < 10; i++) {
+                const dot = document.createElement('div');
+                dot.className = "w-4 h-4 rounded-full border transition-all duration-200 ";
+                
+                if (i === currentQuestionInUnit) {
+                    // 當前正在作答，閃爍藍色
+                    dot.className += "bg-blue-400 border-blue-600 animate-pulse scale-125";
+                } else if (userAnswers[i] === null) {
+                    // 未答
+                    dot.className += "bg-slate-200 border-slate-300";
+                } else {
+                    // 已答
+                    if (quizMode === 'study') {
+                        // 即時學習模式，顯示對錯
+                        const isCorrect = (userAnswers[i] === questions[currentUnitIndex * 10 + i].answer);
+                        if (isCorrect) {
+                            dot.className += "bg-emerald-500 border-emerald-600";
+                        } else {
+                            dot.className += "bg-rose-500 border-rose-600";
+                        }
+                    } else {
+                        // 測驗模式只顯示已作答藍色
+                        dot.className += "bg-indigo-500 border-indigo-600";
+                    }
+                }
+                
+                // 點擊點點可以直接跳題 (模擬測驗模式下更方便)
+                dot.title = `第 ${i + 1} 題`;
+                dot.style.cursor = "pointer";
+                dot.onclick = () => {
+                    synth.cancel();
+                    currentQuestionInUnit = i;
+                    renderQuestion();
+                };
+
+                progressDotsContainer.appendChild(dot);
+            }
+        }
+
+        // 計算目前單元分數並更新看板
+        function updateScoreBoard() {
+            let score = 0;
+            for (let i = 0; i < 10; i++) {
+                if (userAnswers[i] !== null) {
+                    const correctIdx = questions[currentUnitIndex * 10 + i].answer;
+                    if (userAnswers[i] === correctIdx) {
+                        score += 10;
+                    }
+                }
+            }
+            currentScoreDisplay.textContent = score;
+        }
+
+        // 顯示/更新即時回饋提示面板 (僅限學習模式)
+        function renderFeedbackPanel() {
+            const checked = hasCheckedAnswer[currentQuestionInUnit];
+            const chosen = userAnswers[currentQuestionInUnit];
+            
+            if (quizMode === 'study' && checked) {
+                const globalIdx = getGlobalIndex();
+                const q = questions[globalIdx];
+                const isCorrect = (chosen === q.answer);
+
+                feedbackAlertEl.classList.remove('hidden');
+                if (isCorrect) {
+                    feedbackAlertEl.className = "mt-6 p-4 rounded-xl border border-emerald-200 bg-emerald-50/50 flex items-start gap-3 transition-all duration-300";
+                    feedbackIconContainer.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i>`;
+                    feedbackTitleEl.className = "font-extrabold text-emerald-800 text-lg";
+                    feedbackTitleEl.textContent = "答對了！非常優秀！";
+                    feedbackDescEl.className = "text-sm md:text-base mt-1 text-emerald-700";
+                    feedbackDescEl.textContent = q.explanation || "計算正確，繼續保持！";
+                } else {
+                    feedbackAlertEl.className = "mt-6 p-4 rounded-xl border border-rose-200 bg-rose-50/50 flex items-start gap-3 transition-all duration-300";
+                    feedbackIconContainer.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-600"></i>`;
+                    feedbackTitleEl.className = "font-extrabold text-rose-800 text-lg";
+                    feedbackTitleEl.textContent = "答錯囉，沒關係，再接再厲！";
+                    feedbackDescEl.className = "text-sm md:text-base mt-1 text-rose-700 font-bold";
+                    // 顯示詳解說明
+                    const correctOptionText = q.options[q.answer];
+                    feedbackDescEl.textContent = `正確答案是：${correctOptionText}。${q.explanation || "請再檢查計算過程。"}`;
+                }
+            } else {
+                feedbackAlertEl.classList.add('hidden');
+            }
+        }
+
+        // 上一題
+        function prevQuestion() {
+            synth.cancel();
+            if (currentQuestionInUnit > 0) {
+                currentQuestionInUnit--;
+                renderQuestion();
+            }
+        }
+
+        // 下一題
+        function nextQuestion() {
+            synth.cancel();
+            if (currentQuestionInUnit < 9) {
+                currentQuestionInUnit++;
+                renderQuestion();
+            } else if (currentQuestionInUnit === 9 && quizMode === 'study') {
+                // 學習模式最後一題，按下一題直接跳出成果結算
+                calculateAndShowReport(false);
+            }
+        }
+
+        // 語音朗讀邏輯
+        function speakText(text) {
+            synth.cancel();
+            utterance.text = text;
+            utterance.rate = parseFloat(speedControl.value);
+            const selectedVoiceIdx = voiceSelectEl.value;
+            if (voices[selectedVoiceIdx]) {
+                utterance.voice = voices[selectedVoiceIdx];
+            }
+            synth.speak(utterance);
+        }
+
+        // 朗讀當前題目與選項
+        function speakCurrentQuestion() {
+            const globalIdx = getGlobalIndex();
+            const q = questions[globalIdx];
+            let textToSpeak = "";
+            
+            if (q.preamble) {
+                textToSpeak += `${q.preamble}。接著是題目。`;
+            }
+            
+            textToSpeak += `${q.question}。選項有：`;
+            
+            q.options.forEach((opt, idx) => {
+                textToSpeak += `${opt}。`;
+            });
+            
+            speakText(textToSpeak);
+        }
+
+        // 計算總分並開啟報告 Modal
+        function calculateAndShowReport(isManualSubmit = false) {
+            synth.cancel();
+
+            // 檢查是否還有未答題目 (測驗模式強制提醒)
+            if (quizMode === 'test') {
+                const unansweredCount = userAnswers.filter(ans => ans === null).length;
+                if (unansweredCount > 0 && isManualSubmit) {
+                    const confirmSubmit = confirm(`你還有 ${unansweredCount} 題尚未作答，確定要提交測驗嗎？`);
+                    if (!confirmSubmit) return;
+                }
+            }
+
+            let correctCount = 0;
+            let wrongCount = 0;
+            
+            for (let i = 0; i < 10; i++) {
+                const correctIdx = questions[currentUnitIndex * 10 + i].answer;
+                if (userAnswers[i] === correctIdx) {
+                    correctCount++;
+                } else {
+                    wrongCount++;
+                }
+            }
+
+            const finalScore = correctCount * 10;
+            
+            // 填寫報告內容
+            document.getElementById('report-score').innerHTML = `${finalScore} <span class="text-2xl font-bold text-slate-400">分</span>`;
+            document.getElementById('report-correct-count').textContent = `${correctCount} 題`;
+            document.getElementById('report-wrong-count').textContent = `${wrongCount} 題`;
+            document.getElementById('report-title').textContent = `單元 ${currentUnitIndex + 1} 學習成果報告`;
+
+            // 給予不同分數的評語與語音讚美
+            let comment = "";
+            let speechAward = "";
+            if (finalScore === 100) {
+                comment = "🎉 太神了！完美的 100 分！你完全掌握了生活數學能力！";
+                speechAward = "恭喜你！獲得完美的 一百 分！你真是太優秀、太厲害了！";
+                startConfettiEffect();
+            } else if (finalScore >= 80) {
+                comment = "🌟 超級棒！得到高分！你做得非常好！";
+                speechAward = `恭喜你！得到 ${finalScore} 分！做得好棒，繼續保持喔！`;
+                startConfettiEffect();
+            } else if (finalScore >= 60) {
+                comment = "👍 及格囉！基本觀念很正確，再努力一下就完美了！";
+                speechAward = `太棒了！得到 ${finalScore} 分！及格囉，再努力一下下就更完美了！`;
+            } else {
+                comment = "💪 沒關係！我們多練習幾次，一定會越來越進步！";
+                speechAward = `你得到了 ${finalScore} 分！沒關係，多讀幾次，相信你下一次一定能拿滿分！`;
+            }
+
+            document.getElementById('report-comment').textContent = comment;
+            
+            // 顯示下一個單元按鈕 (如果是最後一個單元則隱藏)
+            const nextUnitBtn = document.getElementById('next-unit-btn');
+            if (currentUnitIndex === 9) {
+                nextUnitBtn.classList.add('hidden');
+            } else {
+                nextUnitBtn.classList.remove('hidden');
+            }
+
+            // 開啟 Modal
+            document.getElementById('report-modal').classList.remove('hidden');
+            
+            // 報讀成果
+            setTimeout(() => {
+                speakText(speechAward);
+            }, 300);
+        }
+
+        // 關閉報告
+        function closeReportModal() {
+            document.getElementById('report-modal').classList.add('hidden');
+            stopConfettiEffect();
+        }
+
+        // 重新挑戰當前單元
+        function retryCurrentUnit() {
+            closeReportModal();
+            loadUnit(currentUnitIndex);
+        }
+
+        // 前往下一單元
+        function goToNextUnit() {
+            closeReportModal();
+            if (currentUnitIndex < 9) {
+                loadUnit(currentUnitIndex + 1);
+            }
+        }
+
+        // 產生煙火彩帶特效
+        function startConfettiEffect() {
+            const container = document.getElementById('modal-confetti');
+            container.innerHTML = '';
+            const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#ef4444'];
+            for (let i = 0; i < 40; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = `${Math.random() * 100}%`;
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = `${Math.random() * 2}s`;
+                piece.style.animationDuration = `${1.5 + Math.random() * 1.5}s`;
+                piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+                container.appendChild(piece);
+            }
+        }
+
+        function stopConfettiEffect() {
+            document.getElementById('modal-confetti').innerHTML = '';
+        }
+
+        // 下載完整的離線 HTML (包含整套題庫與新設計)
+        function downloadOfflineVersion() {
+            // 複製整份文件
+            const docClone = document.cloneNode(true);
+            
+            // 將打包好的檔案自動轉換為下載 Blob
+            const blob = new Blob([docClone.documentElement.outerHTML], { type: 'text/html;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `生活數學能力_互動計分版_單元${currentUnitIndex + 1}.html`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        // 初始化載入
+        window.addEventListener('DOMContentLoaded', () => {
+            initUnits();
+        });
+    </script>
+</body>
+</html>
