@@ -374,6 +374,14 @@
                 <p class="text-xs text-slate-400 mt-2">提示：系統已鎖定雙重抽離欄位（四行固定高度），原班學科與任課老師永遠維持在相同水平線上，絕不位移。</p>
             </div>
 
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider">⚠️ 班級衝堂通知</h2>
+                    <span id="class-conflict-count" class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-600">0 筆</span>
+                </div>
+                <div id="class-conflict-list" class="text-xs text-slate-600">正在檢查課表…</div>
+            </div>
+
             <!-- 列印動作面板 -->
             <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
                 <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">🖨️ 列印與檔案輸出</h2>
@@ -443,6 +451,7 @@
     <script>
         // 套用最新的工作表 CSV 發布網址
         const DEFAULT_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=338631519&single=true&output=csv";
+        const A3_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=1823409322&single=true&output=csv";
 
         // 全域變數
         let rawStudentsData = [];        // 原始學生名冊
@@ -474,15 +483,17 @@
             updateConnectionStatus('connecting', '正在同步雲端資料庫...');
             const cacheBusterUrl = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
 
-            fetch(cacheBusterUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error("同步失敗");
-                    return response.text();
+            const a3Url = A3_CSV_URL + '&t=' + Date.now();
+            Promise.all([fetch(cacheBusterUrl), fetch(a3Url)])
+                .then(responses => {
+                    if (responses.some(response => !response.ok)) throw new Error("同步失敗");
+                    return Promise.all(responses.map(response => response.text()));
                 })
-                .then(csvText => {
+                .then(([csvText, a3Text]) => {
                     const parsedData = robustCSVParser(csvText);
                     if (parsedData && parsedData.length > 0) {
                         rawStudentsData = parsedData;
+                        applyA3Schedule(a3Text);
                         updateConnectionStatus('success', '雲端連線成功！資料已即時更新。');
                     } else {
                         throw new Error("解析內容無有效學生資料");
@@ -583,6 +594,47 @@
             return results;
         }
 
+        function parseCSVRows(text) {
+            text = text.replace(/^\uFEFF/, '');
+            const lines = []; let row = ['']; let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const c = text[i], next = text[i + 1];
+                if (c === '"') {
+                    if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
+                    else inQuotes = !inQuotes;
+                } else if (c === ',' && !inQuotes) row.push('');
+                else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && next === '\n') i++;
+                    lines.push(row); row = [''];
+                } else row[row.length - 1] += c;
+            }
+            if (row.length > 1 || row[0] !== '') lines.push(row);
+            return lines;
+        }
+
+        function applyA3Schedule(text) {
+            const rows = parseCSVRows(text);
+            if (rows.length < 2) return;
+            const headers = rows[0].map(value => value.trim());
+            const groupIdx = headers.indexOf('分組'), teacherIdx = headers.indexOf('特教教師');
+            const locationIdx = headers.indexOf('上課地點'), timeIdx = headers.indexOf('時間代碼'), studentIdx = headers.indexOf('學生');
+            const studentMap = new Map(rawStudentsData.map(student => [`${student._resolved_info.class}${student._resolved_info.name}`.replace(/\s+/g, ''), student]));
+            rawStudentsData.forEach(student => { student._a3_special = {}; student._a3_assignments = []; });
+            rows.slice(1).forEach(row => {
+                const subject = (row[groupIdx] || '').trim(), teacher = (row[teacherIdx] || '').trim(), location = (row[locationIdx] || '').trim();
+                const codes = [...new Set((row[timeIdx] || '').replace(/['"]/g, '').split(/[\s,、]+/).filter(code => /^[1-5][1-8]$/.test(code)))];
+                (row[studentIdx] || '').split(/[、,\s]+/).map(name => name.trim()).filter(Boolean).forEach(name => {
+                    const student = studentMap.get(name.replace(/\s+/g, ''));
+                    if (!student) return;
+                    codes.forEach(code => {
+                        const assignment = { code, subject, teacher, location };
+                        student._a3_assignments.push(assignment);
+                        student._a3_special[code] = assignment;
+                    });
+                });
+            });
+        }
+
         // 初始化班級整合核心
         function initClassApp() {
             let classSet = new Set();
@@ -616,6 +668,28 @@
 
         function renderSelectedClass() {
             document.getElementById('timetable-preview-container').innerHTML = generateClassPageHTML(selectedClass);
+            renderClassConflicts(selectedClass);
+        }
+
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+        }
+
+        function renderClassConflicts(classTarget) {
+            const conflicts = [];
+            rawStudentsData.filter(student => student._resolved_info.class === classTarget).forEach(student => {
+                const byCode = new Map();
+                (student._a3_assignments || []).forEach(item => {
+                    if (!byCode.has(item.code)) byCode.set(item.code, []);
+                    byCode.get(item.code).push(item);
+                });
+                byCode.forEach((items, code) => { if (items.length > 1) conflicts.push({ student, code, items }); });
+            });
+            conflicts.sort((a, b) => Number(a.code) - Number(b.code) || a.student._resolved_info.name.localeCompare(b.student._resolved_info.name, 'zh-Hant'));
+            const count = document.getElementById('class-conflict-count'), list = document.getElementById('class-conflict-list');
+            count.textContent = `${conflicts.length} 筆`;
+            count.className = `rounded-full px-2 py-0.5 text-[11px] font-bold ${conflicts.length ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`;
+            list.innerHTML = conflicts.length ? `<div class="max-h-72 space-y-2 overflow-y-auto pr-1">${conflicts.map(item => `<div class="rounded-lg border border-rose-200 bg-rose-50 p-2"><div class="font-bold text-rose-800">${escapeHTML(item.student._resolved_info.name)}・週${'一二三四五'[Number(item.code[0]) - 1]}第${item.code[1]}節</div><div class="mt-1 leading-snug">${item.items.map(course => `${escapeHTML(course.subject)}／${escapeHTML(course.teacher)}`).join('<br>')}</div></div>`).join('')}</div>` : '<div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 font-semibold text-emerald-700">✓ 未發現衝堂</div>';
         }
 
         // 拆分原班科目與任課教師字串
@@ -740,7 +814,9 @@
                     let extractedBadgesData = [];
 
                     classStudents.forEach(student => {
-                        let extractedCourse = (student[`特${day}${periodNum}`] || "").trim();
+                        const code = `${day}${periodNum}`;
+                        const a3Course = student._a3_special && student._a3_special[code];
+                        let extractedCourse = a3Course ? a3Course.subject : ((student[`特${code}`] || "").trim().split(/\r?\n/).filter(Boolean).pop() || '');
                         if (extractedCourse) {
                             // 保留完整組別以加入底部對照表
                             enrolledExtractedSubjects.add(extractedCourse);

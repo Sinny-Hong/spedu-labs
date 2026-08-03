@@ -163,6 +163,10 @@
                 <select id="teacher-select" class="w-full bg-slate-50 border-2 border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 font-medium focus:outline-none focus:border-emerald-500 cursor-pointer" disabled><option value="">載入中...</option></select>
             </section>
             <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between gap-3 mb-3"><h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider">⚠️ 教師衝堂檢查</h2><span id="teacher-conflict-count" class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-500">檢查中</span></div>
+                <div id="teacher-conflict-list" class="text-xs leading-relaxed text-slate-500">正在比對教師授課時段…</div>
+            </section>
+            <section class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
                 <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">🖨️ 列印與檔案輸出</h2>
                 <div class="flex flex-col gap-3"><button id="btn-print-single" onclick="window.print()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors" disabled>🖨️ 單頁列印此教師</button><button id="btn-print-all" onclick="triggerPrintAll()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors" disabled>📚 一鍵列印所有教師</button></div>
                 <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg p-3 text-xs mt-4 leading-relaxed"><strong>💡 列印設定：</strong><br>A4／直向，邊界選擇無，並開啟背景圖形。</div>
@@ -186,6 +190,7 @@
                     <div class="flex items-baseline">
                         <span>教師：</span>
                         <span id="label-teacher" class="underline underline-offset-4 decoration-[1.5px] px-2 min-w-[80px] text-center">載入中...</span>
+                        <span id="label-total-periods" class="ml-2 text-[13px] font-bold text-slate-700">總節數：0節</span>
                     </div>
                     <div class="flex items-baseline">
                         <span>版本：</span>
@@ -261,6 +266,7 @@
         let teachersList = [];        // 排序後的不重複教師名單
         let versionString = "115-1 更新版"; // 動態讀取之版本字串
         let scheduleDatabase = {};    // 整理後的大腦結構：{ "陳秋錡": { "11": { subject: "國文三A", students: [...] }, ... } }
+        let teacherAssignments = {};  // 覆蓋前保留完整授課資料，用於總節數與衝堂偵測
 
         // 根據組別名稱產生穩定的專屬色碼
         function getGroupColor(subject) {
@@ -393,6 +399,7 @@
 
             // 2. 遍歷數據建立課表映射
             scheduleDatabase = {};
+            teacherAssignments = {};
             let tempTeachers = new Set();
 
             // 預期 A3 欄位結構：備註[0], 特教教師[1], 分組[2], 節數[3], 上課地點[4], 時間代碼[5], 時間[6], 學生[7]
@@ -416,7 +423,7 @@
                 const studentsArray = rawStudents ? rawStudents.split(/[\s、,，]+/).map(s => s.trim()).filter(s => s) : [];
 
                 // 解析時間代碼
-                const codes = timeCodesStr.split(/[\s,，]+/).map(c => c.trim()).filter(c => c);
+                const codes = [...new Set(timeCodesStr.split(/[\s,，、]+/).map(c => c.trim()).filter(c => /^[1-5][1-8]$/.test(c)))];
 
                 codes.forEach(code => {
                     if (!scheduleDatabase[teacher]) {
@@ -428,6 +435,8 @@
                         subject: subject,
                         students: studentsArray
                     };
+                    if (!teacherAssignments[teacher]) teacherAssignments[teacher] = [];
+                    teacherAssignments[teacher].push({ code, subject, students: studentsArray });
                 });
             }
 
@@ -472,10 +481,37 @@
         // 核心渲染：產生單一教師 A4 紙張內功課表的 HTML 行列
         function renderTeacherTimetable(teacherName) {
             document.getElementById('label-teacher').textContent = teacherName;
+            document.getElementById('label-total-periods').textContent = `總節數：${(teacherAssignments[teacherName] || []).length}節`;
             document.getElementById('label-version').textContent = versionString;
+            renderTeacherConflicts(teacherName);
 
             const tbody = document.getElementById('timetable-body');
             tbody.innerHTML = generateTimetableRowsHTML(teacherName);
+        }
+
+        function formatTimeCode(code) {
+            const days = ['', '週一', '週二', '週三', '週四', '週五'];
+            return `${days[Number(code.charAt(0))] || code} 第${code.charAt(1)}節`;
+        }
+
+        function renderTeacherConflicts(teacherName) {
+            const badge = document.getElementById('teacher-conflict-count');
+            const list = document.getElementById('teacher-conflict-list');
+            const byCode = new Map();
+            (teacherAssignments[teacherName] || []).forEach(item => {
+                if (!byCode.has(item.code)) byCode.set(item.code, []);
+                byCode.get(item.code).push(item);
+            });
+            const conflicts = [...byCode.entries()].filter(([, items]) => items.length > 1).sort((a, b) => Number(a[0]) - Number(b[0]));
+            if (!conflicts.length) {
+                badge.className = 'rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-700';
+                badge.textContent = '0 筆';
+                list.innerHTML = '<div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 font-semibold text-emerald-700">✓ 未發現教師衝堂</div>';
+                return;
+            }
+            badge.className = 'rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-bold text-rose-700';
+            badge.textContent = `${conflicts.length} 筆`;
+            list.innerHTML = `<div class="space-y-2">${conflicts.map(([code, items]) => `<div class="rounded border border-rose-200 bg-rose-50 p-2"><div class="font-bold text-rose-800">${formatTimeCode(code)}</div><div class="mt-1 text-slate-600">${items.map(item => item.subject).join('<br>')}</div><div class="mt-1 text-[10px] text-slate-400">格子顯示最後一筆：${items[items.length - 1].subject}</div></div>`).join('')}</div>`;
         }
 
         // 產生功課表主體 Rows 的共通函式 (單一課堂格高度調整為 98px)
@@ -551,6 +587,7 @@
                                 <div class="flex items-baseline">
                                     <span>教師：</span>
                                     <span class="underline underline-offset-4 decoration-[1.5px] px-2 min-w-[80px] text-center">${teacher}</span>
+                                    <span class="ml-2 text-[13px] font-bold text-slate-700">總節數：${(teacherAssignments[teacher] || []).length}節</span>
                                 </div>
                                 <div class="flex items-baseline">
                                     <span>版本：</span>

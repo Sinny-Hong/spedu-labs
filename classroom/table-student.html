@@ -313,6 +313,14 @@
                 <p class="text-xs text-slate-400 mt-2">提示：切換學生後，課表將自動讀取對應的 原11~原58 與 特11~特58 資料。</p>
             </div>
 
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider">⚠️ 學生衝堂通知</h2>
+                    <span id="student-conflict-count" class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-600">0 筆</span>
+                </div>
+                <div id="student-conflict-list" class="text-xs text-slate-600">正在檢查課表…</div>
+            </div>
+
             <!-- 列印動作面板 -->
             <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
                 <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">🖨️ 列印與檔案輸出</h2>
@@ -382,6 +390,7 @@
     <script>
         // 套用最新的工作表 CSV 發布網址
         const DEFAULT_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=338631519&single=true&output=csv";
+        const A3_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=1823409322&single=true&output=csv";
 
         // 全域變數
         let studentsData = []; 
@@ -414,15 +423,17 @@
             // 加上時間戳記強迫 Google 回傳最新且無暫存的資料
             const cacheBusterUrl = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
 
-            fetch(cacheBusterUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error("同步失敗");
-                    return response.text();
+            const a3Url = A3_CSV_URL + '&t=' + Date.now();
+            Promise.all([fetch(cacheBusterUrl), fetch(a3Url)])
+                .then(responses => {
+                    if (responses.some(response => !response.ok)) throw new Error("同步失敗");
+                    return Promise.all(responses.map(response => response.text()));
                 })
-                .then(csvText => {
+                .then(([csvText, a3Text]) => {
                     const parsedData = robustCSVParser(csvText);
                     if (parsedData && parsedData.length > 0) {
                         studentsData = parsedData;
+                        applyA3Schedule(a3Text);
                         updateConnectionStatus('success', '雲端連線成功！資料已即時更新。');
                     } else {
                         throw new Error("解析內容無學生資料");
@@ -531,6 +542,55 @@
             return results;
         }
 
+        function parseCSVRows(text) {
+            text = text.replace(/^\uFEFF/, '');
+            const lines = [];
+            let row = [''];
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const c = text[i], next = text[i + 1];
+                if (c === '"') {
+                    if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
+                    else inQuotes = !inQuotes;
+                } else if (c === ',' && !inQuotes) row.push('');
+                else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && next === '\n') i++;
+                    lines.push(row); row = [''];
+                } else row[row.length - 1] += c;
+            }
+            if (row.length > 1 || row[0] !== '') lines.push(row);
+            return lines;
+        }
+
+        function applyA3Schedule(text) {
+            const rows = parseCSVRows(text);
+            if (rows.length < 2) return;
+            const headers = rows[0].map(value => value.trim());
+            const groupIdx = headers.indexOf('分組');
+            const teacherIdx = headers.indexOf('特教教師');
+            const locationIdx = headers.indexOf('上課地點');
+            const timeIdx = headers.indexOf('時間代碼');
+            const studentIdx = headers.indexOf('學生');
+            const studentMap = new Map(studentsData.map(student => [`${student._resolved_info.class}${student._resolved_info.name}`.replace(/\s+/g, ''), student]));
+            studentsData.forEach(student => { student._a3_special = {}; student._a3_assignments = []; });
+            rows.slice(1).forEach(row => {
+                const subject = (row[groupIdx] || '').trim();
+                const teacher = (row[teacherIdx] || '').trim();
+                const location = (row[locationIdx] || '').trim();
+                const codes = [...new Set((row[timeIdx] || '').replace(/['"]/g, '').split(/[\s,、]+/).filter(code => /^[1-5][1-8]$/.test(code)))];
+                const names = (row[studentIdx] || '').split(/[、,\s]+/).map(name => name.trim()).filter(Boolean);
+                names.forEach(name => {
+                    const student = studentMap.get(name.replace(/\s+/g, ''));
+                    if (!student) return;
+                    codes.forEach(code => {
+                        const assignment = { code, subject, teacher, location };
+                        student._a3_assignments.push(assignment);
+                        student._a3_special[code] = assignment;
+                    });
+                });
+            });
+        }
+
         // 初始化
         function initApp() {
             document.getElementById('student-count-badge').innerText = studentsData.length;
@@ -562,6 +622,30 @@
         function renderSelectedStudent() {
             const student = studentsData[selectedStudentIndex];
             document.getElementById('timetable-preview-container').innerHTML = generateStudentPageHTML(student);
+            renderStudentConflicts(student);
+        }
+
+        function formatTimeCode(code) {
+            const days = ['', '週一', '週二', '週三', '週四', '週五'];
+            return `${days[Number(code[0])] || code} 第${code[1]}節`;
+        }
+
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+        }
+
+        function renderStudentConflicts(student) {
+            const count = document.getElementById('student-conflict-count');
+            const list = document.getElementById('student-conflict-list');
+            const byCode = new Map();
+            (student?._a3_assignments || []).forEach(item => {
+                if (!byCode.has(item.code)) byCode.set(item.code, []);
+                byCode.get(item.code).push(item);
+            });
+            const conflicts = [...byCode.entries()].filter(([, items]) => items.length > 1).sort((a, b) => Number(a[0]) - Number(b[0]));
+            count.textContent = `${conflicts.length} 筆`;
+            count.className = `rounded-full px-2 py-0.5 text-[11px] font-bold ${conflicts.length ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`;
+            list.innerHTML = conflicts.length ? conflicts.map(([code, items]) => `<div class="mb-2 rounded-lg border border-rose-200 bg-rose-50 p-2"><div class="font-bold text-rose-800">${escapeHTML(formatTimeCode(code))}</div><div class="mt-1 leading-snug">${items.map(item => `${escapeHTML(item.subject)}／${escapeHTML(item.teacher)}`).join('<br>')}</div></div>`).join('') : '<div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 font-semibold text-emerald-700">✓ 未發現衝堂</div>';
         }
 
         // 拆分原班科目字串
@@ -653,7 +737,9 @@
                 for (let day = 1; day <= 5; day++) {
                     // 極速精準讀取對應的原 11~58 與 特 11~58 欄位 (無模糊解讀)
                     let originalCourse = (student[`原${day}${periodNum}`] || "").trim();
-                    let extractedCourse = (student[`特${day}${periodNum}`] || "").trim();
+                    const code = `${day}${periodNum}`;
+                    const a3Course = student._a3_special && student._a3_special[code];
+                    let extractedCourse = a3Course ? a3Course.subject : ((student[`特${code}`] || "").trim().split(/\r?\n/).filter(Boolean).pop() || '');
 
                     rowHtml += `<td>`;
                     rowHtml += `<div class="course-cell-wrapper">`;
