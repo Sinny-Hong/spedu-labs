@@ -50,8 +50,36 @@
         /* A4 直式預覽容器 (210mm x 297mm) */
         .portrait-page {
             width: 210mm;
+            min-width: 210mm;
+            max-width: 210mm;
             height: 297mm;
+            min-height: 297mm;
+            max-height: 297mm;
+            flex: 0 0 210mm;
             box-sizing: border-box;
+        }
+
+        .preview-scroll-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .course-title {
+            font-size: 12px;
+            line-height: 1.08;
+            letter-spacing: -0.01em;
+        }
+
+        .course-title-long {
+            font-size: 10.5px;
+            line-height: 1.04;
+            letter-spacing: -0.055em;
+        }
+
+        .course-title-xlong {
+            font-size: 9.5px;
+            line-height: 1;
+            letter-spacing: -0.075em;
         }
 
         /* 隱藏滾動條 */
@@ -71,6 +99,13 @@
             .preview-scroll-wrapper {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
+                justify-content: flex-start;
+            }
+        }
+
+        @media (min-width: 1101px) {
+            .preview-scroll-wrapper {
+                justify-content: center;
             }
         }
 
@@ -144,6 +179,16 @@
                 <div id="error-toast" class="hidden mt-4 p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-800 text-xs flex items-start gap-2">
                     <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
                     <div><span class="font-bold">連線提示：</span><span id="error-message">雲端載入失敗，已啟用離線預覽模式。</span></div>
+                </div>
+            </section>
+
+            <section id="conflict-panel" class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider">⚠️ 學生衝堂檢查</h2>
+                    <span id="conflict-count" class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-500">檢查中</span>
+                </div>
+                <div id="conflict-list" class="text-xs leading-relaxed text-slate-500">
+                    正在比對同一時段的學生名單…
                 </div>
             </section>
 
@@ -398,6 +443,7 @@
                 });
             }
 
+            renderScheduleConflicts();
             populateTeacherHighlightOptions();
             renderTimetable();
         }
@@ -414,6 +460,107 @@
         function formatTeacher(name) {
             if (!name) return "";
             return name.replace(/老師/g, '').trim();
+        }
+
+        function escapeHTML(value) {
+            return String(value ?? "").replace(/[&<>"']/g, char => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[char]);
+        }
+
+        function parseStudentList(studentsStr) {
+            if (!studentsStr) return [];
+            return studentsStr
+                .split(/[、,\s]+/)
+                .map(student => student.trim())
+                .filter(Boolean);
+        }
+
+        function getCourseTitleClass(groupName, teacher) {
+            const textLength = Array.from(`${groupName || ""}(${formatTeacher(teacher)})`).length;
+            if (textLength >= 14) return 'course-title-xlong';
+            if (textLength >= 11) return 'course-title-long';
+            return 'course-title';
+        }
+
+        function formatTimeCode(code) {
+            const dayNames = ['', '週一', '週二', '週三', '週四', '週五'];
+            const periodNames = ['', '第一節', '第二節', '第三節', '第四節', '第五節', '第六節', '第七節'];
+            return `${dayNames[Number(code.charAt(0))] || code} ${periodNames[Number(code.charAt(1))] || ''}`.trim();
+        }
+
+        function findScheduleConflicts() {
+            const scheduleMap = new Map();
+
+            activeRawData.forEach(group => {
+                const groupKey = `${group.groupName}|${group.teacher}|${group.location}`;
+                group.timeCodes.forEach(code => {
+                    if (!scheduleMap.has(code)) scheduleMap.set(code, new Map());
+                    const studentsAtTime = scheduleMap.get(code);
+
+                    parseStudentList(group.studentsStr).forEach(student => {
+                        if (!studentsAtTime.has(student)) studentsAtTime.set(student, new Map());
+                        studentsAtTime.get(student).set(groupKey, group);
+                    });
+                });
+            });
+
+            const conflicts = [];
+            scheduleMap.forEach((students, code) => {
+                students.forEach((groupMap, student) => {
+                    const groups = [...groupMap.values()];
+                    if (groups.length > 1) conflicts.push({ code, student, groups });
+                });
+            });
+
+            return conflicts.sort((a, b) => Number(a.code) - Number(b.code) || a.student.localeCompare(b.student, 'zh-Hant'));
+        }
+
+        function renderScheduleConflicts() {
+            const countBadge = document.getElementById('conflict-count');
+            const list = document.getElementById('conflict-list');
+            if (!countBadge || !list) return;
+
+            const conflicts = findScheduleConflicts();
+            if (!conflicts.length) {
+                countBadge.className = 'rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-700';
+                countBadge.textContent = '0 筆';
+                list.innerHTML = '<div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 font-semibold text-emerald-700">✓ 未發現學生衝堂</div>';
+                return;
+            }
+
+            const uniqueStudents = new Set(conflicts.map(item => item.student));
+            countBadge.className = 'rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-bold text-rose-700';
+            countBadge.textContent = `${conflicts.length} 筆`;
+
+            const byCode = new Map();
+            conflicts.forEach(conflict => {
+                if (!byCode.has(conflict.code)) byCode.set(conflict.code, []);
+                byCode.get(conflict.code).push(conflict);
+            });
+
+            list.innerHTML = `
+                <p class="mb-3 rounded-lg border border-rose-200 bg-rose-50 p-2.5 font-semibold text-rose-700">
+                    發現 ${uniqueStudents.size} 位學生、${conflicts.length} 筆同時段衝堂
+                </p>
+                <div class="max-h-72 space-y-3 overflow-y-auto pr-1">
+                    ${[...byCode.entries()].map(([code, items]) => `
+                        <div>
+                            <div class="mb-1 font-bold text-slate-700">${escapeHTML(formatTimeCode(code))}</div>
+                            <div class="space-y-1.5">
+                                ${items.map(item => `
+                                    <div class="rounded border border-rose-100 bg-rose-50/60 p-2">
+                                        <div class="font-bold text-rose-800">${escapeHTML(item.student)}</div>
+                                        <div class="mt-0.5 text-[11px] leading-snug text-slate-600">
+                                            ${item.groups.map(group => `${escapeHTML(group.groupName)}／${escapeHTML(formatTeacher(group.teacher))}`).join('<br>')}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
         }
 
         function isItinerantGroup(group) {
@@ -496,8 +643,8 @@
 
         // 學生名單維持雙軌道對齊，字體 11.5px，行高保持 leading-none
         function formatStudentsHTML(studentsStr) {
-            if (!studentsStr) return "";
-            const list = studentsStr.split(/[、,\s]+/).map(s => s.trim()).filter(s => s !== "");
+            const list = parseStudentList(studentsStr);
+            if (!list.length) return "";
             let html = "";
             
             for (let i = 0; i < list.length; i += 2) {
@@ -571,6 +718,7 @@
                             const colors = getTeacherColor(group.teacher);
                             const compressedLocation = formatLocation(group.location);
                             const displayTeacher = formatTeacher(group.teacher);
+                            const titleSizeClass = getCourseTitleClass(group.groupName, group.teacher);
                             
                             const card = document.createElement('div');
                             // 不使用卡片背景、外框、圓角、陰影或上下 padding
@@ -582,7 +730,7 @@
                                 <span class="mt-[3px] h-[6px] w-[6px] flex-shrink-0 rounded-full ${colors.bar}"></span>
                                 <div class="min-w-0 flex-1">
                                     <!-- 第一列：教師色圓點、科目名稱(老師)、地點 -->
-                                    <div class="flex items-center justify-between text-[12px] font-extrabold leading-[1.08] tracking-tight ${colors.text}">
+                                    <div class="${titleSizeClass} flex items-center justify-between font-extrabold ${colors.text}">
                                         <span class="truncate pr-0.5"><span class="teacher-highlight-star">★</span>${group.groupName}(${displayTeacher})</span>
                                         <span class="flex-shrink-0 ml-1 pr-px font-mono font-bold text-[9px] text-slate-700">${compressedLocation}</span>
                                     </div>
