@@ -376,7 +376,7 @@
 
             <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
                 <div class="flex items-center justify-between gap-3 mb-3">
-                    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider">⚠️ 班級衝堂通知</h2>
+                    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider">⚠️ 原班學生衝堂檢查</h2>
                     <span id="class-conflict-count" class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-600">0 筆</span>
                 </div>
                 <div id="class-conflict-list" class="text-xs text-slate-600">正在檢查課表…</div>
@@ -458,6 +458,7 @@
         let classesList = [];           // 排序後的班級清單 (例如 ["301", "302", "303"])
         let specialEdGroupsDict = {};   // 特教老師地點/分組資訊資料庫
         let selectedClass = "";         // 目前選定的班級代碼
+        let versionString = "版本資訊未填寫";
 
         // 離線防呆高擬真測試資料
         const fallbackMockData = [
@@ -616,8 +617,13 @@
             const rows = parseCSVRows(text);
             if (rows.length < 2) return;
             const headers = rows[0].map(value => value.trim());
+            const noteIdx = headers.indexOf('備註');
             const groupIdx = headers.indexOf('分組'), teacherIdx = headers.indexOf('特教教師');
             const locationIdx = headers.indexOf('上課地點'), timeIdx = headers.indexOf('時間代碼'), studentIdx = headers.indexOf('學生');
+            const noteFound = rows.slice(1)
+                .map(row => noteIdx >= 0 ? (row[noteIdx] || '').trim() : '')
+                .find(note => note && !['備註', '改版日期', '列印日期', '改版日期：'].includes(note));
+            if (noteFound) versionString = noteFound;
             const studentMap = new Map(rawStudentsData.map(student => [`${student._resolved_info.class}${student._resolved_info.name}`.replace(/\s+/g, ''), student]));
             rawStudentsData.forEach(student => { student._a3_special = {}; student._a3_assignments = []; });
             rows.slice(1).forEach(row => {
@@ -689,7 +695,8 @@
             const count = document.getElementById('class-conflict-count'), list = document.getElementById('class-conflict-list');
             count.textContent = `${conflicts.length} 筆`;
             count.className = `rounded-full px-2 py-0.5 text-[11px] font-bold ${conflicts.length ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`;
-            list.innerHTML = conflicts.length ? `<div class="max-h-72 space-y-2 overflow-y-auto pr-1">${conflicts.map(item => `<div class="rounded-lg border border-rose-200 bg-rose-50 p-2"><div class="font-bold text-rose-800">${escapeHTML(item.student._resolved_info.name)}・週${'一二三四五'[Number(item.code[0]) - 1]}第${item.code[1]}節</div><div class="mt-1 leading-snug">${item.items.map(course => `${escapeHTML(course.subject)}／${escapeHTML(course.teacher)}`).join('<br>')}</div></div>`).join('')}</div>` : '<div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 font-semibold text-emerald-700">✓ 未發現衝堂</div>';
+            const classLabel = classTarget.endsWith('班') ? classTarget : `${classTarget}班`;
+            list.innerHTML = conflicts.length ? `<p class="mb-2 font-semibold text-rose-700">${escapeHTML(classLabel)}發現 ${conflicts.length} 筆衝堂</p><div class="max-h-72 space-y-2 overflow-y-auto pr-1">${conflicts.map(item => `<div class="rounded-lg border border-rose-200 bg-rose-50 p-2"><div class="font-bold text-rose-800">${escapeHTML(item.student._resolved_info.name)}・週${'一二三四五'[Number(item.code[0]) - 1]}第${item.code[1]}節</div><div class="mt-1 leading-snug">${item.items.map(course => `${escapeHTML(course.subject)}／${escapeHTML(course.teacher)}`).join('<br>')}</div></div>`).join('')}</div>` : `<div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 font-semibold text-emerald-700">✓ ${escapeHTML(classLabel)}未發現衝堂</div>`;
         }
 
         // 拆分原班科目與任課教師字串
@@ -935,7 +942,7 @@
                     </div>
 
                     <div class="student-footer">
-                        <div class="footer-title">異想教室全班抽離課程總對照：(115-1 更新版 2026.06.11)</div>
+                        <div class="footer-title">異想教室全班抽離課程總對照：(${escapeHTML(versionString)})</div>
                         <div style="width: 100%;">
                             ${contactListHtml}
                         </div>

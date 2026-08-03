@@ -396,6 +396,7 @@
         let studentsData = []; 
         let specialEdGroupsDict = {}; // 特教老師地點/分組資訊資料庫
         let selectedStudentIndex = 0;
+        let versionString = "版本資訊未填寫";
 
         // 離線備用高擬真測試資料 (保持 原11, 特11 等規格)
         const fallbackMockData = [
@@ -566,11 +567,16 @@
             const rows = parseCSVRows(text);
             if (rows.length < 2) return;
             const headers = rows[0].map(value => value.trim());
+            const noteIdx = headers.indexOf('備註');
             const groupIdx = headers.indexOf('分組');
             const teacherIdx = headers.indexOf('特教教師');
             const locationIdx = headers.indexOf('上課地點');
             const timeIdx = headers.indexOf('時間代碼');
             const studentIdx = headers.indexOf('學生');
+            const noteFound = rows.slice(1)
+                .map(row => noteIdx >= 0 ? (row[noteIdx] || '').trim() : '')
+                .find(note => note && !['備註', '改版日期', '列印日期', '改版日期：'].includes(note));
+            if (noteFound) versionString = noteFound;
             const studentMap = new Map(studentsData.map(student => [`${student._resolved_info.class}${student._resolved_info.name}`.replace(/\s+/g, ''), student]));
             studentsData.forEach(student => { student._a3_special = {}; student._a3_assignments = []; });
             rows.slice(1).forEach(row => {
@@ -847,7 +853,7 @@
 
                     <!-- 底部對照 Footer (兩欄內容串接並帶有 Tab 定位起點) -->
                     <div class="student-footer">
-                        <div class="footer-title">異想教室抽離課程：(115-1 更新版 2026.06.11)</div>
+                        <div class="footer-title">異想教室抽離課程：(${escapeHTML(versionString)})</div>
                         <div style="width: 100%;">
                             ${contactListHtml}
                         </div>
