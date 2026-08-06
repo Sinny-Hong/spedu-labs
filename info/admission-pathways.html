@@ -256,13 +256,13 @@
     }
     .comparison-row {
       display: grid;
-      grid-template-columns: 150px repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .comparison-row + .comparison-row { border-top: 1px solid var(--line); }
     .comparison-row > div { padding: 16px 18px; }
     .comparison-row > div + div { border-left: 1px solid var(--line); }
     .comparison-head { color: var(--white); background: var(--blue-800); font-weight: 800; }
-    .comparison-label { color: var(--blue-950); background: var(--blue-100); font-weight: 800; }
+    .comparison-item { display: block; margin-bottom: 5px; color: var(--blue-950); font-size: 14px; }
     .service-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -353,12 +353,8 @@
       .section-heading { grid-template-columns: 1fr; gap: 6px; }
       .cards, .service-grid { grid-template-columns: 1fr; }
       .card.wide { grid-column: auto; }
-      .comparison-row { grid-template-columns: 105px minmax(0, 1fr); }
+      .comparison-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .comparison-row > div { padding: 13px 12px; }
-      .comparison-row > div:nth-child(3) { grid-column: 2; border-top: 1px solid var(--line); }
-      .comparison-head > div:first-child { display: none; }
-      .comparison-head { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .comparison-head > div:nth-child(3) { grid-column: auto; border-top: 0; }
     }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   </style>
@@ -457,16 +453,13 @@
         </div>
         <div class="comparison" role="table" aria-label="一般升學與適性輔導安置比較">
           <div class="comparison-row comparison-head" role="row">
-            <div role="columnheader">比較項目</div><div role="columnheader">一般升學</div><div role="columnheader">適性輔導安置</div>
+            <div role="columnheader">教務處負責</div><div role="columnheader">異想教室負責</div>
           </div>
           <div class="comparison-row" role="row">
-            <div class="comparison-label" role="rowheader">負責單位</div><div role="cell">教務處</div><div role="cell">異想教室（特教組）</div>
+            <div role="cell"><strong class="comparison-item">選填順序</strong>先選學校，再選科系</div><div role="cell"><strong class="comparison-item">選填順序</strong>先選職群，再選學校</div>
           </div>
           <div class="comparison-row" role="row">
-            <div class="comparison-label" role="rowheader">選填順序</div><div role="cell">先選學校，再選科系</div><div role="cell">先選職群，再選學校</div>
-          </div>
-          <div class="comparison-row" role="row">
-            <div class="comparison-label" role="rowheader">辦理依據</div><div role="cell">依一般免試入學方式辦理</div><div role="cell">依身心障礙學生適性輔導安置簡章辦理</div>
+            <div role="cell"><strong class="comparison-item">辦理依據</strong>依一般免試入學方式辦理</div><div role="cell"><strong class="comparison-item">辦理依據</strong>依身心障礙學生適性輔導安置簡章辦理</div>
           </div>
         </div>
       </section>
