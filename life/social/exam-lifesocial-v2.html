@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>社會常識練習二｜互動式語音報讀</title>
+  <style>
+    :root{--blue:#1d4ed8;--blue-dark:#1e3a8a;--green:#047857;--red:#be123c;--ink:#1e293b;--muted:#64748b;--line:#dbe4ef;--paper:#fff;--bg:#eef3f8}*{box-sizing:border-box}body{margin:0;padding:18px;color:var(--ink);background:var(--bg);font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif}.app{width:min(980px,100%);margin:auto;overflow:hidden;border:1px solid var(--line);border-radius:22px;background:var(--paper);box-shadow:0 18px 45px #183b6518}header{padding:25px 22px;color:#fff;text-align:center;background:linear-gradient(130deg,#2563eb,var(--blue-dark))}header h1{margin:0;font-size:clamp(24px,5vw,36px)}header p{margin:8px 0 0;color:#dbeafe}.controls{padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:#f8fafc}.controls label{font-weight:800}.controls select,.controls button{min-height:44px;padding:9px 13px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;font:inherit;font-weight:800}.voice{color:#fff!important;background:var(--green)!important;border-color:var(--green)!important;cursor:pointer}.status{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#eff6ff;font-weight:800}.score{padding:5px 12px;border-radius:10px;color:var(--green);background:#d1fae5;font-size:20px}.quiz{padding:clamp(20px,5vw,40px)}.source{display:inline-block;margin-bottom:10px;padding:5px 9px;border-radius:8px;color:#1e40af;background:#dbeafe;font-size:13px;font-weight:900}.question{margin:0 0 22px;font-size:clamp(20px,4vw,28px);line-height:1.55}.options{display:grid;gap:12px}.option{width:100%;padding:15px 17px;border:2px solid var(--line);border-radius:14px;color:var(--ink);background:#fff;text-align:left;font:inherit;font-size:17px;font-weight:800;line-height:1.5;cursor:pointer}.option:hover{border-color:#60a5fa;background:#eff6ff}.option.correct{border-color:#10b981;color:#065f46;background:#ecfdf5}.option.wrong{border-color:#fb7185;color:#9f1239;background:#fff1f2}.option:disabled{cursor:default}.feedback{display:none;margin-top:18px;padding:16px;border-radius:14px;line-height:1.65;font-weight:800}.feedback.show{display:block}.feedback.good{color:#065f46;background:#d1fae5}.feedback.bad{color:#9f1239;background:#ffe4e6}.nav{padding:16px 18px;display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);background:#f8fafc}.nav button{min-height:46px;padding:10px 20px;border:0;border-radius:12px;color:#fff;background:var(--blue);font:inherit;font-weight:900;cursor:pointer}.nav button:first-child{color:var(--ink);background:#e2e8f0}.nav button:disabled{opacity:.4;cursor:not-allowed}.back{padding:0 18px 20px;text-align:center}.back a{color:var(--blue-dark);font-weight:800;text-decoration:none}@media(max-width:560px){body{padding:0}.app{border:0;border-radius:0;box-shadow:none}.controls{align-items:stretch}.controls label{display:grid;gap:6px;flex:1}.voice{align-self:end}.status{font-size:14px}.quiz{padding:22px 16px}.option{font-size:16px}.nav{position:sticky;bottom:0}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header><h1>高中職能力評估－社會常識練習二</h1><p>社會適應補充題庫 S101～S200．每 10 題為一個單元</p></header>
+    <section class="controls"><label>選擇單元<select id="unit"></select></label><button class="voice" id="voice" type="button">🔊 報讀題目</button></section>
+    <section class="status"><span id="progress">第 1／10 題</span><span class="score" id="score">0 分</span></section>
+    <section class="quiz"><span class="source" id="source"></span><h2 class="question" id="question"></h2><div class="options" id="options"></div><div class="feedback" id="feedback" role="status" aria-live="polite"></div></section>
+    <nav class="nav"><button id="prev" type="button">上一題</button><button id="next" type="button">下一題</button></nav>
+    <div class="back"><a href="../index.html">← 回到生活教育目錄</a></div>
+  </main>
+  <script>
+    const questions = [
+      {"sourceId":"S101","question":"1. 到便利商店使用電子票證（如悠遊卡）結帳，扣款前應該先確認什麼？","options":["(1)卡片顏色是否好看","(2)卡片內餘額是否足夠","(3)店員的名字","(4)後面排隊人數"],"answer":1,"explanation":"扣款前應先確認卡片餘額是否足夠付費。"},
+      {"sourceId":"S102","question":"2. 買東西結帳後，店家給的「統一發票」或「消費明細」應該如何處理比較好？","options":["(1)當場撕毀丟掉","(2)妥善保留以利對獎或退換貨","(3)送給隔壁陌生人","(4)隨意丟在路上"],"answer":1,"explanation":"保留發票可對獎，亦可作為商品的退換貨憑證。"},
+      {"sourceId":"S103","question":"3. 在超市買東西時，發現「大包裝」與「小包裝」商品，應該如何選擇最省錢？","options":["(1)一律買大包裝","(2)看清楚「單位售價」進行比價","(3)挑包裝漂亮的","(4)挑名字長的"],"answer":1,"explanation":"比較商品的「單位售價」能判斷哪種包裝最划算。"},
+      {"sourceId":"S104","question":"4. 拿著水費、電費單到便利商店繳費，繳完錢後店員蓋章的「收據」該怎麼辦？","options":["(1)當場丟進垃圾桶","(2)攜回妥善保存證明已繳費","(3)丟給朋友","(4)撕成碎片"],"answer":1,"explanation":"蓋章收據是已繳費的憑證，應妥善保存備查。"},
+      {"sourceId":"S105","question":"5. 當我們手頭資金有限時，買東西應該優先考慮什麼？","options":["(1)自己「想要的」玩具或零食","(2)生活「需要的」食物與用品","(3)廣告打最大的商品","(4)朋友推薦的昂貴奢侈品"],"answer":1,"explanation":"理財時應優先滿足生活「需要」，再考慮「想要」。"},
+      {"sourceId":"S106","question":"6. 使用行動支付（如 LINE Pay、街口）時，出示的付款條碼應該注意什麼？","options":["(1)拍給網友看","(2)防止他人偷拍或側錄以防刷錯帳","(3)隨便傳到群組","(4)列印出來貼在背後"],"answer":1,"explanation":"付款條碼涉及扣款權限，切勿讓陌生人偷拍。"},
+      {"sourceId":"S107","question":"7. 買到的衣服尺寸不合想要辦理退貨，通常需要帶什麼回店家？","options":["(1)只要衣服即可","(2)商品原包裝、標籤及發票/明細","(3)身分證正本","(4)朋友陪同即可"],"answer":1,"explanation":"辦理退換貨通常須攜帶完整商品、標籤及發票憑證。"},
+      {"sourceId":"S108","question":"8. 到超商進行「取貨付款」時，下列哪一項做法是正確的？","options":["(1)先把包裹拆開再付錢","(2)確認收件人姓名與金額無誤後再付款取貨","(3)不用核對金額直接給錢","(4)幫陌生人付錢領包裹"],"answer":1,"explanation":"取貨付款前應確認收件人姓名與金額，避免詐騙。"},
+      {"sourceId":"S109","question":"9. 收到銀行寄來的信用卡或提款卡對帳單，應該怎麼做？","options":["(1)不看直接丟掉","(2)核對每筆消費金額是否符合實際紀錄","(3)借給朋友看","(4)拍照上傳 FB"],"answer":1,"explanation":"定期核對對帳單能及時發現異常扣款或盜刷。"},
+      {"sourceId":"S110","question":"10. 如果看到商品標價「買一送一」，意思是？","options":["(1)付兩件的錢拿一件","(2)付一件的錢可以獲得兩件商品","(3)免費贈送兩件","(4)打五折但只給一件"],"answer":1,"explanation":"買一送一指支付一件商品的費用即可獲得兩件。"},
+      {"sourceId":"S111","question":"11. 到郵局匯款給賣家，填寫「匯款單」時最需要反覆核對的是什麼？","options":["(1)郵局冷氣溫度","(2)帳號、戶名與金額","(3)郵局抽號機號碼","(4)今天的天氣"],"answer":1,"explanation":"匯款時必須仔細核對帳號、戶名與金額，避免匯錯。"},
+      {"sourceId":"S112","question":"12. 在網路上看到便宜得離譜的名牌球鞋，最可能的風險是？","options":["(1)賣家大方送禮","(2)買到假貨或遇到網路購物詐騙","(3)賺到大便宜","(4)一定是正品"],"answer":1,"explanation":"價格遠低於市價的商品極可能是假貨或購物詐騙。"},
+      {"sourceId":"S113","question":"13. 申辦手機載具索取「雲端發票」，主要的優點不包含下列哪一項？","options":["(1)環保少紙化","(2)自動幫忙對獎","(3)保證每期發票都中獎","(4)避免發票遺失"],"answer":2,"explanation":"雲端發票有自動對獎與環保好處，但無法保證中獎。"},
+      {"sourceId":"S114","question":"14. 到餐廳用餐發現菜單註明「加收一成服務費」，若餐點為300元，總共要付多少？","options":["(1)300元","(2)330元","(3)360元","(4)400元"],"answer":1,"explanation":"一成服務費為 300×10%=30元，總共須付 330元。"},
+      {"sourceId":"S115","question":"15. 如果身上的現金不夠支付剛才吃的餐點，最適當的處理方式是？","options":["(1)偷偷從後門溜走","(2)誠實告知店家並尋求補救方式（如家人協助）","(3)在店裡大聲喧嘩","(4)留假電話後離開"],"answer":1,"explanation":"現金不足應誠實說明並主動尋求聯繫家人付清。"},
+      {"sourceId":"S116","question":"16. 關於悠遊卡或一卡通的「自動加值」功能，下列觀念何者正確？","options":["(1)裡面的錢會無限制扣不完","(2)綁定後仍需注意消費與卡片保管","(3)掉了也不用掛失","(4)可以借給任何人使用"],"answer":1,"explanation":"開啟自動加值功能仍應妥善保管卡片，避免遺失造成損失。"},
+      {"sourceId":"S117","question":"17. 當朋友向你借錢，但你手頭也很緊時，你該怎麼做？","options":["(1)借高利貸來借給朋友","(2)禮貌且堅定地說明困難並拒絕","(3)拿家人的錢借他","(4)不理不睬直接打人"],"answer":1,"explanation":"自身能力有限時，應禮貌且堅定地向對方說明拒絕。"},
+      {"sourceId":"S118","question":"18. 購買預售票（如演唱會、電影票）時，下列哪種管道最安全？","options":["(1)臉書不具名社團的黃牛","(2)官方指定的售票系統或平台","(3)陌生網友的私訊","(4)路邊隨機兜售的陌生人"],"answer":1,"explanation":"購買票券應透過官方指定的合法售票管道最安全。"},
+      {"sourceId":"S119","question":"19. 下列何者是「養成良好儲蓄習慣」的做法？","options":["(1)拿到零用錢先花完，剩下的再存","(2)設定固定金額，領到錢後先存起來","(3)全部花光再向別人借","(4)買一堆不需要的特價品"],"answer":1,"explanation":"先儲蓄再消費（先存下預定金額）是良好的理財習慣。"},
+      {"sourceId":"S120","question":"20. 遇到店家找零錢時，什麼時候確認金額最恰當？","options":["(1)回到家後再數","(2)當場在櫃檯當面清點","(3)隔天再回店家找麻煩","(4)隨便塞口袋不用數"],"answer":1,"explanation":"找零時應當場在櫃檯當面清點，以免後續產生爭議。"},
+      {"sourceId":"S121","question":"21. 當你收到瑕疵商品想要求店家處理，溝通時應保持什麼態度？","options":["(1)大吵大鬧砸店","(2)理性出示憑證並說明商品問題","(3)默默吞下不敢說","(4)網路上匿名謾罵"],"answer":1,"explanation":"處理消費爭議應理性出示購物憑證，據實說明問題。"},
+      {"sourceId":"S122","question":"22. 辦理信用卡或分期付款時，什麼是「循環利息」？","options":["(1)銀行送的紅利點數","(2)未繳清欠款所產生的額外高額利息","(3)免費的試用優惠","(4)刷卡獲得的折扣"],"answer":1,"explanation":"信用卡未全額繳清會產生高額循環利息，增加負擔。"},
+      {"sourceId":"S123","question":"23. 逛夜市或傳統市場買菜時，若商品沒有標價，應該怎麼做？","options":["(1)直接拿了就走","(2)先詢問價格與計價方式再決定購買","(3)隨便給店員50元","(4)結帳後嫌貴跟老闆吵架"],"answer":1,"explanation":"購買無標價商品應先問清價格與計算方式再決定。"},
+      {"sourceId":"S124","question":"24. 當便利商店推出「點數貼紙集點」活動，最適當的態度是？","options":["(1)為了集點買一堆不需要的東西","(2)順其自然，有需要消費時再收集","(3)偷拿別人的貼紙","(4)為了點數跟店員吵架"],"answer":1,"explanation":"集點應以理性消費為主，不應為了贈品過度開支。"},
+      {"sourceId":"S125","question":"25. 為何不應該將自己的銀行存摺或提款卡「租借」給他人？","options":["(1)會被沒收紅利","(2)會變成詐騙人頭帳戶而負擔刑事責任","(3)只會被扣50元","(4)沒什麼大不了"],"answer":1,"explanation":"出租或提供帳戶給他人會淪為詐騙共犯，承擔刑責。"},
+      {"sourceId":"S126","question":"26. 需要辦理戶籍謄本或身分證換發，應該去哪一個政府機關？","options":["(1)衛生所","(2)戶政事務所","(3)地政事務所","(4)警察局"],"answer":1,"explanation":"辦理戶籍與身分證件相關業務應至「戶政事務所」。"},
+      {"sourceId":"S127","question":"27. 到郵局辦理郵寄信件時，信封上除了收件人地址，還需要填寫什麼？","options":["(1)收件人電話","(2)郵遞區號","(3)寄件人生日","(4)收件人星座"],"answer":1,"explanation":"填寫正確的「郵遞區號」能加快郵局分揀與投遞效率。"},
+      {"sourceId":"S128","question":"28. 在圖書館借書時，下列哪一種行為是遵守規則的表現？","options":["(1)在書本上畫線做記號","(2)按時歸還圖書館書籍","(3)把喜歡的頁面剪下來","(4)在閱覽室大聲通話"],"answer":1,"explanation":"借閱圖書館圖書應愛護書本並於期限內按時歸還。"},
+      {"sourceId":"S129","question":"29. 到醫院或診所看病時，必須出示哪一張重要卡片？","options":["(1)郵局提款卡","(2)國民健康保險卡（健保卡）","(3)學生證","(4)會員卡"],"answer":1,"explanation":"就醫看診時須出示「健保卡」以核對身分與醫療紀錄。"},
+      {"sourceId":"S130","question":"30. 到公立游泳池或體育館使用設施，下列哪項行為是正確的？","options":["(1)穿著牛仔褲下水游泳","(2)遵守場館使用須知與安全守則","(3)在場館內任意飲食丟垃圾","(4)破壞運動器材"],"answer":1,"explanation":"使用公共體育設施應遵守該場館之規範與安全守則。"},
+      {"sourceId":"S131","question":"31. 到衛生所施打流感疫苗或進行健康檢查，通常需要帶什麼？","options":["(1)健保卡與身分證件","(2)存摺","(3)護照","(4)畢業證書"],"answer":0,"explanation":"至衛生所辦理醫療保健業務須攜帶健保卡與身分證。"},
+      {"sourceId":"S132","question":"32. 在社區公園散步時，看到運動器材故障損壞，應該怎麼做？","options":["(1)繼續強行使用","(2)通報公園管理單位或區公所維修","(3)自己拿鎚子修理","(4)假裝沒看到並叫小孩子去玩"],"answer":1,"explanation":"發現公共設施損壞應通報管理單位，勿強行使用。"},
+      {"sourceId":"S133","question":"33. 到區公所或里長辦公室，主要可以尋求什麼樣的協助？","options":["(1)買便宜的衣服","(2)社福補助諮詢與社區服務申辦","(3)辦理信用卡","(4)購買火車票"],"answer":1,"explanation":"區公所與里辦公處提供在地社會福利與民政諮詢。"},
+      {"sourceId":"S134","question":"34. 搭乘台鐵火車時，若不小心坐錯車廂或找不到座位，可以向誰尋求協助？","options":["(1)旁邊的陌生乘客","(2)列車長或站務人員","(3)打119","(4)喊警察來"],"answer":1,"explanation":"火車上有問題可向列車長或車站站務人員尋求協助。"},
+      {"sourceId":"S135","question":"35. 使用圖書館的電腦設備時，下列哪一種做法是錯誤的？","options":["(1)遵守使用時間限制","(2)隨意下載不明檔案或更改系統設定","(3)離開時登出個人帳號","(4)保持安靜不打擾他人"],"answer":1,"explanation":"公用電腦不可任意下載不明程式或隨意更改設定。"},
+      {"sourceId":"S136","question":"36. 想到郵局臨櫃辦理「存錢」或「提款」，第一步通常要先做什麼？","options":["(1)直接衝到櫃檯","(2)抽取號碼牌並依序等候叫號","(3)大聲喊叫","(4)找郵差拍照"],"answer":1,"explanation":"到郵局或銀行辦理業務應先抽取號碼牌，依序等候。"},
+      {"sourceId":"S137","question":"37. 在社區中發現路燈不亮或道路破損，可以撥打哪一個縣市民服務專線通報？","options":["(1)165","(2)1999 縣市民服務專線","(3)113","(4)104"],"answer":1,"explanation":"1999 為縣市民服務專線，可通報各類社區設施維修。"},
+      {"sourceId":"S138","question":"38. 關於公車候車亭的維護，下列哪一種行為是公民應有的表現？","options":["(1)在公車亭塗鴉","(2)保持候車亭乾淨，不亂丟垃圾","(3)破壞路線圖","(4)霸佔座位睡覺"],"answer":1,"explanation":"公共候車設施需要大家共同維護乾淨與整潔。"},
+      {"sourceId":"S139","question":"39. 到垃圾車停靠點丟垃圾時，下列哪一項做法是正確的？","options":["(1)隨意丟在路邊就走","(2)配合垃圾車時間並做好垃圾分類","(3)將廚餘混在一般垃圾","(4)拿大塑膠袋追跑車子"],"answer":1,"explanation":"應於定點定時配合垃圾車，並做好資源分類。"},
+      {"sourceId":"S140","question":"40. 若在社區遇到無家可歸或需要緊急社會救助的人，可以聯絡哪個單位？","options":["(1)警察局或地方政府社會福利單位","(2)賣場店長","(3)連鎖超商","(4)消防隊買便當"],"answer":0,"explanation":"遇到需緊急救助者可通報地方政府社會福利單位或警方。"},
+      {"sourceId":"S141","question":"41. 使用社區活動中心時，下列哪一項行為是錯誤的？","options":["(1)離開時關閉電燈與冷氣電源","(2)將個人垃圾留在現場","(3)遵守借用時間規範","(4)愛護現場桌椅"],"answer":1,"explanation":"使用公共空間後應清理個人垃圾，恢復環境原狀。"},
+      {"sourceId":"S142","question":"42. 想到醫院看診，但不知道該掛哪一科時，可以怎麼辦？","options":["(1)隨便掛號","(2)向醫院服務台或諮詢櫃檯詢問","(3)直接進診室問醫生","(4)回家不看病"],"answer":1,"explanation":"不確定診別時可向醫院服務台或諮詢人員尋求指引。"},
+      {"sourceId":"S143","question":"43. 關於搭乘公車的「動態看板」或 APP，主要功能是什麼？","options":["(1)看新聞","(2)查看公車預估到站時間","(3)買公車票","(4)打電動"],"answer":1,"explanation":"公車動態資訊可幫助乘客掌握班車預估到站時間。"},
+      {"sourceId":"S144","question":"44. 到郵局寄送「包裹」時，郵務人員會根據什麼來計算郵資？","options":["(1)包裹的顏色","(2)包裹的重量與尺寸大小","(3)寄件人的年齡","(4)包裹的名字"],"answer":1,"explanation":"郵局包裹郵資主要依據重量與包裝尺寸進行計費。"},
+      {"sourceId":"S145","question":"45. 在公共場所（如文化中心）看展覽時，下列哪一種行為是合適的？","options":["(1)用手摸展覽品","(2)遵守規定不觸摸展品、保持安靜","(3)在展場大聲跑跳","(4)帶寵物隨意奔跑"],"answer":1,"explanation":"觀賞展覽應遵守展場規定，不觸摸展品並保持安靜。"},
+      {"sourceId":"S146","question":"46. 需要申辦低收入戶或身心障礙生活補助，應至哪裡遞交申請？","options":["(1)戶籍所在地的區公所社會課","(2)郵局","(3)警察局","(4)醫院"],"answer":0,"explanation":"社福各項津貼補助申辦窗口為戶籍地區公所社會課。"},
+      {"sourceId":"S147","question":"47. 到勞動部就業服務站尋求協助，主要可以獲得什麼服務？","options":["(1)買便宜股票","(2)職業訓練與求職媒合登記","(3)辦理護照","(4)看病拿藥"],"answer":1,"explanation":"就業服務站提供求職登記、職業訓練與工作媒合。"},
+      {"sourceId":"S148","question":"48. 在圖書館閱覽室自習時，手機應該設定為什麼模式比較禮貌？","options":["(1)響鈴開到最大聲","(2)靜音或震動模式","(3)開啟喇叭放音樂","(4)隨意響起"],"answer":1,"explanation":"在圖書館等安靜場所應將手機轉為靜音或震動。"},
+      {"sourceId":"S149","question":"49. 關於社區回收站的使用，下列哪項做法是正確的？","options":["(1)任何垃圾都往回收桶塞","(2)將寶特瓶洗淨壓扁後分類投入","(3)將廚餘倒進紙類回收","(4)破壞回收桶"],"answer":1,"explanation":"回收寶特瓶應先清洗、壓扁並正確分類投遞。"},
+      {"sourceId":"S150","question":"50. 當你在路上發現有人遺失皮夾，最適當的處理方式是？","options":["(1)拿走裡面的現金","(2)送交附近的警察局或派出所","(3)放在路邊不管","(4)拿去買自己的東西"],"answer":1,"explanation":"撿到遺失物應送交警察機關，切勿私吞以免違法。"},
+      {"sourceId":"S151","question":"51. 當你感到非常生氣或情緒激動時，下列哪一種處理方式比較適當？","options":["(1)大聲罵人或破壞物品","(2)先深呼吸、冷靜幾分鐘再溝通","(3)動手打人","(4)離家出走"],"answer":1,"explanation":"生氣時可透過深呼吸與暫離現場來幫助自己冷靜。"},
+      {"sourceId":"S152","question":"52. 與朋友交談時，下列哪一種肢體語言是尊重的表現？","options":["(1)眼睛看著對方並認真傾聽","(2)雙手抱胸看著天花板","(3)一邊打電動一邊回答","(4)頻頻翻白眼"],"answer":0,"explanation":"交談時看著對方並專心傾聽，是良好的社交禮儀。"},
+      {"sourceId":"S153","question":"53. 如果陌生人靠你太近，讓你感到很不舒服，你應該怎麼做？","options":["(1)忍耐不敢動","(2)禮貌退後保持距離，並明確表達拒絕","(3)大聲嘲笑對方","(4)打自己"],"answer":1,"explanation":"感到不舒服時應保持安全個人距離並明確表達拒絕。"},
+      {"sourceId":"S154","question":"54. 當同學或同事獲得好成績或獎項時，適當的社交回應是？","options":["(1)說酸言酸語","(2)誠心給予祝福與恭喜","(3)假裝沒看到","(4)搶走對方的獎牌"],"answer":1,"explanation":"給予他人真誠的恭喜與祝福能建立良好的人際關係。"},
+      {"sourceId":"S155","question":"55. 如果你不小心撞到別人，第一時間應該說什麼？","options":["(1)「是你沒看路！」","(2)「對不起，你沒事吧？」","(3)「快點跟我道歉！」","(4)不說話直接跑掉"],"answer":1,"explanation":"不小心影響或碰撞他人時，應主動表達歉意。"},
+      {"sourceId":"S156","question":"56. 當別人正在說話時，下列哪一種行為是不禮貌的？","options":["(1)專心聆聽","(2)任意打斷對方的發言","(3)等對方說完再回答","(4)點頭表示理解"],"answer":1,"explanation":"隨意打斷他人說話是不禮貌的，應等對方說完。"},
+      {"sourceId":"S157","question":"57. 收到朋友送的生日禮物，即使樣式不完全喜歡，應該如何回應？","options":["(1)當場表達嫌棄","(2)謝謝對方的用心與心意","(3)把禮物丟進垃圾桶","(4)叫對方換成現金"],"answer":1,"explanation":"收受禮物應感謝對方的這份心意與祝福。"},
+      {"sourceId":"S158","question":"58. 在社群網路上（如 FB、IG）與人互動，下列哪種行為是錯誤的？","options":["(1)尊重他人隱私","(2)留言公然謾罵或散播未證實的謠言","(3)發表正面友善的言論","(4)不隨意公開他人照片"],"answer":1,"explanation":"網路發言仍須負法律責任，切勿公然辱罵或造謠。"},
+      {"sourceId":"S159","question":"59. 當你遇到挫折感到心情低落時，下列哪一種宣洩方式較健康？","options":["(1)酗酒或打人","(2)向信任的家人朋友傾訴或運動","(3)關在房間絕食","(4)在網路上亂罵人"],"answer":1,"explanation":"透過運動或向信任者傾訴能健康紓解負面情緒。"},
+      {"sourceId":"S160","question":"60. 朋友邀請你參加活動，但你那天剛好有事不能去，該怎麼回應？","options":["(1)答應後直接放鴿子","(2)誠懇說明原因並禮貌拒絕","(3)罵對方幹嘛找你","(4)不讀不回"],"answer":1,"explanation":"無法赴約時應誠懇說明原因，禮貌告知對方。"},
+      {"sourceId":"S161","question":"61. 關於「個人隱私界線」，下列哪一項資訊不適合隨意問初次見面的朋友？","options":["(1)喜歡的運動","(2)存款金額與薪水細節","(3)喜歡吃的水果","(4)喜歡的音樂"],"answer":1,"explanation":"薪水與存款屬於個人私密隱私，不宜過度打探。"},
+      {"sourceId":"S162","question":"62. 當你和同儕意見不一樣時，最好的溝通方式是什麼？","options":["(1)大聲咆哮逼對方聽你的","(2)理性表達想法並尊重對方的不同觀點","(3)找人打對方","(4)永遠不跟對方說話"],"answer":1,"explanation":"溝通時應理性表達個人觀點，並尊重多元差異。"},
+      {"sourceId":"S163","question":"63. 看到同學在哭泣或難過時，下列哪一種做法是具同理心的表現？","options":["(1)嘲笑對方軟弱","(2)關心詢問是否需要幫忙或給予陪伴","(3)拍照發到網路上","(4)在旁邊幸災樂禍"],"answer":1,"explanation":"展現同理心應給予適當關心、陪伴與必要的協助。"},
+      {"sourceId":"S164","question":"64. 到朋友家做客時，下列哪一種行為是符合禮儀的？","options":["(1)隨意翻看主人的房間與抽屜","(2)進門前脫鞋，並愛護主人的家裡環境","(3)把垃圾丟在沙發上","(4)隨便拿走主人的東西"],"answer":1,"explanation":"作客應尊重主人家規，不隨意翻動隱私物品。"},
+      {"sourceId":"S165","question":"65. 當你承諾幫朋友一個忙，但後來發現自己做不到時，該怎麼辦？","options":["(1)假裝沒這回事","(2)提早誠實說明並表達抱歉","(3)推給別人做","(4)躲起來不接電話"],"answer":1,"explanation":"無法完成承諾時應提早說明原因並表達歉意。"},
+      {"sourceId":"S166","question":"66. 如果你在公共場所跟家人走散了，應該怎麼辦？","options":["(1)慌張大哭大鬧","(2)尋求現場服務台或警察協助廣播","(3)跟著陌生人走","(4)自己跑去馬路上尋找"],"answer":1,"explanation":"走散時應找服務台、店員或警察尋求廣播協助。"},
+      {"sourceId":"S167","question":"67. 當別人指出我們的缺點或給予建議時，適當的態度是？","options":["(1)馬上生氣罵回去","(2)冷靜思考並虛心接受合理的建議","(3)完全不理會","(4)哭鬧摔東西"],"answer":1,"explanation":"面對建設性建議應冷靜思考，虛心檢討改進。"},
+      {"sourceId":"S168","question":"68. 參加團體活動時，下列哪一種行為有助於團隊和諧？","options":["(1)只做自己喜歡的事","(2)遵守團體約定並主動互相協助","(3)推卸責任","(4)破壞活動器材"],"answer":1,"explanation":"配合團體規範並互相幫忙，能促進團體和諧。"},
+      {"sourceId":"S169","question":"69. 當朋友跟你分享他的秘密，並請你幫忙保密時，你應該？","options":["(1)立刻告訴所有同學","(2)守信用，不隨意洩露朋友的秘密","(3)發在網路社群上","(4)拿秘密威脅朋友"],"answer":1,"explanation":"尊重朋友的信任，恪守信用不隨意散播秘密。"},
+      {"sourceId":"S170","question":"70. 如果別人的行為影響到你（如看電影時大聲說話），你該如何處理？","options":["(1)直接跟對方打架","(2)禮貌提醒對方或請現場工作人員處理","(3)大聲辱罵對方","(4)默默忍受"],"answer":1,"explanation":"受影響時可禮貌提醒，或尋求現場工作人員處理。"},
+      {"sourceId":"S171","question":"71. 關於「幽默感」，下列哪一種行為是錯誤的開玩笑？","options":["(1)講一個有趣的笑話","(2)拿對方的外表或身體缺陷開玩笑","(3)分享開心的事","(4)說溫馨的吉祥話"],"answer":1,"explanation":"拿他人身體缺陷或外表開玩笑屬於不尊重與霸凌。"},
+      {"sourceId":"S172","question":"72. 當你需要請求別人幫忙時，開口第一句話說什麼最合適？","options":["(1)「喂！過來！」","(2)「請問可以請你幫個忙嗎？」","(3)「快點幫我！」","(4)不說話直接拉對方"],"answer":1,"explanation":"請求他人協助時應使用禮貌用語「請問」與「請」。"},
+      {"sourceId":"S173","question":"73. 社交場合中，當別人向你自我介紹時，你應該？","options":["(1)轉頭不理人","(2)禮貌回應並介紹自己","(3)嘲笑對方的名字","(4)走開"],"answer":1,"explanation":"他人自我介紹時應禮貌回應，並適度介紹自己。"},
+      {"sourceId":"S174","question":"74. 當你發現自己誤會了別人，最適當的作法是？","options":["(1)死不承認錯誤","(2)主動向對方說明情況並誠摯道歉","(3)怪別人沒講清楚","(4)假裝沒這回事"],"answer":1,"explanation":"發現誤會他人時，應主動說明並表達誠心歉意。"},
+      {"sourceId":"S175","question":"75. 關於「個人空間距離」，與非親密朋友說話時，保持多少距離較合適？","options":["(1)臉貼臉","(2)約一臂長度的社交安全距離","(3)距離十公尺用喊的","(4)緊緊抱住對方"],"answer":1,"explanation":"社交互動保持約一臂長度距離，能讓雙方感到舒適。"},
+      {"sourceId":"S176","question":"76. 出門離開家裡之前，下列哪一項安全檢查是必須做的？","options":["(1)把電視開著","(2)確認水電瓦斯開關與門窗是否關好鎖緊","(3)把所有燈都打開","(4)把大門大開"],"answer":1,"explanation":"出門前應檢查水電瓦斯關閉，並確認門窗鎖好。"},
+      {"sourceId":"S177","question":"77. 發現家中廚房排水孔有異味或堵塞，平日該如何預防？","options":["(1)隨意傾倒大塊廚餘與廢油","(2)清理濾網廚餘，不將廢油直接倒入排水孔","(3)倒入大量垃圾","(4)不理它"],"answer":1,"explanation":"廚餘濾網應定期清理，廢油切勿直接倒入排水管。"},
+      {"sourceId":"S178","question":"78. 感覺自己體溫升高、頭痛不適時，第一步自我檢測應該怎麼做？","options":["(1)吃一顆糖果","(2)使用體溫計量測體溫","(3)去操場跑步","(4)喝冰水"],"answer":1,"explanation":"懷疑發燒時應先使用體溫計量測體溫確認狀況。"},
+      {"sourceId":"S179","question":"79. 關於藥品保存，下列哪一種做法是正確的？","options":["(1)丟在太陽直射的窗台","(2)依照藥袋說明置於陰涼乾燥處或冰箱","(3)將所有藥丸混裝在一起","(4)放在幼童拿得到的地方"],"answer":1,"explanation":"藥品應依指示存放在陰涼避光處，並遠離幼童。"},
+      {"sourceId":"S180","question":"80. 當外送員或宅配人員送貨到家時，應注意什麼門禁安全？","options":["(1)直接大開門邀請對方進房間","(2)先透過門眼核對身分，不隨意讓陌生人進屋","(3)門完全不鎖","(4)把鑰匙給外送員"],"answer":1,"explanation":"收取外送應先確認身分，並避免陌生人進入家中。"},
+      {"sourceId":"S181","question":"81. 居家垃圾中的「生鮮廚餘」（如菜葉、果皮）應該如何處理？","options":["(1)隨意堆放在客廳","(2)瀝乾水分後倒入廚餘回收桶或專用袋","(3)丟出窗外","(4)沖入馬桶"],"answer":1,"explanation":"廚餘應先瀝乾水分，再放入廚餘桶分類回收。"},
+      {"sourceId":"S182","question":"82. 為預防浴室滑倒受傷，下列哪一項改善措施是有效的？","options":["(1)鋪設防滑墊或加裝安全扶手","(2)保持地面積水","(3)使用超高高跟鞋","(4)塗抹地板蠟"],"answer":0,"explanation":"浴室鋪設防滑墊或安裝扶手能有效預防滑倒意外。"},
+      {"sourceId":"S183","question":"83. 醫生開立的抗生素或感冒藥，正確的服用觀念是什麼？","options":["(1)症狀稍微好轉就自己停藥","(2)遵照醫囑按時吃完整個療程","(3)跟家人交換藥吃","(4)一次吃兩倍劑量"],"answer":1,"explanation":"醫師開立之藥物應遵照醫囑按時服完，切勿自行停藥。"},
+      {"sourceId":"S184","question":"84. 天氣轉冷時，為了預防感冒與維持健康，應該怎麼做？","options":["(1)穿著短袖吹風","(2)隨天氣變化適時增添保暖衣物","(3)絕不喝溫水","(4)一整天不開窗"],"answer":1,"explanation":"應依天氣變化適時增添保暖衣物，做好個人保健。"},
+      {"sourceId":"S185","question":"85. 居家使用延長線時，下列哪一種行為容易引發火災危險？","options":["(1)購買有過載保護裝置的延長線","(2)一條延長線同時插滿高功率電器（如電鍋、電暖器）","(3)不使用時拔掉插頭","(4)保持延長線通風"],"answer":1,"explanation":"延長線切勿同時插滿高耗電器，以免過載發熱起火。"},
+      {"sourceId":"S186","question":"86. 發現家中有老鼠或蟑螂出沒，最根本的環境清潔做法是？","options":["(1)堆積大量空盒垃圾","(2)妥善封存食物，保持環境乾淨無積水","(3)在床上吃零食","(4)不清理廚餘"],"answer":1,"explanation":"封存食物、清理廚餘與保持乾燥是防病媒蚊蠅之本。"},
+      {"sourceId":"S187","question":"87. 上完洗手間或進食之前，正確的洗手步驟包含？","options":["(1)用清水摸一下即可","(2)使用肥皂或洗手乳落實「搓洗 20 秒」","(3)擦在衣服上","(4)不用洗手"],"answer":1,"explanation":"飯前便後應使用肥皂搓洗雙手至少 20 秒，才能有效清潔。"},
+      {"sourceId":"S188","question":"88. 若家中水龍頭持續漏水不停，應先關閉什麼組件並找水電工維修？","options":["(1)關閉電視","(2)關閉該水管之止水閥或家戶總水閥","(3)關閉瓦斯","(4)關閉窗戶"],"answer":1,"explanation":"水箱或水管漏水應先關閉總水閥，避免浪費與積水。"},
+      {"sourceId":"S189","question":"89. 當發生腹瀉（拉肚子）時，飲食補充上應該注意什麼？","options":["(1)吃油炸燒烤食物","(2)補充水分與電解質，吃清淡飲食","(3)喝大杯冰珍奶","(4)不喝水"],"answer":1,"explanation":"腹瀉易脫水，應補充水分電解質並食用清淡食物。"},
+      {"sourceId":"S190","question":"90. 關於個人衛生用品（如牙刷），建議多久更換一次？","options":["(1)十年","(2)約 2～3 個月或刷毛散開時","(3)永遠不用換","(4)每天換一支"],"answer":1,"explanation":"牙刷建議每 2～3 個月或刷毛變形散開時更換。"},
+      {"sourceId":"S191","question":"91. 到醫院就醫時，向醫生說明症狀下列哪種說法最清晰？","options":["(1)「就全身不舒服啦！」","(2)「我從昨天開始發燒到38.5度，而且會咳嗽」","(3)「你自己看著辦」","(4)「我不知道」"],"answer":1,"explanation":"清楚說明發作時間、具體體徵與症狀能協助醫生診斷。"},
+      {"sourceId":"S192","question":"92. 居家防颱準備中，下列哪一項行動是正確的？","options":["(1)將陽台花盆移至室內，固定鬆動物品","(2)把窗戶大開通風","(3)跑去海邊觀浪","(4)準備大量煙火"],"answer":0,"explanation":"颱風來臨前應將陽台易墜落的花盆移入室內，並鎖緊門窗。"},
+      {"sourceId":"S193","question":"93. 關於保健食品（如維他命），下列哪一種觀念才是正確的？","options":["(1)可以完全替代正餐與藥物","(2)補充應適量，不能取代均衡飲食與正規醫療","(3)吃越多越健康","(4)跟降血壓藥一起大量吃"],"answer":1,"explanation":"保健食品不能替代均衡飲食與藥物，過量無益。"},
+      {"sourceId":"S194","question":"94. 清潔家裡高處灰塵或更換燈泡時，下列哪種做法比較安全？","options":["(1)站在滾輪椅子上","(2)使用穩固的梯子並請人在旁扶持","(3)站在堆疊的箱子上","(4)單腳跳躍"],"answer":1,"explanation":"高處清潔或換燈泡應使用穩固梯子，避免跌落。"},
+      {"sourceId":"S195","question":"95. 女性生理期期間的衛生護理，下列何者正確？","options":["(1)一天只要換一片衛生棉","(2)定期更換衛生棉並保持乾爽","(3)不用洗澡","(4)隨意丟棄使用過的衛生棉"],"answer":1,"explanation":"生理期應依流量與產品指示定期更換衛生棉，維持乾淨衛生。"},
+      {"sourceId":"S196","question":"96. 發現家中壁癌或牆壁發黴，長期對身體會有什麼不良影響？","options":["(1)讓皮膚變好","(2)易引發呼吸道過敏與氣喘","(3)沒有任何影響","(4)增強免疫力"],"answer":1,"explanation":"居家黴菌與濕氣易誘發呼吸道過敏、咳嗽與氣喘。"},
+      {"sourceId":"S197","question":"97. 使用微波爐加熱食物時，下列哪一種容器是「絕對不能」放入的？","options":["(1)微波專用塑膠盒","(2)金屬碗盤或帶有金屬邊框的餐具","(3)可微波玻璃碗","(4)可微波陶瓷盤"],"answer":1,"explanation":"金屬容器放入微波爐會產生火花引發火災危險。"},
+      {"sourceId":"S198","question":"98. 運動或戶外活動後大量流汗，應該注意什麼健康管理？","options":["(1)馬上吹強烈冷氣","(2)擦乾汗水並適度補充水分","(3)喝冰水狂灌","(4)不穿衣服"],"answer":1,"explanation":"流汗後應及時擦乾避免受涼，並適度補充水分。"},
+      {"sourceId":"S199","question":"99. 當家中發生跳電（斷電）時，第一步處理動作應該是？","options":["(1)馬上打 119","(2)先關閉高功率電器，再查看無熔絲開關","(3)砸壞電器","(4)跑出去大叫"],"answer":1,"explanation":"跳電時應先關閉高功率電器，再檢查無熔絲開關；若反覆跳電，應請專業人員檢修。"},
+      {"sourceId":"S200","question":"100. 保持良好的睡眠習慣，對身心健康有何重要性？","options":["(1)浪費時間","(2)幫助體力恢復、維持免疫力與注意力集中","(3)讓身體變弱","(4)沒任何作用"],"answer":1,"explanation":"充足良好的睡眠是維持免疫力、記憶力與體力的關鍵。"}
+    ];
+    const unitSelect=document.querySelector("#unit"),questionEl=document.querySelector("#question"),sourceEl=document.querySelector("#source"),optionsEl=document.querySelector("#options"),feedbackEl=document.querySelector("#feedback"),progressEl=document.querySelector("#progress"),scoreEl=document.querySelector("#score"),prevBtn=document.querySelector("#prev"),nextBtn=document.querySelector("#next");
+    let unit=0,index=0,answers=Array(10).fill(null);
+    for(let i=0;i<10;i++){const option=document.createElement("option");option.value=i;option.textContent=`單元 ${i+1}（第 ${i*10+1}～${i*10+10} 題）`;unitSelect.append(option)}
+    function current(){return questions[unit*10+index]}
+    function render(){speechSynthesis.cancel();const q=current();sourceEl.textContent=`題庫編號 ${q.sourceId}`;questionEl.textContent=q.question;progressEl.textContent=`第 ${index+1}／10 題`;optionsEl.replaceChildren();feedbackEl.className="feedback";q.options.forEach((text,i)=>{const button=document.createElement("button");button.type="button";button.className="option";button.textContent=text;button.addEventListener("click",()=>answer(i));if(answers[index]!==null){button.disabled=true;if(i===q.answer)button.classList.add("correct");if(i===answers[index]&&i!==q.answer)button.classList.add("wrong")}optionsEl.append(button)});if(answers[index]!==null)showFeedback();prevBtn.disabled=index===0;nextBtn.disabled=index===9;updateScore()}
+    function answer(choice){if(answers[index]!==null)return;answers[index]=choice;render();const q=current();speak(choice===q.answer?`答對了。${q.explanation}`:`答錯了。正確答案是${q.options[q.answer]}。${q.explanation}`)}
+    function showFeedback(){const q=current(),correct=answers[index]===q.answer;feedbackEl.className=`feedback show ${correct?"good":"bad"}`;feedbackEl.textContent=correct?`答對了！${q.explanation}`:`答錯了。正確答案是「${q.options[q.answer]}」。${q.explanation}`}
+    function updateScore(){let score=0;answers.forEach((answer,i)=>{if(answer!==null&&answer===questions[unit*10+i].answer)score+=10});scoreEl.textContent=`${score} 分`}
+    function speak(text){speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(text);utterance.lang="zh-TW";utterance.rate=.9;speechSynthesis.speak(utterance)}
+    document.querySelector("#voice").addEventListener("click",()=>{const q=current();speak(`${q.question}。${q.options.join("。")}`)});unitSelect.addEventListener("change",()=>{unit=Number(unitSelect.value);index=0;answers=Array(10).fill(null);render()});prevBtn.addEventListener("click",()=>{if(index>0){index--;render()}});nextBtn.addEventListener("click",()=>{if(index<9){index++;render()}});render();
+  </script>
+</body>
+</html>
