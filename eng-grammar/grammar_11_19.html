@@ -21,7 +21,7 @@
             align-items: center;
             padding: 20px 10px;
             margin: 0;
-            user-select: none; /* 防止手寫時誤選到文字 */
+            user-select: text;
         }
 
         /* 核心紙張設定：寬度嚴格限定為 A4 210mm，但長度不限以容納展開的詳解 */
@@ -76,6 +76,7 @@
         .drawing-active {
             touch-action: none;
             overflow: hidden;
+            user-select: none;
         }
 
         @media print {
@@ -90,6 +91,7 @@
             }
             /* 控制列印時強制顯示或隱藏特定區塊 */
             .print-hidden-answers .answer-text,
+            .print-hidden-answers .teacher-explanations,
             .print-hidden-answers .hint-card,
             .print-hidden-answers .slot-interactive { display: none !important; }
             
@@ -97,6 +99,9 @@
 
             .print-show-answers .print-blank-line { display: none !important; }
             .print-show-answers .answer-text { display: inline !important; color: #dc2626 !important; }
+            .print-show-answers .teacher-explanations { display: block !important; }
+            .teacher-explanations { break-inside: auto; }
+            .teacher-explanations section { break-inside: avoid; }
         }
         section { break-inside: avoid; }
     </style>
@@ -152,7 +157,7 @@
         <!-- 表頭區塊 -->
         <header class="border-b border-slate-200 pb-1 mb-2 relative z-10">
             <div class="flex justify-between items-end">
-                <h1 class="text-[24px] font-bold text-slate-800 tracking-tight">【字彙 - 數字 11~19】</h1>
+                <h1 class="text-[24px] font-bold text-slate-800 tracking-tight whitespace-nowrap">【字彙－數字 11～19】</h1>
                 <div class="text-[14px] text-slate-400">班級：__________ 姓名：__________</div>
             </div>
         </header>
@@ -321,7 +326,7 @@
                 <!-- Q1 -->
                 <div class="p-2 border border-slate-100 rounded bg-white flex justify-between items-start">
                     <div class="w-full">
-                        <p class="font-medium mb-1">1. ( &nbsp;<span id="l3-bracket-1" class="print-text font-bold text-blue-600">&nbsp;&nbsp;</span>&nbsp; ) My brother has ______ toy cars. ( 🏎️ x 12 )</p>
+                        <p class="font-medium mb-1">( &nbsp;<span id="l3-bracket-1" class="print-text font-bold text-blue-600">&nbsp;&nbsp;</span>&nbsp; ) 1. My brother has ______ toy cars. ( 🏎️ x 12 )</p>
                         <div class="flex gap-6 text-slate-500 ml-10 mt-1">
                             <button onclick="selectL3(1, 'A')" id="l3-opt-1-A" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(A)</b> eleven</button>
                             <button onclick="selectL3(1, 'B')" id="l3-opt-1-B" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(B)</b> twelve</button>
@@ -335,7 +340,7 @@
                 <!-- Q2 -->
                 <div class="p-2 border border-slate-100 rounded bg-slate-50/50 flex justify-between items-start">
                     <div class="w-full">
-                        <p class="font-medium mb-1">2. ( &nbsp;<span id="l3-bracket-2" class="print-text font-bold text-blue-600">&nbsp;&nbsp;</span>&nbsp; ) There are ______ apples in the box. ( 🍎 x 14 )</p>
+                        <p class="font-medium mb-1">( &nbsp;<span id="l3-bracket-2" class="print-text font-bold text-blue-600">&nbsp;&nbsp;</span>&nbsp; ) 2. There are ______ apples in the box. ( 🍎 x 14 )</p>
                         <div class="flex gap-6 text-slate-500 ml-10 mt-1">
                             <button onclick="selectL3(2, 'A')" id="l3-opt-2-A" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-white transition"><b>(A)</b> fourteen</button>
                             <button onclick="selectL3(2, 'B')" id="l3-opt-2-B" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-white transition"><b>(B)</b> thirteen</button>
@@ -349,7 +354,7 @@
                 <!-- Q3 -->
                 <div class="p-2 border border-slate-100 rounded bg-white flex justify-between items-start">
                     <div class="w-full">
-                        <p class="font-medium mb-1">3. ( &nbsp;<span id="l3-bracket-3" class="print-text font-bold text-blue-600">&nbsp;&nbsp;</span>&nbsp; ) I have ______ books. ( 📚 x 19 )</p>
+                        <p class="font-medium mb-1">( &nbsp;<span id="l3-bracket-3" class="print-text font-bold text-blue-600">&nbsp;&nbsp;</span>&nbsp; ) 3. I have ______ books. ( 📚 x 19 )</p>
                         <div class="flex gap-6 text-slate-500 ml-10 mt-1">
                             <button onclick="selectL3(3, 'A')" id="l3-opt-3-A" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(A)</b> seventeen</button>
                             <button onclick="selectL3(3, 'B')" id="l3-opt-3-B" class="px-2.5 py-0.5 rounded border border-slate-200 text-[16px] hover:bg-slate-50 transition"><b>(B)</b> ninety</button>
@@ -370,6 +375,8 @@
         <div class="answer-text hidden text-[15px] text-red-600 font-bold border-t border-dashed border-red-300 pt-2 mt-2">
             🔑 本講義教師解答：【Level 1】1. ◯ &nbsp; 2. ✕ &nbsp; 3. ◯ &nbsp;&nbsp;【Level 2】1. eleven &nbsp; 2. fifteen &nbsp; 3. eighteen &nbsp;&nbsp;【Level 3】1. (B) &nbsp; 2. (A) &nbsp; 3. (C)
         </div>
+
+        <div id="teacher-explanations" class="teacher-explanations hidden border-t-2 border-slate-700 pt-2 mt-3 text-[12px] leading-snug text-slate-800"></div>
 
         <!-- 頁尾 -->
         <footer class="mt-auto pt-2 border-t border-slate-100 flex justify-between items-end relative z-10">
@@ -447,38 +454,30 @@
         function resizeCanvas() {
             const paper = document.getElementById("printable-paper");
             if (!paper) return;
-
-            const newWidth = paper.clientWidth;
-            const newHeight = paper.clientHeight;
-
-            // 防禦型機制：如果尺寸為0先不重繪，避免產生 InvalidStateError 錯誤
-            if (newWidth === 0 || newHeight === 0) return;
-
-            if (canvas.width !== newWidth || canvas.height !== newHeight) {
+            const targetWidth = paper.clientWidth;
+            const targetHeight = paper.clientHeight;
+            if (targetWidth === 0 || targetHeight === 0) return;
+            if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+                let tempCanvas = null;
                 if (canvas.width > 0 && canvas.height > 0) {
-                    const tempCanvas = document.createElement("canvas");
+                    tempCanvas = document.createElement("canvas");
                     tempCanvas.width = canvas.width;
                     tempCanvas.height = canvas.height;
                     const tempCtx = tempCanvas.getContext("2d");
-                    
-                    try {
-                        tempCtx.drawImage(canvas, 0, 0);
-                        canvas.width = newWidth;
-                        canvas.height = newHeight;
-                        ctx.drawImage(tempCanvas, 0, 0);
-                    } catch (e) {
-                        canvas.width = newWidth;
-                        canvas.height = newHeight;
-                    }
-                } else {
-                    canvas.width = newWidth;
-                    canvas.height = newHeight;
+                    try { tempCtx.drawImage(canvas, 0, 0); } catch (e) { tempCanvas = null; }
+                }
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+                if (tempCanvas && tempCanvas.width > 0 && tempCanvas.height > 0) {
+                    try { ctx.drawImage(tempCanvas, 0, 0); }
+                    catch (e) { console.warn("Failed to restore canvas backup safely:", e); }
                 }
             }
         }
 
         window.addEventListener('load', () => {
             resizeCanvas();
+            setTimeout(resizeCanvas, 200);
             window.addEventListener('resize', resizeCanvas);
 
             // 監聽畫布的觸控與滑鼠事件
@@ -504,6 +503,15 @@
             } else {
                 document.body.classList.add("drawing-active");
             }
+        }
+
+        function levelIds(levelNum) {
+            return Object.keys(ANSWERS[`level${levelNum}`]).map(Number).sort((a, b) => a - b);
+        }
+
+        function optionIds(questionNum) {
+            return Array.from(document.querySelectorAll(`[id^="l3-opt-${questionNum}-"]`))
+                .map(button => button.id.split('-').pop());
         }
 
         function startDrawing(e) {
@@ -595,7 +603,7 @@
         }
 
         function selectL3(qNum, option) {
-            ['A', 'B', 'C'].forEach(opt => {
+            optionIds(qNum).forEach(opt => {
                 document.getElementById(`l3-opt-${qNum}-${opt}`).className = "px-2.5 py-0.5 rounded border border-slate-200 text-[16px] text-slate-500 transition";
             });
             document.getElementById(`l3-opt-${qNum}-${option}`).className = "px-2.5 py-0.5 rounded border-2 border-blue-500 bg-blue-50 text-blue-600 font-bold text-[16px] transition";
@@ -609,7 +617,8 @@
             let correctInLevel = 0;
             
             if (levelNum === 1) {
-                for (let i = 1; i <= 3; i++) {
+                const ids = levelIds(1);
+            for (const i of levelIds(2)) {
                     const isCorrect = userState.level1[i] === ANSWERS.level1[i];
                     const hintCard = document.getElementById(`hint-l1-${i}`);
                     
@@ -627,11 +636,12 @@
                         hintCard.innerHTML = `⚠️ <b>再想想看：</b> ${EXPLANATIONS.l1[i]} <span class="text-rose-900 font-bold">(正確答案：${ANSWERS.level1[i]})</span>`;
                     }
                 }
-                showFeedbackModal(1, correctInLevel);
+                showFeedbackModal(1, correctInLevel, ids.length);
             }
             
             if (levelNum === 2) {
-                for (let i = 1; i <= 3; i++) {
+                const ids = levelIds(2);
+            for (const i of levelIds(3)) {
                     const isCorrect = userState.level2[i] === ANSWERS.level2[i];
                     const slot = document.getElementById(`l2-slot-${i}`);
                     const hintCard = document.getElementById(`hint-l2-${i}`);
@@ -653,11 +663,12 @@
                         hintCard.innerHTML = `⚠️ <b>再想想看：</b> ${EXPLANATIONS.l2[i]} <span class="text-rose-900 font-bold">(正確答案：${ANSWERS.level2[i]})</span>`;
                     }
                 }
-                showFeedbackModal(2, correctInLevel);
+                showFeedbackModal(2, correctInLevel, ids.length);
             }
             
             if (levelNum === 3) {
-                for (let i = 1; i <= 3; i++) {
+                const ids = levelIds(3);
+                for (const i of ids) {
                     const isCorrect = userState.level3[i] === ANSWERS.level3[i];
                     const bracket = document.getElementById(`l3-bracket-${i}`);
                     const hintCard = document.getElementById(`hint-l3-${i}`);
@@ -665,7 +676,7 @@
                     hintCard.classList.remove("hidden");
                     
                     // 重設按鈕
-                    ['A', 'B', 'C'].forEach(opt => {
+                    optionIds(i).forEach(opt => {
                         document.getElementById(`l3-opt-${i}-${opt}`).className = "px-2.5 py-0.5 rounded border border-slate-200 text-[16px] text-slate-500 transition";
                     });
 
@@ -691,7 +702,7 @@
                         hintCard.innerHTML = `⚠️ <b>再想想看：</b> ${EXPLANATIONS.l3[i]} <span class="text-rose-900 font-bold">(正確答案：(${ANSWERS.level3[i]}))</span>`;
                     }
                 }
-                showFeedbackModal(3, correctInLevel);
+                showFeedbackModal(3, correctInLevel, ids.length);
             }
             
             updateTotalScore();
@@ -700,7 +711,7 @@
         function updateTotalScore() {
             let totalCorrect = 0;
             // 累加所有對題
-            for(let i=1; i<=3; i++) {
+            for (const i of levelIds(3)) {
                 if(userState.level1[i] === ANSWERS.level1[i]) totalCorrect++;
                 if(userState.level2[i] === ANSWERS.level2[i]) totalCorrect++;
                 if(userState.level3[i] === ANSWERS.level3[i]) totalCorrect++;
@@ -710,7 +721,7 @@
         }
 
         function resetWorksheet() {
-            userState = { level1: { 1: "", 2: "", 3: "" }, level2: { 1: "", 2: "", 3: "" }, level3: { 1: "", 2: "", 3: "" } };
+            userState = createEmptyUserState();
             currentlySelectedWord = null;
             document.getElementById("score-display").innerText = "0";
             document.querySelectorAll(".hint-card").forEach(card => {
@@ -731,11 +742,12 @@
                 
                 // 重置 L3
                 document.getElementById(`l3-bracket-${i}`).innerText = "  ";
-                ['A','B','C'].forEach(opt => {
+                optionIds(i).forEach(opt => {
                     document.getElementById(`l3-opt-${i}-${opt}`).className = "px-2.5 py-0.5 rounded border border-slate-200 text-[16px] text-slate-500 transition";
                 });
             }
             ['eleven', 'fifteen', 'eighteen'].forEach(w => document.getElementById(`card-${w}`).className = "px-3 py-0.5 bg-white border border-slate-300 text-slate-700 font-bold text-[16px] rounded shadow-sm");
+            resetDynamicControls();
             clearCanvas();
             speakText("重設完成");
         }
@@ -778,9 +790,68 @@
         function speakL3(id, text) { speakSequence([{ text: text, lang: "en-US" }]); }
         function speakText(text) { speakSequence([{ text: text, lang: "zh-TW" }]); }
 
+        function createEmptyUserState() {
+            const state = { level1: {}, level2: {}, level3: {} };
+            for (let levelNum = 1; levelNum <= 3; levelNum++) levelIds(levelNum).forEach(id => { state[`level${levelNum}`][id] = ""; });
+            return state;
+        }
+
+        function resetDynamicControls() {
+            for (const i of levelIds(1)) {
+                const o = document.getElementById(`l1-opt-${i}-O`), x = document.getElementById(`l1-opt-${i}-X`);
+                if (o) o.className = "w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-emerald-600 hover:bg-emerald-50 transition";
+                if (x) x.className = "w-8 h-8 rounded-full border border-slate-300 bg-white font-bold text-rose-600 hover:bg-rose-50 transition";
+            }
+            for (const i of levelIds(2)) {
+                const slot = document.getElementById(`l2-slot-${i}`);
+                if (slot) { slot.innerText = "點此置入"; slot.className = "slot-interactive card-slot text-blue-600 font-bold text-[18px]"; }
+            }
+            for (const i of levelIds(3)) {
+                const bracket = document.getElementById(`l3-bracket-${i}`);
+                if (bracket) bracket.innerText = "  ";
+                optionIds(i).forEach(opt => {
+                    const button = document.getElementById(`l3-opt-${i}-${opt}`);
+                    if (button) button.className = "px-2.5 py-0.5 rounded border border-slate-200 text-[16px] text-slate-500 transition";
+                });
+            }
+        }
+
+        function updateTotalScore() {
+            let correct = 0, total = 0;
+            for (let levelNum = 1; levelNum <= 3; levelNum++) for (const id of levelIds(levelNum)) {
+                total++;
+                if (userState[`level${levelNum}`][id] === ANSWERS[`level${levelNum}`][id]) correct++;
+            }
+            document.getElementById("score-display").innerText = total ? Math.round((correct / total) * 100) : 0;
+        }
+
+        function renderTeacherExplanations() {
+            const container = document.getElementById("teacher-explanations");
+            container.replaceChildren();
+            const heading = document.createElement("h2");
+            heading.className = "text-[15px] font-bold mb-1";
+            heading.textContent = "教師詳解";
+            container.appendChild(heading);
+            for (let levelNum = 1; levelNum <= 3; levelNum++) {
+                const section = document.createElement("section");
+                section.className = "mb-1.5";
+                const levelHeading = document.createElement("h3");
+                levelHeading.className = "font-bold text-[13px]";
+                levelHeading.textContent = `Level ${levelNum}`;
+                section.appendChild(levelHeading);
+                for (const id of levelIds(levelNum)) {
+                    const item = document.createElement("p");
+                    item.textContent = `${id}. 答案：${ANSWERS[`level${levelNum}`][id]}｜${EXPLANATIONS[`l${levelNum}`][id].replace(/\*\*/g, "")}`;
+                    section.appendChild(item);
+                }
+                container.appendChild(section);
+            }
+        }
+
         // ================= 5. 雙獨立列印功能處理 =================
         function printWorksheet(isAnswerVersion) {
             const paper = document.getElementById("printable-paper");
+            if (isAnswerVersion) renderTeacherExplanations();
             
             // 同步 Level 1 (  ) 的括號純文字與正確答案
             const brackets = document.querySelectorAll('.l1-print-bracket');
@@ -828,15 +899,15 @@
             }
         };
 
-        function showFeedbackModal(level, correctCount) {
+        function showFeedbackModal(level, correctCount, maxCount) {
             const m = document.getElementById("custom-modal");
             let icon = "🎉";
-            if (correctCount === 3) icon = "🏆";
+            if (correctCount === maxCount) icon = "🏆";
             else if (correctCount === 0) icon = "💡";
             
             document.getElementById("modal-icon").innerText = icon;
             document.getElementById("modal-title").innerText = `Level ${level} 批改完成！`;
-            document.getElementById("modal-message").innerText = `此關卡答對了 ${correctCount} / 3 題！下方的動態解析已展開，歡迎對照與學習。`;
+            document.getElementById("modal-message").innerText = `此關卡答對了 ${correctCount} / ${maxCount} 題！下方的動態解析已展開，歡迎對照與學習。`;
             m.classList.remove("hidden"); m.classList.add("flex");
             speakText(`批改完成。答對${correctCount}題。`);
         }

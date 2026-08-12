@@ -22,7 +22,7 @@
             align-items: center;
             padding: 20px 10px;
             margin: 0;
-            user-select: none; /* 防止電視螢幕手寫時誤選到文字 */
+            user-select: text;
         }
 
         /* 核心紙張規格：寬度限定 A4 210mm，長度不限以容納展開的智慧詳解 */
@@ -77,6 +77,7 @@
         .drawing-active {
             touch-action: none;
             overflow: hidden;
+            user-select: none;
         }
 
         @media print {
@@ -99,6 +100,7 @@
 
             .print-show-answers .print-blank-line { display: none !important; }
             .print-show-answers .answer-text { display: inline !important; color: #dc2626 !important; }
+            .teacher-explanations{display:none!important}.print-show-answers .teacher-explanations{display:block!important}
         }
         section { break-inside: avoid; }
     </style>
@@ -152,7 +154,7 @@
 
         <!-- 標題與班級姓名欄位 -->
         <header class="border-b border-slate-200 pb-1 mb-2 relative z-10 flex justify-between items-end">
-            <h1 class="text-[24px] font-bold text-slate-800 tracking-tight">【時間詞 - 時間介系詞 past 與 to】</h1>
+            <h1 class="text-[22px] font-bold text-slate-800 tracking-tight whitespace-nowrap">【時間詞－past／to】</h1>
             <div class="text-[14px] text-slate-400 whitespace-nowrap mb-0.5">班級：__________ 姓名：__________</div>
         </header>
 
@@ -386,6 +388,7 @@
             🔑 本講義教師解答：【Level 1】1. ◯ &nbsp; 2. ✕ &nbsp; 3. ◯ &nbsp;&nbsp;【Level 2】1. past &nbsp; 2. to &nbsp; 3. quarter &nbsp; 4. quarter &nbsp;&nbsp;【Level 3】1. (B) &nbsp; 2. (A) &nbsp; 3. (C)
         </div>
 
+        <div id="teacher-explanations" class="teacher-explanations hidden text-[13px] leading-relaxed border-t border-dashed border-red-300 pt-2 mt-2"></div>
         <!-- 頁尾 -->
         <footer class="mt-auto pt-2 border-t border-slate-100 flex justify-between items-end relative z-10">
             <div>
@@ -406,6 +409,7 @@
             level2: { 1: "past", 2: "to", 3: "quarter", 4: "quarter" },
             level3: { 1: "B", 2: "A", 3: "C" }
         };
+        const levelIds=Object.fromEntries(Object.entries(ANSWERS).map(([l,a])=>[l,Object.keys(a).map(Number)]));
 
         const EXPLANATIONS = {
             l1: {
@@ -498,7 +502,7 @@
 
         window.addEventListener('load', () => {
             resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
+            window.addEventListener('resize',()=>setTimeout(resizeCanvas,200));
 
             // 支援滑鼠與觸控事件
             canvas.addEventListener('mousedown', startDrawing);
@@ -717,14 +721,8 @@
 
         function updateTotalScore() {
             let totalCorrect = 0;
-            for(let i=1; i<=3; i++) {
-                if(userState.level1[i] === ANSWERS.level1[i]) totalCorrect++;
-                if(userState.level3[i] === ANSWERS.level3[i]) totalCorrect++;
-            }
-            for(let i=1; i<=4; i++) {
-                if(userState.level2[i] === ANSWERS.level2[i]) totalCorrect++;
-            }
-            const finalScore = Math.round((totalCorrect / 10) * 100);
+            let totalQuestions=0;Object.keys(ANSWERS).forEach(l=>levelIds[l].forEach(i=>{totalQuestions++;if(userState[l][i]===ANSWERS[l][i])totalCorrect++;}));
+            const finalScore = Math.round((totalCorrect / totalQuestions) * 100);
             document.getElementById("score-display").innerText = finalScore;
         }
 
@@ -812,6 +810,7 @@
         // ================= 5. 雙獨立列印功能與解答 pre-fill 處理 =================
         function printWorksheet(isAnswerVersion) {
             const paper = document.getElementById("printable-paper");
+            if(isAnswerVersion)renderTeacherExplanations();
             
             // 同步 Level 1 括號內容
             const brackets = document.querySelectorAll('.l1-print-bracket');
@@ -827,13 +826,13 @@
             });
 
             // 同步 Level 2 狀態到列印純文字
-            for(let i=1; i<=4; i++) {
+            for(const i of levelIds.level2) {
                 const ans = isAnswerVersion ? ANSWERS.level2[i] : (userState.level2[i] !== "" ? userState.level2[i] : "________");
                 document.getElementById(`l2-print-${i}`).innerText = ans;
             }
 
             // 同步 Level 3 狀態到列印純文字
-            for(let i=1; i<=3; i++) {
+            for(const i of levelIds.level3) {
                 const ans = isAnswerVersion ? ANSWERS.level3[i] : (userState.level3[i] !== "" ? userState.level3[i] : "&nbsp;&nbsp;");
                 document.getElementById(`l3-bracket-${i}`).innerHTML = ans;
             }
@@ -850,12 +849,13 @@
         window.onafterprint = function() {
             const paper = document.getElementById("printable-paper");
             paper.className = "paper print-hidden-answers";
-            for(let i=1; i<=3; i++) {
+            for(const i of levelIds.level3) {
                 const val = userState.level3[i] !== "" ? userState.level3[i] : "  ";
                 document.getElementById(`l3-bracket-${i}`).innerText = val;
             }
         };
 
+        function renderTeacherExplanations(){const c=document.getElementById("teacher-explanations");c.innerHTML='<h2 class="text-[15px] font-bold mb-1">教師詳解</h2>';for(let n=1;n<=3;n++){const l=`level${n}`;c.innerHTML+=`<section><b>Level ${n}</b><br>${levelIds[l].map(id=>`${id}. 答案：${ANSWERS[l][id]}｜${EXPLANATIONS[`l${n}`][id].replace(/\*\*/g,"")}`).join('<br>')}</section>`;}}
         function showFeedbackModal(level, correctCount, maxCount) {
             let icon = "🎉";
             if (correctCount === maxCount) icon = "🏆";

@@ -22,7 +22,7 @@
             align-items: center;
             padding: 20px 10px;
             margin: 0;
-            user-select: none; /* 防止電視螢幕手寫時誤選到文字 */
+            user-select: text;
         }
 
         /* A4 紙張規格：寬度限定 210mm，長度不限以容納展開的智慧詳解 */
@@ -77,6 +77,7 @@
         .drawing-active {
             touch-action: none;
             overflow: hidden;
+            user-select: none;
         }
 
         @media print {
@@ -99,6 +100,8 @@
 
             .print-show-answers .print-blank-line { display: none !important; }
             .print-show-answers .answer-text { display: inline !important; color: #dc2626 !important; }
+            .teacher-explanations { display: none !important; }
+            .print-show-answers .teacher-explanations { display: block !important; }
         }
         section { break-inside: avoid; }
     </style>
@@ -152,7 +155,7 @@
 
         <!-- 標題與姓名欄位 -->
         <header class="border-b border-slate-200 pb-1 mb-2 relative z-10 flex justify-between items-end">
-            <h1 class="text-[24px] font-bold text-slate-800 tracking-tight">【連接詞 - If 條件句 (如果)】</h1>
+            <h1 class="text-[22px] font-bold text-slate-800 tracking-tight whitespace-nowrap">【連接詞－if 條件句】</h1>
             <div class="text-[14px] text-slate-400 whitespace-nowrap mb-0.5">班級：__________ 姓名：__________</div>
         </header>
 
@@ -362,6 +365,8 @@
             🔑 本講義教師解答：【Level 1】1. ◯ &nbsp; 2. ✕ &nbsp; 3. ◯ &nbsp;&nbsp;【Level 2】1. If &nbsp; 2. , I will &nbsp; 3. will &nbsp;&nbsp;【Level 3】1. (A) &nbsp; 2. (B) &nbsp; 3. (B)
         </div>
 
+        <div id="teacher-explanations" class="teacher-explanations hidden text-[13px] leading-relaxed border-t border-dashed border-red-300 pt-2 mt-2"></div>
+
         <!-- 頁尾 -->
         <footer class="mt-auto pt-2 border-t border-slate-100 flex justify-between items-end relative z-10">
             <div>
@@ -382,6 +387,12 @@
             level2: { 1: "if", 2: ", I will", 3: "will" },
             level3: { 1: "A", 2: "B", 3: "B" }
         };
+
+        const levelIds = Object.fromEntries(Object.entries(ANSWERS).map(([level, answers]) => [level, Object.keys(answers).map(Number)]));
+        const optionIds = levelIds.level3.reduce((all, id) => {
+            all[id] = Array.from(document.querySelectorAll(`[id^="l3-opt-${id}-"]`)).map(btn => btn.id.split('-').pop());
+            return all;
+        }, {});
 
         const EXPLANATIONS = {
             l1: {
@@ -618,7 +629,7 @@
             let correctInLevel = 0;
             
             if (levelNum === 1) {
-                for (let i = 1; i <= 3; i++) {
+                for (const i of levelIds.level1) {
                     const isCorrect = userState.level1[i] === ANSWERS.level1[i];
                     const hintCard = document.getElementById(`hint-l1-${i}`);
                     hintCard.classList.remove("hidden");
@@ -635,11 +646,11 @@
                         hintCard.innerHTML = `⚠️ <b>再想想看：</b> ${EXPLANATIONS.l1[i]} <span class="text-rose-900 font-bold">(正確答案：${ANSWERS.level1[i]})</span>`;
                     }
                 }
-                showFeedbackModal(1, correctInLevel, 3);
+                showFeedbackModal(1, correctInLevel, levelIds.level1.length);
             }
             
             if (levelNum === 2) {
-                for (let i = 1; i <= 3; i++) {
+                for (const i of levelIds.level2) {
                     const isCorrect = userState.level2[i] === ANSWERS.level2[i];
                     const slot = document.getElementById(`l2-slot-${i}`);
                     const hintCard = document.getElementById(`hint-l2-${i}`);
@@ -660,17 +671,17 @@
                         hintCard.innerHTML = `⚠️ <b>再想想看：</b> ${EXPLANATIONS.l2[i]} <span class="text-rose-900 font-bold">(正確答案：${ANSWERS.level2[i]})</span>`;
                     }
                 }
-                showFeedbackModal(2, correctInLevel, 3);
+                showFeedbackModal(2, correctInLevel, levelIds.level2.length);
             }
             
             if (levelNum === 3) {
-                for (let i = 1; i <= 3; i++) {
+                for (const i of levelIds.level3) {
                     const isCorrect = userState.level3[i] === ANSWERS.level3[i];
                     const bracket = document.getElementById(`l3-bracket-${i}`);
                     const hintCard = document.getElementById(`hint-l3-${i}`);
                     hintCard.classList.remove("hidden");
                     
-                    ['A', 'B', 'C'].forEach(opt => {
+                    optionIds[i].forEach(opt => {
                         document.getElementById(`l3-opt-${i}-${opt}`).className = "px-2.5 py-1 text-left rounded border border-slate-200 text-[16px] text-slate-500 font-bold transition";
                     });
 
@@ -696,7 +707,7 @@
                         hintCard.innerHTML = `⚠️ <b>再想想看：</b> ${EXPLANATIONS.l3[i]} <span class="text-rose-900 font-bold">(正確答案是：(${ANSWERS.level3[i]}))</span>`;
                     }
                 }
-                showFeedbackModal(3, correctInLevel, 3);
+                showFeedbackModal(3, correctInLevel, levelIds.level3.length);
             }
             updateTotalScore();
             setTimeout(resizeCanvas, 100); // 詳解卡展開後自動拉長畫布
@@ -704,12 +715,12 @@
 
         function updateTotalScore() {
             let totalCorrect = 0;
-            for(let i=1; i<=3; i++) {
-                if(userState.level1[i] === ANSWERS.level1[i]) totalCorrect++;
-                if(userState.level2[i] === ANSWERS.level2[i]) totalCorrect++;
-                if(userState.level3[i] === ANSWERS.level3[i]) totalCorrect++;
-            }
-            const finalScore = Math.round((totalCorrect / 9) * 100);
+            let totalQuestions = 0;
+            Object.keys(ANSWERS).forEach(level => levelIds[level].forEach(i => {
+                totalQuestions++;
+                if(userState[level][i] === ANSWERS[level][i]) totalCorrect++;
+            }));
+            const finalScore = Math.round((totalCorrect / totalQuestions) * 100);
             document.getElementById("score-display").innerText = finalScore;
         }
 
@@ -793,6 +804,7 @@
         // ================= 5. 雙獨立列印功能與解答 pre-fill 處理 =================
         function printWorksheet(isAnswerVersion) {
             const paper = document.getElementById("printable-paper");
+            if (isAnswerVersion) renderTeacherExplanations();
             
             // 同步 Level 1 括號內容
             const brackets = document.querySelectorAll('.l1-print-bracket');
@@ -808,7 +820,7 @@
             });
 
             // 同步 Level 2 狀態到列印純文字
-            for(let i=1; i<=3; i++) {
+            for(const i of levelIds.level2) {
                 let ans = isAnswerVersion ? ANSWERS.level2[i] : (userState.level2[i] !== "" ? userState.level2[i] : "________");
                 // 處理首字母大寫
                 if (i === 1 && ans === 'if') {
@@ -818,7 +830,7 @@
             }
 
             // 同步 Level 3 狀態到列印純文字
-            for(let i=1; i<=3; i++) {
+            for(const i of levelIds.level3) {
                 const ans = isAnswerVersion ? ANSWERS.level3[i] : (userState.level3[i] !== "" ? userState.level3[i] : "&nbsp;&nbsp;");
                 document.getElementById(`l3-bracket-${i}`).innerHTML = ans;
             }
@@ -835,7 +847,7 @@
         window.onafterprint = function() {
             const paper = document.getElementById("printable-paper");
             paper.className = "paper print-hidden-answers";
-            for(let i=1; i<=3; i++) {
+            for(const i of levelIds.level3) {
                 const val = userState.level3[i] !== "" ? userState.level3[i] : "  ";
                 document.getElementById(`l3-bracket-${i}`).innerText = val;
             }
@@ -848,6 +860,16 @@
             
             showModalMsg(`Level ${level} 批改完成！`, `此關卡答對了 ${correctCount} / ${maxCount} 題！下方的動態智慧詳解已展開。`, icon);
             speakText(`批改完成。答對${correctCount}題。`);
+        }
+
+        function renderTeacherExplanations() {
+            const container = document.getElementById("teacher-explanations");
+            container.innerHTML = '<h2 class="text-[15px] font-bold mb-1">教師詳解</h2>';
+            for (let n = 1; n <= 3; n++) {
+                const level = `level${n}`;
+                const details = levelIds[level].map(id => `${id}. 答案：${ANSWERS[level][id]}｜${EXPLANATIONS[`l${n}`][id].replace(/\*\*/g, "")}`).join('<br>');
+                container.innerHTML += `<section class="mb-1.5"><h3 class="font-bold text-[13px]">Level ${n}</h3>${details}</section>`;
+            }
         }
 
         function showModalMsg(title, message, icon) {
