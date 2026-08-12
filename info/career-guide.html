@@ -230,6 +230,7 @@
       object-fit: cover;
       background: #f5f0dc;
     }
+    .card-button img.contain { object-fit: contain; }
     .card-meta {
       padding: 15px 17px 17px;
       display: flex;
@@ -391,12 +392,12 @@
         <p class="eyebrow">CAREER CLUSTER GUIDE</p>
         <h1>高中<br>職群介紹</h1>
         <p class="hero-lead">從學習內容、核心技能到適合特質，用圖卡快速認識不同升學方向，找到值得進一步探索的選擇。</p>
-        <span class="hero-tag">共 18 種升學方向</span>
+        <span class="hero-tag">共 19 種升學方向</span>
       </section>
 
       <div class="toolbar">
         <input class="search" id="search" type="search" placeholder="搜尋職群名稱…" aria-label="搜尋職群名稱">
-        <span class="result-count" id="resultCount" aria-live="polite">18 張</span>
+        <span class="result-count" id="resultCount" aria-live="polite">19 張</span>
       </div>
 
       <section class="gallery" id="gallery" aria-label="高中職群圖卡"></section>
@@ -434,11 +435,12 @@
       { title: "土木與建築群", category: "工業" },
       { title: "美容造型群", category: "服務與設計" },
       { title: "綜合型高中", category: "普通與綜合" },
-      { title: "商業與管理群", category: "商業與語文" }
+      { title: "綜合職能科", category: "普通與綜合", fileNumber: 19, fit: "contain" },
+      { title: "商業與管理群", category: "商業與語文", fileNumber: 18 }
     ].map((item, index) => ({
       ...item,
       index,
-      src: `career-cards/career_card_${String(index + 1).padStart(2, "0")}.jpg`
+      src: `career-cards/career_card_${String(item.fileNumber || index + 1).padStart(2, "0")}.jpg`
     }));
 
     const gallery = document.getElementById("gallery");
@@ -467,7 +469,7 @@
       gallery.innerHTML = visibleCareers.map(item => `
         <article class="career-card">
           <button class="card-button" type="button" data-index="${item.index}" aria-label="放大查看${escapeHtml(item.title)}圖卡">
-            <img src="${item.src}" alt="${escapeHtml(item.title)}介紹圖卡" loading="lazy" width="512" height="432">
+            <img class="${item.fit || ""}" src="${item.src}" alt="${escapeHtml(item.title)}介紹圖卡" loading="lazy" width="512" height="432">
             <span class="card-meta">
               <h2>${escapeHtml(item.title)}</h2>
               <span>點選放大 ↗</span>
