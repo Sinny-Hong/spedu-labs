@@ -229,7 +229,7 @@
                 臺南市立新市國民中學 115 學年度第一學期 異想教室總課表
             </span>
             <span class="text-[9.5px] text-slate-700 font-bold timetable-font tracking-tight" id="version-tag">
-                實施日期: 讀取中... | 版本: 讀取中...
+                版本: 讀取中...
             </span>
         </div>
 
@@ -404,28 +404,18 @@
             const studentIdx = headers.findIndex(h => h.trim() === '學生');
             const noteIdx = headers.findIndex(h => h.trim() === '備註');
 
-            // 提取版本資訊
-            let versionDate = "未指定";
-            let versionNote = "無備註";
-            
-            const noteValues = parsed.slice(1)
-                .map(row => row[noteIdx])
-                .filter(val => val && val.trim() !== "");
-
-            if (noteValues.length > 0) {
-                const datePattern = /\d{3}\.\d{1,2}\.\d{1,2}/;
-                const foundDate = noteValues.find(v => datePattern.test(v));
-                if (foundDate) versionDate = foundDate.trim();
-
-                const foundNote = noteValues.find(v => v.includes('改版') || v.includes('實施') || (v.startsWith('(') && v.endsWith(')')));
-                if (foundNote) {
-                    versionNote = foundNote.trim().replace(/[()]/g, '');
-                } else {
-                    const otherNote = noteValues.find(v => !datePattern.test(v) && v !== "改版日期" && v !== "列印日期");
-                    if (otherNote) versionNote = otherNote.trim();
+            // 版本日期固定連動「備註」欄中「改版日期」下一列的儲存格
+            let revisionDate = "未指定";
+            if (noteIdx !== -1) {
+                const revisionLabelRow = parsed.findIndex((row, index) =>
+                    index > 0 && ["改版日期", "改版日期："].includes((row[noteIdx] || "").trim())
+                );
+                if (revisionLabelRow !== -1) {
+                    const linkedValue = (parsed[revisionLabelRow + 1]?.[noteIdx] || "").trim();
+                    if (linkedValue) revisionDate = linkedValue;
                 }
             }
-            document.getElementById('version-tag').innerText = `實施日期: ${versionDate} | 版本: ${versionNote}`;
+            document.getElementById('version-tag').innerText = `版本: ${revisionDate}`;
 
             activeRawData = [];
 
