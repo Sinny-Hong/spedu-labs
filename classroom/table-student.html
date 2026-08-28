@@ -512,18 +512,7 @@
                 const tutorName = (rowData[3] || "").trim();
                 const counselorName = (rowData[4] || "").trim();
 
-                if (!studentName || studentName === "姓名" || studentName === "C") {
-                    continue; // 跳過表頭或空白行
-                }
-
-                studentObj["_resolved_info"] = {
-                    class: className,
-                    name: studentName,
-                    tutor: tutorName,
-                    counselor: counselorName
-                };
-
-                // 自動將右側非空白的分組資訊建立為字典庫
+                // 先讀取 A5 右側名單；即使本列左側沒有學生，教師資料仍須保留
                 if (groupIdx !== -1 && rowData[groupIdx]) {
                     const groupName = rowData[groupIdx].trim();
                     if (groupName && groupName !== "分組" && groupName !== "未填寫") {
@@ -539,6 +528,17 @@
                         if (!isDuplicate) specialEdGroupsDict[groupName].push(detail);
                     }
                 }
+
+                if (!studentName || studentName === "姓名" || studentName === "C") {
+                    continue; // 右側名單已讀取，再跳過沒有學生的列
+                }
+
+                studentObj["_resolved_info"] = {
+                    class: className,
+                    name: studentName,
+                    tutor: tutorName,
+                    counselor: counselorName
+                };
 
                 results.push(studentObj);
             }
