@@ -451,14 +451,13 @@
     <script>
         // 套用最新的工作表 CSV 發布網址
         const DEFAULT_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=338631519&single=true&output=csv";
-        const A3_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=1823409322&single=true&output=csv";
 
         // 全域變數
         let rawStudentsData = [];        // 原始學生名冊
         let classesList = [];           // 排序後的班級清單 (例如 ["301", "302", "303"])
         let specialEdGroupsDict = {};   // 特教老師地點/分組資訊資料庫
         let selectedClass = "";         // 目前選定的班級代碼
-        let versionString = "版本資訊未填寫";
+        let versionString = "8/26第一週暫行課表";
 
         // 離線防呆高擬真測試資料
         const fallbackMockData = [
@@ -484,17 +483,15 @@
             updateConnectionStatus('connecting', '正在同步雲端資料庫...');
             const cacheBusterUrl = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
 
-            const a3Url = A3_CSV_URL + '&t=' + Date.now();
-            Promise.all([fetch(cacheBusterUrl), fetch(a3Url)])
-                .then(responses => {
-                    if (responses.some(response => !response.ok)) throw new Error("同步失敗");
-                    return Promise.all(responses.map(response => response.text()));
+            fetch(cacheBusterUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error("同步失敗");
+                    return response.text();
                 })
-                .then(([csvText, a3Text]) => {
+                .then(csvText => {
                     const parsedData = robustCSVParser(csvText);
                     if (parsedData && parsedData.length > 0) {
                         rawStudentsData = parsedData;
-                        applyA3Schedule(a3Text);
                         updateConnectionStatus('success', '雲端連線成功！資料已即時更新。');
                     } else {
                         throw new Error("解析內容無有效學生資料");
@@ -505,8 +502,7 @@
                     console.warn("啟動離線防呆備用資料：", error.message);
                     rawStudentsData = fallbackMockData;
                     specialEdGroupsDict = {
-                        "國文三C": { teacher: "陳秋錡", location: "異想教室C", phone: "#6019" },
-                        "國文三D": { teacher: "王老師", location: "異想教室D", phone: "#6020" }
+                        "國文三C": [{ teacher: "洪羽晶", location: "異想L", phone: "#6234" }]
                     };
                     updateConnectionStatus('fallback', '目前處於靜態/防呆離線測試模式');
                     initClassApp();
@@ -583,62 +579,21 @@
                 if (groupIdx !== -1 && rowData[groupIdx]) {
                     const groupName = rowData[groupIdx].trim();
                     if (groupName && groupName !== "分組" && groupName !== "未填寫") {
-                        specialEdGroupsDict[groupName] = {
+                        const detail = {
                             teacher: teacherIdx !== -1 ? (rowData[teacherIdx] || "特教老師").trim() : "特教老師",
                             location: locationIdx !== -1 ? (rowData[locationIdx] || "異想教室").trim() : "異想教室",
                             phone: phoneIdx !== -1 ? (rowData[phoneIdx] || "-").trim() : "-"
                         };
+                        if (!specialEdGroupsDict[groupName]) specialEdGroupsDict[groupName] = [];
+                        const isDuplicate = specialEdGroupsDict[groupName].some(item =>
+                            item.teacher === detail.teacher && item.location === detail.location && item.phone === detail.phone
+                        );
+                        if (!isDuplicate) specialEdGroupsDict[groupName].push(detail);
                     }
                 }
                 results.push(studentObj);
             }
             return results;
-        }
-
-        function parseCSVRows(text) {
-            text = text.replace(/^\uFEFF/, '');
-            const lines = []; let row = ['']; let inQuotes = false;
-            for (let i = 0; i < text.length; i++) {
-                const c = text[i], next = text[i + 1];
-                if (c === '"') {
-                    if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
-                    else inQuotes = !inQuotes;
-                } else if (c === ',' && !inQuotes) row.push('');
-                else if ((c === '\r' || c === '\n') && !inQuotes) {
-                    if (c === '\r' && next === '\n') i++;
-                    lines.push(row); row = [''];
-                } else row[row.length - 1] += c;
-            }
-            if (row.length > 1 || row[0] !== '') lines.push(row);
-            return lines;
-        }
-
-        function applyA3Schedule(text) {
-            const rows = parseCSVRows(text);
-            if (rows.length < 2) return;
-            const headers = rows[0].map(value => value.trim());
-            const noteIdx = headers.indexOf('備註');
-            const groupIdx = headers.indexOf('分組'), teacherIdx = headers.indexOf('特教教師');
-            const locationIdx = headers.indexOf('上課地點'), timeIdx = headers.indexOf('時間代碼'), studentIdx = headers.indexOf('學生');
-            const noteFound = rows.slice(1)
-                .map(row => noteIdx >= 0 ? (row[noteIdx] || '').trim() : '')
-                .find(note => note && !['備註', '改版日期', '列印日期', '改版日期：'].includes(note));
-            if (noteFound) versionString = noteFound;
-            const studentMap = new Map(rawStudentsData.map(student => [`${student._resolved_info.class}${student._resolved_info.name}`.replace(/\s+/g, ''), student]));
-            rawStudentsData.forEach(student => { student._a3_special = {}; student._a3_assignments = []; });
-            rows.slice(1).forEach(row => {
-                const subject = (row[groupIdx] || '').trim(), teacher = (row[teacherIdx] || '').trim(), location = (row[locationIdx] || '').trim();
-                const codes = [...new Set((row[timeIdx] || '').replace(/['"]/g, '').split(/[\s,、]+/).filter(code => /^[1-5][1-8]$/.test(code)))];
-                (row[studentIdx] || '').split(/[、,\s]+/).map(name => name.trim()).filter(Boolean).forEach(name => {
-                    const student = studentMap.get(name.replace(/\s+/g, ''));
-                    if (!student) return;
-                    codes.forEach(code => {
-                        const assignment = { code, subject, teacher, location };
-                        student._a3_assignments.push(assignment);
-                        student._a3_special[code] = assignment;
-                    });
-                });
-            });
         }
 
         // 初始化班級整合核心
@@ -684,12 +639,16 @@
         function renderClassConflicts(classTarget) {
             const conflicts = [];
             rawStudentsData.filter(student => student._resolved_info.class === classTarget).forEach(student => {
-                const byCode = new Map();
-                (student._a3_assignments || []).forEach(item => {
-                    if (!byCode.has(item.code)) byCode.set(item.code, []);
-                    byCode.get(item.code).push(item);
-                });
-                byCode.forEach((items, code) => { if (items.length > 1) conflicts.push({ student, code, items }); });
+                for (let day = 1; day <= 5; day++) {
+                    for (let period = 1; period <= 8; period++) {
+                        const code = `${day}${period}`;
+                        const items = getA5SpecialCourses(student, code).map(subject => ({
+                            subject,
+                            teacher: resolveSubjectDetailsFromDB(subject).teacher || '未提供教師'
+                        }));
+                        if (items.length > 1) conflicts.push({ student, code, items });
+                    }
+                }
             });
             conflicts.sort((a, b) => Number(a.code) - Number(b.code) || a.student._resolved_info.name.localeCompare(b.student._resolved_info.name, 'zh-Hant'));
             const count = document.getElementById('class-conflict-count'), list = document.getElementById('class-conflict-list');
@@ -697,6 +656,13 @@
             count.className = `rounded-full px-2 py-0.5 text-[11px] font-bold ${conflicts.length ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`;
             const classLabel = classTarget.endsWith('班') ? classTarget : `${classTarget}班`;
             list.innerHTML = conflicts.length ? `<p class="mb-2 font-semibold text-rose-700">${escapeHTML(classLabel)}發現 ${conflicts.length} 筆衝堂</p><div class="max-h-72 space-y-2 overflow-y-auto pr-1">${conflicts.map(item => `<div class="rounded-lg border border-rose-200 bg-rose-50 p-2"><div class="font-bold text-rose-800">${escapeHTML(item.student._resolved_info.name)}・週${'一二三四五'[Number(item.code[0]) - 1]}第${item.code[1]}節</div><div class="mt-1 leading-snug">${item.items.map(course => `${escapeHTML(course.subject)}／${escapeHTML(course.teacher)}`).join('<br>')}</div></div>`).join('')}</div>` : `<div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 font-semibold text-emerald-700">✓ ${escapeHTML(classLabel)}未發現衝堂</div>`;
+        }
+
+        function getA5SpecialCourses(student, code) {
+            return [...new Set(String(student?.[`特${code}`] || '')
+                .split(/\r?\n/)
+                .map(value => value.trim())
+                .filter(Boolean))];
         }
 
         // 拆分原班科目與任課教師字串
@@ -822,25 +788,21 @@
 
                     classStudents.forEach(student => {
                         const code = `${day}${periodNum}`;
-                        const a3Course = student._a3_special && student._a3_special[code];
-                        let extractedCourse = a3Course ? a3Course.subject : ((student[`特${code}`] || "").trim().split(/\r?\n/).filter(Boolean).pop() || '');
-                        if (extractedCourse) {
+                        const extractedCourses = getA5SpecialCourses(student, code);
+                        extractedCourses.forEach(extractedCourse => {
                             // 保留完整組別以加入底部對照表
                             enrolledExtractedSubjects.add(extractedCourse);
 
                             // 簡化課程名稱：去除後綴組別 A, B, C 等
                             let cleanExtSubject = extractedCourse.split(/[\n\r(（\s]/)[0].trim();
                             let minimalSubject = cleanExtSubject.replace(/[一二三四五六七八九]?[ABCDEFGH]粉?$/g, '');
-                            
                             const styleColors = getStampColorStyle(cleanExtSubject);
-                            
-                            // 儲存標籤 HTML 資料結構
                             extractedBadgesData.push({
                                 studentName: student._resolved_info.name,
                                 subject: minimalSubject,
                                 style: styleColors
                             });
-                        }
+                        });
                     });
 
                     rowHtml += `<td>`;
@@ -881,14 +843,14 @@
                     const sub2 = subjectArray[i+1];
                     
                     const info1 = resolveSubjectDetailsFromDB(sub1);
-                    const teacherStr1 = info1.teacher ? `${info1.teacher}老師` : "特教老師";
-                    const col1 = `● ${info1.subject}：${teacherStr1} (${info1.location} / ${info1.phone})`;
+                    const teacherStr1 = info1.teacher ? `${info1.teacher}老師` : "未提供教師";
+                    const col1 = `● ${info1.subject}：${teacherStr1} (${info1.location})`;
                     
                     let col2 = "";
                     if (sub2) {
                         const info2 = resolveSubjectDetailsFromDB(sub2);
-                        const teacherStr2 = info2.teacher ? `${info2.teacher}老師` : "特教老師";
-                        col2 = `● ${info2.subject}：${teacherStr2} (${info2.location} / ${info2.phone})`;
+                        const teacherStr2 = info2.teacher ? `${info2.teacher}老師` : "未提供教師";
+                        col2 = `● ${info2.subject}：${teacherStr2} (${info2.location})`;
                     }
                     
                     contactListHtml += `
@@ -951,36 +913,19 @@
             `;
         }
 
-        // 輔助查找特教分組字典庫
+        // 以 A5 最右側名單為唯一來源；同課程的不同教室與分機合併並列
         function resolveSubjectDetailsFromDB(rawSubject) {
-            if (!rawSubject) return { subject: '', teacher: '-', location: '-', phone: '-' };
+            if (!rawSubject) return { subject: '', teacher: '', location: '未提供對照資料' };
             let subject = rawSubject.trim();
-
-            if (specialEdGroupsDict[subject]) {
-                return { subject: subject, ...specialEdGroupsDict[subject] };
-            }
-
-            const keys = Object.keys(specialEdGroupsDict);
-            for (let k of keys) {
-                if (subject.includes(k) || k.includes(subject)) {
-                    return { subject: subject, ...specialEdGroupsDict[k] };
-                }
-            }
-
-            // 無匹配時的安全防呆推測
-            let teacher = '特教老師';
-            let location = '異想教室';
-            let phone = '-';
-
-            if (subject.includes('國文') || subject.includes('國')) {
-                teacher = '陳秋錡'; location = '異想教室C'; phone = '#6019';
-            } else if (subject.includes('英語') || subject.includes('英') || subject.includes('生活') || subject.includes('社交') || subject.includes('溝通')) {
-                teacher = '洪欣怡'; location = '異想教室M'; phone = '#6034';
-            } else if (subject.includes('數學') || subject.includes('數')) {
-                teacher = '許杏凰'; location = '異想教室L'; phone = '#6234';
-            }
-
-            return { subject, teacher, location, phone };
+            const entries = specialEdGroupsDict[subject] || [];
+            if (!entries.length) return { subject, teacher: '', location: '未提供對照資料' };
+            const teachers = [...new Set(entries.map(item => item.teacher).filter(Boolean))];
+            const places = [...new Set(entries.map(item => `${item.location || '未提供地點'} / ${item.phone || '-'}`))];
+            return {
+                subject,
+                teacher: teachers.join('老師、'),
+                location: places.join('、')
+            };
         }
 
         function saveAndReloadUrl() {
