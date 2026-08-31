@@ -5,6 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>生活英文與文法｜Sinny Spedu Labs</title>
   <link rel="stylesheet" href="../shared/css/workspace.css?v=2.1">
+  <style>
+    /* 文法索引專用：舒適型單欄目錄，不影響其他工作區。 */
+    .grammar-page .main > * { max-width: 1120px; margin-left: auto; margin-right: auto; }
+    .grammar-page .card-grid { display: block; }
+    .grammar-page .category-section { margin: 0 0 34px; }
+    .grammar-page .category-section:not(:has(.resource-card:not([hidden]))) { display: none; }
+    .grammar-page .category-heading {
+      display: flex; align-items: center; gap: 15px; margin: 0 0 12px;
+      color: var(--navy); font-size: 21px; line-height: 1.35;
+    }
+    .grammar-page .category-heading::after {
+      content: ""; flex: 1; height: 1px; background: #d9e2ec;
+    }
+    .grammar-page .category-items { display: grid; gap: 10px; }
+    .grammar-page .resource-card {
+      min-height: 0; padding: 17px 20px 17px 17px;
+      border: 1px solid var(--line); border-left: 5px solid var(--navy); border-radius: 13px;
+      box-shadow: 0 4px 14px rgba(18, 63, 119, .055);
+      display: grid; grid-template-columns: 32px minmax(210px, .72fr) minmax(260px, 1.28fr);
+      align-items: center; column-gap: 15px; cursor: pointer;
+    }
+    .grammar-page .resource-card:hover { transform: translateY(-1px); background: #fbfdff; }
+    .grammar-page .resource-card:focus-visible {
+      outline: 3px solid rgba(245, 158, 11, .28); outline-offset: 2px;
+    }
+    .grammar-page .favorite {
+      grid-column: 1; align-self: center; width: 32px; height: 32px; padding: 0;
+      display: grid; place-items: center; border-radius: 50%; font-size: 22px;
+    }
+    .grammar-page .favorite:hover { background: #fff4dc; }
+    .grammar-page .resource-card .resource-title {
+      grid-column: 2; margin: 0; color: var(--navy); font-size: 19px;
+      line-height: 1.4; font-weight: 900;
+    }
+    .grammar-page .resource-card .resource-description {
+      grid-column: 3; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55;
+    }
+    .grammar-page .resource-status { color: #9a6200; font-weight: 800; white-space: nowrap; }
+    .grammar-page .resource-card.is-placeholder { cursor: default; opacity: .76; }
+
+    @media (max-width: 820px) {
+      .grammar-page .resource-card {
+        grid-template-columns: 32px minmax(0, 1fr); row-gap: 3px;
+        padding: 15px 16px 15px 13px;
+      }
+      .grammar-page .favorite { grid-row: 1 / span 2; }
+      .grammar-page .resource-card .resource-title { grid-column: 2; }
+      .grammar-page .resource-card .resource-description { grid-column: 2; }
+    }
+    @media (max-width: 720px) {
+      .grammar-page .category-section { margin-bottom: 28px; }
+      .grammar-page .category-heading { margin-bottom: 10px; font-size: 19px; }
+      .grammar-page .category-items { gap: 9px; }
+      .grammar-page .resource-card { min-height: 76px; }
+      .grammar-page .resource-card .resource-title { font-size: 18px; }
+      .grammar-page .resource-card .resource-description { font-size: 13px; }
+    }
+  </style>
 </head>
 <body class="grammar-page">
   <button class="mobile-toggle" id="mobileToggle" aria-label="開啟分類選單">☰</button>
@@ -57,17 +115,40 @@
       ).join("")
     );
 
-    document.getElementById("grammarCards").innerHTML = window.GRAMMAR_DATA.map(item => {
-      const unavailable = unavailableFiles.has(item.filename);
-      const action = unavailable
-        ? `<span class="card-link">教材準備中</span>`
-        : `<a class="card-link" href="${escapeHtml(item.filename)}">開啟教材 →</a>`;
-      return `<article class="resource-card${unavailable ? " is-placeholder" : ""}" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}">
-        <div class="card-top"><span class="tag">${escapeHtml(item.category)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
-        <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>${action}
-      </article>`;
+    document.getElementById("grammarCards").innerHTML = window.GRAMMAR_CATEGORIES.map(category => {
+      const cards = window.GRAMMAR_DATA.filter(item => item.category === category).map(item => {
+        const unavailable = unavailableFiles.has(item.filename);
+        const href = unavailable ? "" : ` data-href="${escapeHtml(item.filename)}" tabindex="0" role="link"`;
+        const status = unavailable ? ` <span class="resource-status">（教材準備中）</span>` : "";
+        return `<article class="resource-card${unavailable ? " is-placeholder" : ""}" data-category="${escapeHtml(item.category)}" style="border-left-color:${escapeHtml(item.themeColor)}"${href}>
+          <button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button>
+          <h2 class="resource-title">${escapeHtml(item.title)}</h2>
+          <p class="resource-description">${escapeHtml(item.desc)}${status}</p>
+        </article>`;
+      }).join("");
+      return `<section class="category-section" data-category-section="${escapeHtml(category)}">
+        <h2 class="category-heading">${escapeHtml(category)}</h2>
+        <div class="category-items">${cards}</div>
+      </section>`;
     }).join("");
   </script>
   <script src="../shared/js/workspace.js?v=2.1"></script>
+  <script>
+    document.querySelectorAll(".resource-card[data-href]").forEach(card => {
+      const openResource = () => { window.location.href = card.dataset.href; };
+      card.addEventListener("click", event => {
+        if (!event.target.closest(".favorite")) openResource();
+      });
+      card.addEventListener("keydown", event => {
+        if (!event.target.closest(".favorite") && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          openResource();
+        }
+      });
+    });
+    document.querySelectorAll(".favorite").forEach(button => {
+      button.addEventListener("click", event => event.stopPropagation());
+    });
+  </script>
 </body>
 </html>
