@@ -152,9 +152,9 @@
 
         /* 固定物理軌道：原班科目、原班教師、三列抽離課程清單 */
         .course-cell-wrapper {
-            height: 86px; 
+            height: 91px;
             display: grid;
-            grid-template-rows: 24px 16px 46px;
+            grid-template-rows: 26px 17px 48px;
             align-items: center;
             justify-items: center;
             padding: 1px;
@@ -166,7 +166,7 @@
         .orig-subject {
             font-weight: bold;
             line-height: 1.1;
-            height: 24px;
+            height: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -178,7 +178,7 @@
             font-size: 13px;
             color: #334155;
             line-height: 1.1;
-            height: 16px;
+            height: 17px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -188,7 +188,7 @@
         /* 第三軌固定容納三列，不讓抽離人數改變原班課表列高 */
         .extracted-course-list {
             width: 96%;
-            height: 46px;
+            height: 48px;
             padding-top: 1px;
             display: flex;
             flex-direction: column;
@@ -237,17 +237,18 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            font-size: 14.5px;
+            font-size: 12.5px;
+            line-height: 1.05;
             padding-top: 0;
-            margin-top: 6px;
+            margin-top: 3px;
             font-family: "DFKai-SB", "標楷體", "BiauKai", serif !important;
             text-align: left;
         }
 
         .footer-title {
             font-weight: bold;
-            font-size: 15px;
-            margin-bottom: 6px;
+            font-size: 13px;
+            margin-bottom: 2px;
             color: black;
         }
 
@@ -256,7 +257,7 @@
             display: flex;
             align-items: center;
             width: 100%;
-            margin-bottom: 4px;
+            margin-bottom: 1px;
             color: #111;
         }
 
@@ -702,6 +703,29 @@
             return '--item-color:#b45309;'; // 琥珀色
         }
 
+        function getShortStudentName(name) {
+            return Array.from(String(name || '').trim()).slice(-2).join('');
+        }
+
+        function getShortCourseName(subject) {
+            const cleanSubject = String(subject || '').trim();
+            if (/巡迴|巡輔/.test(cleanSubject)) return '巡迴';
+            if (/生活訓練|社交訓練/.test(cleanSubject)) return '訓練';
+            const withoutGroup = cleanSubject.replace(/[一二三四五六七八九]?[A-ZＡ-Ｚ]粉?$/i, '');
+            return Array.from(withoutGroup).slice(0, 2).join('');
+        }
+
+        function getShortLocation(subject) {
+            const entries = specialEdGroupsDict[String(subject || '').trim()] || [];
+            const location = entries[0]?.location?.trim() || '';
+            const roomCode = location.match(/教室\s*([A-ZＡ-Ｚ0-9])$/i);
+            if (roomCode) return roomCode[1].toUpperCase();
+            if (location.includes('直播')) return '播';
+            if (location.includes('巡迴')) return '巡';
+            const compactLocation = location.replace(/異想|教室|上課地點|\s/g, '');
+            return Array.from(compactLocation).slice(-1).join('');
+        }
+
         // 班級全景課表 HTML 生成引擎
         function generateClassPageHTML(classTarget) {
             // 1. 撈出選定班級的所有特教學生
@@ -794,13 +818,13 @@
                             // 保留完整組別以加入底部對照表
                             enrolledExtractedSubjects.add(extractedCourse);
 
-                            // 簡化課程名稱：去除後綴組別 A, B, C 等
+                            // 格內採「名字後兩字(課程兩字)地點一字」，完整資料仍保留在底部對照欄
                             let cleanExtSubject = extractedCourse.split(/[\n\r(（\s]/)[0].trim();
-                            let minimalSubject = cleanExtSubject.replace(/[一二三四五六七八九]?[ABCDEFGH]粉?$/g, '');
                             const styleColors = getStampColorStyle(cleanExtSubject);
                             extractedBadgesData.push({
-                                studentName: student._resolved_info.name,
-                                subject: minimalSubject,
+                                studentName: getShortStudentName(student._resolved_info.name),
+                                subject: getShortCourseName(cleanExtSubject),
+                                location: getShortLocation(extractedCourse),
                                 style: styleColors
                             });
                         });
@@ -822,7 +846,7 @@
                     const extractedListItems = extractedBadgesData.slice(0, 3).map(b => `
                         <div class="extracted-course-item" style="${b.style}">
                             <span class="extracted-course-bullet">●</span>
-                            <span class="extracted-course-text">${b.studentName}：${b.subject}</span>
+                            <span class="extracted-course-text">${escapeHTML(b.studentName)}(${escapeHTML(b.subject)})${escapeHTML(b.location)}</span>
                         </div>
                     `).join('');
                     rowHtml += `<div class="extracted-course-list">${extractedListItems}</div>`;
