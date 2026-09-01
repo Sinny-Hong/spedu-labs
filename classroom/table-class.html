@@ -152,9 +152,9 @@
 
         /* 固定物理軌道：原班科目、原班教師、三列抽離課程清單 */
         .course-cell-wrapper {
-            height: 91px;
+            height: 95px;
             display: grid;
-            grid-template-rows: 26px 17px 48px;
+            grid-template-rows: 26px 17px 52px;
             align-items: center;
             justify-items: center;
             padding: 1px;
@@ -188,7 +188,7 @@
         /* 第三軌固定容納三列，不讓抽離人數改變原班課表列高 */
         .extracted-course-list {
             width: 96%;
-            height: 48px;
+            height: 52px;
             padding-top: 1px;
             display: flex;
             flex-direction: column;
@@ -200,18 +200,18 @@
 
         .extracted-course-item {
             width: 100%;
-            height: 15px;
-            min-height: 15px;
+            height: 17px;
+            min-height: 17px;
             display: flex;
             align-items: center;
             justify-content: flex-start;
             gap: 2px;
             color: #111827;
             font-weight: 700;
-            font-size: 11.5px;
+            font-size: 12.5px;
             letter-spacing: -0.25px;
             text-align: left;
-            line-height: 15px;
+            line-height: 17px;
             white-space: nowrap;
             overflow: hidden;
             box-sizing: border-box;
@@ -846,7 +846,7 @@
                     const extractedListItems = extractedBadgesData.slice(0, 3).map(b => `
                         <div class="extracted-course-item" style="${b.style}">
                             <span class="extracted-course-bullet">●</span>
-                            <span class="extracted-course-text">${escapeHTML(b.studentName)}(${escapeHTML(b.subject)})${escapeHTML(b.location)}</span>
+                            <span class="extracted-course-text">${escapeHTML(b.studentName)}（${escapeHTML(b.subject)}）${escapeHTML(b.location)}</span>
                         </div>
                     `).join('');
                     rowHtml += `<div class="extracted-course-list">${extractedListItems}</div>`;
