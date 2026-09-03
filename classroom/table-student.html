@@ -395,7 +395,7 @@
         let studentsData = []; 
         let specialEdGroupsDict = {}; // 特教老師地點/分組資訊資料庫
         let selectedStudentIndex = 0;
-        let versionString = "8/26第一週暫行課表";
+        let versionString = "版本資訊未填寫";
 
         // 離線備用高擬真測試資料 (保持 原11, 特11 等規格)
         const fallbackMockData = [
@@ -490,8 +490,10 @@
             let teacherIdx = cleanHeaders.findIndex(h => h === "特教教師" || h === "特教老師" || h.includes("特教教師"));
             let locationIdx = cleanHeaders.findIndex(h => h === "上課地點" || h.includes("上課地點") || h.includes("地點"));
             let phoneIdx = cleanHeaders.findIndex(h => h === "上課電話" || h.includes("上課電話") || h.includes("電話") || h.includes("分機") || h.includes("電話分機"));
+            let versionIdx = cleanHeaders.findIndex(h => h === "版本代號" || h.includes("版本代號"));
 
             specialEdGroupsDict = {}; // 清空並重新建立
+            versionString = "版本資訊未填寫";
             const results = [];
 
             for (let r = 1; r < lines.length; r++) {
@@ -511,6 +513,12 @@
                 const studentName = (rowData[2] || "").trim();
                 const tutorName = (rowData[3] || "").trim();
                 const counselorName = (rowData[4] || "").trim();
+
+                // A5 的版本代號只需填寫一次，讀取第一個有效值
+                if (versionString === "版本資訊未填寫" && versionIdx !== -1) {
+                    const versionValue = (rowData[versionIdx] || "").trim();
+                    if (versionValue && versionValue !== "版本代號") versionString = versionValue;
+                }
 
                 // 先讀取 A5 右側名單；即使本列左側沒有學生，教師資料仍須保留
                 if (groupIdx !== -1 && rowData[groupIdx]) {
