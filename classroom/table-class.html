@@ -403,32 +403,6 @@
                 </div>
             </div>
 
-            <!-- 雲端試算表設定 -->
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                <details class="group">
-                    <summary class="flex justify-between items-center font-bold text-slate-700 cursor-pointer list-none">
-                        <span>🔗 雲端資料庫連結設定</span>
-                        <span class="transition group-open:rotate-180">
-                            <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
-                        </span>
-                    </summary>
-                    <div class="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">A5彙整分頁 CSV 網址：</label>
-                            <input id="csv-url-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-xs focus:outline-none focus:border-blue-500" placeholder="請貼上 CSV 網址">
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="saveAndReloadUrl()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2 px-3 rounded transition-colors cursor-pointer">
-                                儲存並重新載入
-                            </button>
-                            <button onclick="resetDefaultUrl()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold py-2 px-3 rounded transition-colors cursor-pointer">
-                                重設預設
-                            </button>
-                        </div>
-                    </div>
-                </details>
-            </div>
-
         </div>
 
         <!-- 右側：A4 紙張即時預覽區域 -->
@@ -477,9 +451,7 @@
         ];
 
         window.onload = function() {
-            const savedUrl = localStorage.getItem('sh_timetable_csv_url') || DEFAULT_CSV_URL;
-            document.getElementById('csv-url-input').value = savedUrl;
-            fetchAndParseCSV(savedUrl);
+            fetchAndParseCSV(DEFAULT_CSV_URL);
         };
 
         function fetchAndParseCSV(url) {
@@ -702,13 +674,15 @@
 
         function getDisplaySpecialCourseName(subject) {
             const fullSubject = String(subject || '').trim();
-            if (/^(?:國文|英語|數學)/.test(fullSubject)) return fullSubject;
-            if (/^生活管理/.test(fullSubject)) return '生活管理';
-            if (/^生活訓練/.test(fullSubject)) return '生活訓練';
-            if (/^自閉巡迴/.test(fullSubject)) return '自閉巡迴';
-            if (/^情障巡迴/.test(fullSubject)) return '情障巡迴';
-            if (/^聽語巡迴/.test(fullSubject)) return '聽語巡迴';
-            return fullSubject;
+            if (/^國文/.test(fullSubject)) return '國文';
+            if (/^英語/.test(fullSubject)) return '英語';
+            if (/^數學/.test(fullSubject)) return '數學';
+            if (/^生活管理/.test(fullSubject)) return '生管';
+            if (/^生活訓練/.test(fullSubject)) return '生訓';
+            if (/^自閉巡迴/.test(fullSubject)) return '自閉';
+            if (/^情障巡迴/.test(fullSubject)) return '情障';
+            if (/^聽語巡迴/.test(fullSubject)) return '聽語';
+            return Array.from(fullSubject).slice(0, 2).join('');
         }
 
         function getFixedFooterHTML() {
@@ -911,7 +885,7 @@
 
                     <div>
                         <div class="doc-title">臺南市立新市國民中學</div>
-                        <div class="doc-subtitle">115學年度第一學期 異想教室排課通知單</div>
+                        <div class="doc-subtitle">115學年度第一學期 異想教室排課通知單（${escapeHTML(versionString)}）</div>
                         
                         <!-- 雙欄精準物理列定位：66.6% 寬度留給學生姓名、33.4% 導師姓名靠左排，完美在週四最左邊框對齊線起頭 -->
                         <div class="student-info-line">
@@ -954,19 +928,6 @@
                 teacher: teachers.join('老師、'),
                 location: places.join('、')
             };
-        }
-
-        function saveAndReloadUrl() {
-            const urlInput = document.getElementById('csv-url-input').value.trim();
-            if (!urlInput) { alert("請先輸入發布的 CSV 網址"); return; }
-            localStorage.setItem('sh_timetable_csv_url', urlInput);
-            fetchAndParseCSV(urlInput);
-        }
-
-        function resetDefaultUrl() {
-            document.getElementById('csv-url-input').value = DEFAULT_CSV_URL;
-            localStorage.setItem('sh_timetable_csv_url', DEFAULT_CSV_URL);
-            fetchAndParseCSV(DEFAULT_CSV_URL);
         }
 
         function updateConnectionStatus(type, message) {
