@@ -27,12 +27,17 @@
             }
             .print-page {
                 width: 210mm !important;
-                height: 297mm !important;
+                height: 296mm !important;
+                min-height: 296mm !important;
+                max-height: 296mm !important;
                 margin: 0 !important;
-                padding: 5mm !important;
+                padding: 4mm !important;
                 box-shadow: none !important;
                 background: white !important;
-                page-break-after: always;
+                page-break-after: auto;
+                break-after: auto;
+                page-break-inside: avoid;
+                break-inside: avoid;
                 box-sizing: border-box;
             }
             /* 強制背景顏色與框線印出 */
@@ -42,9 +47,9 @@
             }
         }
 
-        /* 標楷體公文質感風格 */
+        /* 縮小彩色列印優先採黑體，筆畫較標楷體清楚穩定 */
         .timetable-font {
-            font-family: "DFKai-SB", "標楷體", "BiauKai", "Noto Serif TC", serif;
+            font-family: "Microsoft JhengHei", "微軟正黑體", "PingFang TC", "Noto Sans TC", Arial, sans-serif;
         }
 
         /* A4 直式預覽容器 (210mm x 297mm) */
@@ -65,19 +70,19 @@
         }
 
         .course-title {
-            font-size: 12px;
-            line-height: 1.08;
+            font-size: 11.5px;
+            line-height: 1.04;
             letter-spacing: -0.01em;
         }
 
         .course-title-long {
-            font-size: 10.5px;
-            line-height: 1.04;
+            font-size: 10px;
+            line-height: 1.02;
             letter-spacing: -0.055em;
         }
 
         .course-title-xlong {
-            font-size: 9.5px;
+            font-size: 9px;
             line-height: 1;
             letter-spacing: -0.075em;
         }
@@ -221,7 +226,7 @@
             </div>
             <div class="preview-scroll-wrapper w-full flex justify-start">
                 <!-- A4 直式主實體頁面 -->
-                <div class="print-page portrait-page bg-white shadow-2xl rounded-sm border border-slate-300 p-5 flex flex-col justify-between overflow-hidden transition-all">
+                <div class="print-page portrait-page bg-white shadow-2xl rounded-sm border border-slate-300 p-[4mm] flex flex-col justify-between overflow-hidden transition-all">
         
         <!-- 一行式公文極簡標題 (已移除底部的橫條黑線，日期與版本靠右) -->
         <div class="flex items-baseline justify-between mb-1 leading-none">
@@ -238,7 +243,7 @@
             <table class="w-full border-collapse border-2 border-slate-950 text-center timetable-font table-fixed">
                 <!-- 星期標題列 -->
                 <thead>
-                    <tr class="bg-slate-50 h-[20px] border-b-2 border-slate-955 text-slate-950 text-[11px] font-extrabold leading-none">
+                    <tr class="bg-slate-50 h-[18px] border-b-2 border-slate-955 text-slate-950 text-[10.5px] font-extrabold leading-none">
                         <!-- 時間欄佔比 8%，留下 92% 給五天均分 -->
                         <th class="w-[8%] border-r-2 border-slate-950 text-[10px]">節次/時間</th>
                         <th class="w-[18.4%] border-r border-slate-400">星期一</th>
@@ -641,9 +646,9 @@
                 const s1 = list[i] || "";
                 const s2 = list[i+1] || "";
                 html += `
-                    <div class="grid grid-cols-2 gap-x-1.5 w-full text-left font-semibold text-slate-900 tracking-tight leading-none mt-px">
-                        <span class="truncate pl-[2px] text-[11.5px]">${s1}</span>
-                        <span class="truncate pl-[2px] text-[11.5px]">${s2}</span>
+                    <div class="grid grid-cols-2 gap-x-1.5 w-full text-left font-semibold text-slate-900 tracking-tight leading-none">
+                        <span class="truncate pl-[2px] text-[10.75px]">${s1}</span>
+                        <span class="truncate pl-[2px] text-[10.75px]">${s2}</span>
                     </div>
                 `;
             }
@@ -702,7 +707,7 @@
                     } else {
                         const wrapper = document.createElement('div');
                         // 緊湊文字組別：僅保留 1px 的組別間距
-                        wrapper.className = `flex flex-col w-full h-full justify-start gap-[2px]`;
+                        wrapper.className = `flex flex-col w-full h-full justify-start gap-px`;
 
                         cellGroups.forEach(group => {
                             const colors = getTeacherColor(group.teacher);
