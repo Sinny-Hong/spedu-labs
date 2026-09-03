@@ -221,7 +221,7 @@
         .extracted-course-text {
             display: inline-block;
             min-width: 0;
-            padding: 0 4px;
+            padding: 0 2px;
             overflow: hidden;
             text-overflow: ellipsis;
             background: #fef08a !important;
@@ -230,6 +230,11 @@
             -webkit-box-decoration-break: clone;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+        }
+
+        .extracted-course-location {
+            font-size: 10.5px;
+            letter-spacing: -0.25px;
         }
 
         /* 底部對照表樣式 */
@@ -763,12 +768,18 @@
         function getShortLocation(subject, explicitLocation = '') {
             const entries = specialEdGroupsDict[String(subject || '').trim()] || [];
             const location = String(explicitLocation || entries[0]?.location || '').trim();
-            const roomCode = location.match(/教室\s*([A-ZＡ-Ｚ0-9])$/i);
-            if (roomCode) return roomCode[1].toUpperCase();
-            if (location.includes('直播')) return '播';
+            if (!location) return '';
+            const roomCode = location.match(/^異想(?:教室)?\s*([A-ZＡ-Ｚ0-9])$/i);
+            if (roomCode) return roomCode[1].normalize('NFKC').toUpperCase();
+            if (location.includes('合作社')) return '合';
+            if (location.includes('校')) return '校';
+            if (location.includes('直播')) return '直';
             if (location.includes('巡迴')) return '巡';
+            if (location.includes('資源')) return '資';
+            if (location.includes('輔導')) return '輔';
+            if (location.includes('特教')) return '特';
             const compactLocation = location.replace(/異想|教室|上課地點|\s/g, '');
-            return Array.from(compactLocation).slice(-1).join('');
+            return Array.from(compactLocation)[0] || '';
         }
 
         // 班級全景課表 HTML 生成引擎
@@ -885,7 +896,7 @@
                     const extractedListItems = extractedBadgesData.slice(0, 3).map(b => `
                         <div class="extracted-course-item" style="${b.style}">
                             <span class="extracted-course-bullet">●</span>
-                            <span class="extracted-course-text">${escapeHTML(b.studentName)}（${escapeHTML(b.subject)}）${escapeHTML(b.location)}</span>
+                            <span class="extracted-course-text">${escapeHTML(b.studentName)}(${escapeHTML(b.subject)})${b.location ? `<span class="extracted-course-location">${escapeHTML(b.location)}</span>` : ''}</span>
                         </div>
                     `).join('');
                     rowHtml += `<div class="extracted-course-list">${extractedListItems}</div>`;

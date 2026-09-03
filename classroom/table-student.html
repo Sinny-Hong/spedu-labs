@@ -151,7 +151,7 @@
             border: 2px solid #dc2626; /* 印章框邊框加粗 */
             color: #dc2626;
             font-weight: 900; /* 加粗 */
-            padding: 0 10px; /* 寬口內襯 */
+            padding: 0 7px; /* 保留印章留白，並容納四字課名與一字地點 */
             border-radius: 4px;
             font-size: 14.5px; /* 加大字型 */
             letter-spacing: 0.8px;
@@ -162,6 +162,13 @@
             overflow: hidden;
             text-overflow: ellipsis;
             box-sizing: border-box;
+        }
+
+        .stamp-location {
+            margin-left: 2px;
+            font-size: 11px;
+            letter-spacing: 0;
+            font-weight: 800;
         }
 
         /* 與印章等高的預留空白，保證教師與課程位置絕對不飄移 */
@@ -646,13 +653,27 @@
 
         function getDisplaySpecialCourseName(subject) {
             const fullSubject = String(subject || '').trim();
-            if (/^(?:國文|英語|數學)/.test(fullSubject)) return fullSubject;
-            if (/^生活管理/.test(fullSubject)) return '生活管理';
-            if (/^生活訓練/.test(fullSubject)) return '生活訓練';
-            if (/^自閉巡迴/.test(fullSubject)) return '自閉巡迴';
-            if (/^情障巡迴/.test(fullSubject)) return '情障巡迴';
-            if (/^聽語巡迴/.test(fullSubject)) return '聽語巡迴';
-            return fullSubject;
+            let displaySubject = fullSubject;
+            if (/^生活管理/.test(fullSubject)) displaySubject = '生活管理';
+            else if (/^生活訓練/.test(fullSubject)) displaySubject = '生活訓練';
+            else if (/^自閉巡迴/.test(fullSubject)) displaySubject = '自閉巡迴';
+            else if (/^情障巡迴/.test(fullSubject)) displaySubject = '情障巡迴';
+            else if (/^聽語巡迴/.test(fullSubject)) displaySubject = '聽語巡迴';
+            return Array.from(displaySubject).slice(0, 4).join('');
+        }
+
+        function getDisplaySpecialLocation(location) {
+            const fullLocation = String(location || '').trim();
+            if (!fullLocation) return '';
+            const roomCode = fullLocation.match(/^異想(?:教室)?\s*([A-ZＡ-Ｚ0-9])$/i);
+            if (roomCode) return roomCode[1].normalize('NFKC').toUpperCase();
+            if (/合作社/.test(fullLocation)) return '合';
+            if (/校/.test(fullLocation)) return '校';
+            if (/直播/.test(fullLocation)) return '直';
+            if (/資源/.test(fullLocation)) return '資';
+            if (/輔導/.test(fullLocation)) return '輔';
+            if (/特教/.test(fullLocation)) return '特';
+            return Array.from(fullLocation)[0] || '';
         }
 
         function getFixedFooterHTML() {
@@ -766,7 +787,7 @@
                     if (extractedEntry) {
                         const fullSubject = extractedEntry.subject;
                         const displaySubject = getDisplaySpecialCourseName(fullSubject);
-                        const displayLocation = extractedEntry.location ? `（${extractedEntry.location}）` : '';
+                        const displayLocation = getDisplaySpecialLocation(extractedEntry.location);
 
                         // 1. 原班科目 (鎖定第一軌，永遠不會被印章頂開)
                         const origSubjectFontSize = parsedOrig.subject.length > 4 ? 'font-size: 12px; tracking-tighter' : 'font-size: 15.5px;';
@@ -777,7 +798,7 @@
                         
                         // 3. 特教抽離課印章 (鎖定第三軌)
                         const stampColors = getStampColorClass(fullSubject);
-                        rowHtml += `<span class="extracted-stamp ${stampColors}">${escapeHTML(displaySubject)}${escapeHTML(displayLocation)}</span>`;
+                        rowHtml += `<span class="extracted-stamp ${stampColors}">${escapeHTML(displaySubject)}${displayLocation ? ` <span class="stamp-location">(${escapeHTML(displayLocation)})</span>` : ''}</span>`;
 
                     } else if (originalCourse) {
                         // 純原班課程 (鎖定第一、二軌，第三軌帶入等高留白器，保證位置與有印章時完全一致)
