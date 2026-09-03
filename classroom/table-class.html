@@ -237,12 +237,35 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            font-size: 12.5px;
-            line-height: 1.05;
+            width: 100%;
+            font-size: 13.5px;
+            line-height: 1.12;
             padding-top: 0;
             margin-top: 3px;
             font-family: "DFKai-SB", "標楷體", "BiauKai", serif !important;
             text-align: left;
+        }
+
+        .footer-version {
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1.12;
+            margin-bottom: 2px;
+        }
+
+        .footer-info-line {
+            width: 100%;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .footer-info-continuation {
+            box-sizing: border-box;
+            padding-left: 5em;
+        }
+
+        .footer-info-line + .footer-info-line {
+            margin-top: 1px;
         }
 
         .footer-title {
@@ -687,10 +710,13 @@
 
         function getFixedFooterHTML() {
             const lines = [specialTeamText, contactInfoText].filter(Boolean);
-            if (!lines.length) return '';
             return `
                 <div class="student-footer">
-                    ${lines.map(line => `<div class="footer-info-line">${escapeHTML(line)}</div>`).join('')}
+                    <div class="footer-version">版本代號：${escapeHTML(versionString)}</div>
+                    ${lines.map(line => {
+                        const parts = String(line).replace(/\r\n?/g, '\n').split('\n');
+                        return `<div class="footer-info-line">${parts.map((part, index) => `<div${index ? ' class="footer-info-continuation"' : ''}>${escapeHTML(part)}</div>`).join('')}</div>`;
+                    }).join('')}
                 </div>`;
         }
 
@@ -885,7 +911,7 @@
 
                     <div>
                         <div class="doc-title">臺南市立新市國民中學</div>
-                        <div class="doc-subtitle">115學年度第一學期 異想教室排課通知單（${escapeHTML(versionString)}）</div>
+                        <div class="doc-subtitle">115學年度第一學期 異想教室排課通知單</div>
                         
                         <!-- 雙欄精準物理列定位：66.6% 寬度留給學生姓名、33.4% 導師姓名靠左排，完美在週四最左邊框對齊線起頭 -->
                         <div class="student-info-line">

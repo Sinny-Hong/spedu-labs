@@ -175,11 +175,35 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            font-size: 14.5px; /* 提升整體底部字型易讀性 */
+            width: 100%;
+            font-size: 15px;
+            line-height: 1.15;
             padding-top: 0;
             margin-top: 10px;
             font-family: "DFKai-SB", "標楷體", "BiauKai", serif !important;
             text-align: left;
+        }
+
+        .footer-version {
+            font-size: 15.5px;
+            font-weight: bold;
+            line-height: 1.15;
+            margin-bottom: 3px;
+        }
+
+        .footer-info-line {
+            width: 100%;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .footer-info-continuation {
+            box-sizing: border-box;
+            padding-left: 5em;
+        }
+
+        .footer-info-line + .footer-info-line {
+            margin-top: 2px;
         }
 
         .footer-title {
@@ -633,10 +657,13 @@
 
         function getFixedFooterHTML() {
             const lines = [specialTeamText, contactInfoText].filter(Boolean);
-            if (!lines.length) return '';
             return `
                 <div class="student-footer">
-                    ${lines.map(line => `<div class="footer-info-line">${escapeHTML(line)}</div>`).join('')}
+                    <div class="footer-version">版本代號：${escapeHTML(versionString)}</div>
+                    ${lines.map(line => {
+                        const parts = String(line).replace(/\r\n?/g, '\n').split('\n');
+                        return `<div class="footer-info-line">${parts.map((part, index) => `<div${index ? ' class="footer-info-continuation"' : ''}>${escapeHTML(part)}</div>`).join('')}</div>`;
+                    }).join('')}
                 </div>`;
         }
 
@@ -779,7 +806,7 @@
                 <div class="page-container official-doc">
                     <div>
                         <div class="doc-title">臺南市立新市國民中學</div>
-                        <div class="doc-subtitle">115學年度第一學期 異想教室個別學生課表（${escapeHTML(versionString)}）</div>
+                        <div class="doc-subtitle">115學年度第一學期 異想教室個別學生課表</div>
                         
                         <!-- 完全連成單行、去橫槓且動態最大化寬度間隔的基本個資列 -->
                         <div class="student-info-line">
