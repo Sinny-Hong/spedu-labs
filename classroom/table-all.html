@@ -153,6 +153,29 @@
                 opacity: 1 !important;
                 background-color: #fff7ae !important;
             }
+
+            body.print-highlight-all #app-main {
+                display: none !important;
+            }
+
+            body.print-highlight-all #highlight-print-section {
+                display: block !important;
+            }
+
+            body.print-highlight-all #highlight-print-section .print-page {
+                display: flex !important;
+                page-break-after: always !important;
+                break-after: page;
+            }
+
+            body.print-highlight-all #highlight-print-section .print-page:last-child {
+                page-break-after: auto !important;
+                break-after: auto;
+            }
+        }
+
+        #highlight-print-section {
+            display: none;
         }
     </style>
 </head>
@@ -214,6 +237,9 @@
                 <button onclick="window.print()" class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors cursor-pointer">
                     <span>🖨️</span> 列印 A4 直式總表
                 </button>
+                <button id="btn-print-all-highlights" onclick="printAllTeacherHighlights()" class="mt-3 w-full flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors cursor-pointer" disabled>
+                    <span>📚</span> 一鍵列印所有教師醒目版
+                </button>
                 <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg p-3 text-xs mt-4 leading-relaxed">
                     <strong>💡 列印小祕訣：</strong><br>
                     1. 紙張選擇 <strong>A4／直向</strong>。<br>
@@ -267,6 +293,8 @@
             </div>
         </section>
     </main>
+
+    <div id="highlight-print-section"></div>
 
     <!-- 數據讀取與渲染邏輯 JS 大腦 -->
     <script>
@@ -445,6 +473,7 @@
             renderScheduleConflicts();
             populateTeacherHighlightOptions();
             renderTimetable();
+            document.getElementById('btn-print-all-highlights').disabled = false;
         }
 
         function parseTimeCodes(codeStr) {
@@ -612,6 +641,57 @@
                 card.classList.toggle('teacher-highlighted', isHighlighting && matchesSelection);
             });
         }
+
+        function getHighlightPrintTargets() {
+            const select = document.getElementById('highlight-teacher-select');
+            if (!select) return [];
+            return Array.from(select.options)
+                .filter(option => option.value)
+                .map(option => ({ value: option.value, label: option.textContent.trim() }));
+        }
+
+        function buildHighlightPrintPages() {
+            const sourcePage = document.querySelector('#preview-panel .print-page');
+            const printSection = document.getElementById('highlight-print-section');
+            const targets = getHighlightPrintTargets();
+            if (!sourcePage || !printSection || targets.length === 0) return 0;
+
+            printSection.innerHTML = '';
+            targets.forEach(target => {
+                const page = sourcePage.cloneNode(true);
+                const versionTag = page.querySelector('#version-tag');
+                page.querySelectorAll('[id]').forEach(element => element.removeAttribute('id'));
+
+                page.querySelectorAll('.teacher-course-block').forEach(card => {
+                    const matchesTarget = target.value === ITINERANT_HIGHLIGHT_VALUE
+                        ? card.dataset.itinerant === 'true'
+                        : card.dataset.teacher === target.value;
+                    card.classList.toggle('teacher-highlighted', matchesTarget);
+                });
+
+                if (versionTag) versionTag.textContent = `${versionTag.textContent.trim()}｜醒目：${target.label}`;
+                printSection.appendChild(page);
+            });
+            return targets.length;
+        }
+
+        function clearHighlightPrintPages() {
+            document.body.classList.remove('print-highlight-all');
+            const printSection = document.getElementById('highlight-print-section');
+            if (printSection) printSection.innerHTML = '';
+        }
+
+        function printAllTeacherHighlights() {
+            const pageCount = buildHighlightPrintPages();
+            if (!pageCount) {
+                alert('目前沒有可列印的教師醒目資料。');
+                return;
+            }
+            document.body.classList.add('print-highlight-all');
+            requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+        }
+
+        window.addEventListener('afterprint', clearHighlightPrintPages);
 
         function formatLocation(loc) {
             if (!loc) return "";
