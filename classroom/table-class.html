@@ -208,13 +208,26 @@
             gap: 2px;
             color: #111827;
             font-weight: 700;
-            font-size: 12.5px;
+            font-size: 13px;
             letter-spacing: -0.25px;
             text-align: left;
             line-height: 17px;
             white-space: nowrap;
             overflow: hidden;
             box-sizing: border-box;
+        }
+
+        .extracted-course-list.items-1,
+        .extracted-course-list.items-2 {
+            justify-content: center;
+            gap: 1px;
+        }
+
+        .extracted-course-list.items-1 .extracted-course-item,
+        .extracted-course-list.items-2 .extracted-course-item {
+            height: 19px;
+            min-height: 19px;
+            line-height: 19px;
         }
 
         .extracted-course-bullet { flex: 0 0 auto; color: var(--item-color, #b45309); font-size: 10px; line-height: 1; }
@@ -233,7 +246,7 @@
         }
 
         .extracted-course-location {
-            font-size: 10.5px;
+            font-size: 11px;
             letter-spacing: -0.25px;
         }
 
@@ -899,7 +912,8 @@
                             <span class="extracted-course-text">${escapeHTML(b.studentName)}(${escapeHTML(b.subject)})${b.location ? `<span class="extracted-course-location">${escapeHTML(b.location)}</span>` : ''}</span>
                         </div>
                     `).join('');
-                    rowHtml += `<div class="extracted-course-list">${extractedListItems}</div>`;
+                    const extractedItemCount = Math.min(extractedBadgesData.length, 3);
+                    rowHtml += `<div class="extracted-course-list items-${extractedItemCount}">${extractedListItems}</div>`;
 
                     rowHtml += `</div>`;
                     rowHtml += `</td>`;
