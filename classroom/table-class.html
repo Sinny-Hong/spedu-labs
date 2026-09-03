@@ -459,6 +459,8 @@
         let specialEdGroupsDict = {};   // 特教老師地點/分組資訊資料庫
         let selectedClass = "";         // 目前選定的班級代碼
         let versionString = "版本資訊未填寫";
+        let specialTeamText = "";
+        let contactInfoText = "";
 
         // 離線防呆高擬真測試資料
         const fallbackMockData = [
@@ -552,6 +554,8 @@
 
             specialEdGroupsDict = {}; 
             versionString = "版本資訊未填寫";
+            specialTeamText = versionIdx !== -1 ? (lines[2]?.[versionIdx] || "").trim() : "";
+            contactInfoText = versionIdx !== -1 ? (lines[3]?.[versionIdx] || "").trim() : "";
             const results = [];
 
             for (let r = 1; r < lines.length; r++) {
@@ -652,9 +656,9 @@
                 for (let day = 1; day <= 5; day++) {
                     for (let period = 1; period <= 8; period++) {
                         const code = `${day}${period}`;
-                        const items = getA5SpecialCourses(student, code).map(subject => ({
-                            subject,
-                            teacher: resolveSubjectDetailsFromDB(subject).teacher || '未提供教師'
+                        const items = getA5SpecialEntries(student, code).map(entry => ({
+                            subject: entry.subject,
+                            teacher: resolveSubjectDetailsFromDB(entry.subject).teacher || '未提供教師'
                         }));
                         if (items.length > 1) conflicts.push({ student, code, items });
                     }
@@ -668,11 +672,52 @@
             list.innerHTML = conflicts.length ? `<p class="mb-2 font-semibold text-rose-700">${escapeHTML(classLabel)}發現 ${conflicts.length} 筆衝堂</p><div class="max-h-72 space-y-2 overflow-y-auto pr-1">${conflicts.map(item => `<div class="rounded-lg border border-rose-200 bg-rose-50 p-2"><div class="font-bold text-rose-800">${escapeHTML(item.student._resolved_info.name)}・週${'一二三四五'[Number(item.code[0]) - 1]}第${item.code[1]}節</div><div class="mt-1 leading-snug">${item.items.map(course => `${escapeHTML(course.subject)}／${escapeHTML(course.teacher)}`).join('<br>')}</div></div>`).join('')}</div>` : `<div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 font-semibold text-emerald-700">✓ ${escapeHTML(classLabel)}未發現衝堂</div>`;
         }
 
-        function getA5SpecialCourses(student, code) {
-            return [...new Set(String(student?.[`特${code}`] || '')
+        function isSpecialLocation(value) {
+            const location = String(value || '').trim();
+            if (!location) return false;
+            const knownLocations = Object.values(specialEdGroupsDict)
+                .flat()
+                .map(item => String(item.location || '').trim())
+                .filter(Boolean);
+            return knownLocations.includes(location)
+                || /^(?:異想(?:教室)?\s*[A-ZＡ-Ｚ0-9]+|合作社|直播室|資源教室|輔導室|特教辦公室)$/i.test(location);
+        }
+
+        // 相容舊版一行課名、舊式多課換行，以及新版「課名＋地點」兩行格式
+        function getA5SpecialEntries(student, code) {
+            const lines = String(student?.[`特${code}`] || '')
                 .split(/\r?\n/)
                 .map(value => value.trim())
-                .filter(Boolean))];
+                .filter(Boolean);
+            if (!lines.length) return [];
+            if (lines.length === 1) return [{ subject: lines[0], location: '' }];
+            if (isSpecialLocation(lines[1])) {
+                return [
+                    { subject: lines[0], location: lines[1] },
+                    ...lines.slice(2).map(subject => ({ subject, location: '' }))
+                ];
+            }
+            return [...new Set(lines)].map(subject => ({ subject, location: '' }));
+        }
+
+        function getDisplaySpecialCourseName(subject) {
+            const fullSubject = String(subject || '').trim();
+            if (/^(?:國文|英語|數學)/.test(fullSubject)) return fullSubject;
+            if (/^生活管理/.test(fullSubject)) return '生活管理';
+            if (/^生活訓練/.test(fullSubject)) return '生活訓練';
+            if (/^自閉巡迴/.test(fullSubject)) return '自閉巡迴';
+            if (/^情障巡迴/.test(fullSubject)) return '情障巡迴';
+            if (/^聽語巡迴/.test(fullSubject)) return '聽語巡迴';
+            return fullSubject;
+        }
+
+        function getFixedFooterHTML() {
+            const lines = [specialTeamText, contactInfoText].filter(Boolean);
+            if (!lines.length) return '';
+            return `
+                <div class="student-footer">
+                    ${lines.map(line => `<div class="footer-info-line">${escapeHTML(line)}</div>`).join('')}
+                </div>`;
         }
 
         // 拆分原班科目與任課教師字串
@@ -715,17 +760,9 @@
             return Array.from(String(name || '').trim()).slice(-2).join('');
         }
 
-        function getShortCourseName(subject) {
-            const cleanSubject = String(subject || '').trim();
-            if (/巡迴|巡輔/.test(cleanSubject)) return '巡迴';
-            if (/生活訓練|社交訓練/.test(cleanSubject)) return '訓練';
-            const withoutGroup = cleanSubject.replace(/[一二三四五六七八九]?[A-ZＡ-Ｚ]粉?$/i, '');
-            return Array.from(withoutGroup).slice(0, 2).join('');
-        }
-
-        function getShortLocation(subject) {
+        function getShortLocation(subject, explicitLocation = '') {
             const entries = specialEdGroupsDict[String(subject || '').trim()] || [];
-            const location = entries[0]?.location?.trim() || '';
+            const location = String(explicitLocation || entries[0]?.location || '').trim();
             const roomCode = location.match(/教室\s*([A-ZＡ-Ｚ0-9])$/i);
             if (roomCode) return roomCode[1].toUpperCase();
             if (location.includes('直播')) return '播';
@@ -782,8 +819,6 @@
                 { name: "第八節", start: "16:00", end: "16:45" }
             ];
 
-            const enrolledExtractedSubjects = new Set();
-
             // 早自習
             let morningStudyHtml = `
                 <tr>
@@ -821,18 +856,14 @@
 
                     classStudents.forEach(student => {
                         const code = `${day}${periodNum}`;
-                        const extractedCourses = getA5SpecialCourses(student, code);
-                        extractedCourses.forEach(extractedCourse => {
-                            // 保留完整組別以加入底部對照表
-                            enrolledExtractedSubjects.add(extractedCourse);
-
-                            // 格內採「名字後兩字(課程兩字)地點一字」，完整資料仍保留在底部對照欄
-                            let cleanExtSubject = extractedCourse.split(/[\n\r(（\s]/)[0].trim();
-                            const styleColors = getStampColorStyle(cleanExtSubject);
+                        const extractedEntries = getA5SpecialEntries(student, code);
+                        extractedEntries.forEach(entry => {
+                            const fullSubject = entry.subject;
+                            const styleColors = getStampColorStyle(fullSubject);
                             extractedBadgesData.push({
                                 studentName: getShortStudentName(student._resolved_info.name),
-                                subject: getShortCourseName(cleanExtSubject),
-                                location: getShortLocation(extractedCourse),
+                                subject: getDisplaySpecialCourseName(fullSubject),
+                                location: getShortLocation(fullSubject, entry.location),
                                 style: styleColors
                             });
                         });
@@ -867,38 +898,7 @@
                 tableRowsHtml += rowHtml;
             });
 
-            // 完美對齊：雙欄 Tab 定位點資訊對照表 (班級綜合版)
-            let contactListHtml = "";
-            if (enrolledExtractedSubjects.size > 0) {
-                const subjectArray = Array.from(enrolledExtractedSubjects);
-                for (let i = 0; i < subjectArray.length; i += 2) {
-                    const sub1 = subjectArray[i];
-                    const sub2 = subjectArray[i+1];
-                    
-                    const info1 = resolveSubjectDetailsFromDB(sub1);
-                    const teacherStr1 = info1.teacher ? `${info1.teacher}老師` : "未提供教師";
-                    const col1 = `● ${info1.subject}：${teacherStr1} (${info1.location})`;
-                    
-                    let col2 = "";
-                    if (sub2) {
-                        const info2 = resolveSubjectDetailsFromDB(sub2);
-                        const teacherStr2 = info2.teacher ? `${info2.teacher}老師` : "未提供教師";
-                        col2 = `● ${info2.subject}：${teacherStr2} (${info2.location})`;
-                    }
-                    
-                    contactListHtml += `
-                        <div class="footer-tab-row">
-                            <div class="footer-col-left">${col1}</div>
-                            ${col2 ? `<div class="footer-col-right">${col2}</div>` : ""}
-                        </div>
-                    `;
-                }
-            } else {
-                contactListHtml = `
-                    <div class="footer-tab-row">
-                        <div class="footer-col-left">※ 本班級學生本學期暫無參與異想教室抽離課程。</div>
-                    </div>`;
-            }
+            const fixedFooterHtml = getFixedFooterHTML();
 
             return `
                 <div class="page-container official-doc">
@@ -936,12 +936,7 @@
                         </table>
                     </div>
 
-                    <div class="student-footer">
-                        <div class="footer-title">異想教室全班抽離課程總對照：(${escapeHTML(versionString)})</div>
-                        <div style="width: 100%;">
-                            ${contactListHtml}
-                        </div>
-                    </div>
+                    ${fixedFooterHtml}
                 </div>
             `;
         }
