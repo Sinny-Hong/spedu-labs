@@ -105,6 +105,32 @@
         }
         section { break-inside: avoid; }
     </style>
+    <style id="standard-a4-print">
+        /* 共用列印骨架：固定學生版與解答版為單張 A4。 */
+        @page { size: A4 portrait; margin: 0; }
+
+        @media print {
+            html, body {
+                width: 210mm !important;
+                height: 297mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            body { display: block !important; }
+
+            .paper {
+                width: 210mm !important;
+                height: 297mm !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 8mm 13mm !important;
+                box-sizing: border-box !important;
+                box-shadow: none !important;
+                overflow: visible !important;
+            }
+        }
+    </style>
 </head>
 <body class="antialiased text-slate-800">
 

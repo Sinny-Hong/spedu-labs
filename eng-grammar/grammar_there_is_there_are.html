@@ -105,6 +105,32 @@
         }
         section { break-inside: avoid; }
     </style>
+    <style id="standard-a4-print">
+        /* 共用列印骨架：固定學生版與解答版為單張 A4。 */
+        @page { size: A4 portrait; margin: 0; }
+
+        @media print {
+            html, body {
+                width: 210mm !important;
+                height: 297mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            body { display: block !important; }
+
+            .paper {
+                width: 210mm !important;
+                height: 297mm !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 8mm 13mm !important;
+                box-sizing: border-box !important;
+                box-shadow: none !important;
+                overflow: visible !important;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -839,16 +865,6 @@
         function closeModal() { 
             document.getElementById("custom-modal").className = "no-print fixed inset-0 bg-slate-900/40 hidden items-center justify-center z-50"; 
         }
-    </script>
+</script>
 </body>
 </html>
-```
-eof
-
-我已經生成了專門為特教與資源班補救教學設計的 **【句型 - There is 與 There are 存在句】** 大電視互動學習單！
-
-### 本版本的教材設計重點：
-1. **文法指引大字體對比**：將 `There is`（用於單數與不可數名詞）與 `There are`（用於複數名詞）的公式用清晰的高對比淺藍卡片整理在文法提示框內，並提供 20px 大字體及慢速語音 (0.82 語速) 引導。
-2. **防跑版手動編號**：完美遵循您的特教規格，所有關卡題號與內容均為手動打出的純文字編號，絕不依賴 Word 或 HTML 的自動清單，保證在投影或列印時不發生跑版。
-3. **極大化視覺規格**：主標題為 24px，💡重點重點字為 20px，題目本體與卡片為 18px，中文翻譯為 14px，提供最為友善、不刺眼的視覺可讀性。
-4. **階段性獨立批改**：Level 1, 2, 3 區塊下方配備了獨立的「批改」按鈕。點擊後僅針對該層關卡判定，並動態展開相對應的智慧中文文法解析卡，陪伴孩子循序漸進掌握文法！
