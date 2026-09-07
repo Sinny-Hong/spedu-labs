@@ -226,8 +226,7 @@
         { gTitle: "◎ 第二組", words: [
           { eng: "boss", ch: "老闆" }, { eng: "relative", ch: "親戚" }, { eng: "job", ch: "工作" },
           { eng: "factory", ch: "工廠" }, { eng: "country", ch: "國家" }, { eng: "future", ch: "未來(的)" },
-          { eng: "grade", ch: "年級" }, { eng: "idea", ch: "主意;想法" }, { eng: "right", ch: "權利" },
-          { eng: "get butterflies in one's stomach", ch: "感到緊張" }
+          { eng: "grade", ch: "年級" }, { eng: "idea", ch: "主意;想法" }, { eng: "right", ch: "權利" }
         ]},
         { gTitle: "◎ 第三組", words: [
           { eng: "plan", ch: "規劃:計畫" }, { eng: "grow", ch: "種植:成長" }, { eng: "drive", ch: "開(車)" },
@@ -237,7 +236,8 @@
         { gTitle: "◎ 第四組", words: [
           { eng: "hope", ch: "希望" }, { eng: "worry", ch: "擔心" }, { eng: "keep", ch: "持續:保持" },
           { eng: "put on", ch: "穿上" }, { eng: "successful", ch: "成功的" }, { eng: "all over", ch: "遍及" },
-          { eng: "give up", ch: "放棄" }, { eng: "make fun of", ch: "取笑" }
+          { eng: "give up", ch: "放棄" }, { eng: "make fun of", ch: "取笑" },
+          { eng: "get butterflies in one's stomach", ch: "感到緊張" }
         ]}
       ],
       "L5": [
@@ -494,16 +494,12 @@
         const savedLesson = currentLesson;
         currentLesson = lessonKey;
         
-        let leftColumnHtml = '';
-        let rightColumnHtml = '';
         const groups = database[lessonKey];
         
         流水題號計數器 = 1;
-        leftColumnHtml += buildGroupHtml(groups[0], 0, true);
-        leftColumnHtml += buildGroupHtml(groups[1], 1, true);
-
-        rightColumnHtml += buildGroupHtml(groups[2], 2, true);
-        rightColumnHtml += buildGroupHtml(groups[3], 3, true);
+        const groupHtml = groups.map((groupData, idx) => buildGroupHtml(groupData, idx, true));
+        const leftColumnHtml = groupHtml[0] + groupHtml[2];
+        const rightColumnHtml = groupHtml[1] + groupHtml[3];
 
         currentLesson = savedLesson; 
 
