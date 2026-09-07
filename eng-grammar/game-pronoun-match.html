@@ -95,6 +95,11 @@
       color: white;
       border-color: var(--primary);
     }
+    .col-clear-btn {
+      border-color: #cbd5e1;
+      color: #64748b;
+      background: #f8fafc;
+    }
 
     /* 計時器與課堂工具列 */
     .timer-and-toolbar {
@@ -155,6 +160,7 @@
       border-color: #ca8a04;
       color: #854d0e;
     }
+    .t-btn:disabled { opacity: .45; cursor: not-allowed; }
     .checkbox-group {
       display: flex;
       align-items: center;
@@ -204,9 +210,7 @@
 
     /* 大螢幕左右配置 */
     .layout-wrapper {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
+      display: block;
       margin-top: 8px;
     }
     .main-table-container {
@@ -215,12 +219,15 @@
       overflow-x: auto;
     }
     .bank-sticky-container {
-      flex: 3;
-      position: sticky;
-      top: 10px;
-      max-height: 82vh;
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 999;
+      width: min(390px, calc(100vw - 24px));
+      max-height: min(72vh, 620px);
       display: flex;
       flex-direction: column;
+      filter: drop-shadow(0 10px 24px rgba(15, 23, 42, .22));
     }
 
     /* 表格 */
@@ -305,7 +312,26 @@
       font-weight: bold;
       color: #475569;
       font-size: 1rem;
+      cursor: grab;
+      touch-action: none;
     }
+    .bank-header:active { cursor: grabbing; }
+    .bank-header-actions { display: flex; align-items: center; gap: 8px; }
+    .bank-toggle {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #94a3b8;
+      border-radius: 6px;
+      background: white;
+      color: #334155;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .bank-sticky-container.collapsed { width: auto; }
+    .bank-sticky-container.collapsed .bank-wrapper { padding: 8px 10px; }
+    .bank-sticky-container.collapsed .bank-header { margin-bottom: 0; }
+    .bank-sticky-container.collapsed .cards-pool { display: none; }
     .cards-pool {
       display: flex;
       flex-wrap: wrap;
@@ -436,26 +462,19 @@
 
     /* 手機直向 */
     @media (max-width: 860px) {
-      body { padding: 4px; padding-bottom: 238px; }
+      body { padding: 4px; }
       .container { width: 100%; max-width: 100%; padding: 10px; border-radius: 0; }
       .header-bar { align-items: flex-start; }
       h2 { font-size: 1.25rem; }
       .subtitle { font-size: .78rem; }
-      .layout-wrapper { flex-direction: column; gap: 8px; }
       .main-table-container { width: 100%; }
       .bank-sticky-container {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100vw;
-        max-height: 228px;
-        z-index: 999;
-        background: white;
-        box-shadow: 0 -4px 15px rgba(0,0,0,0.18);
-        padding: 8px;
+        right: 8px;
+        bottom: 8px;
+        width: min(360px, calc(100vw - 16px));
+        max-height: min(46vh, 360px);
       }
-      .cards-pool { max-height: 154px; }
+      .cards-pool { max-height: 34vh; }
       th, td { font-size: 1.03rem; padding: 6px 2px; }
       .timer-and-toolbar { padding: 8px; }
       .status-bar { font-size: .9rem; }
@@ -475,19 +494,20 @@
   </div>
 
   <div class="col-selector-group">
-    <div class="selector-title">選擇欄位（第 1 個選取的為【提示欄】，其餘為【作答欄】）：</div>
+    <div class="selector-title">選擇欄位（第一個加入的是【提示欄】，其餘是【作答欄】）：</div>
     <div class="col-badges" id="col-badges"></div>
   </div>
 
   <div class="timer-and-toolbar">
     <div class="timer-box">
       <span style="font-weight:bold; color:#475569;">倒數：</span>
-      <button class="t-btn active" onclick="setTimerSeconds(30)">30秒</button>
+      <button class="t-btn active" onclick="setTimerSeconds(null)">不倒數</button>
+      <button class="t-btn" onclick="setTimerSeconds(30)">30秒</button>
       <button class="t-btn" onclick="setTimerSeconds(45)">45秒</button>
       <button class="t-btn" onclick="setTimerSeconds(60)">60秒</button>
       <button class="t-btn" onclick="setTimerSeconds(90)">90秒</button>
-      <button class="t-btn t-btn-add" onclick="addTime(15)">＋15秒</button>
-      <div id="timer-display" class="timer-display">30</div>
+      <button id="btn-add-time" class="t-btn t-btn-add" onclick="addTime(15)" disabled>＋15秒</button>
+      <div id="timer-display" class="timer-display">不限時</div>
     </div>
 
     <div class="checkbox-group">
@@ -518,9 +538,12 @@
 
     <div class="bank-sticky-container" id="bank-sticky-container">
       <div class="bank-wrapper">
-        <div class="bank-header">
+        <div class="bank-header" id="bank-drag-handle">
           <span>◎ 字卡庫</span>
-          <span id="card-count">0 張</span>
+          <span class="bank-header-actions">
+            <span id="card-count">0 張</span>
+            <button id="bank-toggle" class="bank-toggle" type="button" aria-label="縮小字卡庫" title="縮小字卡庫">−</button>
+          </span>
         </div>
         <div class="cards-pool" id="cards-pool"></div>
       </div>
@@ -599,8 +622,8 @@ let reviewCorrectedSlots = new Set();
 let finalScores = {};
 
 /* ===== 計時 ===== */
-let configuredTime = 30;
-let remainingTime = 30;
+let configuredTime = null;
+let remainingTime = null;
 let timerRunning = false;
 let timerInterval = null;
 let timerHasStarted = false;
@@ -610,6 +633,7 @@ function init() {
   renderColSelector();
   buildReferenceTable();
   resetGame();
+  initFloatingBank();
 }
 
 function renderColSelector() {
@@ -633,21 +657,30 @@ function renderColSelector() {
     btn.onclick = () => toggleColumn(col.key);
     container.appendChild(btn);
   });
+
+  const clearBtn = document.createElement("button");
+  clearBtn.className = "col-btn col-clear-btn";
+  clearBtn.innerText = "全部移除";
+  clearBtn.disabled = activeCols.length === 0;
+  clearBtn.onclick = clearAllColumns;
+  container.appendChild(clearBtn);
 }
 
 function toggleColumn(key) {
   const idx = activeCols.indexOf(key);
 
   if (idx > -1) {
-    if (activeCols.length <= 2) {
-      alert("至少要保留一個提示欄與一個作答欄喔！");
-      return;
-    }
     activeCols.splice(idx, 1);
   } else {
     activeCols.push(key);
   }
 
+  renderColSelector();
+  resetGame();
+}
+
+function clearAllColumns() {
+  activeCols = [];
   renderColSelector();
   resetGame();
 }
@@ -658,14 +691,15 @@ function setTimerSeconds(sec) {
   configuredTime = sec;
 
   document.querySelectorAll(".timer-box .t-btn:not(.t-btn-add)").forEach(b => {
-    b.classList.toggle("active", b.innerText.includes(`${sec}秒`));
+    b.classList.toggle("active", sec === null ? b.innerText === "不倒數" : b.innerText === `${sec}秒`);
   });
+  document.getElementById("btn-add-time").disabled = sec === null;
 
   resetTimer();
 }
 
 function addTime(sec) {
-  if (phase !== "playing") return;
+  if (phase !== "playing" || configuredTime === null) return;
   remainingTime += sec;
   updateTimerUI();
 }
@@ -692,7 +726,7 @@ function unlockAudio() {
 }
 
 function startTimerIfNeeded() {
-  if (phase !== "playing" || timerHasStarted || timerRunning) return;
+  if (configuredTime === null || phase !== "playing" || timerHasStarted || timerRunning) return;
 
   unlockAudio();
   timerHasStarted = true;
@@ -720,8 +754,8 @@ function stopTimer() {
 
 function updateTimerUI() {
   const display = document.getElementById("timer-display");
-  display.innerText = Math.max(remainingTime, 0);
-  display.classList.toggle("timer-warning", remainingTime <= 10 && remainingTime > 0);
+  display.innerText = configuredTime === null ? "不限時" : Math.max(remainingTime, 0);
+  display.classList.toggle("timer-warning", configuredTime !== null && remainingTime <= 10 && remainingTime > 0);
 }
 
 function playBeepSound() {
@@ -768,6 +802,15 @@ function resetGame() {
   document.getElementById("btn-next").style.display = "none";
   document.getElementById("score-modal").style.display = "none";
   document.getElementById("bank-sticky-container").classList.remove("bank-disabled");
+
+  if (activeCols.length < 2) {
+    activeRows = [];
+    bankCards = [];
+    renderTable();
+    renderCardsPool();
+    document.getElementById("instruction-msg").innerText = "💡 請先加入 1 個提示欄與至少 1 個作答欄。";
+    return;
+  }
 
   const shuffleRows = document.getElementById("chk-shuffle-rows").checked;
   activeRows = [...RAW_DATABASE];
@@ -821,6 +864,18 @@ function renderTable() {
   const tbody = document.getElementById("table-body");
   thead.innerHTML = "";
   tbody.innerHTML = "";
+
+  if (activeCols.length < 2) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.innerText = "請選擇至少兩個欄位後開始配對。";
+    td.style.padding = "28px 12px";
+    td.style.color = "#64748b";
+    td.style.fontWeight = "bold";
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    return;
+  }
 
   const trHead = document.createElement("tr");
 
@@ -998,6 +1053,10 @@ function shuffleCardsOnly() {
 
 /* ===== 平時檢查：可訂正 ===== */
 function checkAnswers() {
+  if (activeCols.length < 2) {
+    document.getElementById("instruction-msg").innerText = "💡 請先加入 1 個提示欄與至少 1 個作答欄。";
+    return;
+  }
   if (phase === "submitted") return;
 
   if (phase === "review") {
@@ -1178,6 +1237,61 @@ function buildReferenceTable() {
 
 function toggleModal(show) {
   document.getElementById("full-modal").style.display = show ? "flex" : "none";
+}
+
+/* ===== 可拖曳浮動字卡庫 ===== */
+function initFloatingBank() {
+  const bank = document.getElementById("bank-sticky-container");
+  const handle = document.getElementById("bank-drag-handle");
+  const toggle = document.getElementById("bank-toggle");
+  let drag = null;
+
+  const clampPosition = () => {
+    if (!bank.style.left || !bank.style.top) return;
+    const rect = bank.getBoundingClientRect();
+    const left = Math.min(Math.max(0, rect.left), Math.max(0, window.innerWidth - rect.width));
+    const top = Math.min(Math.max(0, rect.top), Math.max(0, window.innerHeight - rect.height));
+    bank.style.left = `${left}px`;
+    bank.style.top = `${top}px`;
+  };
+
+  handle.addEventListener("pointerdown", event => {
+    if (event.target.closest("button")) return;
+    const rect = bank.getBoundingClientRect();
+    drag = { pointerId: event.pointerId, dx: event.clientX - rect.left, dy: event.clientY - rect.top };
+    bank.style.left = `${rect.left}px`;
+    bank.style.top = `${rect.top}px`;
+    bank.style.right = "auto";
+    bank.style.bottom = "auto";
+    handle.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  });
+
+  handle.addEventListener("pointermove", event => {
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const maxLeft = Math.max(0, window.innerWidth - bank.offsetWidth);
+    const maxTop = Math.max(0, window.innerHeight - bank.offsetHeight);
+    bank.style.left = `${Math.min(Math.max(0, event.clientX - drag.dx), maxLeft)}px`;
+    bank.style.top = `${Math.min(Math.max(0, event.clientY - drag.dy), maxTop)}px`;
+  });
+
+  const stopDragging = event => {
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    drag = null;
+    if (handle.hasPointerCapture(event.pointerId)) handle.releasePointerCapture(event.pointerId);
+  };
+  handle.addEventListener("pointerup", stopDragging);
+  handle.addEventListener("pointercancel", stopDragging);
+
+  toggle.addEventListener("click", () => {
+    const collapsed = bank.classList.toggle("collapsed");
+    toggle.innerText = collapsed ? "+" : "−";
+    toggle.setAttribute("aria-label", collapsed ? "展開字卡庫" : "縮小字卡庫");
+    toggle.title = collapsed ? "展開字卡庫" : "縮小字卡庫";
+    requestAnimationFrame(clampPosition);
+  });
+
+  window.addEventListener("resize", clampPosition);
 }
 
 init();

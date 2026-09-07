@@ -2,6 +2,7 @@
 // 本檔只保存卡片與分類資訊；搜尋、篩選、收藏功能仍由 index.html 負責。
 window.GRAMMAR_DATA = [
       // ==== 代名詞 ====
+      { id: "52", category: "代名詞", title: "人稱代名詞配對板", desc: "主格、受格、所有格、Be 動詞、所有格代名詞與反身代名詞的互動配對複習", filename: "game-pronoun-match.html", themeColor: "#3B82F6" },
       { id: "1", category: "代名詞", title: "我、你、他 (主格)", desc: "我是...，自我介紹與主詞用法", filename: "grammar_I.html", themeColor: "#3B82F6" },
       { id: "2", category: "代名詞", title: "我、你、他 (受格)", desc: "動作的接受者 (love me, love him)", filename: "grammar_me.html", themeColor: "#3B82F6" },
       { id: "3", category: "代名詞", title: "我的、你的、他的 (所有格)", desc: "物品的主人 (my book, your dog)", filename: "grammar_my.html", themeColor: "#3B82F6" },
@@ -11,7 +12,6 @@ window.GRAMMAR_DATA = [
       { id: "7", category: "代名詞", title: "反身代名詞 (單數)", desc: "我自己、你自己、他自己 (myself, yourself, himself) 的用法", filename: "grammar_myself.html", themeColor: "#3B82F6" },
       { id: "8", category: "代名詞", title: "反身代名詞 (複數)", desc: "我們自己、你們自己、他們自己 (ourselves, yourselves) 的用法", filename: "grammar_ourselves.html", themeColor: "#3B82F6" },
       { id: "9", category: "代名詞", title: "所有格代名詞", desc: "區分「我的書 (my book)」與「我的東西 (mine)」的代名詞用法", filename: "grammar_mine.html", themeColor: "#3B82F6" },
-      { id: "52", category: "代名詞", title: "人稱代名詞配對板", desc: "主格、受格、所有格、Be 動詞、所有格代名詞與反身代名詞的互動配對複習", filename: "game-pronoun-match.html", themeColor: "#3B82F6" },
 
       // ==== 日常句型及片語 ====
       { id: "10", category: "日常句型及片語", title: "祈使句(please)", desc: "祈使句的禮貌表達與日常應用", filename: "grammar_please.html", themeColor: "#2563EB" },
