@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人稱代名詞配對板｜互動提示板</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #dbeafe;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
+      --review: #2563eb;
+      --review-bg: #dbeafe;
+      --border-color: #334155;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background-color: #f1f5f9;
+      margin: 0;
+      padding: 12px 16px;
+      color: #1e293b;
+    }
+    .container {
+      background: white;
+      padding: 16px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      max-width: 1800px;
+      width: 96vw;
+      margin: 0 auto;
+    }
+
+    /* 頂部 */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    h2 { margin: 0; font-size: 1.5rem; }
+    .subtitle {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: .9rem;
+      font-weight: 700;
+    }
+
+    /* 欄位選擇 */
+    .col-selector-group {
+      background: #f8fafc;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border: 1px solid #cbd5e1;
+    }
+    .selector-title {
+      font-weight: bold;
+      font-size: 0.95rem;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+    .col-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .col-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      border: 2px solid #94a3b8;
+      background: white;
+      color: #475569;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .col-btn.active-prompt {
+      background: #0284c7;
+      color: white;
+      border-color: #0284c7;
+    }
+    .col-btn.active-answer {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* 計時器與課堂工具列 */
+    .timer-and-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #f8fafc;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border: 1px solid #cbd5e1;
+    }
+    .timer-box {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .timer-display {
+      font-size: 1.75rem;
+      font-weight: 900;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #0f172a;
+      min-width: 76px;
+      text-align: center;
+      padding: 2px 10px;
+      border-radius: 6px;
+      background: #e2e8f0;
+    }
+    .timer-display.timer-warning {
+      background: var(--danger);
+      color: white;
+      animation: pulse 0.75s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .68; transform: scale(1.04); }
+    }
+    .t-btn {
+      padding: 6px 10px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      border: 1px solid #94a3b8;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .t-btn.active {
+      background: #0284c7;
+      color: white;
+      border-color: #0284c7;
+    }
+    .t-btn-add {
+      background: #fef08a;
+      border-color: #ca8a04;
+      color: #854d0e;
+    }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+    .checkbox-group label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+    }
+    .actions-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid transparent;
+      user-select: none;
+      transition: 0.15s;
+    }
+    .btn-default { background: #e2e8f0; color: #334155; }
+    .btn-default:hover { background: #cbd5e1; }
+    .btn-check { background: var(--success); color: white; }
+    .btn-check:hover { background: #15803d; }
+    .btn-modal { background: #475569; color: white; }
+    .btn-next { background: var(--primary); color: white; display: none; }
+
+    /* 狀態 */
+    .status-bar {
+      margin-bottom: 8px;
+      font-weight: bold;
+      font-size: 1.05rem;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .score-txt { font-size: 1.15rem; font-weight: 900; }
+
+    /* 大螢幕左右配置 */
+    .layout-wrapper {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-top: 8px;
+    }
+    .main-table-container {
+      flex: 7;
+      min-width: 0;
+      overflow-x: auto;
+    }
+    .bank-sticky-container {
+      flex: 3;
+      position: sticky;
+      top: 10px;
+      max-height: 82vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 表格 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      border: 1.5px solid var(--border-color);
+      text-align: center;
+      padding: 10px 6px;
+      font-size: 1.22rem;
+    }
+    th { background: #f8fafc; }
+    th.prompt-th { background: #e0f2fe; color: #0369a1; }
+    th.ans-th { background: var(--primary-light); color: #1e40af; }
+    .header-score {
+      display: block;
+      margin-top: 4px;
+      font-size: 1.25rem;
+      color: #0f172a;
+      font-weight: 900;
+    }
+    td.prompt-td {
+      font-weight: bold;
+      background: #f8fafc;
+    }
+    td.slot-td {
+      background: #fff;
+      cursor: pointer;
+      min-width: 90px;
+      height: 52px;
+      user-select: none;
+      transition: background 0.15s, outline-color 0.15s;
+    }
+    td.slot-td:hover:not(.locked) { background: #f1f5f9; }
+    td.slot-selected {
+      outline: 3px solid var(--warning);
+      outline-offset: -3px;
+      background-color: var(--warning-bg) !important;
+    }
+    td.cell-correct {
+      background-color: var(--success-bg) !important;
+      color: #166534 !important;
+      font-weight: 900;
+      cursor: default !important;
+    }
+    td.cell-wrong {
+      background-color: var(--danger-bg) !important;
+      color: #991b1b !important;
+      font-weight: 900;
+    }
+    td.cell-empty-warn {
+      background-color: #fef9c3 !important;
+      outline: 2px dashed #ca8a04;
+      outline-offset: -3px;
+    }
+    td.cell-review-correct {
+      background-color: var(--review-bg) !important;
+      color: #1e40af !important;
+      font-weight: 900;
+      cursor: default !important;
+    }
+
+    /* 字卡區 */
+    .bank-wrapper {
+      border: 2px dashed #94a3b8;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .bank-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #475569;
+      font-size: 1rem;
+    }
+    .cards-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      overflow-y: auto;
+      max-height: 70vh;
+      padding: 4px;
+      align-content: flex-start;
+    }
+    .card {
+      background: white;
+      border: 2px solid #64748b;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+      user-select: none;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .card:hover { transform: translateY(-2px); }
+    .card.selected-card {
+      border-color: var(--warning);
+      background: var(--warning-bg);
+      transform: scale(1.06) translateY(-2px);
+      box-shadow: 0 4px 10px rgba(245, 158, 11, 0.35);
+    }
+    .bank-disabled {
+      opacity: .55;
+      pointer-events: none;
+    }
+
+    /* 一般提示總表 Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.52);
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+      padding: 16px;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      width: min(1120px, 94vw);
+      max-height: 88vh;
+      overflow: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+
+    /* 時間到成績卡 */
+    .score-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.82);
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 18px;
+    }
+    .score-card {
+      width: min(760px, 94vw);
+      background: white;
+      border-radius: 18px;
+      padding: 26px;
+      box-shadow: 0 25px 80px rgba(0,0,0,.35);
+      position: relative;
+      text-align: center;
+      animation: scorePop .22s ease-out;
+    }
+    @keyframes scorePop {
+      from { opacity: 0; transform: scale(.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .score-close {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: none;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 1.7rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .score-title {
+      margin: 0 0 16px;
+      font-size: clamp(2rem, 5vw, 4rem);
+      color: var(--danger);
+      font-weight: 1000;
+    }
+    .score-columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+    }
+    .score-column {
+      border: 3px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 16px 10px;
+      background: #f8fafc;
+    }
+    .score-column-name {
+      font-weight: 900;
+      color: #475569;
+      margin-bottom: 4px;
+      font-size: 1.15rem;
+    }
+    .score-column-value {
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      line-height: 1;
+      font-weight: 1000;
+      color: #0f172a;
+    }
+    .score-hint {
+      margin: 16px 0 0;
+      font-weight: 800;
+      color: #64748b;
+    }
+
+    /* 手機直向 */
+    @media (max-width: 860px) {
+      body { padding: 4px; padding-bottom: 238px; }
+      .container { width: 100%; max-width: 100%; padding: 10px; border-radius: 0; }
+      .header-bar { align-items: flex-start; }
+      h2 { font-size: 1.25rem; }
+      .subtitle { font-size: .78rem; }
+      .layout-wrapper { flex-direction: column; gap: 8px; }
+      .main-table-container { width: 100%; }
+      .bank-sticky-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100vw;
+        max-height: 228px;
+        z-index: 999;
+        background: white;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.18);
+        padding: 8px;
+      }
+      .cards-pool { max-height: 154px; }
+      th, td { font-size: 1.03rem; padding: 6px 2px; }
+      .timer-and-toolbar { padding: 8px; }
+      .status-bar { font-size: .9rem; }
+      .score-close { width: 42px; height: 42px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-bar">
+    <div>
+      <h2>人稱代名詞配對板</h2>
+      <p class="subtitle">主格、受格、所有格、Be 動詞、所有格代名詞、反身代名詞自由配對</p>
+    </div>
+    <button class="btn btn-modal" onclick="toggleModal(true)">📋 查看完整提示總表</button>
+  </div>
+
+  <div class="col-selector-group">
+    <div class="selector-title">選擇欄位（第 1 個選取的為【提示欄】，其餘為【作答欄】）：</div>
+    <div class="col-badges" id="col-badges"></div>
+  </div>
+
+  <div class="timer-and-toolbar">
+    <div class="timer-box">
+      <span style="font-weight:bold; color:#475569;">倒數：</span>
+      <button class="t-btn active" onclick="setTimerSeconds(30)">30秒</button>
+      <button class="t-btn" onclick="setTimerSeconds(45)">45秒</button>
+      <button class="t-btn" onclick="setTimerSeconds(60)">60秒</button>
+      <button class="t-btn" onclick="setTimerSeconds(90)">90秒</button>
+      <button class="t-btn t-btn-add" onclick="addTime(15)">＋15秒</button>
+      <div id="timer-display" class="timer-display">30</div>
+    </div>
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="chk-shuffle-rows" onchange="resetGame()"> 🔀 人稱亂序</label>
+      <label><input type="checkbox" id="chk-distractors" onchange="resetGame()"> 😈 加入干擾卡</label>
+    </div>
+
+    <div class="actions-group">
+      <button class="btn btn-default" onclick="shuffleCardsOnly()">重新洗牌</button>
+      <button class="btn btn-default" onclick="resetGame()">清空重來</button>
+      <button class="btn btn-check" onclick="checkAnswers()">檢查答案</button>
+      <button id="btn-next" class="btn btn-next" onclick="nextRound()">🔄 下一輪</button>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <span id="instruction-msg">💡 先點卡片再點空格，或先點空格再點卡片皆可。</span>
+    <span id="score-display" class="score-txt"></span>
+  </div>
+
+  <div class="layout-wrapper">
+    <div class="main-table-container">
+      <table id="main-table">
+        <thead id="table-head"></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <div class="bank-sticky-container" id="bank-sticky-container">
+      <div class="bank-wrapper">
+        <div class="bank-header">
+          <span>◎ 字卡庫</span>
+          <span id="card-count">0 張</span>
+        </div>
+        <div class="cards-pool" id="cards-pool"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 完整提示總表 -->
+<div id="full-modal" class="modal" onclick="toggleModal(false)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:12px;">
+      <h3 style="margin:0;">人稱代名詞完整對照總表</h3>
+      <button class="btn btn-default" onclick="toggleModal(false)">關閉</button>
+    </div>
+    <table id="reference-full-table"></table>
+  </div>
+</div>
+
+<!-- 時間到成績卡 -->
+<div id="score-modal" class="score-modal">
+  <div class="score-card">
+    <button class="score-close" onclick="closeScoreModal()" aria-label="關閉成績">×</button>
+    <div class="score-title">⏰ 時間到！</div>
+    <div id="score-columns" class="score-columns"></div>
+    <p class="score-hint">按 × 回到批改畫面，再請小老師救援錯題。</p>
+  </div>
+</div>
+
+<script>
+const RAW_DATABASE = [
+  { zh: "我", subj: "I", obj: "me", poss: "my", be: "am", poss_pron: "mine", ref: "myself" },
+  { zh: "你", subj: "you", obj: "you", poss: "your", be: "are", poss_pron: "yours", ref: "yourself" },
+  { zh: "他", subj: "he", obj: "him", poss: "his", be: "is", poss_pron: "his", ref: "himself" },
+  { zh: "她", subj: "she", obj: "her", poss: "her", be: "is", poss_pron: "hers", ref: "herself" },
+  { zh: "它", subj: "it", obj: "it", poss: "its", be: "is", poss_pron: "its", ref: "itself" },
+  { zh: "我們", subj: "we", obj: "us", poss: "our", be: "are", poss_pron: "ours", ref: "ourselves" },
+  { zh: "你們", subj: "you", obj: "you", poss: "your", be: "are", poss_pron: "yours", ref: "yourselves" },
+  { zh: "他們", subj: "they", obj: "them", poss: "their", be: "are", poss_pron: "theirs", ref: "themselves" }
+];
+
+const COLUMNS_DEF = [
+  { key: "zh", name: "中文" },
+  { key: "subj", name: "主格" },
+  { key: "obj", name: "受格" },
+  { key: "poss", name: "所有格" },
+  { key: "be", name: "Be動詞" },
+  { key: "poss_pron", name: "所有格代名詞" },
+  { key: "ref", name: "反身代名詞" }
+];
+
+function fisherYates(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* ===== 狀態 ===== */
+let activeCols = ["zh", "subj"];
+let activeRows = [];
+let userSlots = {};
+let bankCards = [];
+let selectedSlot = null;
+let selectedCardId = null;
+
+/* playing：學生作答；submitted：時間到成績卡；review：小老師訂正 */
+let phase = "playing";
+
+let practiceCorrectSlots = new Set();
+let practiceWrongSlots = new Set();
+
+let originalCorrectSlots = new Set();
+let originalWrongSlots = new Set();
+let reviewCorrectedSlots = new Set();
+let finalScores = {};
+
+/* ===== 計時 ===== */
+let configuredTime = 30;
+let remainingTime = 30;
+let timerRunning = false;
+let timerInterval = null;
+let timerHasStarted = false;
+let audioCtx = null;
+
+function init() {
+  renderColSelector();
+  buildReferenceTable();
+  resetGame();
+}
+
+function renderColSelector() {
+  const container = document.getElementById("col-badges");
+  container.innerHTML = "";
+  COLUMNS_DEF.forEach(col => {
+    const btn = document.createElement("button");
+    btn.className = "col-btn";
+    const idx = activeCols.indexOf(col.key);
+
+    if (idx === 0) {
+      btn.classList.add("active-prompt");
+      btn.innerText = `${col.name}（提示）`;
+    } else if (idx > 0) {
+      btn.classList.add("active-answer");
+      btn.innerText = `${col.name}（作答）`;
+    } else {
+      btn.innerText = col.name;
+    }
+
+    btn.onclick = () => toggleColumn(col.key);
+    container.appendChild(btn);
+  });
+}
+
+function toggleColumn(key) {
+  const idx = activeCols.indexOf(key);
+
+  if (idx > -1) {
+    if (activeCols.length <= 2) {
+      alert("至少要保留一個提示欄與一個作答欄喔！");
+      return;
+    }
+    activeCols.splice(idx, 1);
+  } else {
+    activeCols.push(key);
+  }
+
+  renderColSelector();
+  resetGame();
+}
+
+/* ===== 計時器 ===== */
+function setTimerSeconds(sec) {
+  if (phase !== "playing") return;
+  configuredTime = sec;
+
+  document.querySelectorAll(".timer-box .t-btn:not(.t-btn-add)").forEach(b => {
+    b.classList.toggle("active", b.innerText.includes(`${sec}秒`));
+  });
+
+  resetTimer();
+}
+
+function addTime(sec) {
+  if (phase !== "playing") return;
+  remainingTime += sec;
+  updateTimerUI();
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerHasStarted = false;
+  remainingTime = configuredTime;
+  updateTimerUI();
+}
+
+function unlockAudio() {
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+  } catch (e) {
+    console.warn("Audio Context unavailable:", e);
+  }
+}
+
+function startTimerIfNeeded() {
+  if (phase !== "playing" || timerHasStarted || timerRunning) return;
+
+  unlockAudio();
+  timerHasStarted = true;
+  timerRunning = true;
+
+  timerInterval = setInterval(() => {
+    remainingTime--;
+    updateTimerUI();
+
+    if (remainingTime <= 0) {
+      remainingTime = 0;
+      clearInterval(timerInterval);
+      timerRunning = false;
+      updateTimerUI();
+      playBeepSound();
+      finalizeSubmission();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+}
+
+function updateTimerUI() {
+  const display = document.getElementById("timer-display");
+  display.innerText = Math.max(remainingTime, 0);
+  display.classList.toggle("timer-warning", remainingTime <= 10 && remainingTime > 0);
+}
+
+function playBeepSound() {
+  try {
+    unlockAudio();
+    if (!audioCtx) return;
+
+    const now = audioCtx.currentTime;
+    [0, 0.23, 0.46].forEach((delay, idx) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = idx === 2 ? 1046 : 880;
+      gain.gain.setValueAtTime(0.0001, now + delay);
+      gain.gain.exponentialRampToValueAtTime(0.38, now + delay + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + delay + 0.17);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + delay);
+      osc.stop(now + delay + 0.18);
+    });
+  } catch (e) {
+    console.warn("Beep failed:", e);
+  }
+}
+
+/* ===== 遊戲初始化 ===== */
+function resetGame() {
+  resetTimer();
+  phase = "playing";
+
+  selectedSlot = null;
+  selectedCardId = null;
+  userSlots = {};
+  practiceCorrectSlots.clear();
+  practiceWrongSlots.clear();
+  originalCorrectSlots.clear();
+  originalWrongSlots.clear();
+  reviewCorrectedSlots.clear();
+  finalScores = {};
+
+  document.getElementById("score-display").innerText = "";
+  document.getElementById("instruction-msg").innerText = "💡 先點卡片再點空格，或先點空格再點卡片皆可。";
+  document.getElementById("btn-next").style.display = "none";
+  document.getElementById("score-modal").style.display = "none";
+  document.getElementById("bank-sticky-container").classList.remove("bank-disabled");
+
+  const shuffleRows = document.getElementById("chk-shuffle-rows").checked;
+  activeRows = [...RAW_DATABASE];
+  if (shuffleRows) fisherYates(activeRows);
+
+  buildBankCards();
+  renderTable();
+  renderCardsPool();
+}
+
+function nextRound() {
+  resetGame();
+}
+
+function buildBankCards() {
+  bankCards = [];
+  const answerCols = activeCols.slice(1);
+  let cardCounter = 0;
+
+  activeRows.forEach(row => {
+    answerCols.forEach(colKey => {
+      bankCards.push({
+        id: `c_${cardCounter++}`,
+        text: row[colKey]
+      });
+    });
+  });
+
+  const useDistractors = document.getElementById("chk-distractors").checked;
+  if (useDistractors) {
+    const unselected = COLUMNS_DEF.filter(c => !activeCols.includes(c.key) && c.key !== "zh");
+
+    if (unselected.length > 0) {
+      const sampleCol = unselected[Math.floor(Math.random() * unselected.length)].key;
+      activeRows.forEach(row => {
+        bankCards.push({
+          id: `c_${cardCounter++}`,
+          text: row[sampleCol],
+          isDistractor: true
+        });
+      });
+    }
+  }
+
+  fisherYates(bankCards);
+}
+
+/* ===== 渲染 ===== */
+function renderTable() {
+  const thead = document.getElementById("table-head");
+  const tbody = document.getElementById("table-body");
+  thead.innerHTML = "";
+  tbody.innerHTML = "";
+
+  const trHead = document.createElement("tr");
+
+  activeCols.forEach((colKey, idx) => {
+    const colDef = COLUMNS_DEF.find(c => c.key === colKey);
+    const th = document.createElement("th");
+
+    if (idx === 0) {
+      th.className = "prompt-th";
+      th.innerHTML = `【提示】${colDef.name}`;
+    } else {
+      th.className = "ans-th";
+      const scoreHtml = finalScores[colKey]
+        ? `<span class="header-score">${finalScores[colKey].correct} / ${finalScores[colKey].total}</span>`
+        : "";
+      th.innerHTML = `【作答】${colDef.name}${scoreHtml}`;
+    }
+
+    trHead.appendChild(th);
+  });
+
+  thead.appendChild(trHead);
+
+  activeRows.forEach((row, rIdx) => {
+    const tr = document.createElement("tr");
+
+    activeCols.forEach((colKey, cIdx) => {
+      const td = document.createElement("td");
+      const slotKey = `${rIdx}-${colKey}`;
+
+      if (cIdx === 0) {
+        td.className = "prompt-td";
+        td.innerText = row[colKey];
+      } else {
+        td.className = "slot-td";
+        td.id = `slot-${slotKey}`;
+
+        if (userSlots[slotKey]) td.innerText = userSlots[slotKey].text;
+
+        if (phase === "playing") {
+          if (practiceCorrectSlots.has(slotKey)) {
+            td.classList.add("cell-correct", "locked");
+          } else if (practiceWrongSlots.has(slotKey)) {
+            td.classList.add(userSlots[slotKey] ? "cell-wrong" : "cell-empty-warn");
+          }
+        } else {
+          if (originalCorrectSlots.has(slotKey)) {
+            td.classList.add("cell-correct", "locked");
+          } else if (reviewCorrectedSlots.has(slotKey)) {
+            td.classList.add("cell-review-correct", "locked");
+          } else if (originalWrongSlots.has(slotKey)) {
+            td.classList.add(userSlots[slotKey] ? "cell-wrong" : "cell-empty-warn");
+          }
+        }
+
+        if (selectedSlot === slotKey && phase !== "submitted") {
+          td.classList.add("slot-selected");
+        }
+
+        td.onclick = () => onSlotClick(slotKey);
+      }
+
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+}
+
+function renderCardsPool() {
+  const pool = document.getElementById("cards-pool");
+  pool.innerHTML = "";
+  document.getElementById("card-count").innerText = `${bankCards.length} 張`;
+
+  bankCards.forEach(card => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.id = `card-${card.id}`;
+    div.innerText = card.text;
+
+    if (selectedCardId === card.id) div.classList.add("selected-card");
+
+    div.onclick = () => onCardClick(card.id);
+    pool.appendChild(div);
+  });
+}
+
+function refreshUI() {
+  renderTable();
+  renderCardsPool();
+}
+
+/* ===== 互動：字卡只以文字判定，不綁定欄位或人稱 ===== */
+function isLockedSlot(slotKey) {
+  return practiceCorrectSlots.has(slotKey)
+    || originalCorrectSlots.has(slotKey)
+    || reviewCorrectedSlots.has(slotKey);
+}
+
+function onSlotClick(slotKey) {
+  if (phase === "submitted" || isLockedSlot(slotKey)) return;
+
+  if (selectedCardId) {
+    placeCardIntoSlot(selectedCardId, slotKey);
+    selectedCardId = null;
+    selectedSlot = null;
+    refreshUI();
+    return;
+  }
+
+  if (userSlots[slotKey]) {
+    returnCardToBank(slotKey);
+    practiceWrongSlots.delete(slotKey);
+    refreshUI();
+    return;
+  }
+
+  selectedSlot = (selectedSlot === slotKey) ? null : slotKey;
+  refreshUI();
+}
+
+function onCardClick(cardId) {
+  if (phase === "submitted") return;
+
+  if (selectedSlot) {
+    if (isLockedSlot(selectedSlot)) {
+      selectedSlot = null;
+      refreshUI();
+      return;
+    }
+
+    placeCardIntoSlot(cardId, selectedSlot);
+    selectedSlot = null;
+    selectedCardId = null;
+    refreshUI();
+    return;
+  }
+
+  selectedCardId = (selectedCardId === cardId) ? null : cardId;
+  refreshUI();
+}
+
+function placeCardIntoSlot(cardId, slotKey) {
+  if (phase === "submitted" || isLockedSlot(slotKey)) return;
+
+  if (phase === "playing") startTimerIfNeeded();
+
+  if (userSlots[slotKey]) returnCardToBank(slotKey);
+
+  const cIdx = bankCards.findIndex(c => c.id === cardId);
+  if (cIdx === -1) return;
+
+  const cardObj = bankCards.splice(cIdx, 1)[0];
+  userSlots[slotKey] = cardObj;
+  practiceWrongSlots.delete(slotKey);
+
+  if (phase === "review") evaluateReviewSlot(slotKey);
+}
+
+function returnCardToBank(slotKey) {
+  if (!userSlots[slotKey] || isLockedSlot(slotKey)) return;
+
+  bankCards.push(userSlots[slotKey]);
+  delete userSlots[slotKey];
+
+  if (phase === "review") {
+    reviewCorrectedSlots.delete(slotKey);
+  }
+}
+
+function shuffleCardsOnly() {
+  fisherYates(bankCards);
+  renderCardsPool();
+}
+
+/* ===== 平時檢查：可訂正 ===== */
+function checkAnswers() {
+  if (phase === "submitted") return;
+
+  if (phase === "review") {
+    evaluateAllReviewSlots();
+    refreshUI();
+    return;
+  }
+
+  const answerCols = activeCols.slice(1);
+  let total = activeRows.length * answerCols.length;
+  let correct = 0;
+
+  practiceWrongSlots.clear();
+
+  activeRows.forEach((row, rIdx) => {
+    answerCols.forEach(colKey => {
+      const slotKey = `${rIdx}-${colKey}`;
+      const userText = normalize(userSlots[slotKey]?.text);
+      const correctText = normalize(row[colKey]);
+
+      if (userText && userText === correctText) {
+        practiceCorrectSlots.add(slotKey);
+        correct++;
+      } else {
+        practiceWrongSlots.add(slotKey);
+      }
+    });
+  });
+
+  const scoreEl = document.getElementById("score-display");
+  scoreEl.innerText = `目前答對：${correct} / ${total}`;
+  scoreEl.style.color = correct === total ? "var(--success)" : "var(--danger)";
+
+  refreshUI();
+}
+
+/* ===== 時間到：強制交卷 ===== */
+function finalizeSubmission() {
+  if (phase !== "playing") return;
+
+  stopTimer();
+  phase = "submitted";
+  selectedSlot = null;
+  selectedCardId = null;
+
+  practiceCorrectSlots.clear();
+  practiceWrongSlots.clear();
+  originalCorrectSlots.clear();
+  originalWrongSlots.clear();
+  reviewCorrectedSlots.clear();
+  finalScores = {};
+
+  const answerCols = activeCols.slice(1);
+
+  answerCols.forEach(colKey => {
+    finalScores[colKey] = { correct: 0, total: activeRows.length };
+  });
+
+  activeRows.forEach((row, rIdx) => {
+    answerCols.forEach(colKey => {
+      const slotKey = `${rIdx}-${colKey}`;
+      const userText = normalize(userSlots[slotKey]?.text);
+      const correctText = normalize(row[colKey]);
+
+      if (userText && userText === correctText) {
+        originalCorrectSlots.add(slotKey);
+        finalScores[colKey].correct++;
+      } else {
+        originalWrongSlots.add(slotKey);
+      }
+    });
+  });
+
+  document.getElementById("instruction-msg").innerText = "⏰ 時間到！已強制交卷。";
+  document.getElementById("score-display").innerText = "";
+  document.getElementById("btn-next").style.display = "inline-block";
+  document.getElementById("bank-sticky-container").classList.add("bank-disabled");
+
+  renderTable();
+  renderCardsPool();
+  showScoreModal();
+}
+
+function showScoreModal() {
+  const scoreColumns = document.getElementById("score-columns");
+  const answerCols = activeCols.slice(1);
+
+  scoreColumns.innerHTML = answerCols.map(colKey => {
+    const colName = COLUMNS_DEF.find(c => c.key === colKey)?.name || colKey;
+    const score = finalScores[colKey];
+    return `
+      <div class="score-column">
+        <div class="score-column-name">${colName}</div>
+        <div class="score-column-value">${score.correct}/${score.total}</div>
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("score-modal").style.display = "flex";
+}
+
+function closeScoreModal() {
+  if (phase !== "submitted") {
+    document.getElementById("score-modal").style.display = "none";
+    return;
+  }
+
+  document.getElementById("score-modal").style.display = "none";
+  phase = "review";
+  document.getElementById("bank-sticky-container").classList.remove("bank-disabled");
+  document.getElementById("instruction-msg").innerText =
+    "🦸 檢討模式：綠色是原本答對；紅色／空白可由小老師訂正；藍色是救援成功。";
+  refreshUI();
+}
+
+/* ===== 小老師救援 ===== */
+function evaluateReviewSlot(slotKey) {
+  if (phase !== "review" || !originalWrongSlots.has(slotKey)) return;
+
+  const [rIdxText, colKey] = slotKey.split("-");
+  const rIdx = Number(rIdxText);
+  const userText = normalize(userSlots[slotKey]?.text);
+  const correctText = normalize(activeRows[rIdx]?.[colKey]);
+
+  if (userText && userText === correctText) {
+    reviewCorrectedSlots.add(slotKey);
+  } else {
+    reviewCorrectedSlots.delete(slotKey);
+  }
+
+  updateReviewStatus();
+}
+
+function evaluateAllReviewSlots() {
+  originalWrongSlots.forEach(slotKey => evaluateReviewSlot(slotKey));
+}
+
+function updateReviewStatus() {
+  const totalWrong = originalWrongSlots.size;
+  const rescued = reviewCorrectedSlots.size;
+
+  if (totalWrong > 0 && rescued === totalWrong) {
+    document.getElementById("instruction-msg").innerText =
+      "🎉 救援完成！所有原始錯題都已訂正；表頭保留原始分數。";
+  } else {
+    document.getElementById("instruction-msg").innerText =
+      `🦸 檢討模式：已救援 ${rescued} / ${totalWrong} 格；表頭分數不會改變。`;
+  }
+}
+
+/* ===== 工具 ===== */
+function normalize(value) {
+  return (value ?? "").toString().trim().toLowerCase();
+}
+
+function buildReferenceTable() {
+  const table = document.getElementById("reference-full-table");
+
+  let html = "<thead><tr>" +
+    COLUMNS_DEF.map(c => `<th>${c.name}</th>`).join("") +
+    "</tr></thead><tbody>";
+
+  RAW_DATABASE.forEach(r => {
+    html += `<tr>
+      <td>${r.zh}</td>
+      <td>${r.subj}</td>
+      <td>${r.obj}</td>
+      <td>${r.poss}</td>
+      <td>${r.be}</td>
+      <td>${r.poss_pron}</td>
+      <td>${r.ref}</td>
+    </tr>`;
+  });
+
+  html += "</tbody>";
+  table.innerHTML = html;
+}
+
+function toggleModal(show) {
+  document.getElementById("full-modal").style.display = show ? "flex" : "none";
+}
+
+init();
+</script>
+</body>
+</html>
