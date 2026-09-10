@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>單字學習講義－中英文配對卷</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+    }
+    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
+    .font-english { font-family: 'Lexend', sans-serif; }
+    
+    /* 嚴格 A4 滿版尺寸 */
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 15px auto;
+      padding: 6mm 8mm; 
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .title-large { font-size: 24px; font-weight: 700; }
+    .info-text { font-size: 16px; font-weight: 500; }
+    
+    .match-input:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+      background-color: #fef2f2;
+    }
+
+    .row-item {
+      height: 34px; /* 嚴格限制行高，與原聽力卷等高 */
+    }
+
+    /* 大電視選取中題目的特效底色 */
+    .active-row {
+      background-color: #fef08a !important; /* 明亮的黃色底，提示學生目前正在作答哪一題 */
+    }
+    .match-option-selected {
+      background-color: #bae6fd !important;
+      outline: 3px solid #0284c7;
+      outline-offset: -2px;
+    }
+
+    #print-all-container { display: none; }
+    
+    @media print {
+      @page { size: A4; margin: 0; }
+      body { background-color: #ffffff; margin: 0; padding: 0; }
+      .no-print { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body.printing-all .page-a4 { display: none !important; }
+      body.printing-all #print-all-container { display: block !important; width: 210mm; }
+      .page-a4 { box-shadow: none; border: none; margin: 0; padding: 6mm 8mm; }
+      .print-page {
+        width: 210mm;
+        height: 297mm;
+        padding: 6mm 8mm;
+        box-sizing: border-box;
+        background-color: #ffffff;
+        page-break-after: always;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: hidden;
+      }
+      .print-page:last-child { page-break-after: avoid; }
+    }
+    body.template-embedded { background-color: #f1f5f9; }
+  body.template-embedded > .no-print { display: none !important; }
+  body.template-embedded > .page-a4 { margin: 0 auto; box-shadow: none; }
+</style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
+    <div class="flex flex-wrap gap-2 items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+        <span class="text-slate-700 font-medium text-sm font-chinese">📺 大電視功能已啟動：點擊左側任一題（變黃底），再點右側藍框中文，即可自動填入答案！</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
+        <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除</button>
+        <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
+        <button onclick="printAllLessons(false)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印學生版 (6頁)</button>
+        <button onclick="printAllLessons(true)" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印教師版 (6頁)</button>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <label for="matchBookSelector" class="text-sm font-bold text-slate-700 font-chinese">冊別</label>
+      <select id="matchBookSelector" class="flex-grow px-3 py-1.5 border border-slate-300 rounded-md bg-white text-sm font-chinese"></select>
+    </div>
+    <div class="grid grid-cols-6 gap-1.5" id="lesson-selectors"></div>
+  </div>
+
+  <div class="page-a4">
+    <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
+      <div class="flex justify-between items-end">
+        <h1 class="title-large text-slate-800 tracking-wider font-chinese" id="main-title">英文科講義 中英文配對卷</h1>
+        
+        <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+          <div class="flex items-end">
+            <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+            <span class="ml-1 shrink-0">班</span>
+          </div>
+          <div class="flex items-end">
+            <span class="shrink-0">姓名：</span>
+            <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
+        <span class="text-[14px] font-bold text-slate-700 font-chinese">◎ 請將正確英文單字的代號填入括號中。錯字用紅筆訂正，中文、英文各 1 次。</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups-container"></div>
+    <div class="h-1 shrink-0"></div>
+  </div>
+
+  <div id="print-all-container"></div>
+
+  <script src="vocab-data.js"></script>
+  <script>
+    const matchBooks = window.VOCAB_DATA && window.VOCAB_DATA.books;
+    const matchTemplateParams = new URLSearchParams(window.location.search);
+    const requestedMatchBook = matchTemplateParams.get("book");
+    if (!matchBooks) {
+      throw new Error("無法載入 vocab-data.js");
+    }
+
+    let currentBookKey = localStorage.getItem("vocab-match-book");
+    if (!matchBooks[currentBookKey]) currentBookKey = Object.keys(matchBooks)[0];
+    if (matchBooks[requestedMatchBook]) currentBookKey = requestedMatchBook;
+
+    let currentBookLabel = "";
+    let currentBookShortLabel = "";
+    let database = {};
+
+    // 薄轉接層：只把共用資料欄位轉回原版配對頁既有格式。
+    function adaptMatchBook(bookKey) {
+      const book = matchBooks[bookKey];
+      return Object.fromEntries(
+        Object.entries(book.lessons).map(([lessonKey, groups]) => [
+          lessonKey,
+          groups.map(group => ({
+            gTitle: `◎ ${group.title}`,
+            words: [...group.words]
+              .sort((a, b) => a.order - b.order)
+              .map(word => ({ eng: word.english, ch: word.chinese }))
+          }))
+        ])
+      );
+    }
+
+    function setMatchBook(bookKey, preferredLesson) {
+      currentBookKey = bookKey;
+      currentBookLabel = matchBooks[bookKey].label;
+      currentBookShortLabel = currentBookLabel.replace(/^115-1\s+康軒/, "");
+      database = adaptMatchBook(bookKey);
+      localStorage.setItem("vocab-match-book", bookKey);
+
+      const selectorContainer = document.getElementById("lesson-selectors");
+      selectorContainer.innerHTML = "";
+      Object.keys(database).forEach(key => {
+        const btn = document.createElement("button");
+        btn.innerText = `${currentBookShortLabel} ${key}`;
+        btn.setAttribute("data-lesson", key);
+        btn.className = "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese";
+        btn.onclick = () => loadLesson(key);
+        selectorContainer.appendChild(btn);
+      });
+
+      const lessonKeys = Object.keys(database);
+      const savedLesson = preferredLesson || localStorage.getItem("vocab-match-lesson");
+      loadLesson(lessonKeys.includes(savedLesson) ? savedLesson : lessonKeys[0]);
+    }
+
+    let currentLesson = "L1";
+    let showAnswersState = false;
+    let activeInput = null; // 全域變數：追蹤大電視目前被點選的英文題目輸入框
+    let pendingMatchLetter = null; // 允許先選中文提示字卡，再選英文題目
+    let pendingMatchOption = null;
+    const optLetters = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+    // SYSTEM SPEECH UTTERANCE
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85; 
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function seededShuffle(array, seedStr) {
+      let hash = 0;
+      for (let i = 0; i < seedStr.length; i++) {
+        hash = seedStr.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      let shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.abs((hash + i) % (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // 核心排版：維持手動編號，新增每組微型控制項與計分牌
+    function buildFixedGroupHtml(groupData, groupIdx) {
+      const totalWords = groupData.words;
+      const totalCount = totalWords.length; // 這一組實際的總題數
+      const half = Math.ceil(totalCount / 2);
+      
+      const partA_Words = totalWords.slice(0, half);
+      const partB_Words = totalWords.slice(half);
+
+      const shuffledA = seededShuffle(partA_Words, `${currentLesson}-${groupIdx}-A`);
+      const shuffledB = seededShuffle(partB_Words, `${currentLesson}-${groupIdx}-B`);
+
+      let rowsHtml = '';
+
+      for (let i = 0; i < 12; i++) {
+        let isPartB = i >= 6;
+        let localIdx = isPartB ? i - 6 : i;
+        
+        let currentLeftList = isPartB ? partB_Words : partA_Words;
+        let currentRightList = isPartB ? shuffledB : shuffledA;
+
+        let leftItem = currentLeftList[localIdx];  
+        let rightItem = currentRightList[localIdx]; 
+
+        let rowClass = "flex items-center justify-between row-item px-1 quiz-row";
+        if (i === 6) {
+          rowClass += " border-t-2 border-dashed border-slate-300 pt-0.5";
+        }
+
+        let leftColHtml = '';
+        if (leftItem) {
+          const correctAnsLetter = optLetters[currentRightList.findIndex(x => x.ch === leftItem.ch)];
+
+          leftColHtml = `
+            <div class="flex items-center flex-grow truncate h-[28px] pr-2 rounded cursor-pointer transition select-none" onclick="setActiveRow(this, '${leftItem.eng.replace(/'/g, "\\'")}')">
+              <span class="text-[14px] font-bold text-slate-700 shrink-0">(</span>
+              <input type="text" maxlength="1" data-ans="${correctAnsLetter}" readonly class="match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none">
+              <span class="text-[14px] font-bold text-slate-700 shrink-0 mr-2">)</span>
+              <span class="font-bold text-slate-400 text-[12px] font-english mr-1.5 shrink-0">${localIdx + 1}.</span>
+              <span class="font-english font-medium text-slate-800 text-[15.5px] tracking-tight truncate word-span leading-none">${leftItem.eng}</span>
+            </div>
+          `;
+        } else {
+          leftColHtml = `<div class="flex-grow h-[28px] opacity-0 pointer-events-none"></div>`;
+        }
+
+        let rightColHtml = '';
+        if (rightItem) {
+          const letterLabel = optLetters[localIdx];
+          
+          let radiusClass = "rounded-none";
+          if (localIdx === 0) radiusClass = "rounded-t";
+          if (localIdx === currentRightList.length - 1 || localIdx === 5) radiusClass = "rounded-b";
+
+          rightColHtml = `
+            <div onclick="selectChineseAnswer('${letterLabel}', this)" class="match-option-card flex items-center bg-sky-100 border-x border-sky-300 ${radiusClass} ${localIdx === 0 ? 'border-t' : ''} ${localIdx === currentRightList.length - 1 || localIdx === 5 ? 'border-b' : ''} px-2 w-[115px] h-[30px] shrink-0 shadow-sm cursor-pointer hover:bg-sky-200 transition">
+              <span class="font-bold text-red-600 text-[13px] font-english mr-1 shrink-0">${letterLabel}.</span>
+              <span class="font-chinese text-slate-800 text-[13px] font-medium truncate flex-grow leading-none">${rightItem.ch}</span>
+            </div>
+          `;
+        } else {
+          rightColHtml = `<div class="w-[115px] h-[30px] shrink-0 opacity-0 pointer-events-none"></div>`;
+        }
+
+        rowsHtml += `
+          <div class="${rowClass}">
+            ${leftColHtml}
+            ${rightColHtml}
+          </div>
+        `;
+      }
+
+      return `
+        <div class="bg-white flex flex-col justify-start flex-grow">
+          <div class="flex justify-between items-center bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 mb-1 shrink-0">
+            <div class="flex items-center gap-2">
+              <h3 class="text-[15.5px] font-bold text-slate-800 font-chinese tracking-wide">${groupData.gTitle}</h3>
+              <span id="score-${groupIdx}" class="no-print hidden px-1.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded text-[11px] font-bold font-chinese"></span>
+            </div>
+            
+            <div class="no-print flex gap-1">
+              <button onclick="checkGroupAnswers(${groupIdx}, ${totalCount})" title="檢查批改" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese flex items-center gap-0.5">✅ 檢查</button>
+              <button onclick="clearGroupAnswers(${groupIdx})" title="清空本組" class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded text-[11px] transition border border-slate-300 font-chinese flex items-center gap-0.5">🧼 清空</button>
+              <button onclick="toggleGroupAnswers(${groupIdx})" title="本組解答" class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese flex items-center gap-0.5">💡 解答</button>
+            </div>
+          </div>
+          <div class="flex flex-col flex-grow justify-start">
+            ${rowsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    // 大電視專用：點擊左側英文列，高亮亮起黃底，並進入準備填入狀態
+    function setActiveRow(element, engWord) {
+      document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      const parentRow = element.closest('.quiz-row');
+      parentRow.classList.add('active-row');
+      activeInput = parentRow.querySelector('.match-input');
+      speakWord(engWord);
+
+      // 若學生先點了中文提示字卡，點英文題目時立即完成配對。
+      if (pendingMatchLetter) {
+        activeInput.value = pendingMatchLetter;
+        activeInput.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        parentRow.classList.remove('active-row');
+        activeInput = null;
+        clearPendingMatchOption();
+      }
+    }
+
+    function clearPendingMatchOption() {
+      if (pendingMatchOption) pendingMatchOption.classList.remove('match-option-selected');
+      pendingMatchLetter = null;
+      pendingMatchOption = null;
+    }
+
+    // 可先點英文再點中文，也可先點中文再點英文；完成後不自動跳到下一列。
+    function selectChineseAnswer(letter, optionElement) {
+      if (activeInput) {
+        activeInput.value = letter;
+        activeInput.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        activeInput.closest('.quiz-row').classList.remove('active-row');
+        activeInput = null;
+        clearPendingMatchOption();
+      } else {
+        clearPendingMatchOption();
+        pendingMatchLetter = letter;
+        pendingMatchOption = optionElement;
+        pendingMatchOption.classList.add('match-option-selected');
+      }
+    }
+
+    // 功能一：✅ 獨立檢查批改功能 (附帶計分牌機制)
+    function checkGroupAnswers(groupIdx, totalCount) {
+      const groupContainers = document.querySelectorAll('#groups-container > div');
+      if (!groupContainers[groupIdx]) return;
+      
+      const inputs = groupContainers[groupIdx].querySelectorAll('.match-input');
+      let correctScore = 0;
+      let filledCount = 0;
+
+      inputs.forEach(input => {
+        const userAns = input.value.trim().toUpperCase();
+        const correctAns = input.getAttribute('data-ans');
+        
+        if (userAns === '') return; // 沒寫的不算分
+        
+        filledCount++;
+        if (userAns === correctAns) {
+          correctScore++;
+          // 正確：變綠底、深綠字
+          input.className = "match-input w-5 h-5 text-center font-black text-emerald-700 focus:outline-none bg-emerald-100 rounded text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        } else {
+          // 錯誤：用橡皮擦擦掉，維持透明底藍框狀態等待重新作答
+          input.value = '';
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        }
+      });
+
+      // 秀出計分告示牌
+      const scoreBadge = document.getElementById(`score-${groupIdx}`);
+      if (scoreBadge) {
+        scoreBadge.innerText = `答對 ${correctScore} / ${totalCount}`;
+        scoreBadge.classList.remove('hidden');
+      }
+    }
+
+    // 功能二：🧼 獨立清空單組功能
+    function clearGroupAnswers(groupIdx) {
+      const groupContainers = document.querySelectorAll('#groups-container > div');
+      if (!groupContainers[groupIdx]) return;
+      
+      const inputs = groupContainers[groupIdx].querySelectorAll('.match-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+      });
+      
+      groupContainers[groupIdx].querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      activeInput = null;
+      clearPendingMatchOption();
+      
+      // 隱藏計分牌
+      const scoreBadge = document.getElementById(`score-${groupIdx}`);
+      if (scoreBadge) {
+        scoreBadge.innerText = '';
+        scoreBadge.classList.add('hidden');
+      }
+    }
+
+    // 功能三：💡 顯示/隱藏單組解答功能
+    function toggleGroupAnswers(groupIdx) {
+      const groupContainers = document.querySelectorAll('#groups-container > div');
+      if (!groupContainers[groupIdx]) return;
+      
+      const inputs = groupContainers[groupIdx].querySelectorAll('.match-input');
+      
+      let isAlreadyShowing = false;
+      if (inputs.length > 0 && inputs[0].value === inputs[0].getAttribute('data-ans') && inputs[0].classList.contains('bg-red-50')) {
+        isAlreadyShowing = true;
+      }
+      
+      inputs.forEach(input => {
+        const ans = input.getAttribute('data-ans');
+        if (!isAlreadyShowing) {
+          input.value = ans;
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-red-50 text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        } else {
+          input.value = '';
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        }
+      });
+
+      // 解答狀態下自動隱藏動態計分
+      const scoreBadge = document.getElementById(`score-${groupIdx}`);
+      if (scoreBadge) scoreBadge.classList.add('hidden');
+    }
+
+    function loadLesson(lessonKey) {
+      currentLesson = lessonKey;
+      showAnswersState = false;
+      activeInput = null;
+      clearPendingMatchOption();
+
+      document.querySelectorAll('.lesson-btn').forEach(btn => {
+        const k = btn.getAttribute('data-lesson');
+        btn.className = (k === lessonKey) ? 
+          "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-red-600 text-white border-red-600 shadow-sm" :
+          "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
+      });
+
+      document.getElementById('main-title').innerText = `${currentBookShortLabel} ${lessonKey} 英文科講義 中英文配對卷`;
+      localStorage.setItem("vocab-match-lesson", lessonKey);
+      const container = document.getElementById('groups-container');
+      container.innerHTML = '';
+
+      const groups = database[lessonKey];
+      groups.forEach((groupData, idx) => {
+        container.innerHTML += buildFixedGroupHtml(groupData, idx);
+      });
+
+      applyMicroScaling();
+    }
+
+    // 微自動縮放：防止超長單字/片語在 A4 列印或大螢幕時溢出
+    function applyMicroScaling() {
+      document.querySelectorAll('.word-span').forEach(span => {
+        const textLength = span.innerText.length;
+        if (textLength > 20) {
+          span.style.fontSize = "11.5px";
+          span.style.letterSpacing = "-0.7px";
+        } else if (textLength > 14) {
+          span.style.fontSize = "13.5px";
+          span.style.letterSpacing = "-0.3px";
+        } else {
+          span.style.fontSize = "15.5px";
+        }
+      });
+    }
+
+    function initApp() {
+      document.body.classList.toggle("template-embedded", matchTemplateParams.get("embedded") === "1");
+      const bookSelector = document.getElementById("matchBookSelector");
+      Object.entries(matchBooks).forEach(([bookKey, book]) => {
+        bookSelector.add(new Option(book.label, bookKey));
+      });
+      bookSelector.value = currentBookKey;
+      bookSelector.addEventListener("change", () => {
+        setMatchBook(bookSelector.value);
+      });
+      setMatchBook(currentBookKey, matchTemplateParams.get("lesson"));
+      if (matchTemplateParams.get("teacher") === "1") {
+        setTimeout(() => toggleAnswers(), 0);
+      }
+    }
+
+    function toggleAnswers() {
+      activeInput = null;
+      document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      clearPendingMatchOption();
+      showAnswersState = !showAnswersState;
+      document.querySelectorAll('.match-input').forEach(input => {
+        const ans = input.getAttribute('data-ans');
+        if (showAnswersState) {
+          input.value = ans;
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-red-50 text-[14px] p-0 shrink-0 pointer-events-none";
+        } else {
+          input.value = '';
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 pointer-events-none";
+        }
+      });
+      document.querySelectorAll('[id^="score-"]').forEach(badge => badge.classList.add('hidden'));
+    }
+
+    function clearAnswers() {
+      document.querySelectorAll('.match-input').forEach(input => {
+        input.value = '';
+        input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 pointer-events-none";
+      });
+      document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      document.querySelectorAll('[id^="score-"]').forEach(badge => badge.classList.add('hidden'));
+      showAnswersState = false;
+      activeInput = null;
+      clearPendingMatchOption();
+    }
+
+    function printAllLessons(includeAnswers = false) {
+      const printContainer = document.getElementById('print-all-container');
+      printContainer.innerHTML = '';
+
+      Object.keys(database).forEach(lessonKey => {
+        const page = document.createElement('div');
+        page.className = "print-page";
+
+        const savedLesson = currentLesson;
+        currentLesson = lessonKey;
+        
+        let allGroupsHtml = '';
+        database[lessonKey].forEach((groupData, idx) => {
+          allGroupsHtml += buildFixedGroupHtml(groupData, idx);
+        });
+
+        currentLesson = savedLesson;
+
+        page.innerHTML = `
+          <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
+            <div class="flex justify-between items-end">
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">${currentBookShortLabel} ${lessonKey} 英文科講義 中英文配對卷${includeAnswers ? '（教師版）' : ''}</h1>
+              <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+                <div class="flex items-end">
+                  <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+                  <span class="ml-1 shrink-0">班</span>
+                </div>
+                <div class="flex items-end">
+                  <span class="shrink-0">姓名：</span>
+                  <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
+              <span class="text-[14px] font-bold text-slate-700 font-chinese">◎ 請將正確英文單字的代號填入括號中。錯字用紅筆訂正，中文、英文各 1 次。</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden">
+            ${allGroupsHtml}
+          </div>
+          <div class="h-1 shrink-0"></div>
+        `;
+        printContainer.appendChild(page);
+        if (includeAnswers) {
+          page.querySelectorAll('.match-input').forEach(input => {
+            input.value = input.getAttribute('data-ans') || '-';
+            input.classList.add('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+          });
+        }
+      });
+
+      setTimeout(() => {
+        applyMicroScaling();
+        document.body.classList.add('printing-all');
+        window.print();
+        setTimeout(() => { document.body.classList.remove('printing-all'); }, 600);
+      }, 50);
+    }
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>
+
+
+
+

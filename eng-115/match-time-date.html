@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>時間與日期配對板｜三排對照語音版</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #dbeafe;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
+      --review: #2563eb;
+      --review-bg: #dbeafe;
+      --border-color: #334155;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background-color: #f1f5f9;
+      margin: 0;
+      padding: 6px 10px;
+      color: #1e293b;
+    }
+    .container {
+      background: white;
+      padding: 8px 12px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      max-width: 1820px;
+      width: 98vw;
+      margin: 0 auto;
+    }
+
+    /* 頂部標題 */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 5px;
+      margin-bottom: 6px;
+    }
+    h2 { margin: 0; font-size: 1.2rem; display: inline-flex; align-items: baseline; gap: 8px; }
+    .subtitle { color: var(--muted); font-size: .8rem; font-weight: normal; }
+
+    /* 單一行超緊湊控制面板 */
+    .compact-control-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: #f8fafc;
+      padding: 5px 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      border: 1px solid #cbd5e1;
+    }
+    .ctrl-section {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .ctrl-label { font-size: 0.82rem; font-weight: bold; color: #475569; }
+    select.compact-select {
+      padding: 3px 6px;
+      border-radius: 4px;
+      border: 1.5px solid #94a3b8;
+      background: white;
+      font-weight: bold;
+      font-size: 0.85rem;
+      color: #1e293b;
+      cursor: pointer;
+    }
+    .col-btn {
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1.5px solid #94a3b8;
+      background: white;
+      color: #475569;
+      user-select: none;
+    }
+    .col-btn.active-prompt { background: #0284c7; color: white; border-color: #0284c7; }
+    .col-btn.active-answer { background: var(--primary); color: white; border-color: var(--primary); }
+
+    /* 計時與工具列 */
+    .timer-and-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: #f8fafc;
+      padding: 5px 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      border: 1px solid #cbd5e1;
+    }
+    .timer-display {
+      font-size: 1.35rem;
+      font-weight: 900;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      color: #0f172a;
+      min-width: 60px;
+      text-align: center;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: #e2e8f0;
+    }
+    .timer-display.timer-warning {
+      background: var(--danger);
+      color: white;
+      animation: pulse 0.75s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .68; transform: scale(1.04); }
+    }
+    .t-btn {
+      padding: 3px 7px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      border: 1px solid #94a3b8;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .t-btn.active { background: #0284c7; color: white; border-color: #0284c7; }
+    .t-btn-add { background: #fef08a; border-color: #ca8a04; color: #854d0e; }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: bold;
+      font-size: 0.82rem;
+    }
+    .checkbox-group label { cursor: pointer; display: flex; align-items: center; gap: 3px; user-select: none; }
+    .btn {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid transparent;
+      user-select: none;
+      transition: 0.15s;
+    }
+    .btn-default { background: #e2e8f0; color: #334155; }
+    .btn-default:hover { background: #cbd5e1; }
+    .btn-check { background: var(--success); color: white; }
+    .btn-check:hover { background: #15803d; }
+    .btn-modal { background: #475569; color: white; font-size: 0.78rem; padding: 3px 8px; }
+    .btn-next { background: var(--primary); color: white; display: none; }
+
+    /* 狀態列 */
+    .status-bar {
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .score-txt { font-size: 1rem; font-weight: 900; }
+
+    /* 左右佈局 */
+    .layout-wrapper {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+      gap: 12px;
+      align-items: start;
+    }
+
+    /* 多排並列網格 */
+    .main-table-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+      min-width: 0;
+      align-items: start;
+    }
+    .table-sub-pane { width: 100%; }
+
+    .bank-sticky-container {
+      position: sticky;
+      top: 6px;
+      width: 100%;
+      max-height: calc(100vh - 14px);
+      display: flex;
+      flex-direction: column;
+      filter: drop-shadow(0 6px 14px rgba(15, 23, 42, .18));
+    }
+    .bank-sticky-container.floating {
+      position: fixed;
+      z-index: 999;
+      width: min(320px, calc(100vw - 16px));
+      max-height: min(72vh, 560px);
+    }
+
+    /* 表格樣式 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      border: 1.5px solid var(--border-color);
+      text-align: center;
+      padding: 5px 3px;
+      font-size: 1.12rem;
+      overflow-wrap: anywhere;
+      line-height: 1.15;
+    }
+    th { background: #f8fafc; font-size: 0.9rem; padding: 4px 2px; }
+    th.prompt-th { background: #e0f2fe; color: #0369a1; }
+    th.ans-th { background: var(--primary-light); color: #1e40af; }
+    .header-score {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.95rem;
+      color: #0f172a;
+      font-weight: 900;
+    }
+    td.prompt-td {
+      font-weight: bold;
+      background: #f8fafc;
+      width: 38%;
+      font-size: 1.05rem;
+    }
+    td.slot-td {
+      background: #fff;
+      cursor: pointer;
+      height: 40px;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    td.slot-td:hover:not(.locked) { background: #f1f5f9; }
+    td.slot-selected {
+      outline: 3px solid var(--warning);
+      outline-offset: -3px;
+      background-color: var(--warning-bg) !important;
+    }
+    td.cell-correct {
+      background-color: var(--success-bg) !important;
+      color: #166534 !important;
+      font-weight: 900;
+      cursor: default !important;
+    }
+    td.cell-wrong {
+      background-color: var(--danger-bg) !important;
+      color: #991b1b !important;
+      font-weight: 900;
+    }
+    td.cell-empty-warn {
+      background-color: #fef9c3 !important;
+      outline: 2px dashed #ca8a04;
+      outline-offset: -3px;
+    }
+    td.cell-review-correct {
+      background-color: var(--review-bg) !important;
+      color: #1e40af !important;
+      font-weight: 900;
+      cursor: default !important;
+    }
+
+    /* 字卡區 */
+    .bank-wrapper {
+      border: 2px dashed #94a3b8;
+      border-radius: 8px;
+      padding: 6px;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .bank-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #475569;
+      font-size: 0.85rem;
+      cursor: grab;
+      touch-action: none;
+    }
+    .bank-header:active { cursor: grabbing; }
+    .bank-toggle {
+      width: 24px;
+      height: 24px;
+      border: 1px solid #94a3b8;
+      border-radius: 4px;
+      background: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .bank-dock { display: none; }
+    .bank-sticky-container.floating .bank-dock { display: inline-block; }
+    .bank-sticky-container.collapsed { width: auto; }
+    .bank-sticky-container.collapsed .bank-wrapper { padding: 6px 8px; }
+    .bank-sticky-container.collapsed .bank-header { margin-bottom: 0; }
+    .bank-sticky-container.collapsed .cards-pool { display: none; }
+    .cards-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      overflow-y: auto;
+      max-height: 74vh;
+      padding: 2px;
+      align-content: flex-start;
+    }
+    .card {
+      background: white;
+      border: 1.5px solid #64748b;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      user-select: none;
+      transition: transform 0.1s;
+    }
+    .card:hover { transform: translateY(-1px); }
+    .card.selected-card {
+      border-color: var(--warning);
+      background: var(--warning-bg);
+      transform: scale(1.05);
+      box-shadow: 0 3px 8px rgba(245, 158, 11, 0.3);
+    }
+    .bank-disabled { opacity: .55; pointer-events: none; }
+
+    /* Modal & 提示卡 */
+    .modal, .score-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+      padding: 16px;
+    }
+    .modal-content {
+      background: white;
+      padding: 16px;
+      border-radius: 10px;
+      width: min(1000px, 96vw);
+      max-height: 88vh;
+      overflow: auto;
+    }
+    .modal-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid #cbd5e1;
+      padding-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .modal-tab-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1.5px solid #94a3b8;
+      background: #f8fafc;
+      font-weight: bold;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    .modal-tab-btn.active {
+      background: #0284c7;
+      color: white;
+      border-color: #0284c7;
+    }
+    .ref-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+    .ref-card-box {
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .ref-card-title {
+      background: #e2e8f0;
+      padding: 5px 8px;
+      font-weight: bold;
+      font-size: 0.88rem;
+      color: #334155;
+    }
+    .tts-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 0 4px;
+    }
+
+    /* 成績卡 */
+    .score-card {
+      width: min(600px, 94vw);
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      position: relative;
+    }
+    .score-close {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: #e2e8f0;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .score-title { margin: 0 0 10px; font-size: 2rem; color: var(--danger); font-weight: 900; }
+    .score-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+    .score-column { border: 2px solid #cbd5e1; border-radius: 6px; padding: 8px; background: #f8fafc; }
+    .score-column-value { font-size: 2.2rem; font-weight: 900; }
+
+    @media (max-width: 950px) {
+      .layout-wrapper { display: block; }
+      .bank-sticky-container {
+        position: fixed;
+        right: 8px;
+        bottom: 8px;
+        top: auto;
+        z-index: 999;
+        width: min(320px, calc(100vw - 16px));
+        max-height: min(50vh, 400px);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-bar">
+    <div>
+      <h2>時間與日期配對板 <span class="subtitle">三排對照．支援語音</span></h2>
+    </div>
+    <button class="btn btn-modal" onclick="toggleModal(true)">📋 查看總表提示卡</button>
+  </div>
+
+  <!-- 單一行超緊湊控制面板 -->
+  <div class="compact-control-bar">
+    <div class="ctrl-section">
+      <span class="ctrl-label">單元：</span>
+      <select id="sel-group" class="compact-select" onchange="onGroupChange(this.value)">
+        <option value="months">📅 十二月份</option>
+        <option value="week_time">⏰ 星期與時間</option>
+        <option value="ordinals">🔢 日期序數 (1-31)</option>
+      </select>
+
+      <span class="ctrl-label" style="margin-left:4px;">範圍：</span>
+      <select id="sel-subgroup" class="compact-select" onchange="onSubgroupChange(this.value)"></select>
+    </div>
+
+    <div class="ctrl-section">
+      <span class="ctrl-label">欄位：</span>
+      <div id="col-badges" style="display:inline-flex; gap:4px; align-items:center;"></div>
+    </div>
+  </div>
+
+  <!-- 工具列與計時器 -->
+  <div class="timer-and-toolbar">
+    <div class="ctrl-section">
+      <span class="ctrl-label">倒數：</span>
+      <button class="t-btn active" onclick="setTimerSeconds(null)">不倒數</button>
+      <button class="t-btn" onclick="setTimerSeconds(30)">30秒</button>
+      <button class="t-btn" onclick="setTimerSeconds(60)">60秒</button>
+      <button class="t-btn" onclick="setTimerSeconds(90)">90秒</button>
+      <button id="btn-add-time" class="t-btn t-btn-add" onclick="addTime(15)" disabled>＋15s</button>
+      <div id="timer-display" class="timer-display">不限時</div>
+    </div>
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="chk-shuffle-rows" onchange="resetGame()"> 🔀 亂序</label>
+      <label><input type="checkbox" id="chk-distractors" onchange="resetGame()"> 😈 干擾卡</label>
+      <label><input type="checkbox" id="chk-tts" checked> 🔊 發音</label>
+    </div>
+
+    <div class="ctrl-section">
+      <button class="btn btn-default" onclick="shuffleCardsOnly()">重新洗牌</button>
+      <button class="btn btn-default" onclick="resetGame()">清空重來</button>
+      <button class="btn btn-check" onclick="checkAnswers()">檢查答案</button>
+      <button id="btn-next" class="btn btn-next" onclick="nextRound()">🔄 下一輪</button>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <span id="instruction-msg">💡 點選卡片與空格進行填入（點選英文可聽發音）。</span>
+    <span id="score-display" class="score-txt"></span>
+  </div>
+
+  <div class="layout-wrapper">
+    <!-- 主題目區：三排並列 -->
+    <div class="main-table-container" id="main-table-panes"></div>
+
+    <!-- 字卡區 -->
+    <div class="bank-sticky-container" id="bank-sticky-container">
+      <div class="bank-wrapper">
+        <div class="bank-header" id="bank-drag-handle">
+          <span>◎ 字卡庫</span>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span id="card-count">0 張</span>
+            <button id="bank-dock" class="bank-toggle bank-dock" type="button" title="停靠">↘</button>
+            <button id="bank-toggle" class="bank-toggle" type="button" title="縮小">−</button>
+          </div>
+        </div>
+        <div class="cards-pool" id="cards-pool"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 分頁式總表 Modal -->
+<div id="full-modal" class="modal" onclick="toggleModal(false)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <h3 style="margin:0;">時間與日期提示總表</h3>
+      <button class="btn btn-default" onclick="toggleModal(false)">關閉</button>
+    </div>
+    
+    <div class="modal-tabs">
+      <button class="modal-tab-btn active" id="tab-btn-1" onclick="switchModalTab(1)">📅 十二月份 (雙欄對照)</button>
+      <button class="modal-tab-btn" id="tab-btn-2" onclick="switchModalTab(2)">⏰ 星期與時序單位</button>
+      <button class="modal-tab-btn" id="tab-btn-3" onclick="switchModalTab(3)">🔢 日期序數 1–31 (三排對照)</button>
+    </div>
+
+    <div id="modal-tab-content"></div>
+  </div>
+</div>
+
+<!-- 成績卡 -->
+<div id="score-modal" class="score-modal">
+  <div class="score-card">
+    <button class="score-close" onclick="closeScoreModal()">×</button>
+    <div class="score-title">⏰ 時間到！</div>
+    <div id="score-columns" class="score-columns"></div>
+    <p style="margin-top:12px; color:#64748b; font-weight:bold;">關閉後可請小老師點選錯題進行救援訂正。</p>
+  </div>
+</div>
+
+<script>
+const DATABASE = {
+  months: {
+    name: "十二月份",
+    subgroups: {
+      m_1_6: {
+        name: "1 到 6 月",
+        items: [
+          { zh: "一月", full: "January", abbr: "Jan.", tts: "January" },
+          { zh: "二月", full: "February", abbr: "Feb.", tts: "February" },
+          { zh: "三月", full: "March", abbr: "Mar.", tts: "March" },
+          { zh: "四月", full: "April", abbr: "Apr.", tts: "April" },
+          { zh: "五月", full: "May", abbr: "May", tts: "May" },
+          { zh: "六月", full: "June", abbr: "Jun.", tts: "June" }
+        ]
+      },
+      m_7_12: {
+        name: "7 到 12 月",
+        items: [
+          { zh: "七月", full: "July", abbr: "Jul.", tts: "July" },
+          { zh: "八月", full: "August", abbr: "Aug.", tts: "August" },
+          { zh: "九月", full: "September", abbr: "Sep.", tts: "September" },
+          { zh: "十月", full: "October", abbr: "Oct.", tts: "October" },
+          { zh: "十一月", full: "November", abbr: "Nov.", tts: "November" },
+          { zh: "十二月", full: "December", abbr: "Dec.", tts: "December" }
+        ]
+      },
+      m_all: {
+        name: "1 到 12 月（全選雙欄並排）",
+        items: [
+          { zh: "一月", full: "January", abbr: "Jan.", tts: "January" },
+          { zh: "二月", full: "February", abbr: "Feb.", tts: "February" },
+          { zh: "三月", full: "March", abbr: "Mar.", tts: "March" },
+          { zh: "四月", full: "April", abbr: "Apr.", tts: "April" },
+          { zh: "五月", full: "May", abbr: "May", tts: "May" },
+          { zh: "六月", full: "June", abbr: "Jun.", tts: "June" },
+          { zh: "七月", full: "July", abbr: "Jul.", tts: "July" },
+          { zh: "八月", full: "August", abbr: "Aug.", tts: "August" },
+          { zh: "九月", full: "September", abbr: "Sep.", tts: "September" },
+          { zh: "十月", full: "October", abbr: "Oct.", tts: "October" },
+          { zh: "十一月", full: "November", abbr: "Nov.", tts: "November" },
+          { zh: "十二月", full: "December", abbr: "Dec.", tts: "December" }
+        ]
+      }
+    }
+  },
+  week_time: {
+    name: "星期與時間",
+    subgroups: {
+      w_mon_fri: {
+        name: "星期一至五",
+        items: [
+          { zh: "星期一", full: "Monday", abbr: "Mon.", tts: "Monday" },
+          { zh: "星期二", full: "Tuesday", abbr: "Tue.", tts: "Tuesday" },
+          { zh: "星期三", full: "Wednesday", abbr: "Wed.", tts: "Wednesday" },
+          { zh: "星期四", full: "Thursday", abbr: "Thu.", tts: "Thursday" },
+          { zh: "星期五", full: "Friday", abbr: "Fri.", tts: "Friday" }
+        ]
+      },
+      w_mon_sun: {
+        name: "星期一至日",
+        items: [
+          { zh: "星期一", full: "Monday", abbr: "Mon.", tts: "Monday" },
+          { zh: "星期二", full: "Tuesday", abbr: "Tue.", tts: "Tuesday" },
+          { zh: "星期三", full: "Wednesday", abbr: "Wed.", tts: "Wednesday" },
+          { zh: "星期四", full: "Thursday", abbr: "Thu.", tts: "Thursday" },
+          { zh: "星期五", full: "Friday", abbr: "Fri.", tts: "Friday" },
+          { zh: "星期六", full: "Saturday", abbr: "Sat.", tts: "Saturday" },
+          { zh: "星期日", full: "Sunday", abbr: "Sun.", tts: "Sunday" }
+        ]
+      },
+      w_weekends: {
+        name: "星期＋週末週間",
+        items: [
+          { zh: "星期一", full: "Monday", abbr: "Mon.", tts: "Monday" },
+          { zh: "星期二", full: "Tuesday", abbr: "Tue.", tts: "Tuesday" },
+          { zh: "星期三", full: "Wednesday", abbr: "Wed.", tts: "Wednesday" },
+          { zh: "星期四", full: "Thursday", abbr: "Thu.", tts: "Thursday" },
+          { zh: "星期五", full: "Friday", abbr: "Fri.", tts: "Friday" },
+          { zh: "星期六", full: "Saturday", abbr: "Sat.", tts: "Saturday" },
+          { zh: "星期日", full: "Sunday", abbr: "Sun.", tts: "Sunday" },
+          { zh: "週", full: "Week", abbr: "W", tts: "Week" },
+          { zh: "平日 (週間)", full: "Weekdays", abbr: "Wkd.", tts: "Weekdays" },
+          { zh: "週末", full: "Weekend", abbr: "Wknd.", tts: "Weekend" }
+        ]
+      },
+      w_units_all: {
+        name: "完整時間單位",
+        items: [
+          { zh: "年", full: "Year", abbr: "Y", tts: "Year" },
+          { zh: "月", full: "Month", abbr: "M", tts: "Month" },
+          { zh: "週", full: "Week", abbr: "W", tts: "Week" },
+          { zh: "日", full: "Day", abbr: "D", tts: "Day" },
+          { zh: "小時", full: "hour", abbr: "Hr", tts: "hour" },
+          { zh: "分鐘", full: "minute", abbr: "Min", tts: "minute" },
+          { zh: "秒鐘", full: "second", abbr: "Sec", tts: "second" },
+          { zh: "上午", full: "morning", abbr: "a.m.", tts: "morning" },
+          { zh: "下午", full: "afternoon", abbr: "p.m.", tts: "afternoon" }
+        ]
+      }
+    }
+  },
+  ordinals: {
+    name: "日期序數 (1-31)",
+    subgroups: {
+      ord_1_10: {
+        name: "1 到 10",
+        items: [
+          { zh: "第一", full: "first", abbr: "1st", tts: "first" },
+          { zh: "第二", full: "second", abbr: "2nd", tts: "second" },
+          { zh: "第三", full: "third", abbr: "3rd", tts: "third" },
+          { zh: "第四", full: "fourth", abbr: "4th", tts: "fourth" },
+          { zh: "第五", full: "fifth", abbr: "5th", tts: "fifth" },
+          { zh: "第六", full: "sixth", abbr: "6th", tts: "sixth" },
+          { zh: "第七", full: "seventh", abbr: "7th", tts: "seventh" },
+          { zh: "第八", full: "eighth", abbr: "8th", tts: "eighth" },
+          { zh: "第九", full: "ninth", abbr: "9th", tts: "ninth" },
+          { zh: "第十", full: "tenth", abbr: "10th", tts: "tenth" }
+        ]
+      },
+      ord_11_20: {
+        name: "11 到 20",
+        items: [
+          { zh: "第十一", full: "eleventh", abbr: "11th", tts: "eleventh" },
+          { zh: "第十二", full: "twelfth", abbr: "12th", tts: "twelfth" },
+          { zh: "第十三", full: "thirteenth", abbr: "13th", tts: "thirteenth" },
+          { zh: "第十四", full: "fourteenth", abbr: "14th", tts: "fourteenth" },
+          { zh: "第十五", full: "fifteenth", abbr: "15th", tts: "fifteenth" },
+          { zh: "第十六", full: "sixteenth", abbr: "16th", tts: "sixteenth" },
+          { zh: "第十七", full: "seventeenth", abbr: "17th", tts: "seventeenth" },
+          { zh: "第十八", full: "eighteenth", abbr: "18th", tts: "eighteenth" },
+          { zh: "第十九", full: "nineteenth", abbr: "19th", tts: "nineteenth" },
+          { zh: "第二十", full: "twentieth", abbr: "20th", tts: "twentieth" }
+        ]
+      },
+      ord_21_31: {
+        name: "21 到 31",
+        items: [
+          { zh: "第二十一", full: "twenty-first", abbr: "21st", tts: "twenty-first" },
+          { zh: "第二十二", full: "twenty-second", abbr: "22nd", tts: "twenty-second" },
+          { zh: "第二十三", full: "twenty-third", abbr: "23rd", tts: "twenty-third" },
+          { zh: "第二十四", full: "twenty-fourth", abbr: "24th", tts: "twenty-fourth" },
+          { zh: "第二十五", full: "twenty-fifth", abbr: "25th", tts: "twenty-fifth" },
+          { zh: "第二十六", full: "twenty-sixth", abbr: "26th", tts: "twenty-sixth" },
+          { zh: "第二十七", full: "twenty-seventh", abbr: "27th", tts: "twenty-seventh" },
+          { zh: "第二十八", full: "twenty-eighth", abbr: "28th", tts: "twenty-eighth" },
+          { zh: "第二十九", full: "twenty-ninth", abbr: "29th", tts: "twenty-ninth" },
+          { zh: "第三十", full: "thirtieth", abbr: "30th", tts: "thirtieth" },
+          { zh: "第三十一", full: "thirty-first", abbr: "31st", tts: "thirty-first" }
+        ]
+      },
+      ord_all: {
+        name: "1 到 31（全選三欄並排）",
+        items: [
+          { zh: "第一", full: "first", abbr: "1st", tts: "first" },
+          { zh: "第二", full: "second", abbr: "2nd", tts: "second" },
+          { zh: "第三", full: "third", abbr: "3rd", tts: "third" },
+          { zh: "第四", full: "fourth", abbr: "4th", tts: "fourth" },
+          { zh: "第五", full: "fifth", abbr: "5th", tts: "fifth" },
+          { zh: "第六", full: "sixth", abbr: "6th", tts: "sixth" },
+          { zh: "第七", full: "seventh", abbr: "7th", tts: "seventh" },
+          { zh: "第八", full: "eighth", abbr: "8th", tts: "eighth" },
+          { zh: "第九", full: "ninth", abbr: "9th", tts: "ninth" },
+          { zh: "第十", full: "tenth", abbr: "10th", tts: "tenth" },
+          { zh: "第十一", full: "eleventh", abbr: "11th", tts: "eleventh" },
+          { zh: "第十二", full: "twelfth", abbr: "12th", tts: "twelfth" },
+          { zh: "第十三", full: "thirteenth", abbr: "13th", tts: "thirteenth" },
+          { zh: "第十四", full: "fourteenth", abbr: "14th", tts: "fourteenth" },
+          { zh: "第十五", full: "fifteenth", abbr: "15th", tts: "fifteenth" },
+          { zh: "第十六", full: "sixteenth", abbr: "16th", tts: "sixteenth" },
+          { zh: "第十七", full: "seventeenth", abbr: "17th", tts: "seventeenth" },
+          { zh: "第十八", full: "eighteenth", abbr: "18th", tts: "eighteenth" },
+          { zh: "第十九", full: "nineteenth", abbr: "19th", tts: "nineteenth" },
+          { zh: "第二十", full: "twentieth", abbr: "20th", tts: "twentieth" },
+          { zh: "第二十一", full: "twenty-first", abbr: "21st", tts: "twenty-first" },
+          { zh: "第二十二", full: "twenty-second", abbr: "22nd", tts: "twenty-second" },
+          { zh: "第二十三", full: "twenty-third", abbr: "23rd", tts: "twenty-third" },
+          { zh: "第二十四", full: "twenty-fourth", abbr: "24th", tts: "twenty-fourth" },
+          { zh: "第二十五", full: "twenty-fifth", abbr: "25th", tts: "twenty-fifth" },
+          { zh: "第二十六", full: "twenty-sixth", abbr: "26th", tts: "twenty-sixth" },
+          { zh: "第二十七", full: "twenty-seventh", abbr: "27th", tts: "twenty-seventh" },
+          { zh: "第二十八", full: "twenty-eighth", abbr: "28th", tts: "twenty-eighth" },
+          { zh: "第二十九", full: "twenty-ninth", abbr: "29th", tts: "twenty-ninth" },
+          { zh: "第三十", full: "thirtieth", abbr: "30th", tts: "thirtieth" },
+          { zh: "第三十一", full: "thirty-first", abbr: "31st", tts: "thirty-first" }
+        ]
+      }
+    }
+  }
+};
+
+const COLUMNS_DEF = [
+  { key: "zh", name: "中文" },
+  { key: "full", name: "英文全寫" },
+  { key: "abbr", name: "縮寫" }
+];
+
+function fisherYates(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+let currentGroup = "months";
+let currentSubgroup = "m_1_6";
+
+let activeCols = ["zh", "full"];
+let activeRows = [];
+let userSlots = {};
+let bankCards = [];
+let selectedSlot = null;
+let selectedCardId = null;
+
+let phase = "playing";
+let practiceCorrectSlots = new Set();
+let practiceWrongSlots = new Set();
+let originalCorrectSlots = new Set();
+let originalWrongSlots = new Set();
+let reviewCorrectedSlots = new Set();
+let finalScores = {};
+
+let configuredTime = null;
+let remainingTime = null;
+let timerRunning = false;
+let timerInterval = null;
+let timerHasStarted = false;
+let audioCtx = null;
+
+/* ===== 語音朗讀 ===== */
+function speakText(text) {
+  if (!document.getElementById("chk-tts").checked) return;
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.rate = 0.9;
+  window.speechSynthesis.speak(utterance);
+}
+
+function init() {
+  updateSubgroupOptions();
+  renderColSelector();
+  switchModalTab(1);
+  resetGame();
+  initFloatingBank();
+}
+
+function onGroupChange(val) {
+  currentGroup = val;
+  updateSubgroupOptions();
+  resetGame();
+}
+
+function updateSubgroupOptions() {
+  const selSub = document.getElementById("sel-subgroup");
+  selSub.innerHTML = "";
+  const subObj = DATABASE[currentGroup].subgroups;
+  const keys = Object.keys(subObj);
+  keys.forEach(k => {
+    const opt = document.createElement("option");
+    opt.value = k;
+    opt.innerText = subObj[k].name;
+    selSub.appendChild(opt);
+  });
+  currentSubgroup = keys[0];
+  selSub.value = currentSubgroup;
+}
+
+function onSubgroupChange(val) {
+  currentSubgroup = val;
+  resetGame();
+}
+
+function renderColSelector() {
+  const container = document.getElementById("col-badges");
+  container.innerHTML = "";
+  COLUMNS_DEF.forEach(col => {
+    const btn = document.createElement("button");
+    btn.className = "col-btn";
+    const idx = activeCols.indexOf(col.key);
+
+    if (idx === 0) {
+      btn.classList.add("active-prompt");
+      btn.innerText = `${col.name}(提示)`;
+    } else if (idx > 0) {
+      btn.classList.add("active-answer");
+      btn.innerText = `${col.name}(作答)`;
+    } else {
+      btn.innerText = col.name;
+    }
+
+    btn.onclick = () => toggleColumn(col.key);
+    container.appendChild(btn);
+  });
+
+  const clearBtn = document.createElement("button");
+  clearBtn.className = "col-btn";
+  clearBtn.style.color = "#94a3b8";
+  clearBtn.innerText = "清空";
+  clearBtn.onclick = () => { activeCols = []; renderColSelector(); resetGame(); };
+  container.appendChild(clearBtn);
+}
+
+function toggleColumn(key) {
+  const idx = activeCols.indexOf(key);
+  if (idx > -1) activeCols.splice(idx, 1);
+  else activeCols.push(key);
+  renderColSelector();
+  resetGame();
+}
+
+/* ===== 計時機制 ===== */
+function setTimerSeconds(sec) {
+  if (phase !== "playing") return;
+  configuredTime = sec;
+  document.querySelectorAll(".timer-and-toolbar .t-btn:not(.t-btn-add)").forEach(b => {
+    b.classList.toggle("active", sec === null ? b.innerText === "不倒數" : b.innerText === `${sec}秒`);
+  });
+  document.getElementById("btn-add-time").disabled = sec === null;
+  resetTimer();
+}
+
+function addTime(sec) {
+  if (phase !== "playing" || configuredTime === null) return;
+  remainingTime += sec;
+  updateTimerUI();
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerHasStarted = false;
+  remainingTime = configuredTime;
+  updateTimerUI();
+}
+
+function unlockAudio() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+  } catch (e) {}
+}
+
+function startTimerIfNeeded() {
+  if (configuredTime === null || phase !== "playing" || timerHasStarted || timerRunning) return;
+  unlockAudio();
+  timerHasStarted = true;
+  timerRunning = true;
+  timerInterval = setInterval(() => {
+    remainingTime--;
+    updateTimerUI();
+    if (remainingTime <= 0) {
+      remainingTime = 0;
+      clearInterval(timerInterval);
+      timerRunning = false;
+      updateTimerUI();
+      playBeepSound();
+      finalizeSubmission();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+}
+
+function updateTimerUI() {
+  const display = document.getElementById("timer-display");
+  display.innerText = configuredTime === null ? "不限時" : Math.max(remainingTime, 0);
+  display.classList.toggle("timer-warning", configuredTime !== null && remainingTime <= 10 && remainingTime > 0);
+}
+
+function playBeepSound() {
+  try {
+    unlockAudio();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    [0, 0.2, 0.4].forEach((d, idx) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = idx === 2 ? 1046 : 880;
+      gain.gain.setValueAtTime(0.001, now + d);
+      gain.gain.exponentialRampToValueAtTime(0.3, now + d + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + d + 0.16);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + d);
+      osc.stop(now + d + 0.17);
+    });
+  } catch (e) {}
+}
+
+/* ===== 核心遊戲重設 ===== */
+function resetGame() {
+  resetTimer();
+  phase = "playing";
+  selectedSlot = null;
+  selectedCardId = null;
+  userSlots = {};
+  practiceCorrectSlots.clear();
+  practiceWrongSlots.clear();
+  originalCorrectSlots.clear();
+  originalWrongSlots.clear();
+  reviewCorrectedSlots.clear();
+  finalScores = {};
+
+  document.getElementById("score-display").innerText = "";
+  document.getElementById("instruction-msg").innerText = "💡 點選卡片與空格進行填入（點選英文可聽發音）。";
+  document.getElementById("btn-next").style.display = "none";
+  document.getElementById("score-modal").style.display = "none";
+  document.getElementById("bank-sticky-container").classList.remove("bank-disabled");
+
+  if (activeCols.length < 2) {
+    activeRows = [];
+    bankCards = [];
+    renderPanes();
+    renderCardsPool();
+    document.getElementById("instruction-msg").innerText = "💡 請先加入 1 個提示欄與至少 1 個作答欄。";
+    return;
+  }
+
+  const rawList = DATABASE[currentGroup].subgroups[currentSubgroup].items;
+  activeRows = [...rawList];
+
+  if (document.getElementById("chk-shuffle-rows").checked) {
+    fisherYates(activeRows);
+  }
+
+  buildBankCards();
+  renderPanes();
+  renderCardsPool();
+}
+
+function nextRound() { resetGame(); }
+
+function buildBankCards() {
+  bankCards = [];
+  const answerCols = activeCols.slice(1);
+  let cardCounter = 0;
+
+  activeRows.forEach(row => {
+    answerCols.forEach(colKey => {
+      bankCards.push({
+        id: `c_${cardCounter++}`,
+        text: row[colKey],
+        tts: row.tts || row.full
+      });
+    });
+  });
+
+  if (document.getElementById("chk-distractors").checked) {
+    const allItems = [];
+    Object.values(DATABASE[currentGroup].subgroups).forEach(sg => allItems.push(...sg.items));
+    const currentTexts = new Set(bankCards.map(c => normalize(c.text)));
+    const unselectedCols = COLUMNS_DEF.filter(c => c.key !== "zh");
+    let added = 0;
+    const shuffled = fisherYates([...allItems]);
+
+    for (let it of shuffled) {
+      if (added >= Math.min(4, Math.ceil(activeRows.length * 0.35))) break;
+      for (let col of unselectedCols) {
+        const text = it[col.key];
+        if (text && !currentTexts.has(normalize(text))) {
+          bankCards.push({
+            id: `c_${cardCounter++}`,
+            text,
+            tts: it.tts || it.full,
+            isDistractor: true
+          });
+          currentTexts.add(normalize(text));
+          added++;
+          break;
+        }
+      }
+    }
+  }
+
+  fisherYates(bankCards);
+}
+
+/* ===== 三排/雙排並列渲染 ===== */
+function renderPanes() {
+  const container = document.getElementById("main-table-panes");
+  container.innerHTML = "";
+
+  if (activeCols.length < 2) {
+    container.innerHTML = `<div style="padding:20px; color:#64748b; font-weight:bold;">請選擇至少兩個欄位開始遊戲。</div>`;
+    return;
+  }
+
+  let numPanes = 1;
+  if (activeRows.length > 20) numPanes = 3;
+  else if (activeRows.length > 6) numPanes = 2;
+
+  const chunkSize = Math.ceil(activeRows.length / numPanes);
+
+  for (let p = 0; p < numPanes; p++) {
+    const startIdx = p * chunkSize;
+    const endIdx = Math.min(startIdx + chunkSize, activeRows.length);
+    if (startIdx >= endIdx) break;
+
+    const paneDiv = document.createElement("div");
+    paneDiv.className = "table-sub-pane";
+
+    const tbl = document.createElement("table");
+    const thead = document.createElement("thead");
+    const tbody = document.createElement("tbody");
+
+    const trHead = document.createElement("tr");
+    activeCols.forEach((colKey, idx) => {
+      const colDef = COLUMNS_DEF.find(c => c.key === colKey);
+      const th = document.createElement("th");
+      if (idx === 0) {
+        th.className = "prompt-th";
+        th.innerText = `【提示】${colDef.name}`;
+      } else {
+        th.className = "ans-th";
+        const scoreHtml = finalScores[colKey]
+          ? `<span class="header-score">${finalScores[colKey].correct} / ${finalScores[colKey].total}</span>`
+          : "";
+        th.innerHTML = `【作答】${colDef.name}${scoreHtml}`;
+      }
+      trHead.appendChild(th);
+    });
+    thead.appendChild(trHead);
+
+    for (let rIdx = startIdx; rIdx < endIdx; rIdx++) {
+      const row = activeRows[rIdx];
+      const tr = document.createElement("tr");
+
+      activeCols.forEach((colKey, cIdx) => {
+        const td = document.createElement("td");
+        const slotKey = `${rIdx}-${colKey}`;
+
+        if (cIdx === 0) {
+          td.className = "prompt-td";
+          td.innerText = row[colKey];
+          if (colKey !== "zh") {
+            td.title = "點擊聽發音";
+            td.style.cursor = "pointer";
+            td.onclick = () => speakText(row.tts || row.full);
+          }
+        } else {
+          td.className = "slot-td";
+          td.id = `slot-${slotKey}`;
+
+          if (userSlots[slotKey]) td.innerText = userSlots[slotKey].text;
+
+          if (phase === "playing") {
+            if (practiceCorrectSlots.has(slotKey)) td.classList.add("cell-correct", "locked");
+            else if (practiceWrongSlots.has(slotKey)) td.classList.add(userSlots[slotKey] ? "cell-wrong" : "cell-empty-warn");
+          } else {
+            if (originalCorrectSlots.has(slotKey)) td.classList.add("cell-correct", "locked");
+            else if (reviewCorrectedSlots.has(slotKey)) td.classList.add("cell-review-correct", "locked");
+            else if (originalWrongSlots.has(slotKey)) td.classList.add(userSlots[slotKey] ? "cell-wrong" : "cell-empty-warn");
+          }
+
+          if (selectedSlot === slotKey && phase !== "submitted") td.classList.add("slot-selected");
+          td.onclick = () => onSlotClick(slotKey);
+        }
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    }
+
+    tbl.appendChild(thead);
+    tbl.appendChild(tbody);
+    paneDiv.appendChild(tbl);
+    container.appendChild(paneDiv);
+  }
+}
+
+function renderCardsPool() {
+  const pool = document.getElementById("cards-pool");
+  pool.innerHTML = "";
+  document.getElementById("card-count").innerText = `${bankCards.length} 張`;
+
+  bankCards.forEach(card => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.id = `card-${card.id}`;
+    div.innerText = card.text;
+    if (selectedCardId === card.id) div.classList.add("selected-card");
+    div.onclick = () => {
+      speakText(card.tts || card.text);
+      onCardClick(card.id);
+    };
+    pool.appendChild(div);
+  });
+}
+
+function refreshUI() {
+  renderPanes();
+  renderCardsPool();
+}
+
+/* ===== 互動處理 ===== */
+function isLockedSlot(slotKey) {
+  return practiceCorrectSlots.has(slotKey) || originalCorrectSlots.has(slotKey) || reviewCorrectedSlots.has(slotKey);
+}
+
+function onSlotClick(slotKey) {
+  if (phase === "submitted" || isLockedSlot(slotKey)) return;
+  if (selectedCardId) {
+    placeCardIntoSlot(selectedCardId, slotKey);
+    selectedCardId = null;
+    selectedSlot = null;
+    refreshUI();
+    return;
+  }
+  if (userSlots[slotKey]) {
+    returnCardToBank(slotKey);
+    practiceWrongSlots.delete(slotKey);
+    refreshUI();
+    return;
+  }
+  selectedSlot = (selectedSlot === slotKey) ? null : slotKey;
+  refreshUI();
+}
+
+function onCardClick(cardId) {
+  if (phase === "submitted") return;
+  if (selectedSlot) {
+    if (isLockedSlot(selectedSlot)) {
+      selectedSlot = null;
+      refreshUI();
+      return;
+    }
+    placeCardIntoSlot(cardId, selectedSlot);
+    selectedSlot = null;
+    selectedCardId = null;
+    refreshUI();
+    return;
+  }
+  selectedCardId = (selectedCardId === cardId) ? null : cardId;
+  refreshUI();
+}
+
+function placeCardIntoSlot(cardId, slotKey) {
+  if (phase === "submitted" || isLockedSlot(slotKey)) return;
+  if (phase === "playing") startTimerIfNeeded();
+  if (userSlots[slotKey]) returnCardToBank(slotKey);
+
+  const cIdx = bankCards.findIndex(c => c.id === cardId);
+  if (cIdx === -1) return;
+
+  userSlots[slotKey] = bankCards.splice(cIdx, 1)[0];
+  practiceWrongSlots.delete(slotKey);
+  if (phase === "review") evaluateReviewSlot(slotKey);
+}
+
+function returnCardToBank(slotKey) {
+  if (!userSlots[slotKey] || isLockedSlot(slotKey)) return;
+  bankCards.push(userSlots[slotKey]);
+  delete userSlots[slotKey];
+  if (phase === "review") reviewCorrectedSlots.delete(slotKey);
+}
+
+function shuffleCardsOnly() {
+  fisherYates(bankCards);
+  renderCardsPool();
+}
+
+/* ===== 批改機制 ===== */
+function checkAnswers() {
+  if (activeCols.length < 2) return;
+  if (phase === "submitted") return;
+  if (phase === "review") {
+    evaluateAllReviewSlots();
+    refreshUI();
+    return;
+  }
+
+  const answerCols = activeCols.slice(1);
+  let total = activeRows.length * answerCols.length;
+  let correct = 0;
+  practiceWrongSlots.clear();
+
+  activeRows.forEach((row, rIdx) => {
+    answerCols.forEach(colKey => {
+      const slotKey = `${rIdx}-${colKey}`;
+      const userText = normalize(userSlots[slotKey]?.text);
+      const correctText = normalize(row[colKey]);
+
+      if (userText && userText === correctText) {
+        practiceCorrectSlots.add(slotKey);
+        correct++;
+      } else {
+        practiceWrongSlots.add(slotKey);
+      }
+    });
+  });
+
+  const scoreEl = document.getElementById("score-display");
+  scoreEl.innerText = `答對：${correct} / ${total}`;
+  scoreEl.style.color = correct === total ? "var(--success)" : "var(--danger)";
+  refreshUI();
+}
+
+function finalizeSubmission() {
+  if (phase !== "playing") return;
+  stopTimer();
+  phase = "submitted";
+  selectedSlot = null;
+  selectedCardId = null;
+
+  practiceCorrectSlots.clear();
+  practiceWrongSlots.clear();
+  originalCorrectSlots.clear();
+  originalWrongSlots.clear();
+  reviewCorrectedSlots.clear();
+  finalScores = {};
+
+  const answerCols = activeCols.slice(1);
+  answerCols.forEach(colKey => finalScores[colKey] = { correct: 0, total: activeRows.length });
+
+  activeRows.forEach((row, rIdx) => {
+    answerCols.forEach(colKey => {
+      const slotKey = `${rIdx}-${colKey}`;
+      const userText = normalize(userSlots[slotKey]?.text);
+      const correctText = normalize(row[colKey]);
+
+      if (userText && userText === correctText) {
+        originalCorrectSlots.add(slotKey);
+        finalScores[colKey].correct++;
+      } else {
+        originalWrongSlots.add(slotKey);
+      }
+    });
+  });
+
+  document.getElementById("instruction-msg").innerText = "⏰ 時間到！已強制交卷。";
+  document.getElementById("score-display").innerText = "";
+  document.getElementById("btn-next").style.display = "inline-block";
+  document.getElementById("bank-sticky-container").classList.add("bank-disabled");
+
+  renderPanes();
+  renderCardsPool();
+  showScoreModal();
+}
+
+function showScoreModal() {
+  const container = document.getElementById("score-columns");
+  const answerCols = activeCols.slice(1);
+  container.innerHTML = answerCols.map(colKey => {
+    const colName = COLUMNS_DEF.find(c => c.key === colKey)?.name || colKey;
+    const score = finalScores[colKey];
+    return `
+      <div class="score-column">
+        <div style="font-weight:bold; color:#475569;">${colName}</div>
+        <div class="score-column-value">${score.correct}/${score.total}</div>
+      </div>
+    `;
+  }).join("");
+  document.getElementById("score-modal").style.display = "flex";
+}
+
+function closeScoreModal() {
+  document.getElementById("score-modal").style.display = "none";
+  if (phase === "submitted") {
+    phase = "review";
+    document.getElementById("bank-sticky-container").classList.remove("bank-disabled");
+    document.getElementById("instruction-msg").innerText = "🦸 訂正模式：小老師可協助填入正確答案救援（藍色）。";
+    refreshUI();
+  }
+}
+
+function evaluateReviewSlot(slotKey) {
+  if (phase !== "review" || !originalWrongSlots.has(slotKey)) return;
+  const [rIdxText, colKey] = slotKey.split("-");
+  const rIdx = Number(rIdxText);
+  const userText = normalize(userSlots[slotKey]?.text);
+  const correctText = normalize(activeRows[rIdx]?.[colKey]);
+
+  if (userText && userText === correctText) reviewCorrectedSlots.add(slotKey);
+  else reviewCorrectedSlots.delete(slotKey);
+
+  const totalWrong = originalWrongSlots.size;
+  const rescued = reviewCorrectedSlots.size;
+  document.getElementById("instruction-msg").innerText =
+    rescued === totalWrong ? "🎉 所有原始錯題皆救援成功！" : `🦸 救援進度：${rescued} / ${totalWrong}`;
+}
+
+function evaluateAllReviewSlots() {
+  originalWrongSlots.forEach(s => evaluateReviewSlot(s));
+}
+
+function normalize(val) {
+  return (val ?? "").toString().trim().toLowerCase();
+}
+
+/* ===== 分頁式提示總表 ===== */
+function switchModalTab(tabIndex) {
+  document.querySelectorAll(".modal-tab-btn").forEach((btn, idx) => {
+    btn.classList.toggle("active", idx === tabIndex - 1);
+  });
+
+  const content = document.getElementById("modal-tab-content");
+  let subPanes = [];
+
+  if (tabIndex === 1) {
+    subPanes = [
+      { title: "1 到 6 月", items: DATABASE.months.subgroups.m_1_6.items },
+      { title: "7 到 12 月", items: DATABASE.months.subgroups.m_7_12.items }
+    ];
+  } else if (tabIndex === 2) {
+    subPanes = [
+      { title: "星期 (週一至週日)", items: DATABASE.week_time.subgroups.w_mon_sun.items },
+      { title: "常見時間單位", items: DATABASE.week_time.subgroups.w_units_all.items }
+    ];
+  } else {
+    subPanes = [
+      { title: "1 到 10", items: DATABASE.ordinals.subgroups.ord_1_10.items },
+      { title: "11 到 20", items: DATABASE.ordinals.subgroups.ord_11_20.items },
+      { title: "21 到 31", items: DATABASE.ordinals.subgroups.ord_21_31.items }
+    ];
+  }
+
+  let html = `<div class="ref-grid">`;
+  subPanes.forEach(pane => {
+    html += `
+      <div class="ref-card-box">
+        <div class="ref-card-title">${pane.title}</div>
+        <table>
+          <thead><tr><th>中文</th><th>英文全寫</th><th>縮寫</th></tr></thead>
+          <tbody>
+    `;
+    pane.items.forEach(it => {
+      html += `
+        <tr>
+          <td style="font-weight:bold;">${it.zh}</td>
+          <td>
+            ${it.full}
+            <button class="tts-btn" onclick="speakText('${it.tts || it.full}')" title="朗讀">🔊</button>
+          </td>
+          <td>${it.abbr}</td>
+        </tr>
+      `;
+    });
+    html += `</tbody></table></div>`;
+  });
+  html += `</div>`;
+  content.innerHTML = html;
+}
+
+function toggleModal(show) {
+  document.getElementById("full-modal").style.display = show ? "flex" : "none";
+}
+
+/* ===== 浮動字卡庫 ===== */
+function initFloatingBank() {
+  const bank = document.getElementById("bank-sticky-container");
+  const handle = document.getElementById("bank-drag-handle");
+  const toggle = document.getElementById("bank-toggle");
+  const dock = document.getElementById("bank-dock");
+  let drag = null;
+
+  handle.addEventListener("pointerdown", e => {
+    if (e.target.closest("button")) return;
+    const rect = bank.getBoundingClientRect();
+    drag = { pointerId: e.pointerId, dx: e.clientX - rect.left, dy: e.clientY - rect.top };
+    bank.classList.add("floating");
+    bank.style.left = `${rect.left}px`;
+    bank.style.top = `${rect.top}px`;
+    handle.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+
+  handle.addEventListener("pointermove", e => {
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    const maxL = Math.max(0, window.innerWidth - bank.offsetWidth);
+    const maxT = Math.max(0, window.innerHeight - bank.offsetHeight);
+    bank.style.left = `${Math.min(Math.max(0, e.clientX - drag.dx), maxL)}px`;
+    bank.style.top = `${Math.min(Math.max(0, e.clientY - drag.dy), maxT)}px`;
+  });
+
+  const stopDrag = e => {
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    drag = null;
+    if (handle.hasPointerCapture(e.pointerId)) handle.releasePointerCapture(e.pointerId);
+  };
+  handle.addEventListener("pointerup", stopDrag);
+  handle.addEventListener("pointercancel", stopDrag);
+
+  toggle.addEventListener("click", () => {
+    const collapsed = bank.classList.toggle("collapsed");
+    toggle.innerText = collapsed ? "+" : "−";
+  });
+
+  dock.addEventListener("click", () => {
+    bank.classList.remove("floating");
+    ["left", "top", "right", "bottom"].forEach(p => bank.style.removeProperty(p));
+  });
+}
+
+init();
+</script>
+</body>
+</html>

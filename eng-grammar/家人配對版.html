@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家人稱謂與親友配對板｜三排對照語音版</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #dbeafe;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
+      --review: #2563eb;
+      --review-bg: #dbeafe;
+      --border-color: #334155;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background-color: #f1f5f9;
+      margin: 0;
+      padding: 6px 10px;
+      color: #1e293b;
+    }
+    .container {
+      background: white;
+      padding: 8px 12px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      max-width: 1820px;
+      width: 98vw;
+      margin: 0 auto;
+    }
+
+    /* 頂部標題 */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 5px;
+      margin-bottom: 6px;
+    }
+    h2 { margin: 0; font-size: 1.2rem; display: inline-flex; align-items: baseline; gap: 8px; }
+    .subtitle { color: var(--muted); font-size: .8rem; font-weight: normal; }
+
+    /* 組別多選與模式列 */
+    .group-selector-panel {
+      background: #f8fafc;
+      padding: 6px 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      border: 1px solid #cbd5e1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .group-badges {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+    }
+    .group-btn {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1.5px solid #94a3b8;
+      background: white;
+      color: #475569;
+      user-select: none;
+      transition: all 0.12s;
+    }
+    .group-btn.active {
+      background: #0284c7;
+      color: white;
+      border-color: #0284c7;
+    }
+    .mode-swap-btn {
+      background: #4338ca;
+      color: white;
+      border: 1.5px solid #3730a3;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* 計時與工具列 */
+    .timer-and-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: #f8fafc;
+      padding: 5px 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      border: 1px solid #cbd5e1;
+    }
+    .ctrl-section {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .ctrl-label { font-size: 0.82rem; font-weight: bold; color: #475569; }
+    .timer-display {
+      font-size: 1.35rem;
+      font-weight: 900;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      color: #0f172a;
+      min-width: 60px;
+      text-align: center;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: #e2e8f0;
+    }
+    .timer-display.timer-warning {
+      background: var(--danger);
+      color: white;
+      animation: pulse 0.75s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .68; transform: scale(1.04); }
+    }
+    .t-btn {
+      padding: 3px 7px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      border: 1px solid #94a3b8;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .t-btn.active { background: #0284c7; color: white; border-color: #0284c7; }
+    .t-btn-add { background: #fef08a; border-color: #ca8a04; color: #854d0e; }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: bold;
+      font-size: 0.82rem;
+    }
+    .checkbox-group label { cursor: pointer; display: flex; align-items: center; gap: 3px; user-select: none; }
+    .btn {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid transparent;
+      user-select: none;
+      transition: 0.15s;
+    }
+    .btn-default { background: #e2e8f0; color: #334155; }
+    .btn-default:hover { background: #cbd5e1; }
+    .btn-check { background: var(--success); color: white; }
+    .btn-check:hover { background: #15803d; }
+    .btn-modal { background: #475569; color: white; font-size: 0.78rem; padding: 3px 8px; }
+    .btn-next { background: var(--primary); color: white; display: none; }
+
+    /* 狀態列 */
+    .status-bar {
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .score-txt { font-size: 1rem; font-weight: 900; }
+
+    /* 左右佈局 */
+    .layout-wrapper {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+      gap: 12px;
+      align-items: start;
+    }
+
+    /* 三欄並列網格 */
+    .main-table-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+      min-width: 0;
+      align-items: start;
+    }
+    .table-sub-pane { width: 100%; }
+
+    .bank-sticky-container {
+      position: sticky;
+      top: 6px;
+      width: 100%;
+      max-height: calc(100vh - 14px);
+      display: flex;
+      flex-direction: column;
+      filter: drop-shadow(0 6px 14px rgba(15, 23, 42, .18));
+    }
+    .bank-sticky-container.floating {
+      position: fixed;
+      z-index: 999;
+      width: min(320px, calc(100vw - 16px));
+      max-height: min(72vh, 560px);
+    }
+
+    /* 表格樣式 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      border: 1.5px solid var(--border-color);
+      text-align: center;
+      padding: 5px 3px;
+      font-size: 1.12rem;
+      overflow-wrap: anywhere;
+      line-height: 1.15;
+    }
+    th { background: #f8fafc; font-size: 0.9rem; padding: 4px 2px; }
+    th.prompt-th { background: #e0f2fe; color: #0369a1; }
+    th.ans-th { background: var(--primary-light); color: #1e40af; }
+    .header-score {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.95rem;
+      color: #0f172a;
+      font-weight: 900;
+    }
+    td.prompt-td {
+      font-weight: bold;
+      background: #f8fafc;
+      width: 44%;
+      font-size: 1.05rem;
+    }
+    td.slot-td {
+      background: #fff;
+      cursor: pointer;
+      height: 40px;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    td.slot-td:hover:not(.locked) { background: #f1f5f9; }
+    td.slot-selected {
+      outline: 3px solid var(--warning);
+      outline-offset: -3px;
+      background-color: var(--warning-bg) !important;
+    }
+    td.cell-correct {
+      background-color: var(--success-bg) !important;
+      color: #166534 !important;
+      font-weight: 900;
+      cursor: default !important;
+    }
+    td.cell-wrong {
+      background-color: var(--danger-bg) !important;
+      color: #991b1b !important;
+      font-weight: 900;
+    }
+    td.cell-empty-warn {
+      background-color: #fef9c3 !important;
+      outline: 2px dashed #ca8a04;
+      outline-offset: -3px;
+    }
+    td.cell-review-correct {
+      background-color: var(--review-bg) !important;
+      color: #1e40af !important;
+      font-weight: 900;
+      cursor: default !important;
+    }
+
+    /* 字卡區 */
+    .bank-wrapper {
+      border: 2px dashed #94a3b8;
+      border-radius: 8px;
+      padding: 6px;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .bank-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #475569;
+      font-size: 0.85rem;
+      cursor: grab;
+      touch-action: none;
+    }
+    .bank-header:active { cursor: grabbing; }
+    .bank-toggle {
+      width: 24px;
+      height: 24px;
+      border: 1px solid #94a3b8;
+      border-radius: 4px;
+      background: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .bank-dock { display: none; }
+    .bank-sticky-container.floating .bank-dock { display: inline-block; }
+    .bank-sticky-container.collapsed { width: auto; }
+    .bank-sticky-container.collapsed .bank-wrapper { padding: 6px 8px; }
+    .bank-sticky-container.collapsed .bank-header { margin-bottom: 0; }
+    .bank-sticky-container.collapsed .cards-pool { display: none; }
+    .cards-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      overflow-y: auto;
+      max-height: 74vh;
+      padding: 2px;
+      align-content: flex-start;
+    }
+    .card {
+      background: white;
+      border: 1.5px solid #64748b;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      user-select: none;
+      transition: transform 0.1s;
+    }
+    .card:hover { transform: translateY(-1px); }
+    .card.selected-card {
+      border-color: var(--warning);
+      background: var(--warning-bg);
+      transform: scale(1.05);
+      box-shadow: 0 3px 8px rgba(245, 158, 11, 0.3);
+    }
+    .bank-disabled { opacity: .55; pointer-events: none; }
+
+    /* Modal & 雙分頁設計 */
+    .modal, .score-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+      padding: 16px;
+    }
+    .modal-content {
+      background: white;
+      padding: 16px;
+      border-radius: 10px;
+      width: min(1000px, 96vw);
+      max-height: 88vh;
+      overflow: auto;
+    }
+    .modal-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid #cbd5e1;
+      padding-bottom: 6px;
+    }
+    .modal-tab-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1.5px solid #94a3b8;
+      background: #f8fafc;
+      font-weight: bold;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    .modal-tab-btn.active {
+      background: #0284c7;
+      color: white;
+      border-color: #0284c7;
+    }
+    .ref-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+    .ref-card-box {
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .ref-card-title {
+      background: #e2e8f0;
+      padding: 6px 8px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #334155;
+    }
+    .tts-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 0 4px;
+    }
+
+    /* 成績卡 */
+    .score-card {
+      width: min(600px, 94vw);
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      position: relative;
+    }
+    .score-close {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: #e2e8f0;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .score-title { margin: 0 0 10px; font-size: 2rem; color: var(--danger); font-weight: 900; }
+    .score-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+    .score-column { border: 2px solid #cbd5e1; border-radius: 6px; padding: 8px; background: #f8fafc; }
+    .score-column-value { font-size: 2.2rem; font-weight: 900; }
+
+    @media (max-width: 950px) {
+      .layout-wrapper { display: block; }
+      .bank-sticky-container {
+        position: fixed;
+        right: 8px;
+        bottom: 8px;
+        top: auto;
+        z-index: 999;
+        width: min(320px, calc(100vw - 16px));
+        max-height: min(50vh, 400px);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-bar">
+    <div>
+      <h2>家人稱謂與親友配對板 <span class="subtitle">三排對照．支援發音</span></h2>
+    </div>
+    <button class="btn btn-modal" onclick="toggleModal(true)">📋 查看總表提示卡</button>
+  </div>
+
+  <!-- 組別多選與模式切換 -->
+  <div class="group-selector-panel">
+    <div class="group-badges" id="group-badges"></div>
+    <div style="display:flex; align-items:center; gap:6px;">
+      <button class="btn-default" style="padding:2px 6px; font-size:0.75rem; border-radius:4px; cursor:pointer;" onclick="resetToPreset(1)">家庭親屬預設</button>
+      <button class="btn-default" style="padding:2px 6px; font-size:0.75rem; border-radius:4px; cursor:pointer;" onclick="resetToPreset(2)">尊稱標誌預設</button>
+      <button class="mode-swap-btn" id="btn-mode-swap" onclick="toggleMode()">🔄 模式：看中文 ➔ 選英文</button>
+    </div>
+  </div>
+
+  <!-- 計時與工具列 -->
+  <div class="timer-and-toolbar">
+    <div class="ctrl-section">
+      <span class="ctrl-label">倒數：</span>
+      <button class="t-btn active" onclick="setTimerSeconds(null)">不倒數</button>
+      <button class="t-btn" onclick="setTimerSeconds(30)">30秒</button>
+      <button class="t-btn" onclick="setTimerSeconds(60)">60秒</button>
+      <button class="t-btn" onclick="setTimerSeconds(90)">90秒</button>
+      <button id="btn-add-time" class="t-btn t-btn-add" onclick="addTime(15)" disabled>＋15s</button>
+      <div id="timer-display" class="timer-display">不限時</div>
+    </div>
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="chk-shuffle-rows" onchange="resetGame()"> 🔀 亂序</label>
+      <label><input type="checkbox" id="chk-distractors" onchange="resetGame()"> 😈 干擾卡</label>
+      <label><input type="checkbox" id="chk-tts" checked> 🔊 發音</label>
+    </div>
+
+    <div class="ctrl-section">
+      <button class="btn btn-default" onclick="shuffleCardsOnly()">重新洗牌</button>
+      <button class="btn btn-default" onclick="resetGame()">清空重來</button>
+      <button class="btn btn-check" onclick="checkAnswers()">檢查答案</button>
+      <button id="btn-next" class="btn btn-next" onclick="nextRound()">🔄 下一輪</button>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <span id="instruction-msg">💡 點選卡片與空格進行填入（點選英文可聽發音）。</span>
+    <span id="score-display" class="score-txt"></span>
+  </div>
+
+  <div class="layout-wrapper">
+    <!-- 主題目區：三排並列 -->
+    <div class="main-table-container" id="main-table-panes"></div>
+
+    <!-- 字卡區 -->
+    <div class="bank-sticky-container" id="bank-sticky-container">
+      <div class="bank-wrapper">
+        <div class="bank-header" id="bank-drag-handle">
+          <span>◎ 字卡庫</span>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span id="card-count">0 張</span>
+            <button id="bank-dock" class="bank-toggle bank-dock" type="button" title="停靠">↘</button>
+            <button id="bank-toggle" class="bank-toggle" type="button" title="縮小">−</button>
+          </div>
+        </div>
+        <div class="cards-pool" id="cards-pool"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 雙分頁總表 Modal -->
+<div id="full-modal" class="modal" onclick="toggleModal(false)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <h3 style="margin:0;">家人稱謂與親友提示總表</h3>
+      <button class="btn btn-default" onclick="toggleModal(false)">關閉</button>
+    </div>
+    
+    <div class="modal-tabs">
+      <button class="modal-tab-btn active" id="tab-btn-1" onclick="switchModalTab(1)">🏡 家庭親屬篇 (第 1–3 組)</button>
+      <button class="modal-tab-btn" id="tab-btn-2" onclick="switchModalTab(2)">🚻 稱謂、性別與社交篇 (第 4–6 組)</button>
+      <button class="modal-tab-btn" id="tab-btn-3" onclick="switchModalTab(3)">⚡ 進階 (第 7 組)</button>
+    </div>
+
+    <div id="modal-tab-content"></div>
+  </div>
+</div>
+
+<!-- 成績卡 -->
+<div id="score-modal" class="score-modal">
+  <div class="score-card">
+    <button class="score-close" onclick="closeScoreModal()">×</button>
+    <div class="score-title">⏰ 時間到！</div>
+    <div id="score-columns" class="score-columns"></div>
+    <p style="margin-top:12px; color:#64748b; font-weight:bold;">關閉後可請小老師點選錯題進行救援訂正。</p>
+  </div>
+</div>
+
+<script>
+/* ===== 7 大題庫設定 ===== */
+const FAMILY_GROUPS = [
+  {
+    id: "g_basic_family",
+    name: "1. 基礎家庭",
+    items: [
+      { zh: "爸爸 / 父親", en: "father" },
+      { zh: "媽媽 / 母親", en: "mother" },
+      { zh: "哥哥 / 弟弟", en: "brother" },
+      { zh: "姊姊 / 妹妹", en: "sister" },
+      { zh: "爺爺 / 外公", en: "grandfather" },
+      { zh: "奶奶 / 外婆", en: "grandmother" }
+    ]
+  },
+  {
+    id: "g_couple_children",
+    name: "2. 夫妻與子女",
+    items: [
+      { zh: "丈夫", en: "husband" },
+      { zh: "妻子", en: "wife" },
+      { zh: "兒子", en: "son" },
+      { zh: "女兒", en: "daughter" },
+      { zh: "孩子 / 兒童", en: "child" },
+      { zh: "父母雙親", en: "parents" },
+      { zh: "家庭 / 家人", en: "family" }
+    ]
+  },
+  {
+    id: "g_relatives",
+    name: "3. 親戚與孫輩",
+    items: [
+      { zh: "叔伯舅姑丈姨丈", en: "uncle" },
+      { zh: "姑姨嬸舅媽伯母", en: "aunt" },
+      { zh: "堂(表)兄弟姊妹", en: "cousin" },
+      { zh: "祖父母雙親", en: "grandparents" },
+      { zh: "孫子 / 外孫", en: "grandson" },
+      { zh: "孫女 / 外孫女", en: "granddaughter" }
+    ]
+  },
+  {
+    id: "g_gender_signs",
+    name: "4. 性別與標誌",
+    items: [
+      { zh: "男孩", en: "boy" },
+      { zh: "女孩", en: "girl" },
+      { zh: "男人 (成年男性)", en: "man" },
+      { zh: "女人 (成年女性)", en: "woman" },
+      { zh: "紳士 / 男士 (標誌)", en: "gentleman" },
+      { zh: "淑女 / 女士 (標誌)", en: "lady" }
+    ]
+  },
+  {
+    id: "g_titles",
+    name: "5. 常見稱謂尊稱",
+    items: [
+      { zh: "先生 (姓氏前)", en: "Mr." },
+      { zh: "太太 (已婚女性)", en: "Mrs." },
+      { zh: "小姐 (未婚女性)", en: "Miss" },
+      { zh: "女士 (通用/稱呼)", en: "Ms." },
+      { zh: "先生 / 長官 (尊稱)", en: "Sir" },
+      { zh: "女士 / 夫人 (尊稱)", en: "Madam" }
+    ]
+  },
+  {
+    id: "g_peers",
+    name: "6. 親友同儕關係",
+    items: [
+      { zh: "家人 / 家庭", en: "family" },
+      { zh: "朋友", en: "friend" },
+      { zh: "同學", en: "classmate" },
+      { zh: "室友", en: "roommate" },
+      { zh: "鄰居", en: "neighbor" },
+      { zh: "客人 / 訪客", en: "guest" },
+      { zh: "陌生人", en: "stranger" }
+    ]
+  },
+  {
+    id: "g_advanced",
+    name: "7. 進階",
+    items: [
+      { zh: "姪子 / 外甥", en: "nephew" },
+      { zh: "姪女 / 外甥女", en: "niece" },
+      { zh: "女婿", en: "son-in-law" },
+      { zh: "媳婦", en: "daughter-in-law" },
+      { zh: "岳父 / 公公", en: "father-in-law" },
+      { zh: "岳母 / 婆婆", en: "mother-in-law" }
+    ]
+  }
+];
+
+function fisherYates(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* 預設點亮第 1、2、3 組 */
+let selectedGroupIds = new Set(["g_basic_family", "g_couple_children", "g_relatives"]);
+let isZhToEnMode = true; // true: 中文提示選英文；false: 英文提示選中文
+
+let activeRows = [];
+let userSlots = {};
+let bankCards = [];
+let selectedSlot = null;
+let selectedCardId = null;
+
+let phase = "playing";
+let practiceCorrectSlots = new Set();
+let practiceWrongSlots = new Set();
+let originalCorrectSlots = new Set();
+let originalWrongSlots = new Set();
+let reviewCorrectedSlots = new Set();
+let finalScores = {};
+
+let configuredTime = null;
+let remainingTime = null;
+let timerRunning = false;
+let timerInterval = null;
+let timerHasStarted = false;
+let audioCtx = null;
+
+/* ===== 語音朗讀 (Web Speech API) ===== */
+function speakText(text) {
+  if (!document.getElementById("chk-tts").checked) return;
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.rate = 0.9;
+  window.speechSynthesis.speak(utterance);
+}
+
+function init() {
+  renderGroupSelector();
+  switchModalTab(1);
+  resetGame();
+  initFloatingBank();
+}
+
+function renderGroupSelector() {
+  const container = document.getElementById("group-badges");
+  container.innerHTML = "";
+  FAMILY_GROUPS.forEach(g => {
+    const btn = document.createElement("button");
+    btn.className = "group-btn";
+    if (selectedGroupIds.has(g.id)) btn.classList.add("active");
+    btn.innerText = g.name;
+    btn.onclick = () => toggleGroup(g.id);
+    container.appendChild(btn);
+  });
+}
+
+function toggleGroup(id) {
+  if (selectedGroupIds.has(id)) {
+    if (selectedGroupIds.size > 1) selectedGroupIds.delete(id);
+  } else {
+    selectedGroupIds.add(id);
+  }
+  renderGroupSelector();
+  resetGame();
+}
+
+function resetToPreset(presetType) {
+  if (presetType === 1) {
+    selectedGroupIds = new Set(["g_basic_family", "g_couple_children", "g_relatives"]);
+  } else {
+    selectedGroupIds = new Set(["g_gender_signs", "g_titles", "g_peers"]);
+  }
+  renderGroupSelector();
+  resetGame();
+}
+
+function toggleMode() {
+  isZhToEnMode = !isZhToEnMode;
+  document.getElementById("btn-mode-swap").innerText = isZhToEnMode ? "🔄 模式：看中文 ➔ 選英文" : "🔄 模式：看英文 ➔ 選中文";
+  resetGame();
+}
+
+/* ===== 計時機制 ===== */
+function setTimerSeconds(sec) {
+  if (phase !== "playing") return;
+  configuredTime = sec;
+  document.querySelectorAll(".timer-and-toolbar .t-btn:not(.t-btn-add)").forEach(b => {
+    b.classList.toggle("active", sec === null ? b.innerText === "不倒數" : b.innerText === `${sec}秒`);
+  });
+  document.getElementById("btn-add-time").disabled = sec === null;
+  resetTimer();
+}
+
+function addTime(sec) {
+  if (phase !== "playing" || configuredTime === null) return;
+  remainingTime += sec;
+  updateTimerUI();
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerHasStarted = false;
+  remainingTime = configuredTime;
+  updateTimerUI();
+}
+
+function unlockAudio() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+  } catch (e) {}
+}
+
+function startTimerIfNeeded() {
+  if (configuredTime === null || phase !== "playing" || timerHasStarted || timerRunning) return;
+  unlockAudio();
+  timerHasStarted = true;
+  timerRunning = true;
+  timerInterval = setInterval(() => {
+    remainingTime--;
+    updateTimerUI();
+    if (remainingTime <= 0) {
+      remainingTime = 0;
+      clearInterval(timerInterval);
+      timerRunning = false;
+      updateTimerUI();
+      playBeepSound();
+      finalizeSubmission();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+}
+
+function updateTimerUI() {
+  const display = document.getElementById("timer-display");
+  display.innerText = configuredTime === null ? "不限時" : Math.max(remainingTime, 0);
+  display.classList.toggle("timer-warning", configuredTime !== null && remainingTime <= 10 && remainingTime > 0);
+}
+
+function playBeepSound() {
+  try {
+    unlockAudio();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    [0, 0.2, 0.4].forEach((d, idx) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = idx === 2 ? 1046 : 880;
+      gain.gain.setValueAtTime(0.001, now + d);
+      gain.gain.exponentialRampToValueAtTime(0.3, now + d + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + d + 0.16);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + d);
+      osc.stop(now + d + 0.17);
+    });
+  } catch (e) {}
+}
+
+/* ===== 核心遊戲重設 ===== */
+function resetGame() {
+  resetTimer();
+  phase = "playing";
+  selectedSlot = null;
+  selectedCardId = null;
+  userSlots = {};
+  practiceCorrectSlots.clear();
+  practiceWrongSlots.clear();
+  originalCorrectSlots.clear();
+  originalWrongSlots.clear();
+  reviewCorrectedSlots.clear();
+  finalScores = {};
+
+  document.getElementById("score-display").innerText = "";
+  document.getElementById("instruction-msg").innerText = "💡 點選卡片與空格進行填入（點選英文可聽發音）。";
+  document.getElementById("btn-next").style.display = "none";
+  document.getElementById("score-modal").style.display = "none";
+  document.getElementById("bank-sticky-container").classList.remove("bank-disabled");
+
+  const activeGroups = FAMILY_GROUPS.filter(g => selectedGroupIds.has(g.id));
+  activeRows = [];
+  activeGroups.forEach(g => {
+    activeRows.push(...g.items);
+  });
+
+  if (document.getElementById("chk-shuffle-rows").checked) {
+    fisherYates(activeRows);
+  }
+
+  buildBankCards();
+  renderPanes();
+  renderCardsPool();
+}
+
+function nextRound() { resetGame(); }
+
+function buildBankCards() {
+  bankCards = [];
+  const ansKey = isZhToEnMode ? "en" : "zh";
+  let cardCounter = 0;
+
+  activeRows.forEach(row => {
+    bankCards.push({ id: `c_${cardCounter++}`, text: row[ansKey] });
+  });
+
+  // 勾選干擾卡時，優先從第 7 組 (進階) 抓詞干擾
+  if (document.getElementById("chk-distractors").checked) {
+    const advGroup = FAMILY_GROUPS.find(g => g.id === "g_advanced").items;
+    const currentTexts = new Set(bankCards.map(c => normalize(c.text)));
+    let added = 0;
+    const shuffled = fisherYates([...advGroup]);
+
+    for (let it of shuffled) {
+      if (added >= Math.min(3, Math.ceil(activeRows.length * 0.25))) break;
+      const text = it[ansKey];
+      if (text && !currentTexts.has(normalize(text))) {
+        bankCards.push({ id: `c_${cardCounter++}`, text, isDistractor: true });
+        currentTexts.add(normalize(text));
+        added++;
+      }
+    }
+  }
+
+  fisherYates(bankCards);
+}
+
+/* ===== 三排並列渲染 ===== */
+function renderPanes() {
+  const container = document.getElementById("main-table-panes");
+  container.innerHTML = "";
+
+  const promptKey = isZhToEnMode ? "zh" : "en";
+  const ansKey = isZhToEnMode ? "en" : "zh";
+  const promptTitle = isZhToEnMode ? "中文" : "英文";
+  const ansTitle = isZhToEnMode ? "英文" : "中文";
+
+  let numPanes = selectedGroupIds.size;
+  if (numPanes > 3) numPanes = 3;
+  if (numPanes < 1) numPanes = 1;
+
+  const chunkSize = Math.ceil(activeRows.length / numPanes);
+
+  for (let p = 0; p < numPanes; p++) {
+    const startIdx = p * chunkSize;
+    const endIdx = Math.min(startIdx + chunkSize, activeRows.length);
+    if (startIdx >= endIdx) break;
+
+    const paneDiv = document.createElement("div");
+    paneDiv.className = "table-sub-pane";
+
+    const tbl = document.createElement("table");
+    const thead = document.createElement("thead");
+    const tbody = document.createElement("tbody");
+
+    const trHead = document.createElement("tr");
+    const th1 = document.createElement("th");
+    th1.className = "prompt-th";
+    th1.innerText = `【提示】${promptTitle}`;
+
+    const th2 = document.createElement("th");
+    th2.className = "ans-th";
+    const scoreHtml = finalScores[ansKey]
+      ? `<span class="header-score">${finalScores[ansKey].correct} / ${finalScores[ansKey].total}</span>`
+      : "";
+    th2.innerHTML = `【作答】${ansTitle}${scoreHtml}`;
+
+    trHead.appendChild(th1);
+    trHead.appendChild(th2);
+    thead.appendChild(trHead);
+
+    for (let rIdx = startIdx; rIdx < endIdx; rIdx++) {
+      const row = activeRows[rIdx];
+      const tr = document.createElement("tr");
+      const slotKey = `${rIdx}-${ansKey}`;
+
+      const tdPrompt = document.createElement("td");
+      tdPrompt.className = "prompt-td";
+      tdPrompt.innerText = row[promptKey];
+      if (!isZhToEnMode) {
+        tdPrompt.title = "點擊聽發音";
+        tdPrompt.style.cursor = "pointer";
+        tdPrompt.onclick = () => speakText(row.en);
+      }
+      tr.appendChild(tdPrompt);
+
+      const tdSlot = document.createElement("td");
+      tdSlot.className = "slot-td";
+      tdSlot.id = `slot-${slotKey}`;
+
+      if (userSlots[slotKey]) tdSlot.innerText = userSlots[slotKey].text;
+
+      if (phase === "playing") {
+        if (practiceCorrectSlots.has(slotKey)) tdSlot.classList.add("cell-correct", "locked");
+        else if (practiceWrongSlots.has(slotKey)) tdSlot.classList.add(userSlots[slotKey] ? "cell-wrong" : "cell-empty-warn");
+      } else {
+        if (originalCorrectSlots.has(slotKey)) tdSlot.classList.add("cell-correct", "locked");
+        else if (reviewCorrectedSlots.has(slotKey)) tdSlot.classList.add("cell-review-correct", "locked");
+        else if (originalWrongSlots.has(slotKey)) tdSlot.classList.add(userSlots[slotKey] ? "cell-wrong" : "cell-empty-warn");
+      }
+
+      if (selectedSlot === slotKey && phase !== "submitted") tdSlot.classList.add("slot-selected");
+      tdSlot.onclick = () => onSlotClick(slotKey);
+      tr.appendChild(tdSlot);
+
+      tbody.appendChild(tr);
+    }
+
+    tbl.appendChild(thead);
+    tbl.appendChild(tbody);
+    paneDiv.appendChild(tbl);
+    container.appendChild(paneDiv);
+  }
+}
+
+function renderCardsPool() {
+  const pool = document.getElementById("cards-pool");
+  pool.innerHTML = "";
+  document.getElementById("card-count").innerText = `${bankCards.length} 張`;
+
+  bankCards.forEach(card => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.id = `card-${card.id}`;
+    div.innerText = card.text;
+    if (selectedCardId === card.id) div.classList.add("selected-card");
+    div.onclick = () => {
+      if (isZhToEnMode) speakText(card.text);
+      onCardClick(card.id);
+    };
+    pool.appendChild(div);
+  });
+}
+
+function refreshUI() {
+  renderPanes();
+  renderCardsPool();
+}
+
+/* ===== 互動處理 ===== */
+function isLockedSlot(slotKey) {
+  return practiceCorrectSlots.has(slotKey) || originalCorrectSlots.has(slotKey) || reviewCorrectedSlots.has(slotKey);
+}
+
+function onSlotClick(slotKey) {
+  if (phase === "submitted" || isLockedSlot(slotKey)) return;
+  if (selectedCardId) {
+    placeCardIntoSlot(selectedCardId, slotKey);
+    selectedCardId = null;
+    selectedSlot = null;
+    refreshUI();
+    return;
+  }
+  if (userSlots[slotKey]) {
+    returnCardToBank(slotKey);
+    practiceWrongSlots.delete(slotKey);
+    refreshUI();
+    return;
+  }
+  selectedSlot = (selectedSlot === slotKey) ? null : slotKey;
+  refreshUI();
+}
+
+function onCardClick(cardId) {
+  if (phase === "submitted") return;
+  if (selectedSlot) {
+    if (isLockedSlot(selectedSlot)) {
+      selectedSlot = null;
+      refreshUI();
+      return;
+    }
+    placeCardIntoSlot(cardId, selectedSlot);
+    selectedSlot = null;
+    selectedCardId = null;
+    refreshUI();
+    return;
+  }
+  selectedCardId = (selectedCardId === cardId) ? null : cardId;
+  refreshUI();
+}
+
+function placeCardIntoSlot(cardId, slotKey) {
+  if (phase === "submitted" || isLockedSlot(slotKey)) return;
+  if (phase === "playing") startTimerIfNeeded();
+  if (userSlots[slotKey]) returnCardToBank(slotKey);
+
+  const cIdx = bankCards.findIndex(c => c.id === cardId);
+  if (cIdx === -1) return;
+
+  userSlots[slotKey] = bankCards.splice(cIdx, 1)[0];
+  practiceWrongSlots.delete(slotKey);
+  if (phase === "review") evaluateReviewSlot(slotKey);
+}
+
+function returnCardToBank(slotKey) {
+  if (!userSlots[slotKey] || isLockedSlot(slotKey)) return;
+  bankCards.push(userSlots[slotKey]);
+  delete userSlots[slotKey];
+  if (phase === "review") reviewCorrectedSlots.delete(slotKey);
+}
+
+function shuffleCardsOnly() {
+  fisherYates(bankCards);
+  renderCardsPool();
+}
+
+/* ===== 批改機制 ===== */
+function checkAnswers() {
+  if (phase === "submitted") return;
+  if (phase === "review") {
+    evaluateAllReviewSlots();
+    refreshUI();
+    return;
+  }
+
+  const ansKey = isZhToEnMode ? "en" : "zh";
+  let total = activeRows.length;
+  let correct = 0;
+  practiceWrongSlots.clear();
+
+  activeRows.forEach((row, rIdx) => {
+    const slotKey = `${rIdx}-${ansKey}`;
+    const userText = normalize(userSlots[slotKey]?.text);
+    const correctText = normalize(row[ansKey]);
+
+    if (userText && userText === correctText) {
+      practiceCorrectSlots.add(slotKey);
+      correct++;
+    } else {
+      practiceWrongSlots.add(slotKey);
+    }
+  });
+
+  const scoreEl = document.getElementById("score-display");
+  scoreEl.innerText = `答對：${correct} / ${total}`;
+  scoreEl.style.color = correct === total ? "var(--success)" : "var(--danger)";
+  refreshUI();
+}
+
+function finalizeSubmission() {
+  if (phase !== "playing") return;
+  stopTimer();
+  phase = "submitted";
+  selectedSlot = null;
+  selectedCardId = null;
+
+  practiceCorrectSlots.clear();
+  practiceWrongSlots.clear();
+  originalCorrectSlots.clear();
+  originalWrongSlots.clear();
+  reviewCorrectedSlots.clear();
+
+  const ansKey = isZhToEnMode ? "en" : "zh";
+  finalScores[ansKey] = { correct: 0, total: activeRows.length };
+
+  activeRows.forEach((row, rIdx) => {
+    const slotKey = `${rIdx}-${ansKey}`;
+    const userText = normalize(userSlots[slotKey]?.text);
+    const correctText = normalize(row[ansKey]);
+
+    if (userText && userText === correctText) {
+      originalCorrectSlots.add(slotKey);
+      finalScores[ansKey].correct++;
+    } else {
+      originalWrongSlots.add(slotKey);
+    }
+  });
+
+  document.getElementById("instruction-msg").innerText = "⏰ 時間到！已強制交卷。";
+  document.getElementById("score-display").innerText = "";
+  document.getElementById("btn-next").style.display = "inline-block";
+  document.getElementById("bank-sticky-container").classList.add("bank-disabled");
+
+  renderPanes();
+  renderCardsPool();
+  showScoreModal();
+}
+
+function showScoreModal() {
+  const container = document.getElementById("score-columns");
+  const ansKey = isZhToEnMode ? "en" : "zh";
+  const ansTitle = isZhToEnMode ? "英文" : "中文";
+  const score = finalScores[ansKey];
+
+  container.innerHTML = `
+    <div class="score-column">
+      <div style="font-weight:bold; color:#475569;">${ansTitle}作答</div>
+      <div class="score-column-value">${score.correct}/${score.total}</div>
+    </div>
+  `;
+  document.getElementById("score-modal").style.display = "flex";
+}
+
+function closeScoreModal() {
+  document.getElementById("score-modal").style.display = "none";
+  if (phase === "submitted") {
+    phase = "review";
+    document.getElementById("bank-sticky-container").classList.remove("bank-disabled");
+    document.getElementById("instruction-msg").innerText = "🦸 訂正模式：小老師可協助填入正確答案救援（藍色）。";
+    refreshUI();
+  }
+}
+
+function evaluateReviewSlot(slotKey) {
+  if (phase !== "review" || !originalWrongSlots.has(slotKey)) return;
+  const [rIdxText, colKey] = slotKey.split("-");
+  const rIdx = Number(rIdxText);
+  const userText = normalize(userSlots[slotKey]?.text);
+  const correctText = normalize(activeRows[rIdx]?.[colKey]);
+
+  if (userText && userText === correctText) reviewCorrectedSlots.add(slotKey);
+  else reviewCorrectedSlots.delete(slotKey);
+
+  const totalWrong = originalWrongSlots.size;
+  const rescued = reviewCorrectedSlots.size;
+  document.getElementById("instruction-msg").innerText =
+    rescued === totalWrong ? "🎉 所有原始錯題皆救援成功！" : `🦸 救援進度：${rescued} / ${totalWrong}`;
+}
+
+function evaluateAllReviewSlots() {
+  originalWrongSlots.forEach(s => evaluateReviewSlot(s));
+}
+
+function normalize(val) {
+  return (val ?? "").toString().trim().toLowerCase();
+}
+
+/* ===== 雙大分頁總表提示卡 ===== */
+function switchModalTab(tabIndex) {
+  document.querySelectorAll(".modal-tab-btn").forEach((btn, idx) => {
+    btn.classList.toggle("active", idx === tabIndex - 1);
+  });
+
+  const content = document.getElementById("modal-tab-content");
+  let groupsToShow = [];
+
+  if (tabIndex === 1) {
+    groupsToShow = [FAMILY_GROUPS[0], FAMILY_GROUPS[1], FAMILY_GROUPS[2]];
+  } else if (tabIndex === 2) {
+    groupsToShow = [FAMILY_GROUPS[3], FAMILY_GROUPS[4], FAMILY_GROUPS[5]];
+  } else {
+    groupsToShow = [FAMILY_GROUPS[6]];
+  }
+
+  let html = `<div class="ref-grid">`;
+  groupsToShow.forEach(g => {
+    html += `
+      <div class="ref-card-box">
+        <div class="ref-card-title">${g.name}</div>
+        <table>
+          <thead><tr><th>中文</th><th>英文 (點擊發音)</th></tr></thead>
+          <tbody>
+    `;
+    g.items.forEach(it => {
+      html += `
+        <tr>
+          <td style="font-weight:bold;">${it.zh}</td>
+          <td>
+            ${it.en}
+            <button class="tts-btn" onclick="speakText('${it.en}')" title="朗讀">🔊</button>
+          </td>
+        </tr>
+      `;
+    });
+    html += `</tbody></table></div>`;
+  });
+  html += `</div>`;
+  content.innerHTML = html;
+}
+
+function toggleModal(show) {
+  document.getElementById("full-modal").style.display = show ? "flex" : "none";
+}
+
+/* ===== 浮動字卡庫 ===== */
+function initFloatingBank() {
+  const bank = document.getElementById("bank-sticky-container");
+  const handle = document.getElementById("bank-drag-handle");
+  const toggle = document.getElementById("bank-toggle");
+  const dock = document.getElementById("bank-dock");
+  let drag = null;
+
+  handle.addEventListener("pointerdown", e => {
+    if (e.target.closest("button")) return;
+    const rect = bank.getBoundingClientRect();
+    drag = { pointerId: e.pointerId, dx: e.clientX - rect.left, dy: e.clientY - rect.top };
+    bank.classList.add("floating");
+    bank.style.left = `${rect.left}px`;
+    bank.style.top = `${rect.top}px`;
+    handle.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+
+  handle.addEventListener("pointermove", e => {
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    const maxL = Math.max(0, window.innerWidth - bank.offsetWidth);
+    const maxT = Math.max(0, window.innerHeight - bank.offsetHeight);
+    bank.style.left = `${Math.min(Math.max(0, e.clientX - drag.dx), maxL)}px`;
+    bank.style.top = `${Math.min(Math.max(0, e.clientY - drag.dy), maxT)}px`;
+  });
+
+  const stopDrag = e => {
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    drag = null;
+    if (handle.hasPointerCapture(e.pointerId)) handle.releasePointerCapture(e.pointerId);
+  };
+  handle.addEventListener("pointerup", stopDrag);
+  handle.addEventListener("pointercancel", stopDrag);
+
+  toggle.addEventListener("click", () => {
+    const collapsed = bank.classList.toggle("collapsed");
+    toggle.innerText = collapsed ? "+" : "−";
+  });
+
+  dock.addEventListener("click", () => {
+    bank.classList.remove("floating");
+    ["left", "top", "right", "bottom"].forEach(p => bank.style.removeProperty(p));
+  });
+}
+
+init();
+</script>
+</body>
+</html>

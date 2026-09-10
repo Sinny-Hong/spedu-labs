@@ -76,7 +76,10 @@ window.GRAMMAR_DATA = [
       { id: "g1", category: "互動遊戲區", title: "🎮 遊戲｜地心探險數字挑戰", desc: "挑戰大考驗！熟悉英文數字 1 ~ 100000 聽力、大小與發音", filename: "game-corenum.html", themeColor: "#F43F5E" },
       { id: "g2", category: "互動遊戲區", title: "🎮 遊戲｜家庭樹", desc: "利用關聯圖釐清家庭成員、英文稱謂與輩分關係", filename: "game-family.html", themeColor: "#F43F5E" },
       { id: "g3", category: "互動遊戲區", title: "🎮 遊戲｜小啾的時光農場", desc: "解鎖時光任務！訓練年月日、星期、小時、分鐘及秒針判讀", filename: "game-timefarm.html", themeColor: "#F43F5E" },
-      { id: "g4", category: "互動遊戲區", title: "🎮 遊戲｜人稱代名詞配對板", desc: "限時配對、亂序、干擾卡與課堂訂正挑戰", filename: "game-pronoun-match.html", themeColor: "#F43F5E" },
+      { id: "g4", category: "互動遊戲區", title: "🧩 配對板｜英文數字", desc: "英文數字三排對照，支援語音與課堂互動配對", filename: "match-numbers.html", themeColor: "#F43F5E" },
+      { id: "g5", category: "互動遊戲區", title: "🧩 配對板｜家人稱謂", desc: "家人稱謂與親友關係三排對照，支援發音", filename: "match-family.html", themeColor: "#F43F5E" },
+      { id: "g6", category: "互動遊戲區", title: "🧩 配對板｜時間與日期", desc: "星期、月份、日期與時間的三排對照語音配對", filename: "match-time-date.html", themeColor: "#F43F5E" },
+      { id: "g7", category: "互動遊戲區", title: "🧩 配對板｜人稱代名詞", desc: "限時配對、亂序、干擾卡與課堂訂正挑戰", filename: "match-pronouns.html", themeColor: "#F43F5E" },
 
       // ==== 能力挑戰評估 ====
       { id: "e1", category: "能力挑戰評估", title: "📝 評估｜生活英文 (V1)", desc: "高中職特教班及資源班生活英語聽說讀寫綜合評量 (第一版)", filename: "exam-lifeenglish-v1.html", themeColor: "#14B8A6" },

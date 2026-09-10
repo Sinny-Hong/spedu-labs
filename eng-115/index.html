@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>課本講義工作區｜Sinny Spedu Labs</title>
   <link rel="stylesheet" href="../shared/css/workspace.css?v=2.5">
+  <style>.resource-section{margin-bottom:26px}.resource-section:not(:has(.resource-card:not([hidden]))){display:none}</style>
 </head>
 <body class="grammar-page book-page">
   <button class="mobile-toggle" id="mobileToggle" aria-label="開啟選單">☰</button>
@@ -15,7 +16,7 @@
       <nav class="category-nav" id="categoryList" aria-label="教材分類">
         <button class="category-btn active" data-filter="all"><span>全部教材</span><span class="category-count" data-total-count></span></button>
         <button class="category-btn" data-filter="favorites"><span>我的收藏</span><span class="category-count" data-favorite-count>0</span></button>
-        <p class="category-label">年級與資源</p>
+        <p class="category-label">教材區段</p>
       </nav>
       <p class="sidebar-note">點選上方 Logo 可隨時回到異想教室首頁。</p>
     </aside>
@@ -26,11 +27,10 @@
         <a class="home-link" href="../index.html">回到首頁</a>
       </header>
       <div class="search-row">
-        <input class="search-box" id="resourceSearch" type="search" placeholder="搜尋年級、聽力、配對、拼寫或電子書…" aria-label="搜尋課本講義">
+        <input class="search-box" id="resourceSearch" type="search" placeholder="搜尋單字、課文、配對板或電子書…" aria-label="搜尋課本講義">
         <div class="count-badge" id="resultCount"></div>
       </div>
-      <h2 class="section-heading">教材與電子書</h2>
-      <section class="card-grid" id="bookCards"></section>
+      <div id="bookSections"></div>
       <div class="empty-state" id="emptyState">目前沒有符合條件的教材。</div>
     </main>
   </div>
@@ -41,7 +41,7 @@
       "115-1G7hear.html", "115-1G7match.html", "115-1G7readword.html", "115-1G7reading.html", "115-1G7write.html",
       "115-1G8hear.html", "115-1G8match.html", "115-1G8readword.html", "115-1G8reading.html", "115-1G8write.html",
       "115-1G9hear.html", "115-1G9match.html", "115-1G9readword.html", "115-1G9reading.html", "115-1G9write.html",
-      "1200voc.html"
+      "1200voc.html", "vocab.html", "match-numbers.html", "match-family.html", "match-pronouns.html", "match-time-date.html"
     ]);
     const escapeHtml = value => String(value ?? "")
       .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
@@ -55,7 +55,7 @@
       ).join("")
     );
 
-    document.getElementById("bookCards").innerHTML = window.BOOK_DATA.map(item => {
+    const renderCard = item => {
       const unavailable = !item.external && !availableFiles.has(item.filename);
       const action = unavailable
         ? `<span class="card-link">教材準備中</span>`
@@ -64,7 +64,10 @@
         <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
         <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>${action}
       </article>`;
-    }).join("");
+    };
+    document.getElementById("bookSections").innerHTML = window.BOOK_CATEGORIES.map(category =>
+      `<section class="resource-section"><h2 class="section-heading">${escapeHtml(category)}</h2><div class="card-grid">${window.BOOK_DATA.filter(item => item.category === category).map(renderCard).join("")}</div></section>`
+    ).join("");
 
     try {
       const legacyFavorites = JSON.parse(localStorage.getItem("book_favs") || "[]");

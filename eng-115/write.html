@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>單字學習講義－單字拼寫卷</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+    }
+    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
+    .font-english { font-family: 'Lexend', sans-serif; }
+    
+    /* 嚴格 A4 滿版尺寸 (與聽力測驗、配對卷完全相同) */
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 15px auto;
+      padding: 6mm 8mm; 
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .title-large { font-size: 24px; font-weight: 700; }
+    .info-text { font-size: 16px; font-weight: 500; }
+    
+    .spelling-input:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+      background-color: #fef2f2;
+    }
+
+    /* 網頁上呈現極淡底線，列印時會被深色格線取代 */
+    .row-border-style {
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    #print-all-container { display: none; }
+    
+    @media print {
+      @page { size: A4; margin: 0; }
+      body { background-color: #ffffff; margin: 0; padding: 0; }
+      .no-print { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body.printing-all .page-a4 { display: none !important; }
+      body.printing-all #print-all-container { display: block !important; width: 210mm; }
+      .page-a4 { box-shadow: none; border: none; margin: 0; padding: 6mm 8mm; }
+      .print-page {
+        width: 210mm;
+        height: 297mm;
+        padding: 6mm 8mm;
+        box-sizing: border-box;
+        background-color: #ffffff;
+        page-break-after: always;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: hidden;
+      }
+      .print-page:last-child { page-break-after: avoid; }
+
+      /* 列印時強制啟動穩定的深色 Slate-700 下書寫格線 */
+      .row-border-style {
+        border-bottom: 1px solid #334155 !important;
+      }
+    }
+    body.template-embedded { background-color: #f1f5f9; }
+  body.template-embedded > .no-print { display: none !important; }
+  body.template-embedded > .page-a4 { margin: 0 auto; box-shadow: none; }
+</style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <!-- 上方功能控制列 -->
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
+    <div class="flex flex-wrap gap-2 items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+        <span class="text-slate-700 font-medium text-sm font-chinese">💡 提示：點擊「左側中文意思」會發出英文正確讀音。支援線上打字或一鍵列印紙本。</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
+        <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除</button>
+        <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
+        <button onclick="printAllLessons(false)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印學生版 (6頁)</button>
+        <button onclick="printAllLessons(true)" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印教師版 (6頁)</button>
+      </div>
+    </div>
+    <!-- 課次切換橫列 -->
+    <div class="flex items-center gap-2">
+      <label for="writeBookSelector" class="text-sm font-bold text-slate-700 font-chinese">冊別</label>
+      <select id="writeBookSelector" class="flex-grow px-3 py-1.5 border border-slate-300 rounded-md bg-white text-sm font-chinese"></select>
+    </div>
+    <div class="grid grid-cols-6 gap-1.5" id="lesson-selectors"></div>
+  </div>
+
+  <!-- A4 紙本主體容器 -->
+  <div class="page-a4">
+    <!-- 標頭與自訂考卷進度區 -->
+    <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
+      <div class="flex justify-between items-end">
+        <h1 class="title-large text-slate-800 tracking-wider font-chinese" id="main-title">英文科講義 單字拼寫卷</h1>
+        
+        <!-- 固寬不偏移姓名欄 -->
+        <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+          <div class="flex items-end">
+            <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+            <span class="ml-1 shrink-0">班</span>
+          </div>
+          <div class="flex items-end">
+            <span class="shrink-0">姓名：</span>
+            <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+          </div>
+        </div>
+      </div>
+      <!-- 頂部自訂教學欄位規範 -->
+      <div class="mt-2 flex flex-col gap-1 bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0 text-[14px] font-bold text-slate-700 font-chinese">
+        <div class="flex items-center flex-wrap gap-x-6">
+          <span>◎ 生字 (每個字 2 分，每次考 <span class="border-b-2 border-slate-700 w-16 inline-block text-center h-5"></span> 個單字)</span>
+          <span>◎ 錯字請用紅筆訂正：中文 1 次、英文 1 次。</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 欄 x 2 列 = 4大組網格 -->
+    <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups-container"></div>
+    <div class="h-1 shrink-0"></div>
+  </div>
+
+  <!-- 全部列印專用隱藏容器 -->
+  <div id="print-all-container"></div>
+
+  <script src="vocab-data.js"></script>
+  <script>
+    const writeBooks = window.VOCAB_DATA && window.VOCAB_DATA.books;
+    const writeTemplateParams = new URLSearchParams(window.location.search);
+    const requestedWriteBook = writeTemplateParams.get("book");
+    if (!writeBooks) {
+      throw new Error("無法載入 vocab-data.js");
+    }
+
+    let currentWriteBookKey = localStorage.getItem("vocab-write-book");
+    if (!writeBooks[currentWriteBookKey]) currentWriteBookKey = Object.keys(writeBooks)[0];
+    if (writeBooks[requestedWriteBook]) currentWriteBookKey = requestedWriteBook;
+
+    let currentWriteBookLabel = "";
+    let currentWriteBookShortLabel = "";
+    let database = {};
+
+    // 薄轉接層：只把共用資料欄位轉回原版 Write 使用的 eng / ch 格式。
+    function adaptWriteBook(bookKey) {
+      const book = writeBooks[bookKey];
+      return Object.fromEntries(
+        Object.entries(book.lessons).map(([lessonKey, groups]) => [
+          lessonKey,
+          groups.map(group => ({
+            gTitle: `◎ ${group.title}`,
+            words: [...group.words]
+              .sort((a, b) => a.order - b.order)
+              .map(word => ({ eng: word.english, ch: word.chinese }))
+          }))
+        ])
+      );
+    }
+
+    function setWriteBook(bookKey, preferredLesson) {
+      currentWriteBookKey = bookKey;
+      currentWriteBookLabel = writeBooks[bookKey].label;
+      currentWriteBookShortLabel = currentWriteBookLabel.replace(/^115-1\s+康軒/, "");
+      database = adaptWriteBook(bookKey);
+      localStorage.setItem("vocab-write-book", bookKey);
+
+      const selectorContainer = document.getElementById("lesson-selectors");
+      selectorContainer.innerHTML = "";
+      Object.keys(database).forEach(key => {
+        const btn = document.createElement("button");
+        btn.innerText = `${currentWriteBookShortLabel} ${key}`;
+        btn.setAttribute("data-lesson", key);
+        btn.className = "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese";
+        btn.onclick = () => loadLesson(key);
+        selectorContainer.appendChild(btn);
+      });
+
+      const lessonKeys = Object.keys(database);
+      const savedLesson = preferredLesson || localStorage.getItem("vocab-write-lesson");
+      loadLesson(lessonKeys.includes(savedLesson) ? savedLesson : lessonKeys[0]);
+    }
+
+    let currentLesson = "L1";
+    let showAnswersState = false;
+    let 流水題號計數器 = 1;
+
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const cleaned = cleanPastTense(word);
+        const utterance = new SpeechSynthesisUtterance(cleaned);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85; 
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function cleanPastTense(rawEng) {
+      if (rawEng.includes('/')) {
+        const parts = rawEng.split('/');
+        const presentTense = parts[0].trim();
+        const secondPart = parts[1].trim();
+        const secondWords = secondPart.split(/\s+/);
+        if (secondWords.length > 1) {
+          const tailCapsule = secondWords.slice(1).join(' ');
+          return `${presentTense} ${tailCapsule}`;
+        }
+        return presentTense;
+      }
+      return rawEng.trim();
+    }
+
+    // 完美對照聽力卷骨架：高度鎖定在 h-5，縮小中文、擴大英文、絕不超頁
+    function buildGroupHtml(groupData, groupIndex, isPrintMode = false) {
+      let rowsHtml = '';
+      
+      for (let i = 0; i < 12; i++) {
+        const wordItem = groupData.words[i];
+        if (wordItem) {
+          const cleanedEnglish = cleanPastTense(wordItem.eng);
+          
+          rowsHtml += `
+            <div class="flex items-center px-1 py-1.5 row-border-style transition hover:bg-slate-50/50 cursor-pointer" onclick="speakWord('${wordItem.eng.replace(/'/g, "\\'")}')">
+              <!-- 中文向左看齊：固定寬度 105px，字太長會貼心自動折行，完全不影響右邊書寫區 -->
+              <div class="text-slate-800 font-chinese font-medium tracking-wide text-[14px] shrink-0 flex items-start leading-tight pr-1" style="width: 105px;">
+                <span class="font-bold text-slate-400 mr-1.5 font-english text-[13px]">${流水題號計數器}.</span>
+                <span class="break-all">${wordItem.ch}</span>
+              </div>
+              
+              <!-- 右側英文空間：完全釋放寬度，採用固定 h-5 水平置中，徹底防止超格 -->
+              <div class="flex-grow relative font-english pl-2 h-5 flex items-center">
+                <input type="text" data-ans="${cleanedEnglish}" class="spelling-input no-print w-full bg-transparent focus:outline-none text-[15px] font-bold text-slate-800 tracking-wide">
+                <span class="ans-text-span hidden text-red-600 font-extrabold text-[15px] tracking-wide absolute left-2 leading-none">${cleanedEnglish}</span>
+              </div>
+            </div>
+          `;
+          流水題號計數器++;
+        } else {
+          // 均分留白預留格：維持高度物理結構，固定版面
+          rowsHtml += `
+            <div class="flex items-center px-1 py-1.5 row-border-style opacity-0 pointer-events-none select-none">
+              <div style="width: 105px;"><span class="text-[14px]">Empty</span></div>
+              <div class="flex-grow h-5"></div>
+            </div>
+          `;
+        }
+      }
+
+      const actionButtons = isPrintMode ? '' : `
+        <div class="flex gap-1.5">
+          <button onclick="speakGroupPreview(${groupIndex})" class="no-print bg-sky-500/90 hover:bg-sky-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">預習導讀</button>
+        </div>
+      `;
+
+      // 複製聽力測驗的無大框排版：利用灰色控制橫列（bg-slate-100）進行小組微分類
+      return `
+        <div class="bg-white flex flex-col justify-start flex-grow">
+          <div class="flex justify-between items-center bg-slate-100 border border-slate-300 rounded-lg px-3 py-1.5 mb-2 shrink-0">
+            <h3 class="text-[16px] font-bold text-slate-800 font-chinese tracking-wide">${groupData.gTitle}</h3>
+            ${actionButtons}
+          </div>
+          <div class="flex flex-col flex-grow justify-start pl-1">
+            ${rowsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function speakGroupPreview(groupIndex) {
+      const gData = database[currentLesson][groupIndex];
+      const wordsArray = gData.words.map(w => w.eng);
+      executePreviewLoop(wordsArray, 0);
+    }
+
+    function executePreviewLoop(wordsArray, index) {
+      if (index < wordsArray.length) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(wordsArray[index]);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85;
+        utterance.onend = function() {
+          setTimeout(() => { executePreviewLoop(wordsArray, index + 1); }, 1400);
+        };
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function loadLesson(lessonKey) {
+      currentLesson = lessonKey;
+      showAnswersState = false;
+
+      document.querySelectorAll('.lesson-btn').forEach(btn => {
+        const k = btn.getAttribute('data-lesson');
+        btn.className = (k === lessonKey) ? 
+          "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-red-600 text-white border-red-600 shadow-sm" :
+          "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
+      });
+
+      document.getElementById('main-title').innerText = `${currentWriteBookShortLabel} ${lessonKey} 英文科講義 單字拼寫卷`;
+      localStorage.setItem("vocab-write-lesson", lessonKey);
+      
+      const container = document.getElementById('groups-container');
+      container.innerHTML = '';
+
+      流水題號計數器 = 1; 
+      const groups = database[lessonKey];
+      groups.forEach((groupData, idx) => {
+        container.innerHTML += buildFixedGroupHtml(groupData, idx);
+      });
+
+      bindInputLogic();
+    }
+
+    // 將 buildFixedGroupHtml 指向穩定的 buildGroupHtml
+    function buildFixedGroupHtml(groupData, groupIdx) {
+      return buildGroupHtml(groupData, groupIdx, false);
+    }
+
+    function initApp() {
+      document.body.classList.toggle("template-embedded", writeTemplateParams.get("embedded") === "1");
+      const bookSelector = document.getElementById("writeBookSelector");
+      Object.entries(writeBooks).forEach(([bookKey, book]) => {
+        bookSelector.add(new Option(book.label, bookKey));
+      });
+      bookSelector.value = currentWriteBookKey;
+      bookSelector.addEventListener("change", () => {
+        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        setWriteBook(bookSelector.value);
+      });
+      setWriteBook(currentWriteBookKey, writeTemplateParams.get("lesson"));
+      if (writeTemplateParams.get("teacher") === "1") {
+        setTimeout(() => toggleAnswers(), 0);
+      }
+    }
+
+    function bindInputLogic() {
+      const inputs = Array.from(document.querySelectorAll('.spelling-input'));
+      inputs.forEach((input, index) => {
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' && index < inputs.length - 1) {
+            inputs[index + 1].focus();
+          }
+        });
+      });
+    }
+
+    function toggleAnswers() {
+      showAnswersState = !showAnswersState;
+      document.querySelectorAll('.spelling-input').forEach(input => {
+        const parent = input.parentElement;
+        const ansSpan = parent.querySelector('.ans-text-span');
+        const correctAnswer = input.getAttribute('data-ans');
+
+        if (showAnswersState) {
+          input.value = correctAnswer;
+          input.classList.add('opacity-0'); 
+          ansSpan.classList.remove('hidden'); 
+        } else {
+          input.value = '';
+          input.classList.remove('opacity-0');
+          ansSpan.classList.add('hidden');
+        }
+      });
+    }
+
+    function clearAnswers() {
+      document.querySelectorAll('.spelling-input').forEach(input => {
+        input.value = '';
+        input.classList.remove('opacity-0');
+        input.parentElement.querySelector('.ans-text-span').classList.add('hidden');
+      });
+      showAnswersState = false;
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+
+    function printAllLessons(includeAnswers = false) {
+      const printContainer = document.getElementById('print-all-container');
+      printContainer.innerHTML = '';
+
+      Object.keys(database).forEach(lessonKey => {
+        const page = document.createElement('div');
+        page.className = "print-page";
+
+        const savedLesson = currentLesson;
+        currentLesson = lessonKey;
+        
+        const groups = database[lessonKey];
+        
+        流水題號計數器 = 1;
+        const groupHtml = groups.map((groupData, idx) => buildGroupHtml(groupData, idx, true));
+        const leftColumnHtml = groupHtml[0] + groupHtml[2];
+        const rightColumnHtml = groupHtml[1] + groupHtml[3];
+
+        currentLesson = savedLesson; 
+
+        page.innerHTML = `
+          <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
+            <div class="flex justify-between items-end">
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">${currentWriteBookShortLabel} ${lessonKey} 英文科講義 單字拼寫卷${includeAnswers ? '（教師版）' : ''}</h1>
+              <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+                <div class="flex items-end">
+                  <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+                  <span class="ml-1 shrink-0">班</span>
+                </div>
+                <div class="flex items-end">
+                  <span class="shrink-0">姓名：</span>
+                  <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 flex flex-col gap-1 bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0 text-[14px] font-bold text-slate-700 font-chinese">
+              <div class="flex items-center flex-wrap gap-x-6">
+                <span>◎ 生字 (每個字 2 分，每次考 <span class="border-b-2 border-slate-700 w-16 inline-block text-center h-5"></span> 個單字)</span>
+                <span>◎ 錯字請用紅筆訂正：中文 1 次、英文 1 次。</span>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden">
+            <div class="flex flex-col flex-grow justify-start">${leftColumnHtml}</div>
+            <div class="flex flex-col flex-grow justify-start">${rightColumnHtml}</div>
+          </div>
+          <div class="h-1 shrink-0"></div>
+        `;
+        printContainer.appendChild(page);
+        if (includeAnswers) {
+          page.querySelectorAll('.ans-text-span').forEach(answer => answer.classList.remove('hidden'));
+        }
+      });
+
+      setTimeout(() => {
+        document.body.classList.add('printing-all');
+        window.print();
+        setTimeout(() => { document.body.classList.remove('printing-all'); }, 600);
+      }, 50);
+    }
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>
+
+
+
+

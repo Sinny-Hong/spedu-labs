@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>單字學習講義－聽力選擇卷</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+    }
+    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
+    .font-english { font-family: 'Lexend', sans-serif; }
+    
+    /* 嚴格 A4 滿版尺寸 */
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 15px auto;
+      padding: 6mm 8mm; 
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .title-large { font-size: 24px; font-weight: 700; }
+    .info-text { font-size: 16px; font-weight: 500; }
+    
+    .answer-input:focus {
+      border-color: #ef4444; /* 聚焦時改為紅色系提示 */
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+      background-color: #fef2f2;
+    }
+
+    #print-all-container { display: none; }
+    
+    @media print {
+      @page { size: A4; margin: 0; }
+      body { background-color: #ffffff; margin: 0; padding: 0; }
+      .no-print { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body.printing-all .page-a4 { display: none !important; }
+      body.printing-all #print-all-container { display: block !important; width: 210mm; }
+      .page-a4 { box-shadow: none; border: none; margin: 0; padding: 6mm 8mm; }
+      .print-page {
+        width: 210mm;
+        height: 297mm;
+        padding: 6mm 8mm;
+        box-sizing: border-box;
+        background-color: #ffffff;
+        page-break-after: always;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: hidden;
+      }
+      .print-page:last-child { page-break-after: avoid; }
+    }
+    body.template-embedded { background-color: #f1f5f9; }
+  body.template-embedded > .no-print { display: none !important; }
+  body.template-embedded > .page-a4 { margin: 0 auto; box-shadow: none; }
+</style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
+    <div class="flex flex-wrap gap-2 items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+        <span class="text-slate-700 font-medium text-sm font-chinese">🎧 提示：點擊英文單字可聽慢速發音。考前點選「預習」；小考點選「📢 小考」。</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
+        <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除</button>
+        <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
+        <button onclick="printAllLessons(false)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印學生版 (6頁)</button>
+        <button onclick="printAllLessons(true)" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印教師版 (6頁)</button>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <label for="hearBookSelector" class="text-sm font-bold text-slate-700 font-chinese">冊別</label>
+      <select id="hearBookSelector" class="flex-grow px-3 py-1.5 border border-slate-300 rounded-md bg-white text-sm font-chinese"></select>
+    </div>
+    <div class="grid grid-cols-6 gap-1.5" id="lesson-selectors"></div>
+  </div>
+
+  <div class="page-a4">
+    <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
+      <div class="flex justify-between items-end">
+        <h1 class="title-large text-slate-800 tracking-wider font-chinese" id="main-title">英文科講義 聽力選擇卷</h1>
+        
+        <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+          <div class="flex items-end">
+            <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+            <span class="ml-1 shrink-0">班</span>
+          </div>
+          <div class="flex items-end">
+            <span class="shrink-0">姓名：</span>
+            <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
+        <span class="text-[14px] font-bold text-slate-700 font-chinese">◎錯字用紅筆訂正，中文、英文各 1 次。</span>
+      </div>
+    </div>
+
+    <!-- 填入單字組別的容器，不設溢出框，回歸高穩定性排版 -->
+    <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups-container"></div>
+    <div class="h-1 shrink-0"></div>
+  </div>
+
+  <div id="print-all-container"></div>
+
+  <script src="vocab-data.js"></script>
+  <script>
+    const hearBooks = window.VOCAB_DATA && window.VOCAB_DATA.books;
+    const hearTemplateParams = new URLSearchParams(window.location.search);
+    const requestedHearBook = hearTemplateParams.get("book");
+    if (!hearBooks) {
+      throw new Error("無法載入 vocab-data.js");
+    }
+
+    let currentHearBookKey = localStorage.getItem("vocab-hear-book");
+    if (!hearBooks[currentHearBookKey]) currentHearBookKey = Object.keys(hearBooks)[0];
+    if (hearBooks[requestedHearBook]) currentHearBookKey = requestedHearBook;
+
+    let currentHearBookLabel = "";
+    let currentHearBookShortLabel = "";
+    let database = {};
+
+    // 薄轉接層：只把共用資料欄位轉回原版 Hear 使用的 eng / ch 格式。
+    function adaptHearBook(bookKey) {
+      const book = hearBooks[bookKey];
+      return Object.fromEntries(
+        Object.entries(book.lessons).map(([lessonKey, groups]) => [
+          lessonKey,
+          groups.map(group => ({
+            gTitle: `◎ ${group.title}`,
+            words: [...group.words]
+              .sort((a, b) => a.order - b.order)
+              .map(word => ({ eng: word.english, ch: word.chinese }))
+          }))
+        ])
+      );
+    }
+
+    function setHearBook(bookKey, preferredLesson) {
+      currentHearBookKey = bookKey;
+      currentHearBookLabel = hearBooks[bookKey].label;
+      currentHearBookShortLabel = currentHearBookLabel.replace(/^115-1\s+康軒/, "");
+      database = adaptHearBook(bookKey);
+      localStorage.setItem("vocab-hear-book", bookKey);
+
+      const selectorContainer = document.getElementById("lesson-selectors");
+      selectorContainer.innerHTML = "";
+      Object.keys(database).forEach(key => {
+        const btn = document.createElement("button");
+        btn.innerText = `${currentHearBookShortLabel} ${key}`;
+        btn.setAttribute("data-lesson", key);
+        btn.className = "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese";
+        btn.onclick = () => loadLesson(key);
+        selectorContainer.appendChild(btn);
+      });
+
+      const lessonKeys = Object.keys(database);
+      const savedLesson = preferredLesson || localStorage.getItem("vocab-hear-lesson");
+      loadLesson(lessonKeys.includes(savedLesson) ? savedLesson : lessonKeys[0]);
+    }
+
+    let currentLesson = "L1";
+    let showAnswersState = false;
+    let quizOrders = {}; 
+    let groupAnswerStates = {}; // 紀錄單組答案狀態 (true代表顯示)
+    
+    // 支持最高 12 題以對齊精美排版
+    const chineseTitles = [
+      "第一題", "第二題", "第三題", "第四題", "第五題", "第六題", "第七題", "第八題", "第九題", "第十題", "第十一題", "第十二題"
+    ];
+
+    function seedShuffle(array, seedString) {
+      let h = 0;
+      for (let i = 0; i < seedString.length; i++) {
+        h = Math.imul(31, h) + seedString.charCodeAt(i) | 0;
+      }
+      function seededRandom() {
+        let x = Math.sin(h++) * 10000;
+        return x - Math.floor(x);
+      }
+      let shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(seededRandom() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function initLessonOrders(lessonKey) {
+      const groups = database[lessonKey];
+      groups.forEach((groupData, idx) => {
+        const orderKey = `${lessonKey}-${idx}`;
+        let wordsArray = groupData.words.map(w => w.eng);
+        quizOrders[orderKey] = seedShuffle(wordsArray, orderKey);
+      });
+    }
+
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85; 
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function speakQuizChain(chineseNum, englishText, onDone) {
+      window.speechSynthesis.cancel();
+      const uChinese = new SpeechSynthesisUtterance(chineseNum);
+      uChinese.lang = 'zh-TW';
+      uChinese.onend = function() {
+        setTimeout(() => {
+          const uEng1 = new SpeechSynthesisUtterance(englishText);
+          uEng1.lang = 'en-US';
+          uEng1.rate = 0.85;
+          uEng1.onend = function() {
+            setTimeout(() => {
+              const uEng2 = new SpeechSynthesisUtterance(englishText);
+              uEng2.lang = 'en-US';
+              uEng2.rate = 0.85;
+              if (onDone) uEng2.onend = onDone;
+              window.speechSynthesis.speak(uEng2);
+            }, 1200);
+          };
+          window.speechSynthesis.speak(uEng1);
+        }, 400);
+      };
+      window.speechSynthesis.speak(uChinese);
+    }
+
+    function startGroupPreview(groupIndex) {
+      const gData = database[currentLesson][groupIndex];
+      const wordsArray = gData.words.map(w => w.eng);
+      executePreviewLoop(wordsArray, 0);
+    }
+
+    function executePreviewLoop(wordsArray, index) {
+      if (index < wordsArray.length) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(wordsArray[index]);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85;
+        utterance.onend = function() {
+          setTimeout(() => { executePreviewLoop(wordsArray, index + 1); }, 1500);
+        };
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function startGroupQuiz(groupIndex) {
+      document.querySelectorAll(`input[data-gidx="${groupIndex}"]`).forEach(input => input.value = '');
+      const orderKey = `${currentLesson}-${groupIndex}`;
+      executeAudioLoop(orderKey, 0);
+    }
+
+    function executeAudioLoop(orderKey, index) {
+      const currentList = quizOrders[orderKey];
+      if (index < currentList.length) {
+        speakQuizChain(chineseTitles[index], currentList[index], () => {
+          setTimeout(() => { executeAudioLoop(orderKey, index + 1); }, 1800);
+        });
+      }
+    }
+
+    function toggleSingleGroupAnswer(groupIndex) {
+      const stateKey = `${currentLesson}-${groupIndex}`;
+      groupAnswerStates[stateKey] = !groupAnswerStates[stateKey];
+      
+      document.querySelectorAll(`input[data-gidx="${groupIndex}"]`).forEach(input => {
+        const eng = input.getAttribute('data-eng');
+        const orderKey = `${currentLesson}-${groupIndex}`;
+        
+        if (groupAnswerStates[stateKey] || showAnswersState) {
+          if (quizOrders[orderKey]) {
+            input.value = quizOrders[orderKey].indexOf(eng) + 1;
+          } else {
+            input.value = "-";
+          }
+          input.classList.add('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+        } else {
+          input.value = '';
+          input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+        }
+      });
+    }
+
+    function buildGroupHtml(groupData, groupIndex, isPrintMode = false) {
+      const orderKey = `${currentLesson}-${groupIndex}`;
+      let rowsHtml = '';
+      
+      // 所有組別皆嚴格在 12 行內（絕不再出現13行擠壓），行高完美回復
+      for (let i = 0; i < 12; i++) {
+        const wordItem = groupData.words[i];
+        if (wordItem) {
+          rowsHtml += `
+            <div class="flex items-center px-1 py-1.5 hover:bg-slate-50/80 rounded transition cursor-pointer single-row-item" onclick="speakWord('${wordItem.eng.replace(/'/g, "\\'")}')">
+              <span class="text-slate-800 font-bold mr-1 shrink-0 text-[15px]">(</span>
+              <input type="text" maxlength="2" data-gidx="${groupIndex}" data-eng="${wordItem.eng}" onclick="event.stopPropagation();" class="answer-input w-7 h-5 text-center font-bold text-slate-800 border-b-2 border-slate-400 focus:outline-none bg-transparent shrink-0 text-[15px]">
+              <span class="text-slate-800 font-bold ml-1 shrink-0 text-[15px]">)</span>
+              <span class="ml-2 font-medium font-english truncate flex-grow tracking-tight text-slate-800 word-eng-span" style="max-width: 155px;">${wordItem.eng}</span>
+              <span class="font-chinese text-slate-500 text-[14px] pl-2 truncate text-right shrink-0 font-medium" style="max-width: 125px;">${wordItem.ch}</span>
+            </div>
+          `;
+        } else {
+          rowsHtml += `
+            <div class="flex items-center px-1 py-1.5 opacity-0 pointer-events-none select-none">
+              <span class="text-[15px]">(</span>
+              <input type="text" class="w-7 h-5 border-b-2 text-[15px]">
+              <span class="text-[15px]">)</span>
+              <span class="ml-2 text-[15px]">Empty</span>
+            </div>
+          `;
+        }
+      }
+
+      const actionButtons = isPrintMode ? '' : `
+        <div class="flex gap-1.5">
+          <button onclick="startGroupPreview(${groupIndex})" class="no-print bg-sky-500/90 hover:bg-sky-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">預習</button>
+          <button onclick="startGroupQuiz(${groupIndex})" class="no-print bg-orange-400/90 hover:bg-orange-500 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">📢 小考</button>
+          <button onclick="toggleSingleGroupAnswer(${groupIndex})" class="no-print bg-emerald-500/90 hover:bg-emerald-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow font-english">√Ans</button>
+        </div>
+      `;
+
+      return `
+        <div class="bg-white flex flex-col justify-start flex-grow">
+          <div class="flex justify-between items-center bg-slate-100/90 border border-slate-300 rounded-lg px-3 py-1.5 mb-2 shrink-0">
+            <h3 class="text-[16px] font-bold text-slate-800 font-chinese tracking-wide">${groupData.gTitle}</h3>
+            ${actionButtons}
+          </div>
+          <div class="flex flex-col flex-grow justify-start pl-1">
+            ${rowsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function loadLesson(lessonKey) {
+      currentLesson = lessonKey;
+      showAnswersState = false;
+      groupAnswerStates = {}; 
+
+      initLessonOrders(lessonKey);
+
+      document.querySelectorAll('.lesson-btn').forEach(btn => {
+        const k = btn.getAttribute('data-lesson');
+        btn.className = (k === lessonKey) ? 
+          "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-red-600 text-white border-red-600 shadow-sm" :
+          "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
+      });
+
+      document.getElementById('main-title').innerText = `${currentHearBookShortLabel} ${lessonKey} 英文科講義 聽力選擇卷`;
+      localStorage.setItem("vocab-hear-lesson", lessonKey);
+      const container = document.getElementById('groups-container');
+      container.innerHTML = '';
+
+      const groups = database[lessonKey];
+      groups.forEach((groupData, idx) => {
+        container.innerHTML += buildGroupHtml(groupData, idx, false);
+      });
+
+      bindInputLogic();
+      applyMicroScaling();
+    }
+
+    // 微自動縮放：防止超長單字/片語超出
+    function applyMicroScaling() {
+      document.querySelectorAll('.word-eng-span').forEach(span => {
+        const textLength = span.innerText.length;
+        if (textLength > 24) {
+          span.style.fontSize = "11px";
+          span.style.letterSpacing = "-0.8px";
+        } else if (textLength > 18) {
+          span.style.fontSize = "12.5px";
+          span.style.letterSpacing = "-0.5px";
+        } else if (textLength > 12) {
+          span.style.fontSize = "14px";
+        } else {
+          span.style.fontSize = "16px";
+        }
+      });
+    }
+
+    function initApp() {
+      document.body.classList.toggle("template-embedded", hearTemplateParams.get("embedded") === "1");
+      const bookSelector = document.getElementById("hearBookSelector");
+      Object.entries(hearBooks).forEach(([bookKey, book]) => {
+        bookSelector.add(new Option(book.label, bookKey));
+      });
+      bookSelector.value = currentHearBookKey;
+      bookSelector.addEventListener("change", () => {
+        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        setHearBook(bookSelector.value);
+      });
+      setHearBook(currentHearBookKey, hearTemplateParams.get("lesson"));
+      if (hearTemplateParams.get("teacher") === "1") {
+        setTimeout(() => toggleAnswers(), 0);
+      }
+    }
+
+    function bindInputLogic() {
+      const inputsArray = Array.from(document.querySelectorAll('.answer-input'));
+      inputsArray.forEach((input, index) => {
+        input.addEventListener('input', function() {
+          this.value = this.value.replace(/[^0-9]/g, '');
+          const val = parseInt(this.value);
+          if (val < 1 || val > 12) this.value = ''; 
+          
+          if (this.value !== '' && index < inputsArray.length - 1) {
+            inputsArray[index + 1].focus();
+          }
+        });
+
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Backspace' && this.value === '' && index > 0) {
+            inputsArray[index - 1].focus();
+          }
+        });
+      });
+    }
+
+    function toggleAnswers() {
+      showAnswersState = !showAnswersState;
+      document.querySelectorAll('.answer-input').forEach(input => {
+        const groupIndex = input.getAttribute('data-gidx');
+        const eng = input.getAttribute('data-eng');
+        const orderKey = `${currentLesson}-${groupIndex}`;
+        
+        if (showAnswersState) {
+          if (quizOrders[orderKey]) {
+            input.value = quizOrders[orderKey].indexOf(eng) + 1;
+          } else {
+            input.value = "-";
+          }
+          input.classList.add('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+        } else {
+          input.value = '';
+          input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+        }
+      });
+    }
+
+    function clearAnswers() {
+      groupAnswerStates = {};
+      document.querySelectorAll('.answer-input').forEach(input => {
+        input.value = '';
+        input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+      });
+      showAnswersState = false;
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+
+    function printAllLessons(includeAnswers = false) {
+      const printContainer = document.getElementById('print-all-container');
+      printContainer.innerHTML = '';
+
+      Object.keys(database).forEach(lessonKey => {
+        const page = document.createElement('div');
+        page.className = "print-page";
+
+        initLessonOrders(lessonKey);
+
+        let allGroupsHtml = '';
+        database[lessonKey].forEach((groupData, idx) => {
+          allGroupsHtml += buildGroupHtml(groupData, idx, true);
+        });
+
+        page.innerHTML = `
+          <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
+            <div class="flex justify-between items-end">
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">${currentHearBookShortLabel} ${lessonKey} 英文科講義 聽力選擇卷${includeAnswers ? '（教師版）' : ''}</h1>
+              <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+                <div class="flex items-end">
+                  <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
+                  <span class="ml-1 shrink-0">班</span>
+                </div>
+                <div class="flex items-end">
+                  <span class="shrink-0">姓名：</span>
+                  <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
+              <span class="text-[14px] font-bold text-slate-700 font-chinese">◎錯字用紅筆訂正，中文、英文各 1 次。</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden">
+            ${allGroupsHtml}
+          </div>
+          <div class="h-1 shrink-0"></div>
+        `;
+        printContainer.appendChild(page);
+
+        if (includeAnswers) {
+          page.querySelectorAll('.answer-input').forEach(input => {
+            const groupIndex = input.getAttribute('data-gidx');
+            const eng = input.getAttribute('data-eng');
+            const order = quizOrders[`${lessonKey}-${groupIndex}`];
+            input.value = order ? order.indexOf(eng) + 1 : '-';
+            input.classList.add('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+          });
+        }
+      });
+
+      setTimeout(() => {
+        applyMicroScaling();
+        document.body.classList.add('printing-all');
+        window.print();
+        setTimeout(() => { document.body.classList.remove('printing-all'); }, 600);
+      }, 50);
+    }
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>
+
+
+
+
