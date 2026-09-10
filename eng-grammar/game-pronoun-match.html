@@ -210,7 +210,10 @@
 
     /* 大螢幕左右配置 */
     .layout-wrapper {
-      display: block;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 390px);
+      gap: 20px;
+      align-items: start;
       margin-top: 8px;
     }
     .main-table-container {
@@ -219,20 +222,25 @@
       overflow-x: auto;
     }
     .bank-sticky-container {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 999;
-      width: min(390px, calc(100vw - 24px));
-      max-height: min(72vh, 620px);
+      position: sticky;
+      top: 12px;
+      width: 100%;
+      max-height: calc(100vh - 24px);
       display: flex;
       flex-direction: column;
       filter: drop-shadow(0 10px 24px rgba(15, 23, 42, .22));
     }
+    .bank-sticky-container.floating {
+      position: fixed;
+      z-index: 999;
+      width: min(390px, calc(100vw - 24px));
+      max-height: min(72vh, 620px);
+    }
 
     /* 表格 */
     table {
-      width: 100%;
+      width: max-content;
+      min-width: min(100%, 720px);
       border-collapse: collapse;
       background: white;
     }
@@ -240,9 +248,13 @@
       border: 1.5px solid var(--border-color);
       text-align: center;
       padding: 10px 6px;
-      font-size: 1.22rem;
+      min-width: 120px;
+      max-width: 220px;
+      overflow-wrap: anywhere;
+      line-height: 1.2;
     }
-    th { background: #f8fafc; }
+    th { background: #f8fafc; font-size: 1.18rem; }
+    td { font-size: 1.45rem; }
     th.prompt-th { background: #e0f2fe; color: #0369a1; }
     th.ans-th { background: var(--primary-light); color: #1e40af; }
     .header-score {
@@ -328,6 +340,8 @@
       font-weight: 900;
       cursor: pointer;
     }
+    .bank-dock { display: none; }
+    .bank-sticky-container.floating .bank-dock { display: inline-block; }
     .bank-sticky-container.collapsed { width: auto; }
     .bank-sticky-container.collapsed .bank-wrapper { padding: 8px 10px; }
     .bank-sticky-container.collapsed .bank-header { margin-bottom: 0; }
@@ -460,6 +474,20 @@
       color: #64748b;
     }
 
+    /* 中小螢幕改用浮動字卡庫 */
+    @media (max-width: 1180px) {
+      .layout-wrapper { display: block; }
+      .bank-sticky-container {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        top: auto;
+        z-index: 999;
+        width: min(390px, calc(100vw - 24px));
+        max-height: min(60vh, 520px);
+      }
+    }
+
     /* 手機直向 */
     @media (max-width: 860px) {
       body { padding: 4px; }
@@ -471,11 +499,14 @@
       .bank-sticky-container {
         right: 8px;
         bottom: 8px;
+        top: auto;
         width: min(360px, calc(100vw - 16px));
         max-height: min(46vh, 360px);
       }
       .cards-pool { max-height: 34vh; }
-      th, td { font-size: 1.03rem; padding: 6px 2px; }
+      th, td { padding: 6px 4px; min-width: 105px; max-width: 180px; }
+      th { font-size: 1.03rem; }
+      td { font-size: 1.3rem; }
       .timer-and-toolbar { padding: 8px; }
       .status-bar { font-size: .9rem; }
       .score-close { width: 42px; height: 42px; }
@@ -542,6 +573,7 @@
           <span>◎ 字卡庫</span>
           <span class="bank-header-actions">
             <span id="card-count">0 張</span>
+            <button id="bank-dock" class="bank-toggle bank-dock" type="button" aria-label="停靠字卡庫" title="停靠字卡庫">↘</button>
             <button id="bank-toggle" class="bank-toggle" type="button" aria-label="縮小字卡庫" title="縮小字卡庫">−</button>
           </span>
         </div>
@@ -1244,6 +1276,7 @@ function initFloatingBank() {
   const bank = document.getElementById("bank-sticky-container");
   const handle = document.getElementById("bank-drag-handle");
   const toggle = document.getElementById("bank-toggle");
+  const dock = document.getElementById("bank-dock");
   let drag = null;
 
   const clampPosition = () => {
@@ -1259,6 +1292,7 @@ function initFloatingBank() {
     if (event.target.closest("button")) return;
     const rect = bank.getBoundingClientRect();
     drag = { pointerId: event.pointerId, dx: event.clientX - rect.left, dy: event.clientY - rect.top };
+    bank.classList.add("floating");
     bank.style.left = `${rect.left}px`;
     bank.style.top = `${rect.top}px`;
     bank.style.right = "auto";
@@ -1289,6 +1323,11 @@ function initFloatingBank() {
     toggle.setAttribute("aria-label", collapsed ? "展開字卡庫" : "縮小字卡庫");
     toggle.title = collapsed ? "展開字卡庫" : "縮小字卡庫";
     requestAnimationFrame(clampPosition);
+  });
+
+  dock.addEventListener("click", () => {
+    bank.classList.remove("floating");
+    ["left", "top", "right", "bottom"].forEach(property => bank.style.removeProperty(property));
   });
 
   window.addEventListener("resize", clampPosition);
