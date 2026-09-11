@@ -190,6 +190,12 @@
       min-width: 0;
       align-items: start;
     }
+    .pane-title {
+      margin-bottom: 4px;
+      font-size: .86rem;
+      font-weight: 900;
+      color: #475569;
+    }
     .table-sub-pane { width: 100%; }
 
     .bank-sticky-container {
@@ -241,7 +247,7 @@
     td.slot-td {
       background: #fff;
       cursor: pointer;
-      height: 40px;
+      height: 48px;
       user-select: none;
       transition: background 0.15s;
     }
@@ -469,8 +475,6 @@
         <option value="ordinals">🔢 日期序數 (1-31)</option>
       </select>
 
-      <span class="ctrl-label" style="margin-left:4px;">範圍：</span>
-      <select id="sel-subgroup" class="compact-select" onchange="onSubgroupChange(this.value)"></select>
     </div>
 
     <div class="ctrl-section">
@@ -765,7 +769,7 @@ function fisherYates(arr) {
 }
 
 let currentGroup = "months";
-let currentSubgroup = "m_1_6";
+let activePaneGroups = [];
 
 let activeCols = ["zh", "full"];
 let activeRows = [];
@@ -801,7 +805,6 @@ function speakText(text) {
 }
 
 function init() {
-  updateSubgroupOptions();
   renderColSelector();
   switchModalTab(1);
   resetGame();
@@ -810,28 +813,32 @@ function init() {
 
 function onGroupChange(val) {
   currentGroup = val;
-  updateSubgroupOptions();
   resetGame();
 }
 
-function updateSubgroupOptions() {
-  const selSub = document.getElementById("sel-subgroup");
-  selSub.innerHTML = "";
-  const subObj = DATABASE[currentGroup].subgroups;
-  const keys = Object.keys(subObj);
-  keys.forEach(k => {
-    const opt = document.createElement("option");
-    opt.value = k;
-    opt.innerText = subObj[k].name;
-    selSub.appendChild(opt);
-  });
-  currentSubgroup = keys[0];
-  selSub.value = currentSubgroup;
-}
+function getCurrentPaneGroups() {
+  if (currentGroup === "months") {
+    return [
+      { name: "1 到 6 月", items: DATABASE.months.subgroups.m_1_6.items },
+      { name: "7 到 12 月", items: DATABASE.months.subgroups.m_7_12.items }
+    ];
+  }
 
-function onSubgroupChange(val) {
-  currentSubgroup = val;
-  resetGame();
+  if (currentGroup === "week_time") {
+    return [
+      { name: "星期與週間", items: DATABASE.week_time.subgroups.w_weekends.items },
+      {
+        name: "時間單位",
+        items: DATABASE.week_time.subgroups.w_units_all.items.filter(item => item.zh !== "週")
+      }
+    ];
+  }
+
+  return [
+    { name: "1 到 10", items: DATABASE.ordinals.subgroups.ord_1_10.items },
+    { name: "11 到 20", items: DATABASE.ordinals.subgroups.ord_11_20.items },
+    { name: "21 到 31", items: DATABASE.ordinals.subgroups.ord_21_31.items }
+  ];
 }
 
 function renderColSelector() {
@@ -984,12 +991,13 @@ function resetGame() {
     return;
   }
 
-  const rawList = DATABASE[currentGroup].subgroups[currentSubgroup].items;
-  activeRows = [...rawList];
-
-  if (document.getElementById("chk-shuffle-rows").checked) {
-    fisherYates(activeRows);
-  }
+  const shuffleRows = document.getElementById("chk-shuffle-rows").checked;
+  activePaneGroups = getCurrentPaneGroups().map(group => {
+    const items = [...group.items];
+    if (shuffleRows) fisherYates(items);
+    return { name: group.name, items };
+  });
+  activeRows = activePaneGroups.flatMap(group => group.items);
 
   buildBankCards();
   renderPanes();
@@ -1053,19 +1061,18 @@ function renderPanes() {
     return;
   }
 
-  let numPanes = 1;
-  if (activeRows.length > 20) numPanes = 3;
-  else if (activeRows.length > 6) numPanes = 2;
+  let startIdx = 0;
 
-  const chunkSize = Math.ceil(activeRows.length / numPanes);
-
-  for (let p = 0; p < numPanes; p++) {
-    const startIdx = p * chunkSize;
-    const endIdx = Math.min(startIdx + chunkSize, activeRows.length);
-    if (startIdx >= endIdx) break;
+  activePaneGroups.forEach(group => {
+    const endIdx = startIdx + group.items.length;
 
     const paneDiv = document.createElement("div");
     paneDiv.className = "table-sub-pane";
+    paneDiv.dataset.groupName = group.name;
+    const paneTitle = document.createElement("div");
+    paneTitle.className = "pane-title";
+    paneTitle.innerText = group.name;
+    paneDiv.appendChild(paneTitle);
 
     const tbl = document.createElement("table");
     const thead = document.createElement("thead");
@@ -1132,7 +1139,8 @@ function renderPanes() {
     tbl.appendChild(tbody);
     paneDiv.appendChild(tbl);
     container.appendChild(paneDiv);
-  }
+    startIdx = endIdx;
+  });
 }
 
 function renderCardsPool() {

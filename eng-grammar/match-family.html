@@ -200,6 +200,12 @@
       min-width: 0;
       align-items: start;
     }
+    .pane-title {
+      margin-bottom: 4px;
+      font-size: .86rem;
+      font-weight: 900;
+      color: #475569;
+    }
     .table-sub-pane { width: 100%; }
 
     .bank-sticky-container {
@@ -251,7 +257,7 @@
     td.slot-td {
       background: #fff;
       cursor: pointer;
-      height: 40px;
+      height: 48px;
       user-select: none;
       transition: background 0.15s;
     }
@@ -582,8 +588,7 @@ const FAMILY_GROUPS = [
       { zh: "兒子", en: "son" },
       { zh: "女兒", en: "daughter" },
       { zh: "孩子 / 兒童", en: "child" },
-      { zh: "父母雙親", en: "parents" },
-      { zh: "家庭 / 家人", en: "family" }
+      { zh: "父母雙親", en: "parents" }
     ]
   },
   {
@@ -618,8 +623,7 @@ const FAMILY_GROUPS = [
       { zh: "太太 (已婚女性)", en: "Mrs." },
       { zh: "小姐 (未婚女性)", en: "Miss" },
       { zh: "女士 (通用/稱呼)", en: "Ms." },
-      { zh: "先生 / 長官 (尊稱)", en: "Sir" },
-      { zh: "女士 / 夫人 (尊稱)", en: "Madam" }
+      { zh: "先生 / 長官 (尊稱)", en: "Sir" }
     ]
   },
   {
@@ -844,13 +848,12 @@ function resetGame() {
 
   const activeGroups = FAMILY_GROUPS.filter(g => selectedGroupIds.has(g.id));
   activeRows = [];
+  const shuffleRows = document.getElementById("chk-shuffle-rows").checked;
   activeGroups.forEach(g => {
-    activeRows.push(...g.items);
+    const groupRows = [...g.items];
+    if (shuffleRows) fisherYates(groupRows);
+    activeRows.push(...groupRows);
   });
-
-  if (document.getElementById("chk-shuffle-rows").checked) {
-    fisherYates(activeRows);
-  }
 
   buildBankCards();
   renderPanes();
@@ -899,19 +902,19 @@ function renderPanes() {
   const promptTitle = isZhToEnMode ? "中文" : "英文";
   const ansTitle = isZhToEnMode ? "英文" : "中文";
 
-  let numPanes = selectedGroupIds.size;
-  if (numPanes > 3) numPanes = 3;
-  if (numPanes < 1) numPanes = 1;
+  const activeGroups = FAMILY_GROUPS.filter(g => selectedGroupIds.has(g.id));
+  let startIdx = 0;
 
-  const chunkSize = Math.ceil(activeRows.length / numPanes);
-
-  for (let p = 0; p < numPanes; p++) {
-    const startIdx = p * chunkSize;
-    const endIdx = Math.min(startIdx + chunkSize, activeRows.length);
-    if (startIdx >= endIdx) break;
+  activeGroups.forEach(group => {
+    const endIdx = startIdx + group.items.length;
 
     const paneDiv = document.createElement("div");
     paneDiv.className = "table-sub-pane";
+    paneDiv.dataset.groupId = group.id;
+    const paneTitle = document.createElement("div");
+    paneTitle.className = "pane-title";
+    paneTitle.innerText = group.name;
+    paneDiv.appendChild(paneTitle);
 
     const tbl = document.createElement("table");
     const thead = document.createElement("thead");
@@ -974,7 +977,8 @@ function renderPanes() {
     tbl.appendChild(tbody);
     paneDiv.appendChild(tbl);
     container.appendChild(paneDiv);
-  }
+    startIdx = endIdx;
+  });
 }
 
 function renderCardsPool() {

@@ -200,6 +200,12 @@
       min-width: 0;
       align-items: start;
     }
+    .pane-title {
+      margin-bottom: 4px;
+      font-size: .86rem;
+      font-weight: 900;
+      color: #475569;
+    }
     .table-sub-pane { width: 100%; }
 
     .bank-sticky-container {
@@ -251,7 +257,7 @@
     td.slot-td {
       background: #fff;
       cursor: pointer;
-      height: 38px;
+      height: 48px;
       user-select: none;
       transition: background 0.15s;
     }
@@ -874,13 +880,12 @@ function resetGame() {
 
   const activeGroups = NUMBER_GROUPS.filter(g => selectedGroupIds.has(g.id));
   activeRows = [];
+  const shuffleRows = document.getElementById("chk-shuffle-rows").checked;
   activeGroups.forEach(g => {
-    activeRows.push(...g.items);
+    const groupRows = [...g.items];
+    if (shuffleRows) fisherYates(groupRows);
+    activeRows.push(...groupRows);
   });
-
-  if (document.getElementById("chk-shuffle-rows").checked) {
-    fisherYates(activeRows);
-  }
 
   buildBankCards();
   renderPanes();
@@ -929,19 +934,19 @@ function renderPanes() {
   const promptTitle = isNumToEnMode ? "數字" : "英文";
   const ansTitle = isNumToEnMode ? "英文" : "數字";
 
-  let numPanes = selectedGroupIds.size;
-  if (numPanes > 3) numPanes = 3;
-  if (numPanes < 1) numPanes = 1;
+  const activeGroups = NUMBER_GROUPS.filter(g => selectedGroupIds.has(g.id));
+  let startIdx = 0;
 
-  const chunkSize = Math.ceil(activeRows.length / numPanes);
-
-  for (let p = 0; p < numPanes; p++) {
-    const startIdx = p * chunkSize;
-    const endIdx = Math.min(startIdx + chunkSize, activeRows.length);
-    if (startIdx >= endIdx) break;
+  activeGroups.forEach(group => {
+    const endIdx = startIdx + group.items.length;
 
     const paneDiv = document.createElement("div");
     paneDiv.className = "table-sub-pane";
+    paneDiv.dataset.groupId = group.id;
+    const paneTitle = document.createElement("div");
+    paneTitle.className = "pane-title";
+    paneTitle.innerText = group.name;
+    paneDiv.appendChild(paneTitle);
 
     const tbl = document.createElement("table");
     const thead = document.createElement("thead");
@@ -1004,7 +1009,8 @@ function renderPanes() {
     tbl.appendChild(tbody);
     paneDiv.appendChild(tbl);
     container.appendChild(paneDiv);
-  }
+    startIdx = endIdx;
+  });
 }
 
 function renderCardsPool() {
