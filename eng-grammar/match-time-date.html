@@ -79,6 +79,25 @@
       color: #1e293b;
       cursor: pointer;
     }
+    .group-buttons {
+      display: inline-flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .group-btn {
+      padding: 5px 10px;
+      border: 1.5px solid #94a3b8;
+      border-radius: 6px;
+      background: #f8fafc;
+      color: #334155;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .group-btn.active {
+      background: #0284c7;
+      color: white;
+      border-color: #0284c7;
+    }
     .col-btn {
       padding: 2px 7px;
       border-radius: 4px;
@@ -469,12 +488,11 @@
   <div class="compact-control-bar">
     <div class="ctrl-section">
       <span class="ctrl-label">單元：</span>
-      <select id="sel-group" class="compact-select" onchange="onGroupChange(this.value)">
-        <option value="months">📅 十二月份</option>
-        <option value="week_time">⏰ 星期與時間</option>
-        <option value="ordinals">🔢 日期序數 (1-31)</option>
-      </select>
-
+      <div class="group-buttons" role="group" aria-label="選擇時間與日期單元">
+        <button class="group-btn active" data-group="months" onclick="onGroupChange('months')">📅 十二月份</button>
+        <button class="group-btn" data-group="week_time" onclick="onGroupChange('week_time')">⏰ 星期與時間</button>
+        <button class="group-btn" data-group="ordinals" onclick="onGroupChange('ordinals')">🔢 日期序數</button>
+      </div>
     </div>
 
     <div class="ctrl-section">
@@ -813,6 +831,11 @@ function init() {
 
 function onGroupChange(val) {
   currentGroup = val;
+  document.querySelectorAll(".group-btn").forEach(btn => {
+    const isActive = btn.dataset.group === val;
+    btn.classList.toggle("active", isActive);
+    btn.setAttribute("aria-pressed", String(isActive));
+  });
   resetGame();
 }
 

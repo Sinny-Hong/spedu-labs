@@ -22,8 +22,8 @@ window.BOOK_DATA = [
 
   { id: "ebook_hle", category: "電子書", tag: "翰林", title: "翰林國中英語電子書", desc: "開啟 115 學年度上學期翰林國中英語電子書", filename: "https://edisc3.hle.com.tw/edisc_v3/ebook_v2023.html#degree=%E5%9C%8B%E4%B8%AD&cat=%E8%8B%B1%E8%AA%9E&prd=JEN&year=115%E4%B8%8A&grade=%E5%85%A8%E5%B9%B4%E7%B4%9A&tab=tab2", external: true, themeColor: "#f59e0b" },
   { id: "ebook_knsh", category: "電子書", tag: "康軒", title: "康軒國中英語電子書", desc: "開啟 115 學年度第一學期康軒國中英語電子書", filename: "https://digitalmaster.knsh.com.tw/v3/pages/j/index.html#year=1151&field=en&grade=all&item=ebook&bookcase=online", external: true, themeColor: "#0ea5e9" },
-  { id: "match_numbers", category: "電子書", tag: "課堂配對板", title: "英文數字配對板", desc: "英文數字三排對照，支援語音與課堂互動配對", filename: "match-numbers.html", themeColor: "#2563eb" },
-  { id: "match_family", category: "電子書", tag: "課堂配對板", title: "家人稱謂配對板", desc: "家人稱謂與親友關係三排對照，支援發音", filename: "match-family.html", themeColor: "#db2777" },
-  { id: "match_pronouns", category: "電子書", tag: "課堂配對板", title: "人稱代名詞配對板", desc: "主格、受格、所有格、Be 動詞與反身代名詞互動提示", filename: "match-pronouns.html", themeColor: "#7c3aed" },
-  { id: "match_time_date", category: "電子書", tag: "課堂配對板", title: "時間與日期配對板", desc: "星期、月份、日期與時間的三排對照，支援語音", filename: "match-time-date.html", themeColor: "#ea580c" }
+  { id: "match_numbers", category: "電子書", tag: "課堂配對板", title: "英文數字配對板", desc: "英文數字三排對照，支援語音與課堂互動配對", filename: "../eng-grammar/match-numbers.html", themeColor: "#2563eb" },
+  { id: "match_family", category: "電子書", tag: "課堂配對板", title: "家人稱謂配對板", desc: "家人稱謂與親友關係三排對照，支援發音", filename: "../eng-grammar/match-family.html", themeColor: "#db2777" },
+  { id: "match_pronouns", category: "電子書", tag: "課堂配對板", title: "人稱代名詞配對板", desc: "主格、受格、所有格、Be 動詞與反身代名詞互動提示", filename: "../eng-grammar/match-pronouns.html", themeColor: "#7c3aed" },
+  { id: "match_time_date", category: "電子書", tag: "課堂配對板", title: "時間與日期配對板", desc: "星期、月份、日期與時間的三排對照，支援語音", filename: "../eng-grammar/match-time-date.html", themeColor: "#ea580c" }
 ];
