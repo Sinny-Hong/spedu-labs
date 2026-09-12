@@ -50,11 +50,18 @@
     }
 
     #print-all-container { display: none; }
+    .write-print-hint { display: none; position: absolute; left: 0.5rem; right: 0; align-items: center; height: 1.25rem; line-height: 1; white-space: nowrap; overflow: visible; color: #334155; font-weight: 500; }
+    .write-print-hint:not(.write-hint-trace) { transform: translateY(4px); }
+    .write-hint-content { display: flex; align-items: baseline; gap: 2px; min-width: 0; white-space: nowrap; transform: scaleX(var(--write-hint-scale, 1)); transform-origin: left center; }
+    .write-hint-token { flex: 0 0 auto; }
+    .write-hint-space { display: inline-block; width: 0.7em; flex: 0 0 0.7em; }
+    .write-hint-trace { color: #aeb7c3; font-family: "Comic Sans MS", "Comic Sans", cursive; font-size: 17pt; font-style: italic; font-weight: 400; line-height: 0.82; letter-spacing: 0.01em; overflow: visible; transform: scaleX(var(--write-trace-scale, 1)); transform-origin: left center; }
     
     @media print {
       @page { size: A4; margin: 0; }
       body { background-color: #ffffff; margin: 0; padding: 0; }
       .no-print { display: none !important; }
+      .write-print-hint { display: flex !important; }
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       body.printing-all .page-a4 { display: none !important; }
       body.printing-all #print-all-container { display: block !important; width: 210mm; }
@@ -75,7 +82,7 @@
 
       /* 列印時強制啟動穩定的深色 Slate-700 下書寫格線 */
       .row-border-style {
-        border-bottom: 1px solid #334155 !important;
+        border-bottom: 0.65px solid #475569 !important;
       }
     }
     body.template-embedded { background-color: #f1f5f9; }
@@ -148,6 +155,9 @@
   <script>
     const writeBooks = window.VOCAB_DATA && window.VOCAB_DATA.books;
     const writeTemplateParams = new URLSearchParams(window.location.search);
+    const writeHintModes = new Set(["blank", "count", "initial", "trace"]);
+    const requestedWriteHint = writeTemplateParams.get("hint");
+    const writeHintMode = writeHintModes.has(requestedWriteHint) ? requestedWriteHint : "blank";
     const requestedWriteBook = writeTemplateParams.get("book");
     if (!writeBooks) {
       throw new Error("無法載入 vocab-data.js");
@@ -230,6 +240,44 @@
       return rawEng.trim();
     }
 
+    function escapeWriteHintHtml(value) {
+      return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+    }
+
+    function getWriteHintScale(answer) {
+      const length = Array.from(answer).length;
+      if (length > 28) return 0.44;
+      if (length > 22) return 0.6;
+      if (length > 17) return 0.76;
+      if (length > 13) return 0.88;
+      return 1;
+    }
+
+    function getWriteTraceScale(answer) {
+      const length = Array.from(answer).length;
+      if (length > 28) return 0.44;
+      if (length > 22) return 0.6;
+      if (length > 17) return 0.76;
+      return 1;
+    }
+
+    function buildWriteHintHtml(answer) {
+      if (writeHintMode === 'blank') return `<span class="write-print-hint" aria-hidden="true"></span>`;
+      if (writeHintMode === 'trace') return `<span class="write-print-hint write-hint-trace" style="--write-trace-scale:${getWriteTraceScale(answer)}" aria-hidden="true">${escapeWriteHintHtml(answer)}</span>`;
+
+      let firstLetterShown = false;
+      const tokens = Array.from(answer).map(char => {
+        if (/[A-Za-z]/.test(char)) {
+          const value = writeHintMode === 'initial' && !firstLetterShown ? char : '_';
+          firstLetterShown = true;
+          return `<span class="write-hint-token">${escapeWriteHintHtml(value)}</span>`;
+        }
+        if (/\s/.test(char)) return '<span class="write-hint-space"></span>';
+        return `<span class="write-hint-token">${escapeWriteHintHtml(char)}</span>`;
+      }).join('');
+      return `<span class="write-print-hint" style="font-size:17pt;--write-hint-scale:${getWriteHintScale(answer)}" aria-hidden="true"><span class="write-hint-content">${tokens}</span></span>`;
+    }
+
     // 完美對照聽力卷骨架：高度鎖定在 h-5，縮小中文、擴大英文、絕不超頁
     function buildGroupHtml(groupData, groupIndex, isPrintMode = false) {
       let rowsHtml = '';
@@ -251,6 +299,7 @@
               <div class="flex-grow relative font-english pl-2 h-5 flex items-center">
                 <input type="text" data-ans="${cleanedEnglish}" class="spelling-input no-print w-full bg-transparent focus:outline-none text-[15px] font-bold text-slate-800 tracking-wide">
                 <span class="ans-text-span hidden text-red-600 font-extrabold text-[15px] tracking-wide absolute left-2 leading-none">${cleanedEnglish}</span>
+                ${buildWriteHintHtml(cleanedEnglish)}
               </div>
             </div>
           `;
@@ -458,7 +507,3 @@
   </script>
 </body>
 </html>
-
-
-
-
