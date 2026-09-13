@@ -26,6 +26,7 @@ window.GRAMMAR_DATA = [
       { id: "19", category: "日常句型及片語", title: "If 條件句 (如果)", desc: "如果明天下雨，我就... 的日常生活假設與簡易句型", filename: "grammar_if.html", themeColor: "#2563EB" },
 
       // ==== 時態表達 ====
+      { id: "past-simple", category: "時態表達", title: "過去簡單式｜八頁互動講義", desc: "從 was / were、動詞過去式到 did＋原形，含進階練習與找過去式任務", filename: "prototype-past-simple.html", themeColor: "#F59E0B" },
       { id: "20", category: "時態表達", title: "現在簡單式的判讀(do, does)", desc: "現在簡單式問句與否定的靈魂助動詞用法", filename: "grammar_do_does.html", themeColor: "#F59E0B" },
       { id: "21", category: "時態表達", title: "第三人稱單數動詞變化", desc: "當主詞為第三人稱單數時，一般動詞加 s/es (goes, plays)", filename: "grammar_goes_plays.html", themeColor: "#F59E0B" },
       { id: "22", category: "時態表達", title: "頻率副詞 (always)", desc: "習慣與動作發生頻率的表達與句中位置", filename: "grammar_always.html", themeColor: "#F59E0B" },

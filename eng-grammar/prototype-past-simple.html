@@ -3,10 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>過去簡單式｜母版原型</title>
+<title>過去簡單式｜P1～P8</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Andika:ital,wght@0,400;0,700;1,400;1,700&family=Comic+Neue:ital,wght@0,400;0,700;1,400;1,700&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#1f2937;--muted:#64748b;--line:#cbd5e1;--soft:#f8fafc;--accent:#b45309;
@@ -16,7 +15,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:#eef2f7;color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
-.en,.token,.choice,.answerarea,.en-cell,.source-sentence,.target-sentence,.font-sample{font-family:var(--en);font-style:italic}
+.en,.token,.choice,.answerarea,.en-cell,.source-sentence,.target-sentence{font-family:var(--en);font-style:italic}
 .screenbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 12px;background:rgba(255,255,255,.96);border-bottom:1px solid #dbe2ea;box-shadow:0 2px 10px rgba(15,23,42,.08)}
 .screenbar .title{font-weight:800;margin-right:auto;white-space:nowrap}
 button,.jump{font:inherit;border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:8px;padding:6px 10px;cursor:pointer;text-decoration:none;font-weight:700}
@@ -30,8 +29,9 @@ button.active{background:#334155;color:#fff;border-color:#334155}
 .pagehead .student{margin-left:auto;font-size:13px;color:#475569;white-space:nowrap}
 .kicker{font-size:12px;font-weight:800;color:#64748b;margin-bottom:2px}
 .section{margin-top:10px}
-.section-title{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-weight:900;font-size:17px;margin:0 0 6px;padding:4px 0 5px;border-bottom:1.5px solid #475569}
-#p1 .section-title,#p2 .section-title,#p3 .section-title{padding:7px 9px;border:1.5px solid #64748b;border-radius:9px;background:#f8fafc;margin-bottom:7px}
+.section-title{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-weight:900;font-size:17px;margin:0 0 7px;padding:6px 9px;border:1px solid #94a3b8;border-radius:9px;background:#fafbfc}
+#p1 .section-title,#p2 .section-title,#p3 .section-title{padding:7px 9px;margin-bottom:7px}
+.chapter-title{font-size:26px;font-weight:900;line-height:1.2;margin-bottom:5px}.chapter-title .en{font-size:22px;font-style:normal}
 .section-title .grow{margin-right:auto}
 .mini-btn{font-size:12px;padding:4px 7px;border-radius:6px}
 .score{font-size:12px;font-weight:800;color:#475569;min-width:74px;text-align:right}
@@ -76,7 +76,8 @@ button.active{background:#334155;color:#fff;border-color:#334155}
 .card-bank-title{font-size:12px;font-weight:800;color:#64748b;margin-bottom:7px}
 .word-card{display:inline-flex;align-items:center;justify-content:center;min-width:66px;margin:0 5px 7px 0;padding:7px 10px;border:1.5px solid #94a3b8;border-radius:8px;background:#fff;font-family:var(--en);font-style:italic;font-size:18px;font-weight:800;cursor:pointer}
 .word-card.active{background:#dbeafe;border-color:#3b82f6;color:#1d4ed8}
-.card-bank.hidden{visibility:hidden}
+.card-bank.hidden{visibility:visible}
+.print-hint{display:none}
 .smallpair{display:flex;gap:18px;margin-top:6px;font-size:14px}
 
 /* P2 closed response */
@@ -100,7 +101,7 @@ button.active{background:#334155;color:#fff;border-color:#334155}
 
 /* P3 */
 .rule-card{padding:3px 0 5px}
-.rule-row{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center;padding:4px 0;font-size:15px}
+.rule-row{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center;padding:4px 0;font-size:15px}#p3 .rule-row,#p6 .rule-row{min-height:47px;padding:9px 0}
 .rule-name{font-weight:900;color:#475569}.rule-en{font-size:17px;font-family:var(--en);font-style:italic}
 .rewrite-head{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .rewrite-head .label{font-size:17px;font-weight:900;margin-right:auto}
@@ -141,18 +142,9 @@ button.active{background:#334155;color:#fff;border-color:#334155}
 .rewrite-q.level-none .scaffold-high,.rewrite-q.level-none .scaffold-low{display:none}.rewrite-q.level-none .scaffold-none{display:block}
 .answerrow.show-answer .scaffold-high,.answerrow.show-answer .scaffold-low,.answerrow.show-answer .scaffold-none{display:none!important}
 .answerrow.show-answer .answer-overlay{display:block;color:var(--red);font-weight:800}
+#p6 .answerrow{grid-template-columns:44px 30px 1fr;min-height:39px}#p6 .answerarea{height:32px;font-size:16pt;line-height:31px}
 
 /* P4 font lab */
-.font-table{width:100%;border-collapse:collapse;margin-top:8px}
-.font-table th,.font-table td{border:1px solid #cbd5e1;padding:7px 9px;vertical-align:top}
-.font-table th{background:#f8fafc;text-align:left;font-size:13px}
-.font-name{width:120px;font-weight:900;font-size:13px}
-.font-sample{font-size:19px;line-height:1.55}
-.font-comic{font-family:"Comic Sans MS","Comic Sans",cursive;font-style:italic}
-.font-comic-neue{font-family:"Comic Neue","Comic Sans MS",cursive;font-style:italic}
-.font-andika{font-family:"Andika","Comic Sans MS",sans-serif;font-style:italic}
-.font-abeezee{font-family:"ABeeZee","Comic Sans MS",sans-serif;font-style:italic}
-.font-patrick{font-family:"Patrick Hand","Comic Sans MS",cursive;font-style:normal}
 
 /* P4-P5 regular verb practice */
 .compact-rule{width:100%;border-collapse:collapse;font-size:15px;margin-top:5px}
@@ -160,62 +152,89 @@ button.active{background:#334155;color:#fff;border-color:#334155}
 .compact-rule th{background:#f8fafc;font-weight:900}.compact-rule .en{font-size:17px}
 .irregular-strip{display:flex;gap:13px;flex-wrap:wrap;margin-top:6px;font-size:15px}.irregular-strip b{font-family:var(--en);font-size:17px}
 .short-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 22px}
-.verb-item,.base-item{display:flex;align-items:center;min-height:35px;font-size:17px;line-height:1.4}
+.verb-item,.base-item{display:flex;align-items:center;min-height:35px;font-size:17px;line-height:1.4;white-space:nowrap}
 .text-entry{display:inline-flex;align-items:center;justify-content:center;min-width:105px;height:27px;border:0;border-bottom:1.7px solid #111827;background:transparent;font:italic 800 17px var(--en);text-align:center;outline:none;color:#1f2937}
-.text-entry.correct{color:var(--green);border-color:var(--green)}.text-entry.wrong{color:var(--red);border-color:var(--red)}
+.text-entry.correct{color:var(--red);border-color:var(--red)}.text-entry.wrong{color:var(--red);border-color:var(--red)}
 .rule-hint{transition:.15s}.rule-hint.highlight{background:#fef3c7;box-shadow:inset 0 0 0 1.5px #f59e0b}
-.sentence-pair{display:grid;grid-template-columns:minmax(0,1fr) 22px minmax(0,1.25fr);gap:6px;align-items:center;min-height:48px;font-size:16.5px}
+.sentence-pair{display:grid;grid-template-columns:max-content 20px minmax(0,1fr);gap:5px;align-items:center;min-height:42px;font-size:16px;white-space:nowrap}
+.sentence-pair .text-entry{min-width:78px;width:78px}
+.rule-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:12px;row-gap:8px;margin-top:7px}.rule-column{min-width:0;padding:4px 8px 5px;border-right:1px solid #e2e8f0}.rule-column:nth-child(3n){border-right:0}.rule-column h3{font-size:14px;line-height:1.3;min-height:22px;margin:0 0 4px;color:#334155}.rule-column.highlight h3{background:#fef3c7;color:#b45309}.rule-entry{font:italic 700 16px/1.65 var(--en);white-space:nowrap}.rule-entry .answer{color:var(--red);display:none}.show-rule-answers .rule-entry .answer{display:inline}.show-rule-answers .rule-entry .p4-blank{display:none}.rule-column .arrow{color:#64748b}
+.p4-answer{display:none;color:var(--red);font-weight:800}.show-p4-answers .p4-answer{display:inline-block;min-width:75px;text-align:center;border-bottom:1.5px solid #334155}.show-p4-answers .p4-blank{display:none}.p4-blank{display:inline-block;min-width:75px;border-bottom:1.5px solid #334155}.rule-entry .p4-blank{min-width:35px}
+.arrow-examples span,.base-item{white-space:nowrap}.choice-line{white-space:nowrap}#p5q2 .text-entry{min-width:86px;width:86px}
 .source-key{border-radius:5px;padding:0 2px}.show-key .source-key{background:#fef3c7;color:var(--red);font-weight:900;text-decoration:underline 2px;text-underline-offset:3px}
 .did-banner{font:italic 900 24px var(--en);text-align:center;padding:8px 10px;color:#9a3412;background:#fff7ed;border-radius:9px;margin:5px 0}
 .arrow-examples{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;font:italic 800 18px var(--en);margin:5px 0}.arrow-examples span{padding:4px 10px;background:#f8fafc;border-radius:7px}
 .contrast-row{display:flex;gap:20px;justify-content:center;font:italic 800 17px var(--en)}.bad{color:#b91c1c}.good{color:#15803d}
-.choice-line{min-height:39px;font-size:17px;display:flex;align-items:center;gap:4px}.pick{padding:2px 7px;border-radius:6px;cursor:pointer;font-weight:800}.pick:hover{background:#f1f5f9}.pick.selected{background:#dbeafe;color:#1d4ed8}.pick.correct{background:#dcfce7;color:#166534}.pick.wrong{background:#fee2e2;color:#991b1b}
+.choice-line{min-height:39px;font-size:17px;display:flex;align-items:center;gap:4px}.pick{padding:2px 7px;border-radius:6px;cursor:pointer;font-weight:800}.pick:hover{background:#f1f5f9}.pick.selected{background:#dbeafe;color:#1d4ed8}.pick.correct{background:#fee2e2;color:var(--red)}.pick.wrong{background:#fee2e2;color:#991b1b}
 .regular-rule .rule-row{grid-template-columns:64px 1fr}.did-reminder{font-weight:900;color:#9a3412;margin-left:8px}
-.dev-only{display:block}
+.quick-lookup{margin:9px 0 5px}.quick-lookup h3{font-size:14px;margin:0 0 5px}.lookup-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px 8px}.lookup-pair{display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:3px;align-items:baseline;font-size:12px;border-bottom:1px solid #e2e8f0;padding:1px 0}.lookup-pair .en{font-size:14px}.lookup-head{font-weight:800;color:#64748b}.did-compare{width:100%;border-collapse:collapse;margin:6px 0 10px;font:italic 800 16px var(--en)}.did-compare th,.did-compare td{width:50%;text-align:left;padding:3px 10px;border-bottom:1px solid #e2e8f0;white-space:nowrap}.did-compare th{font:900 14px "Noto Sans TC","Microsoft JhengHei",sans-serif}.did-compare .right{color:var(--red)}.did-compare .wrong-example{color:#64748b}.fix-note{font-size:13px;font-weight:800;margin:5px 0}.fix-demo{display:flex;gap:18px;flex-wrap:wrap;font:italic 14px var(--en);margin:4px 0}.fix-item{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:8px;align-items:center;min-height:32px;font:italic 15px var(--en)}.fix-item .answer{display:none;color:var(--red);font-weight:800}.show-fix-answers .fix-item .answer{display:inline}.show-fix-answers .fix-item .fix-blank{display:none}.fix-blank{display:inline-block;width:120px;border-bottom:1px solid #334155}.mc-item{margin:7px 0 9px}.mc-stem{font:italic 18px var(--en)}.mc-options{display:flex;gap:7px 16px;flex-wrap:wrap;margin:3px 0 0 18px}.mc-option{border:0;background:transparent;font:italic 16px var(--en);cursor:pointer;padding:1px 4px;border-radius:4px}.mc-option.selected{background:#e0edff;color:#1d4ed8}.mc-option.correct{color:var(--red);font-weight:900;background:#fee2e2}.mc-option.wrong{color:#991b1b;background:#fee2e2}.hunt-intro{font-size:13px;margin:5px 0}.hunt-text{font:italic 17px/1.65 var(--en)}.hunt-text p{margin:5px 0}.hunt-word{cursor:pointer;border-radius:3px}.hunt-word.selected{background:#dbeafe;color:#1d4ed8}.hunt-word.correct{background:#fee2e2;color:var(--red);font-weight:900}.hunt-score{font-size:13px;font-weight:800;margin-left:auto}.side-jump{position:fixed;z-index:40;top:76px;right:max(8px,calc((100vw - 210mm)/2 - 177px));width:158px;padding:6px;border:1px solid #dbe2ea;border-radius:8px;background:rgba(255,255,255,.96);box-shadow:0 2px 8px rgba(15,23,42,.06)}.side-jump a{display:block;text-decoration:none;color:#475569;padding:5px 7px;border-radius:5px;font-size:12px;font-weight:800}.side-jump a.active{background:#e0edff;color:#1d4ed8}.side-jump .short{display:none}.side-toggle{display:none}.side-jump .top-link{border-top:1px solid #e2e8f0;margin-top:3px}
 #p2 .fill-item{min-height:35px}
 #p2 .section{margin-top:7px}#p2 .section-title{margin-bottom:4px;padding:5px 8px}#p2 .transform-item{min-height:34px}
 #p2 .hint-table th,#p2 .hint-table td{padding:4px 8px}#p2 .smallpair{margin-top:4px}
 .print-ox{display:none}
 
 .pagefoot{position:absolute;left:13mm;right:13mm;bottom:5mm;display:flex;justify-content:space-between;font-size:10.5px;color:#94a3b8}
+.lookup-pair{grid-template-columns:.9fr 1.2fr 1.4fr}.lookup-pair span:last-child{white-space:nowrap}
+#p4q2 .sentence-pair{min-height:37px}
+#p5q3 .fix-item{min-height:44px;font-size:18px;line-height:1.5}
+#p5q3 .fix-blank{width:125px}
+#p7 .mc-item{margin:8px 0 11px}
+#p7 .mc-stem{display:grid;grid-template-columns:54px 32px minmax(0,1fr);align-items:baseline;font-size:18px;line-height:1.5}
+#p7 .mc-options{margin:5px 0 0 86px}
+#p7 .mc-option:first-child{padding-left:0}
+.mc-answer-slot{font:normal 800 17px "Noto Sans TC","Microsoft JhengHei",sans-serif;color:#1d4ed8}
+.mc-question-number{font-weight:800}
+.mc-answer-slot.revealed{color:var(--red)}
+#p8 .hunt-text{font-size:22px;line-height:1.85}
+#p8 .hunt-text p{margin:9px 0}
+@media (max-width:1200px) and (min-width:901px){.side-jump{top:auto;bottom:12px;right:8px;width:auto}.side-jump .long{display:none}.side-jump .short{display:inline}.side-jump a{display:inline-block;padding:5px}.side-toggle{display:inline-block}.side-jump.expanded{width:170px}.side-jump.expanded a{display:block}.side-jump.expanded .long{display:inline}.side-jump.expanded .short{display:none}}
 @media (max-width:900px){
   .page{width:100%;min-height:auto;padding:18px 16px;margin-bottom:12px}.book{padding:8px}.pagefoot{position:static;margin-top:12px}.screenbar{position:sticky}.pagehead .student{font-size:12px}
   .hint-layout{grid-template-columns:1fr}.transform-item{grid-template-columns:max-content 20px minmax(0,1fr)}.sidehint{min-width:120px}
+  .side-jump{top:auto;bottom:12px;right:8px;width:auto;max-width:calc(100vw - 16px)}.side-jump .long{display:none}.side-jump .short{display:inline}.side-jump a{display:inline-block;padding:5px}.side-jump .top-link{border:0;margin:0}.side-toggle{display:inline-block;padding:4px 8px}.side-jump.expanded{width:170px}.side-jump.expanded a{display:block}.side-jump.expanded .long{display:inline}.side-jump.expanded .short{display:none}.side-jump.expanded .top-link{border-top:1px solid #e2e8f0}
 }
 @media print{
  @page{size:A4;margin:0}
  body{background:#fff}
- .screenbar,.no-print,.card-bank,.dev-only{display:none!important}
+ .screenbar,.no-print,.side-jump{display:none!important}
+ .card-bank{display:none!important}.print-hint-on .card-bank{display:block!important;min-height:0;border:0;background:transparent;padding:3px 0}.print-hint-on .card-bank-title{display:none}.print-hint-on .word-card{border:0;padding:0;margin:0 12px 0 0;background:transparent}
  .book{padding:0}
  .page{width:210mm;height:297mm;min-height:297mm;margin:0;box-shadow:none;padding:11mm 13mm 10mm;page-break-after:always;break-after:page}
  .page:last-child{page-break-after:auto;break-after:auto}
  .pagefoot{bottom:5mm}
  .token{padding:0;background:transparent!important;box-shadow:none!important;color:inherit!important}
  .ox{background:transparent!important}
- #p1 .section-title,#p2 .section-title,#p3 .section-title{background:transparent;border-color:#94a3b8}
+ .section-title{background:transparent;border-color:#94a3b8}
  .print-ox{display:inline}.ox-wrap,.inline-options{display:none!important}
  .hint-layout{display:block}.hint-table{max-width:520px}#p2 .hint-slot{border:0!important}
- #p3 .answerrow{grid-template-columns:190px 1fr}.line-answer-btn{display:none!important}
+ .mc-option{border:0!important;background:transparent!important;color:inherit!important;font-weight:400!important}.mc-answer-slot{font-size:0!important}.mc-answer-slot::after{content:'（　）';font-size:17px;color:#1f2937}.hunt-word{background:transparent!important;color:inherit!important;font-weight:inherit!important}.hunt-result{font-size:0}.hunt-result::after{content:'____';font-size:13px}
+ #p3 .answerrow{grid-template-columns:190px 1fr}#p6 .answerrow{grid-template-columns:44px 1fr}.line-answer-btn{display:none!important}
 }
 </style>
 </head>
 <body>
-<div class="screenbar no-print">
-  <span class="title">過去簡單式｜母版原型</span>
-  <a class="jump" href="#p1">P1 定義＋辨認</a>
-  <a class="jump" href="#p2">P2 was / were</a>
-  <a class="jump" href="#p3">P3 句型</a>
-  <a class="jump" href="#p4">P4 一般動詞</a>
-  <a class="jump" href="#p5">P5 did＋原形</a>
-  <a class="jump" href="#p6">P6 句型</a>
-  <a class="jump" href="#font-lab">字型測試</a>
+<div class="screenbar no-print" id="top">
+  <span class="title">過去簡單式｜P1～P8</span>
   <button class="printbtn" onclick="window.print()">列印整份</button>
 </div>
+<nav class="side-jump no-print" aria-label="章節快轉">
+  <button class="side-toggle" type="button" aria-expanded="false" onclick="toggleSideJump(this)">章節 ▾</button>
+  <a href="#p1"><span class="short">P1</span><span class="long">P1 過去式定義</span></a>
+  <a href="#p2"><span class="short">P2</span><span class="long">P2 was / were</span></a>
+  <a href="#p3"><span class="short">P3</span><span class="long">P3 Be 動詞句型</span></a>
+  <a href="#p4"><span class="short">P4</span><span class="long">P4 動詞過去式變化</span></a>
+  <a href="#p5"><span class="short">P5</span><span class="long">P5 did＋原形</span></a>
+  <a href="#p6"><span class="short">P6</span><span class="long">P6 一般動詞句型</span></a>
+  <a href="#p7"><span class="short">P7</span><span class="long">P7 進階綜合練習</span></a>
+  <a href="#p8"><span class="short">P8</span><span class="long">P8 找找看過去式</span></a>
+  <a class="top-link" href="#top">TOP ↑</a>
+</nav>
 <div class="book">
 
 <section class="page" id="p1">
+  <div class="chapter-title">過去簡單式 <span class="en">Past Simple</span></div>
   <div class="pagehead">
-    <div><div class="kicker">過去簡單式｜P1</div><h1>什麼是過去式？</h1></div>
+    <div><h1>① 什麼是過去式？</h1></div>
     <div class="student">班級：__________　姓名：__________</div>
   </div>
 
@@ -279,7 +298,7 @@ button.active{background:#334155;color:#fff;border-color:#334155}
   <div class="section">
     <div class="section-title">
       <span class="grow">提示板｜先找主詞，再配對 was / were</span>
-      <button class="mini-btn no-print" id="hintBoardBtn" onclick="toggleHintBoard()">隱藏字卡</button>
+      <button class="mini-btn no-print" id="hintBoardBtn" onclick="toggleHintBoard()">列印提示：無</button>
       <button class="mini-btn no-print" onclick="gradeHintBoard()">批改</button>
       <button class="mini-btn no-print" onclick="clearHintBoard()">清除</button>
       <span class="score no-print" id="scoreHintBoard"></span>
@@ -297,7 +316,7 @@ button.active{background:#334155;color:#fff;border-color:#334155}
             <tr><td>複數人、事、物</td><td class="en-cell">are</td><td><span class="hint-slot" data-answer="were"></span></td></tr>
           </tbody>
         </table>
-        <div class="card-bank no-print">
+        <div class="card-bank">
           <div class="card-bank-title">先點字卡，再點左邊空格</div>
           <button class="word-card" onclick="selectHintCard(this,'was')">was</button>
           <button class="word-card" onclick="selectHintCard(this,'were')">were</button>
@@ -411,42 +430,27 @@ button.active{background:#334155;color:#fff;border-color:#334155}
   <div class="pagefoot"><span>過去簡單式｜was / were 句型</span><span>P3</span></div>
 </section>
 
-<section class="page dev-only" id="font-lab">
-  <div class="pagehead">
-    <div><div class="kicker">開發測試頁｜不列印</div><h1>英文字型描寫測試</h1></div>
-    <div class="student">比較 A / G / I / L / P / T 與 a / g / l / t</div>
-  </div>
-  <div class="definition">這頁只用來挑選適合學生辨識與描寫的英文字型；正式教材定稿後可刪除。</div>
-  <table class="font-table">
-    <thead><tr><th>字型</th><th>關鍵字形＋大小寫＋句子</th></tr></thead>
-    <tbody>
-      <tr><td class="font-name">Comic Sans MS<br>Italic</td><td class="font-sample font-comic">A G I J L P T　a g i j l p t　I l 1<br>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>I was a student before. They played basketball yesterday.</td></tr>
-      <tr><td class="font-name">Comic Neue<br>Italic</td><td class="font-sample font-comic-neue">A G I J L P T　a g i j l p t　I l 1<br>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>I was a student before. They played basketball yesterday.</td></tr>
-      <tr><td class="font-name">Andika<br>Italic</td><td class="font-sample font-andika">A G I J L P T　a g i j l p t　I l 1<br>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>I was a student before. They played basketball yesterday.</td></tr>
-      <tr><td class="font-name">ABeeZee<br>Italic</td><td class="font-sample font-abeezee">A G I J L P T　a g i j l p t　I l 1<br>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>I was a student before. They played basketball yesterday.</td></tr>
-      <tr><td class="font-name">Patrick Hand</td><td class="font-sample font-patrick">A G I J L P T　a g i j l p t　I l 1<br>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>I was a student before. They played basketball yesterday.</td></tr>
-    </tbody>
-  </table>
-  <div class="note">若裝置沒有 Comic Sans MS，第一列可能會顯示系統替代字型；其餘候選字型需連網載入。</div>
-  <div class="pagefoot"><span>過去簡單式｜字型測試</span><span>DEV</span></div>
-</section>
-
 <section class="page" id="p4">
   <div class="pagehead"><div><div class="kicker">過去簡單式｜P4</div><h1>一般動詞的過去式</h1></div><div class="student">班級：__________　姓名：__________</div></div>
-  <div class="section"><div class="section-title">提示板｜一般動詞怎麼變成過去式？</div>
-    <table class="compact-rule"><thead><tr><th>原形長這樣</th><th>怎麼變</th><th>例子</th></tr></thead><tbody>
-      <tr class="rule-hint" data-rule="ed"><td>大部分動詞</td><td>＋ <b>ed</b></td><td class="en">play → played</td></tr>
-      <tr class="rule-hint" data-rule="d"><td>已經是 e 結尾</td><td>＋ <b>d</b></td><td class="en">like → liked</td></tr>
-      <tr class="rule-hint" data-rule="ied"><td>子音＋y</td><td>y → <b>ied</b></td><td class="en">study → studied</td></tr>
-      <tr class="rule-hint" data-rule="irr"><td>不規則</td><td>另外記</td><td class="en">go → went</td></tr>
-    </tbody></table>
-    <div class="irregular-strip"><span>常用不規則：</span><b>go → went</b><b>see → saw</b><b>eat → ate</b><b>have → had</b></div>
+  <div class="section" id="p4q1"><div class="section-title"><span class="grow">一、動詞變化規則</span><button class="mini-btn no-print" onclick="hintVerbRules()">提示</button><button class="mini-btn no-print" onclick="showP4Rules()">答案</button></div>
+    <div class="rule-columns">
+      <div class="rule-column"><h3>直接＋ed</h3><div class="rule-entry">play <span class="arrow">→</span> <span class="answer">played</span><span class="p4-blank"></span></div><div class="rule-entry">visit <span class="arrow">→</span> <span class="answer">visited</span><span class="p4-blank"></span></div><div class="rule-entry">want <span class="arrow">→</span> <span class="answer">wanted</span><span class="p4-blank"></span></div></div>
+      <div class="rule-column"><h3>字尾 e，只＋d</h3><div class="rule-entry">like <span class="arrow">→</span> <span class="answer">liked</span><span class="p4-blank"></span></div><div class="rule-entry">bake <span class="arrow">→</span> <span class="answer">baked</span><span class="p4-blank"></span></div><div class="rule-entry">close <span class="arrow">→</span> <span class="answer">closed</span><span class="p4-blank"></span></div></div>
+      <div class="rule-column"><h3>子音＋y<br>去 y＋ied</h3><div class="rule-entry">study <span class="arrow">→</span> <span class="answer">studied</span><span class="p4-blank"></span></div><div class="rule-entry">cry <span class="arrow">→</span> <span class="answer">cried</span><span class="p4-blank"></span></div><div class="rule-entry">try <span class="arrow">→</span> <span class="answer">tried</span><span class="p4-blank"></span></div></div>
+      <div class="rule-column"><h3>重複字尾＋ed</h3><div class="rule-entry">stop <span class="arrow">→</span> <span class="answer">stopped</span><span class="p4-blank"></span></div><div class="rule-entry">jog <span class="arrow">→</span> <span class="answer">jogged</span><span class="p4-blank"></span></div><div class="rule-entry">plan <span class="arrow">→</span> <span class="answer">planned</span><span class="p4-blank"></span></div></div>
+      <div class="rule-column"><h3>原形＝過去式</h3><div class="rule-entry">cut <span class="arrow">→</span> <span class="answer">cut</span><span class="p4-blank"></span></div><div class="rule-entry">put <span class="arrow">→</span> <span class="answer">put</span><span class="p4-blank"></span></div><div class="rule-entry">hit <span class="arrow">→</span> <span class="answer">hit</span><span class="p4-blank"></span></div></div>
+      <div class="rule-column"><h3>不規則變化</h3><div class="rule-entry">go <span class="arrow">→</span> <span class="answer">went</span><span class="p4-blank"></span></div><div class="rule-entry">see <span class="arrow">→</span> <span class="answer">saw</span><span class="p4-blank"></span></div><div class="rule-entry">have <span class="arrow">→</span> <span class="answer">had</span><span class="p4-blank"></span></div></div>
+    </div>
   </div>
-  <div class="section" id="p4q1"><div class="section-title"><span class="grow">一、把動詞變成過去式</span><button class="mini-btn no-print" onclick="hintVerbRules()">提示</button><button class="mini-btn no-print" onclick="gradeText('#p4q1')">批改</button><button class="mini-btn no-print" onclick="showTextAnswers('#p4q1')">答案</button><button class="mini-btn no-print" onclick="clearText('#p4q1')">清除</button><span class="score no-print"></span></div>
-    <div class="short-grid en"><div class="verb-item">1. play → <input class="text-entry" data-answer="played" data-rule="ed"></div><div class="verb-item">2. like → <input class="text-entry" data-answer="liked" data-rule="d"></div><div class="verb-item">3. study → <input class="text-entry" data-answer="studied" data-rule="ied"></div><div class="verb-item">4. go → <input class="text-entry" data-answer="went" data-rule="irr"></div><div class="verb-item">5. see → <input class="text-entry" data-answer="saw" data-rule="irr"></div></div>
-  </div>
-  <div class="section" id="p4q2"><div class="section-title"><span class="grow">二、把現在式改成過去式</span><button class="mini-btn no-print" id="p4KeyBtn" onclick="toggleP4Keys()">動詞提示</button><button class="mini-btn no-print" onclick="gradeText('#p4q2')">批改</button><button class="mini-btn no-print" onclick="showTextAnswers('#p4q2')">答案</button><button class="mini-btn no-print" onclick="clearText('#p4q2')">清除</button><span class="score no-print"></span></div>
-    <div class="en"><div class="sentence-pair"><div>1. I <span class="source-key">play</span> basketball every day.</div><b>→</b><div>I <input class="text-entry" data-answer="played"> basketball yesterday.</div></div><div class="sentence-pair"><div>2. Amy <span class="source-key">likes</span> dogs.</div><b>→</b><div>Amy <input class="text-entry" data-answer="liked"> dogs before.</div></div><div class="sentence-pair"><div>3. We <span class="source-key">study</span> English every day.</div><b>→</b><div>We <input class="text-entry" data-answer="studied"> English yesterday.</div></div><div class="sentence-pair"><div>4. They <span class="source-key">go</span> home every day.</div><b>→</b><div>They <input class="text-entry" data-answer="went"> home yesterday.</div></div><div class="sentence-pair"><div>5. I <span class="source-key">see</span> Kevin every day.</div><b>→</b><div>I <input class="text-entry" data-answer="saw"> Kevin yesterday.</div></div></div>
+  <div class="quick-lookup"><h3>常用不規則動詞快查</h3><div class="lookup-grid">
+    <div class="lookup-pair lookup-head"><span>原形</span><span>過去式</span><span>中文</span></div><div class="lookup-pair lookup-head"><span>原形</span><span>過去式</span><span>中文</span></div><div class="lookup-pair lookup-head"><span>原形</span><span>過去式</span><span>中文</span></div><div class="lookup-pair lookup-head"><span>原形</span><span>過去式</span><span>中文</span></div>
+    <div class="lookup-pair"><span class="en">go</span><span class="en">went</span><span>去</span></div><div class="lookup-pair"><span class="en">come</span><span class="en">came</span><span>來</span></div><div class="lookup-pair"><span class="en">see</span><span class="en">saw</span><span>看見</span></div><div class="lookup-pair"><span class="en">have</span><span class="en">had</span><span>有</span></div>
+    <div class="lookup-pair"><span class="en">get</span><span class="en">got</span><span>得到、變得</span></div><div class="lookup-pair"><span class="en">make</span><span class="en">made</span><span>做</span></div><div class="lookup-pair"><span class="en">take</span><span class="en">took</span><span>拿、帶</span></div><div class="lookup-pair"><span class="en">say</span><span class="en">said</span><span>說</span></div>
+    <div class="lookup-pair"><span class="en">give</span><span class="en">gave</span><span>給</span></div><div class="lookup-pair"><span class="en">buy</span><span class="en">bought</span><span>買</span></div><div class="lookup-pair"><span class="en">eat</span><span class="en">ate</span><span>吃</span></div><div class="lookup-pair"><span class="en">write</span><span class="en">wrote</span><span>寫</span></div>
+  </div></div>
+  <div class="section" id="p4q2"><div class="section-title"><span class="grow">二、把現在式改成過去式</span><button class="mini-btn no-print" id="p4KeyBtn" onclick="toggleP4Keys()">動詞提示</button><button class="mini-btn no-print" onclick="showP4Sentences()">答案</button></div>
+    <div class="en"><div class="sentence-pair"><div>1. I <span class="source-key">play</span> basketball every day.</div><b>→</b><div>I <span class="p4-answer">played</span><span class="p4-blank"></span> basketball yesterday.</div></div><div class="sentence-pair"><div>2. Amy <span class="source-key">likes</span> dogs.</div><b>→</b><div>Amy <span class="p4-answer">liked</span><span class="p4-blank"></span> dogs before.</div></div><div class="sentence-pair"><div>3. We <span class="source-key">study</span> English every day.</div><b>→</b><div>We <span class="p4-answer">studied</span><span class="p4-blank"></span> English yesterday.</div></div><div class="sentence-pair"><div>4. They <span class="source-key">go</span> home every day.</div><b>→</b><div>They <span class="p4-answer">went</span><span class="p4-blank"></span> home yesterday.</div></div><div class="sentence-pair"><div>5. I <span class="source-key">see</span> Kevin every day.</div><b>→</b><div>I <span class="p4-answer">saw</span><span class="p4-blank"></span> Kevin yesterday.</div></div>
+      <div class="sentence-pair"><div>6. He <span class="source-key">visits</span> Aunt May.</div><b>→</b><div>He <span class="p4-answer">visited</span><span class="p4-blank"></span> Aunt May yesterday.</div></div><div class="sentence-pair"><div>7. They <span class="source-key">want</span> ice cream.</div><b>→</b><div>They <span class="p4-answer">wanted</span><span class="p4-blank"></span> ice cream yesterday.</div></div><div class="sentence-pair"><div>8. I <span class="source-key">bake</span> cookies.</div><b>→</b><div>I <span class="p4-answer">baked</span><span class="p4-blank"></span> cookies yesterday.</div></div><div class="sentence-pair"><div>9. Amy <span class="source-key">tries</span> again.</div><b>→</b><div>Amy <span class="p4-answer">tried</span><span class="p4-blank"></span> again yesterday.</div></div><div class="sentence-pair"><div>10. We <span class="source-key">have</span> lunch at school.</div><b>→</b><div>We <span class="p4-answer">had</span><span class="p4-blank"></span> lunch at school yesterday.</div></div></div>
   </div>
   <div class="pagefoot"><span>過去簡單式｜一般動詞過去式</span><span>P4</span></div>
 </section>
@@ -454,13 +458,21 @@ button.active{background:#334155;color:#fff;border-color:#334155}
 <section class="page" id="p5">
   <div class="pagehead"><div><div class="kicker">過去簡單式｜P5</div><h1>did 出現，動詞回原形</h1></div><div class="student">班級：__________　姓名：__________</div></div>
   <div class="did-banner">did 出現 → 動詞回原形</div>
-  <div class="arrow-examples"><span>played → did + play</span><span>liked → did + like</span><span>studied → did + study</span><span>went → did + go</span><span>saw → did + see</span></div>
-  <div class="contrast-row"><span class="bad">✗ did played　✗ didn't went</span><span class="good">✓ did play　✓ didn't go</span></div>
+  <table class="did-compare"><thead><tr><th class="right">正確 ✓</th><th>錯誤 ✗</th></tr></thead><tbody>
+    <tr><td class="right">did + play</td><td class="wrong-example">did + played</td></tr>
+    <tr><td class="right">did + like</td><td class="wrong-example">did + liked</td></tr>
+    <tr><td class="right">did + study</td><td class="wrong-example">did + studied</td></tr>
+    <tr><td class="right">did + go</td><td class="wrong-example">did + went</td></tr>
+    <tr><td class="right">did + see</td><td class="wrong-example">did + saw</td></tr>
+  </tbody></table>
   <div class="section" id="p5q1"><div class="section-title"><span class="grow">一、did 後面選哪一個？</span><button class="mini-btn no-print" onclick="gradePicks()">批改</button><button class="mini-btn no-print" onclick="showPickAnswers()">答案</button><button class="mini-btn no-print" onclick="clearPicks()">清除</button><span class="score no-print"></span></div>
-    <div class="en"><div class="choice-line" data-answer="play">1. Did you（<span class="pick">play</span>／<span class="pick">played</span>）basketball yesterday?</div><div class="choice-line" data-answer="like">2. Did Amy（<span class="pick">like</span>／<span class="pick">liked</span>）the movie?</div><div class="choice-line" data-answer="study">3. Did he（<span class="pick">study</span>／<span class="pick">studied</span>）English yesterday?</div><div class="choice-line" data-answer="go">4. Did they（<span class="pick">go</span>／<span class="pick">went</span>）home?</div><div class="choice-line" data-answer="see">5. Did you（<span class="pick">see</span>／<span class="pick">saw</span>）Kevin?</div></div>
+    <div class="en"><div class="choice-line" data-answer="play">1. Did you（<span class="pick">played</span>／<span class="pick">play</span>）basketball yesterday?</div><div class="choice-line" data-answer="like">2. Did Amy（<span class="pick">like</span>／<span class="pick">liked</span>）the movie?</div><div class="choice-line" data-answer="study">3. Did he（<span class="pick">studied</span>／<span class="pick">study</span>）English yesterday?</div><div class="choice-line" data-answer="go">4. Did they（<span class="pick">went</span>／<span class="pick">go</span>）home?</div><div class="choice-line" data-answer="see">5. Did you（<span class="pick">see</span>／<span class="pick">saw</span>）Kevin?</div></div>
   </div>
   <div class="section" id="p5q2"><div class="section-title"><span class="grow">二、把過去式動詞改回原形</span><button class="mini-btn no-print" onclick="gradeText('#p5q2')">批改</button><button class="mini-btn no-print" onclick="showTextAnswers('#p5q2')">答案</button><button class="mini-btn no-print" onclick="clearText('#p5q2')">清除</button><span class="score no-print"></span></div>
     <div class="short-grid en"><div class="base-item">1. played → did + <input class="text-entry" data-answer="play"></div><div class="base-item">2. liked → did + <input class="text-entry" data-answer="like"></div><div class="base-item">3. studied → did + <input class="text-entry" data-answer="study"></div><div class="base-item">4. went → did + <input class="text-entry" data-answer="go"></div><div class="base-item">5. saw → did + <input class="text-entry" data-answer="see"></div></div>
+  </div>
+  <div class="section" id="p5q3"><div class="section-title"><span class="grow">三、找出錯誤，改成正確的動詞</span><button class="mini-btn no-print" onclick="document.getElementById('p5q3').classList.toggle('show-fix-answers')">答案</button></div>
+    <div class="fix-list"><div class="fix-item"><span>1. Did you <b>played</b> basketball yesterday?</span><span>→ <span class="answer">play</span><span class="fix-blank"></span></span></div><div class="fix-item"><span>2. Amy didn't <b>went</b> to school yesterday.</span><span>→ <span class="answer">go</span><span class="fix-blank"></span></span></div><div class="fix-item"><span>3. Did he <b>studied</b> English last night?</span><span>→ <span class="answer">study</span><span class="fix-blank"></span></span></div><div class="fix-item"><span>4. We didn't <b>saw</b> Kevin yesterday.</span><span>→ <span class="answer">see</span><span class="fix-blank"></span></span></div><div class="fix-item"><span>5. Did Mom <b>made</b> dinner last night?</span><span>→ <span class="answer">make</span><span class="fix-blank"></span></span></div></div>
   </div>
   <div class="pagefoot"><span>過去簡單式｜did＋原形</span><span>P5</span></div>
 </section>
@@ -470,6 +482,36 @@ button.active{background:#334155;color:#fff;border-color:#334155}
   <div class="section"><div class="section-title">句型提示｜同一句話，練肯定、否定、疑問</div><div class="rule-card regular-rule"><div class="rule-row"><div class="rule-name">肯定句</div><div class="rule-en">I <b class="red">played</b> basketball yesterday.</div></div><div class="rule-row"><div class="rule-name">否定句</div><div class="rule-en">I <b class="red">didn't play</b> basketball yesterday.</div></div><div class="rule-row"><div class="rule-name">疑問句</div><div class="rule-en"><b class="red">Did</b> I <b class="red">play</b> basketball yesterday?<span class="did-reminder">did 出現 → 動詞回原形</span></div></div></div></div>
   <div class="section"><div class="rewrite-head no-print"><div class="label">改寫句型｜同一批題目切換鷹架</div><button class="control active" id="p6Present" onclick="toggleP6Hint('present')">現在式提示</button><button class="control active" id="p6Word" onclick="toggleP6Hint('word')">提示單字</button><button class="control group-active" id="p6High" onclick="setP6Level('high')">描寫多</button><button class="control" id="p6Low" onclick="setP6Level('low')">描寫少</button><button class="control" id="p6Fade" onclick="setP6Fade()">漸退</button><button class="control" id="p6None" onclick="setP6Level('none')">全白</button></div><div id="p6Questions"></div></div>
   <div class="pagefoot"><span>過去簡單式｜一般動詞句型</span><span>P6</span></div>
+</section>
+
+<section class="page" id="p7">
+  <div class="pagehead"><div><div class="kicker">過去簡單式｜P7</div><h1>進階版綜合練習</h1></div><div class="student">班級：__________　姓名：__________</div></div>
+  <div class="section" id="p7q1"><div class="section-title"><span class="grow">一、選出正確的過去式用法</span><button class="mini-btn no-print" onclick="gradeBoss()">批改</button><button class="mini-btn no-print" onclick="showBossAnswers()">解答</button><button class="mini-btn no-print" onclick="clearBoss()">清除</button><span class="score no-print" id="scoreBoss"></span></div>
+    <div class="mc-item" data-answer="B"><div class="mc-stem">1. Amy _____ tired yesterday.</div><div class="mc-options"><button class="mc-option" data-v="A">(A) were</button><button class="mc-option" data-v="B">(B) was</button><button class="mc-option" data-v="C">(C) did</button><button class="mc-option" data-v="D">(D) be</button></div></div>
+    <div class="mc-item" data-answer="C"><div class="mc-stem">2. We _____ to the park last Sunday.</div><div class="mc-options"><button class="mc-option" data-v="A">(A) go</button><button class="mc-option" data-v="B">(B) going</button><button class="mc-option" data-v="C">(C) went</button><button class="mc-option" data-v="D">(D) goes</button></div></div>
+    <div class="mc-item" data-answer="B"><div class="mc-stem">3. Did you _____ TV last night?</div><div class="mc-options"><button class="mc-option" data-v="A">(A) watched</button><button class="mc-option" data-v="B">(B) watch</button><button class="mc-option" data-v="C">(C) watching</button><button class="mc-option" data-v="D">(D) watches</button></div></div>
+    <div class="mc-item" data-answer="C"><div class="mc-stem">4. Tom didn't _____ breakfast this morning.</div><div class="mc-options"><button class="mc-option" data-v="A">(A) ate</button><button class="mc-option" data-v="B">(B) eating</button><button class="mc-option" data-v="C">(C) eat</button><button class="mc-option" data-v="D">(D) eats</button></div></div>
+    <div class="mc-item" data-answer="C"><div class="mc-stem">5. My parents _____ very busy yesterday.</div><div class="mc-options"><button class="mc-option" data-v="A">(A) was</button><button class="mc-option" data-v="B">(B) did</button><button class="mc-option" data-v="C">(C) were</button><button class="mc-option" data-v="D">(D) be</button></div></div>
+    <div class="mc-item" data-answer="B"><div class="mc-stem">6. She _____ her homework last night.</div><div class="mc-options"><button class="mc-option" data-v="A">(A) finish</button><button class="mc-option" data-v="B">(B) finished</button><button class="mc-option" data-v="C">(C) finishing</button><button class="mc-option" data-v="D">(D) finishes</button></div></div>
+    <div class="mc-item" data-answer="D"><div class="mc-stem">7. Did Mom _____ dinner last night?</div><div class="mc-options"><button class="mc-option" data-v="A">(A) made</button><button class="mc-option" data-v="B">(B) making</button><button class="mc-option" data-v="C">(C) makes</button><button class="mc-option" data-v="D">(D) make</button></div></div>
+    <div class="mc-item" data-answer="D"><div class="mc-stem">8. They _____ at school yesterday.</div><div class="mc-options"><button class="mc-option" data-v="A">(A) did</button><button class="mc-option" data-v="B">(B) was</button><button class="mc-option" data-v="C">(C) be</button><button class="mc-option" data-v="D">(D) were</button></div></div>
+    <div class="mc-item" data-answer="B"><div class="mc-stem">9. Kevin _____ his teacher yesterday.</div><div class="mc-options"><button class="mc-option" data-v="A">(A) see</button><button class="mc-option" data-v="B">(B) saw</button><button class="mc-option" data-v="C">(C) seeing</button><button class="mc-option" data-v="D">(D) sees</button></div></div>
+    <div class="mc-item" data-answer="C"><div class="mc-stem">10. We didn't _____ basketball yesterday.</div><div class="mc-options"><button class="mc-option" data-v="A">(A) played</button><button class="mc-option" data-v="B">(B) playing</button><button class="mc-option" data-v="C">(C) play</button><button class="mc-option" data-v="D">(D) plays</button></div></div>
+    <div class="mc-item" data-answer="A"><div class="mc-stem">11. Dad _____ a book yesterday.</div><div class="mc-options"><button class="mc-option" data-v="A">(A) bought</button><button class="mc-option" data-v="B">(B) buy</button><button class="mc-option" data-v="C">(C) buying</button><button class="mc-option" data-v="D">(D) buys</button></div></div>
+    <div class="mc-item" data-answer="D"><div class="mc-stem">12. They didn't _____ to school yesterday.</div><div class="mc-options"><button class="mc-option" data-v="A">(A) went</button><button class="mc-option" data-v="B">(B) going</button><button class="mc-option" data-v="C">(C) goes</button><button class="mc-option" data-v="D">(D) go</button></div></div>
+  </div><div class="pagefoot"><span>過去簡單式｜進階綜合練習</span><span>P7</span></div>
+</section>
+
+<section class="page" id="p8">
+  <div class="pagehead"><div><div class="kicker">過去簡單式｜P8</div><h1>找找看：過去式藏在哪裡？</h1></div><div class="student">班級：__________　姓名：__________</div></div>
+  <div class="section hunt" id="p8dialog" data-targets="did visited was talked watched were played cleaned went saw"><div class="section-title"><span class="grow">一、對話</span><button class="mini-btn no-print" onclick="gradeHunt('p8dialog')">批改</button><button class="mini-btn no-print" onclick="showHuntAnswers('p8dialog')">解答</button><button class="mini-btn no-print" onclick="clearHunt('p8dialog')">清除</button><span class="hunt-score">得分：<span class="hunt-result">____</span> / 10</span></div>
+    <div class="hunt-intro">下面的對話中藏了 10 個過去式動詞。找出來並圈起來，每找對一個得 1 分。</div>
+    <div class="hunt-text"><p><b>Amy:</b> Hi, Ben. What did you do yesterday?<br><b>Ben:</b> I visited my grandma after school.<br><b>Amy:</b> How is your grandma?<br><b>Ben:</b> She was happy. We talked and watched TV together.<br><b>Amy:</b> Were your cousins there, too?<br><b>Ben:</b> Yes. We played cards and cleaned her room.<br><b>Amy:</b> What are you doing now?<br><b>Ben:</b> I am doing my homework. I went home at five and saw Kevin on the way.</p></div>
+  </div>
+  <div class="section hunt" id="p8story" data-targets="visited was walked talked watched played helped went had cleaned"><div class="section-title"><span class="grow">二、短文</span><button class="mini-btn no-print" onclick="gradeHunt('p8story')">批改</button><button class="mini-btn no-print" onclick="showHuntAnswers('p8story')">解答</button><button class="mini-btn no-print" onclick="clearHunt('p8story')">清除</button><span class="hunt-score">得分：<span class="hunt-result">____</span> / 10</span></div>
+    <div class="hunt-intro">下面的短文中也藏了 10 個過去式動詞。全部找出來，每找對一個得 1 分。</div>
+    <div class="hunt-text"><p><b>A Day at the Museum</b></p><p>Today, I am looking at some photos from our class trip.</p><p>Last Sunday, our class visited a museum. The weather was sunny. We walked around the museum and our teacher talked about many old things. We watched a short movie, and I played a small history game. My friend Amy helped me with one question.</p><p>At noon, we went to a restaurant. We had lunch together. After lunch, we cleaned our tables at the restaurant.</p></div>
+  </div><div class="pagefoot"><span>過去簡單式｜找找看過去式</span><span>P8</span></div>
 </section>
 
 </div>
@@ -488,7 +530,7 @@ function gradeKeyword(){
     selected.forEach(t=>{if(t===correctToken)t.classList.add('grade-correct');else t.classList.remove('selected','grade-wrong')});
     if(selected.includes(correctToken)) score++;
   });
-  document.getElementById('scoreKeyword').textContent=`答對 ${score} / 5 題`;
+  document.getElementById('scoreKeyword').textContent=`${score} / 5`;
 }
 function showKeywordAnswers(){
   document.querySelectorAll('#p1q1 .recog-line').forEach(row=>{const ans=row.dataset.answer;row.querySelectorAll('.token').forEach(t=>{t.classList.remove('selected','grade-correct','grade-wrong','missed');if(t.dataset.word.toLowerCase()===ans)t.classList.add('selected','grade-correct')})});
@@ -519,7 +561,7 @@ function gradeJudge(){
     if(sel===ans) score++;
     else if(sel) row.querySelector(`.ox[data-v="${sel}"]`).classList.add('grade-wrong');
   });
-  document.getElementById('scoreJudge').textContent=`答對 ${score} / 5 題`;
+  document.getElementById('scoreJudge').textContent=`${score} / 5`;
 }
 function showJudgeAnswers(){
   document.querySelectorAll('#p1q2 .judge-line').forEach(row=>{
@@ -536,8 +578,8 @@ function clearJudge(){
 /* P2 hint board */
 let hintCard=null;
 function toggleHintBoard(){
-  const b=document.querySelector('#hintBoard .card-bank'); b.classList.toggle('hidden');
-  document.getElementById('hintBoardBtn').textContent=b.classList.contains('hidden')?'顯示字卡':'隱藏字卡';
+  const page=document.getElementById('p2');page.classList.toggle('print-hint-on');
+  document.getElementById('hintBoardBtn').textContent=page.classList.contains('print-hint-on')?'列印提示：有':'列印提示：無';
 }
 function selectHintCard(btn,val){
   hintCard=val; document.querySelectorAll('.card-bank .word-card').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
@@ -566,7 +608,7 @@ document.querySelectorAll('#p2q1 .fill-item').forEach(item=>{
 function gradeFill(){
   let score=0; const items=[...document.querySelectorAll('#p2q1 .fill-item')];
   items.forEach(item=>{ const b=item.querySelector('.blank'); b.classList.remove('correct','wrong'); if(b.dataset.value===item.dataset.answer){b.classList.add('correct');score++;} else if(b.dataset.value){b.classList.add('wrong');setTimeout(()=>{if(b.classList.contains('wrong')){b.textContent='';delete b.dataset.value;b.classList.remove('wrong')}},650);} });
-  document.getElementById('scoreFill').textContent=`答對 ${score} / ${items.length} 題`;
+  document.getElementById('scoreFill').textContent=`${score} / ${items.length}`;
 }
 function showFillAnswers(){ document.querySelectorAll('#p2q1 .fill-item').forEach(item=>{const b=item.querySelector('.blank');b.textContent=item.dataset.answer;b.dataset.value=item.dataset.answer;b.classList.add('correct');}); }
 function clearFill(){ document.querySelectorAll('#p2q1 .fill-item').forEach(item=>{delete item.dataset.selected;item.querySelectorAll('.choice').forEach(c=>c.classList.remove('active'));const b=item.querySelector('.blank');b.textContent='';delete b.dataset.value;b.classList.remove('correct','wrong')});document.getElementById('scoreFill').textContent=''; }
@@ -580,10 +622,10 @@ document.querySelectorAll('#p2q2 .transform-item').forEach(item=>item.querySelec
 function gradeTransform(){
   let score=0; const items=[...document.querySelectorAll('#p2q2 .transform-item')];
   items.forEach(item=>{const b=item.querySelector('.blank');b.classList.remove('correct','wrong');if(b.dataset.value===item.dataset.answer){b.classList.add('correct');score++;}else if(b.dataset.value){b.classList.add('wrong');setTimeout(()=>{if(b.classList.contains('wrong')){b.textContent='';delete b.dataset.value;b.classList.remove('wrong')}},650)}});
-  document.getElementById('scoreTransform').textContent=`答對 ${score} / ${items.length} 題`;
+  document.getElementById('scoreTransform').textContent=`${score} / ${items.length}`;
 }
 function showTransformAnswers(){document.querySelectorAll('#p2q2 .transform-item').forEach(item=>{const b=item.querySelector('.blank');b.textContent=item.dataset.answer;b.dataset.value=item.dataset.answer;b.classList.add('correct')});}
-function clearTransform(){transformCard=null;document.querySelectorAll('#p2q2 .global-card').forEach(b=>b.classList.remove('active'));document.querySelectorAll('#p2q2 .blank').forEach(b=>{b.textContent='';delete b.dataset.value;b.classList.remove('correct','wrong')});document.getElementById('scoreTransform').textContent='';}
+function clearTransform(){transformCard=null;document.querySelectorAll('#p2q2 .global-card,#p2q2 .choice').forEach(b=>b.classList.remove('active'));document.querySelectorAll('#p2q2 .blank').forEach(b=>{b.textContent='';delete b.dataset.value;b.classList.remove('correct','wrong')});document.getElementById('scoreTransform').textContent='';}
 
 /* P3 */
 function toggleGroupHint(kind){
@@ -608,7 +650,9 @@ function norm(v){return v.trim().toLowerCase().replace(/[’]/g,"'");}
 function gradeText(sel){const box=document.querySelector(sel),items=[...box.querySelectorAll('.text-entry')];let score=0;items.forEach(i=>{i.classList.remove('correct','wrong');if(norm(i.value)===i.dataset.answer){i.classList.add('correct');score++}else if(i.value){i.classList.add('wrong');setTimeout(()=>{if(i.classList.contains('wrong')){i.value='';i.classList.remove('wrong')}},650)}});box.querySelector('.score').textContent=`${score} / ${items.length}`;}
 function showTextAnswers(sel){const box=document.querySelector(sel);box.querySelectorAll('.text-entry').forEach(i=>{i.value=i.dataset.answer;i.classList.remove('wrong');i.classList.add('correct')});box.querySelector('.score').textContent='';}
 function clearText(sel){const box=document.querySelector(sel);box.querySelectorAll('.text-entry').forEach(i=>{i.value='';i.classList.remove('correct','wrong')});box.querySelector('.score').textContent='';document.querySelectorAll('.rule-hint').forEach(r=>r.classList.remove('highlight'));}
-function hintVerbRules(){const rules=new Set([...document.querySelectorAll('#p4q1 .text-entry')].filter(i=>!i.value).map(i=>i.dataset.rule));document.querySelectorAll('.rule-hint').forEach(r=>r.classList.toggle('highlight',rules.has(r.dataset.rule)));}
+function hintVerbRules(){document.querySelectorAll('#p4q1 .rule-column').forEach(c=>c.classList.toggle('highlight'));}
+function showP4Rules(){document.getElementById('p4q1').classList.toggle('show-rule-answers');}
+function showP4Sentences(){document.getElementById('p4q2').classList.toggle('show-p4-answers');}
 function toggleP4Keys(){const box=document.getElementById('p4q2');box.classList.toggle('show-key');document.getElementById('p4KeyBtn').classList.toggle('active',box.classList.contains('show-key'));}
 document.querySelectorAll('#p5q1 .choice-line').forEach(row=>row.querySelectorAll('.pick').forEach(p=>p.addEventListener('click',()=>{row.querySelectorAll('.pick').forEach(x=>x.classList.remove('selected','correct','wrong'));p.classList.add('selected')})));
 function gradePicks(){let score=0;const box=document.getElementById('p5q1'),rows=[...box.querySelectorAll('.choice-line')];rows.forEach(r=>{const p=r.querySelector('.pick.selected');r.querySelectorAll('.pick').forEach(x=>x.classList.remove('correct','wrong'));if(p&&norm(p.textContent)===r.dataset.answer){p.classList.add('correct');score++}else if(p){p.classList.add('wrong');setTimeout(()=>p.classList.remove('selected','wrong'),650)}});box.querySelector('.score').textContent=`${score} / ${rows.length}`;}
@@ -628,6 +672,27 @@ function toggleP6Hint(kind){const cls=kind==='present'?'show-present':'show-word
 function clearP6Btns(){['p6High','p6Low','p6Fade','p6None'].forEach(id=>document.getElementById(id).classList.remove('group-active'))}
 function setP6Level(level){p6Qs().forEach(q=>setQuestionLevel(q,level));clearP6Btns();document.getElementById(level==='high'?'p6High':level==='low'?'p6Low':'p6None').classList.add('group-active')}
 function setP6Fade(){p6Qs().forEach((q,i)=>{q.classList.remove('show-present','show-word');if(i===0){setQuestionLevel(q,'high');q.classList.add('show-present','show-word')}else if(i===1){setQuestionLevel(q,'high');q.classList.add('show-word')}else if(i===2){setQuestionLevel(q,'low');q.classList.add('show-word')}else setQuestionLevel(q,'none')});document.getElementById('p6Present').classList.remove('active');document.getElementById('p6Word').classList.remove('active');clearP6Btns();document.getElementById('p6Fade').classList.add('group-active')}
+
+/* First-level chapter navigation */
+function toggleSideJump(btn){const nav=btn.closest('.side-jump');nav.classList.toggle('expanded');btn.setAttribute('aria-expanded',nav.classList.contains('expanded'))}
+const chapterLinks=[...document.querySelectorAll('.side-jump a[href^="#p"]')];
+const chapterObserver=new IntersectionObserver(entries=>{const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(visible)chapterLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+visible.target.id))},{rootMargin:'-20% 0px -50% 0px',threshold:[0,.2,.5]});
+document.querySelectorAll('.page[id^="p"]').forEach(page=>chapterObserver.observe(page));
+chapterLinks.forEach(a=>a.addEventListener('click',()=>{const nav=a.closest('.side-jump');nav.classList.remove('expanded');nav.querySelector('.side-toggle').setAttribute('aria-expanded','false')}));
+
+/* P7: one selected answer per question */
+document.querySelectorAll('#p7 .mc-item').forEach(item=>{const stem=item.querySelector('.mc-stem'),match=stem.textContent.match(/^(\d+\.)\s*(.*)$/);if(!match)return;const slot=document.createElement('span'),number=document.createElement('span'),question=document.createElement('span');slot.className='mc-answer-slot';slot.textContent='（　）';number.className='mc-question-number';number.textContent=match[1];question.textContent=match[2];stem.replaceChildren(slot,number,question)});
+function bossSlot(item,val,reveal=false){const slot=item.querySelector('.mc-answer-slot');slot.textContent=val?`（${val}）`:'（　）';slot.classList.toggle('revealed',reveal)}
+document.querySelectorAll('#p7 .mc-option').forEach(btn=>btn.addEventListener('click',()=>{const item=btn.closest('.mc-item');item.querySelectorAll('.mc-option').forEach(o=>o.classList.remove('selected','correct','wrong'));btn.classList.add('selected');bossSlot(item,btn.dataset.v)}));
+function gradeBoss(){let score=0;document.querySelectorAll('#p7 .mc-item').forEach(item=>{const selected=item.querySelector('.mc-option.selected');if(selected){const right=selected.dataset.v===item.dataset.answer;selected.classList.add(right?'correct':'wrong');bossSlot(item,selected.dataset.v,right);if(right)score++}});document.getElementById('scoreBoss').textContent=`${score} / ${document.querySelectorAll('#p7 .mc-item').length}`}
+function showBossAnswers(){document.querySelectorAll('#p7 .mc-item').forEach(item=>{item.querySelectorAll('.mc-option').forEach(o=>{o.classList.remove('selected','correct','wrong');if(o.dataset.v===item.dataset.answer)o.classList.add('selected','correct')});bossSlot(item,item.dataset.answer,true)});document.getElementById('scoreBoss').textContent=''}
+function clearBoss(){document.querySelectorAll('#p7 .mc-option').forEach(o=>o.classList.remove('selected','correct','wrong'));document.querySelectorAll('#p7 .mc-item').forEach(item=>bossSlot(item,''));document.getElementById('scoreBoss').textContent=''}
+
+/* P8: wrap every English word; the target list marks exactly ten words per passage. */
+document.querySelectorAll('#p8 .hunt').forEach(hunt=>{const targets=hunt.dataset.targets.split(' '),found=new Set(),walker=document.createTreeWalker(hunt.querySelector('.hunt-text'),NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);nodes.forEach(node=>{const parts=node.textContent.split(/([A-Za-z]+(?:['’][A-Za-z]+)?)/g);if(parts.length===1)return;const frag=document.createDocumentFragment();parts.forEach(part=>{if(!/^[A-Za-z]+(?:['’][A-Za-z]+)?$/.test(part)){frag.append(part);return}const span=document.createElement('span');span.className='hunt-word';span.textContent=part;const key=part.toLowerCase();if(targets.includes(key)&&!found.has(key)){span.dataset.target='true';found.add(key)}span.addEventListener('click',()=>{span.classList.toggle('selected');span.classList.remove('correct')});frag.append(span)});node.replaceWith(frag)});hunt.dataset.actualTargets=String(hunt.querySelectorAll('.hunt-word[data-target]').length)});
+function gradeHunt(id){const hunt=document.getElementById(id);let score=0;hunt.querySelectorAll('.hunt-word').forEach(word=>{word.classList.remove('correct');if(word.classList.contains('selected')){if(word.dataset.target==='true'){word.classList.add('correct');score++}else word.classList.remove('selected')}});hunt.querySelector('.hunt-result').textContent=score}
+function showHuntAnswers(id){const hunt=document.getElementById(id);hunt.querySelectorAll('.hunt-word').forEach(word=>{word.classList.remove('selected','correct');if(word.dataset.target==='true')word.classList.add('selected','correct')});hunt.querySelector('.hunt-result').textContent='____'}
+function clearHunt(id){const hunt=document.getElementById(id);hunt.querySelectorAll('.hunt-word').forEach(word=>word.classList.remove('selected','correct'));hunt.querySelector('.hunt-result').textContent='____'}
 </script>
 </body>
 </html>
