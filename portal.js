@@ -206,7 +206,9 @@ function escapeHtml(value) {
 
 function updateDateAndWeek(now) {
   const weekdays = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+  const shortWeekdays = ["日","一","二","三","四","五","六"];
   document.getElementById("headerDate").textContent = `${now.getMonth()+1} 月 ${now.getDate()} 日　${weekdays[now.getDay()]}`;
+  document.getElementById("contactDate").textContent = `${now.getMonth()+1}/${now.getDate()}（${shortWeekdays[now.getDay()]}）`;
 }
 
 function updateClock() {
@@ -306,14 +308,19 @@ function renderContact(rows) {
     : [];
   const hasActiveTerm = activeTerms.length === 1;
   const schoolWeek = document.getElementById("schoolWeek");
+  const contactWeek = document.getElementById("contactWeek");
   const weeklyWordsCard = document.getElementById("weeklyWordsCard");
   if (hasActiveTerm) {
     const activeTerm = activeTerms[0];
+    const weekValue = String(activeTerm[weekColumn]).trim();
+    const weekNumber = weekValue.match(/^第?\s*(\d+)\s*週?$/);
     schoolWeek.textContent = `${String(activeTerm[termColumn]).trim()}・${String(activeTerm[weekColumn]).trim()}`;
+    contactWeek.textContent = weekNumber ? `第${weekNumber[1]}週` : weekValue;
     schoolWeek.hidden = false;
     weeklyWordsCard.hidden = words.length === 0;
   } else {
     schoolWeek.textContent = "";
+    contactWeek.textContent = "";
     schoolWeek.hidden = true;
     weeklyWordsCard.hidden = true;
   }
