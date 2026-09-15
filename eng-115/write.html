@@ -43,6 +43,7 @@
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
       background-color: #fef2f2;
     }
+    .spelling-input { position: relative; z-index: 1; }
 
     /* 網頁上呈現極淡底線，列印時會被深色格線取代 */
     .row-border-style {
@@ -50,7 +51,7 @@
     }
 
     #print-all-container { display: none; }
-    .write-print-hint { display: none; position: absolute; left: 0.5rem; right: 0; align-items: center; height: 1.25rem; line-height: 1; white-space: nowrap; overflow: visible; color: #334155; font-weight: 500; }
+    .write-print-hint { display: flex; position: absolute; left: 0.5rem; right: 0; align-items: center; height: 1.25rem; line-height: 1; white-space: nowrap; overflow: visible; pointer-events: none; color: #334155; font-weight: 500; }
     .write-print-hint:not(.write-hint-trace) { transform: translateY(4px); }
     .write-hint-content { display: flex; align-items: baseline; gap: 2px; min-width: 0; white-space: nowrap; transform: scaleX(var(--write-hint-scale, 1)); transform-origin: left center; }
     .write-hint-token { flex: 0 0 auto; }
