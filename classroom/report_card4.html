@@ -71,28 +71,13 @@
       width:18mm; height:14mm; display:flex; align-items:flex-start; justify-content:center;
       padding-top:2.5mm; background:#eef2f7; color:#111827;
       clip-path:polygon(0 0,100% 0,100% 68%,50% 100%,0 68%);
-      filter:drop-shadow(0 0 .35mm #111827);
+      box-shadow:inset 0 0 0 .35mm #111827;
       font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;
       font-size:11.5pt; font-weight:800; line-height:1;
       -webkit-print-color-adjust:exact; print-color-adjust:exact;
     }
     .ratio-house.daily { grid-column:5; justify-self:center; }
     .ratio-house.exam { grid-column:6; justify-self:center; }
-
-    .integrated-strip {
-      width:100%; min-height:16mm; display:grid;
-      grid-template-columns:10% 14% 9% 10% 15% 19% 23%;
-      align-items:center; margin:0 auto 1.5mm; padding:1.4mm 0;
-      background:#f1f5f9; border-left:4px solid #64748b;
-      -webkit-print-color-adjust:exact; print-color-adjust:exact;
-    }
-    .integrated-copy {
-      grid-column:1 / 5; padding:0 3mm;
-      font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;
-      font-size:11.5pt; font-weight:700; line-height:1.3; color:#334155;
-    }
-    .integrated-strip .ratio-house.daily { grid-column:5; }
-    .integrated-strip .ratio-house.exam { grid-column:6; }
 
     .grade-table { width:100%; margin:0 auto; border-collapse:collapse; table-layout:fixed; font-size:.83em; }
     .grade-table th,.grade-table td { height:var(--row-height); padding:1mm; border:1px solid #000; text-align:center; vertical-align:middle; overflow-wrap:anywhere; font-weight:400; }
@@ -104,14 +89,18 @@
     .main-table .col-teacher { width:23%; }
 
     .ratio-corner {
-      position:absolute; right:1mm; bottom:.7mm;
+      position:absolute; right:1mm; bottom:.7mm; padding:.4mm 1.2mm .3mm;
+      border-radius:1.2mm; background:#fde047;
       font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;
-      font-size:10.5pt; font-weight:800; line-height:1; color:#111827;
+      font-size:12pt; font-weight:800; line-height:1; color:#111827; white-space:nowrap;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;
     }
     .composition-note {
-      position:absolute; right:1mm; bottom:.7mm;
+      position:absolute; right:1mm; bottom:.7mm; padding:.4mm 1.2mm .3mm;
+      border-radius:1.2mm; background:#fde047;
       font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;
-      font-size:10pt; font-weight:700; line-height:1; color:#374151; white-space:nowrap;
+      font-size:11.5pt; font-weight:800; line-height:1; color:#111827; white-space:nowrap;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;
     }
 
     .ratio-section + .ratio-section { margin-top:6mm; }
@@ -143,7 +132,7 @@
       .paper { width:auto; min-height:0; margin:0; padding:0; box-shadow:none; }
       .notice-unit,.mismatch-notice,.table-block { break-inside:avoid-page !important; page-break-inside:avoid !important; }
       .notice-unit + .notice-unit,.notice-unit + .mismatch-notice,.mismatch-notice + .mismatch-notice { margin-top:10mm; }
-      .ratio-house,.integrated-strip,.highlight-mark { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      .ratio-house,.ratio-corner,.composition-note,.highlight-mark { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
     }
   </style>
 </head>
@@ -172,17 +161,15 @@
         <label class="field"><span>版面模式</span><select id="viewMode">
           <option value="compact" selected>班級集中｜格內 50%</option>
           <option value="arrow">比例分區｜箭頭</option>
-          <option value="integrated">比例分區｜整合提示</option>
-        </select></label>
+                  </select></label>
       </section>
       <section class="card">
         <h2>🖨️ 操作與輸出</h2>
         <div class="button-stack">
           <button id="printPage" class="button green" type="button">列印通知單 (A4)</button>
-          <button id="downloadWord" class="button word" type="button">下載 Word (.docx)</button>
           <button id="reload" class="button slate" type="button">即時同步雲端資料</button>
         </div>
-        <p class="tip">班級集中不拆 50%／100%；箭頭與整合提示模式才依比例分區。Word 會依目前模式輸出。</p>
+        <p class="tip">班級集中不拆 50%／100%；比例分區模式依 50%／100% 分開顯示箭頭。</p>
       </section>
       <details class="card filter-card"><summary id="filterToggleText">✅ 學生篩選（點此展開）</summary><div class="filter-content">
         <label class="field"><span>搜尋學生</span><input id="studentSearch" type="search" placeholder="搜尋班級、座號、姓名或教師"></label>
@@ -240,17 +227,6 @@
       </div>`;
     }
 
-    function integratedGuideHtml(dailyRatio){
-      const copy=dailyRatio===50
-        ?"本區日常評量依 50% 比例評定"
-        :"本區日常評量由異想教室評定 100%";
-      return `<div class="integrated-strip">
-        <div class="integrated-copy">${copy}</div>
-        ${ratioHouseHtml(dailyRatio,"daily")}
-        ${ratioHouseHtml(100,"exam")}
-      </div>`;
-    }
-
     function mainTableHtml(students,{showCorner=false}={}){
       return `<table class="grade-table main-table"><thead><tr>
         <th class="col-class">班級</th><th class="col-name">姓名</th><th class="col-seat">座號</th>
@@ -265,7 +241,6 @@
 
     function tableBlockHtml(students,dailyRatio,mode){
       if(mode==="arrow") return `<div class="table-block">${ratioGuideHtml(dailyRatio)}${mainTableHtml(students)}</div>`;
-      if(mode==="integrated") return `<div class="table-block">${integratedGuideHtml(dailyRatio)}${mainTableHtml(students)}</div>`;
       return `<div class="table-block">${mainTableHtml(students,{showCorner:true})}</div>`;
     }
 
@@ -489,7 +464,6 @@
     $("#studentSearch").addEventListener("input",renderStudentFilters);
     $("#restoreStudents").addEventListener("click",()=>{selectedStudents().forEach(student=>excluded.delete(student.id));saveExcluded();render();renderStudentFilters();});
     $("#printPage").addEventListener("click",()=>window.print());
-    $("#downloadWord").addEventListener("click",downloadWord);
     $("#reload").addEventListener("click",loadData);
 
     window.__chineseNoticeTest={parseCsv,buildRecordsFromA7Rows,receiptHtml,mainTableHtml,studentRatio};
