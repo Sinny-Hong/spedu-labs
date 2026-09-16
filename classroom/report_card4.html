@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>國文科段考成績通知單產生器</title>
+  <title>�𧢲�蝘烐挾���蝮暸�𡁶䰻�桃𤩎�笔膥</title>
   <style>
     :root {
       --ink:#111827; --muted:#64748b; --panel:#fff; --page:#fff;
@@ -39,6 +39,8 @@
     .button { min-height:42px; padding:8px 12px; border:0; border-radius:7px; color:#fff; background:var(--blue); font-weight:700; cursor:pointer; }
     .button.green { background:var(--green); }
     .button.slate { background:#475569; }
+    .button.word { background:#2563eb; }
+    .button:disabled { opacity:.58; cursor:wait; }
     .button.small { min-height:36px; font-size:13px; }
     .tip { margin:12px 0 0; color:#475569; font-size:12px; line-height:1.6; }
     .filter-card { padding:0; overflow:hidden; }
@@ -54,37 +56,84 @@
     .filter-summary { margin:8px 0 0; color:var(--muted); font-size:12px; }
     .preview-title { margin:0 0 8px 4px; color:#64748b; font-size:14px; font-weight:700; }
     .paper { width:210mm; min-height:297mm; margin:0 auto 24px; padding:16mm 12mm; background:var(--page); box-shadow:0 12px 28px #0f172a2b; }
-    .notice-unit,.mismatch-notice { color:#000; font-family:"DFKai-SB","BiauKai","標楷體","PMingLiU",serif; font-size:var(--print-font-size); line-height:1.3; break-inside:avoid; page-break-inside:avoid; }
+    .notice-unit,.mismatch-notice { color:#000; font-family:"DFKai-SB","BiauKai","璅蹱扑擃�","PMingLiU",serif; font-size:var(--print-font-size); line-height:1.3; break-inside:avoid; page-break-inside:avoid; }
     .notice-unit + .notice-unit,.notice-unit + .mismatch-notice,.mismatch-notice + .mismatch-notice { margin-top:14mm; }
     .notice-title { margin:0 0 2mm; text-align:center; font-size:1.05em; font-weight:400; white-space:nowrap; }
     .teacher-name { margin:0 0 2mm 9mm; font-size:1.18em; font-weight:700; line-height:1.25; }
     .teacher-name .name { text-decoration:underline; text-underline-offset:3px; }
+    .table-block { margin-top:2mm; break-inside:avoid; page-break-inside:avoid; }
+    .ratio-guide {
+      width:100%; min-height:14mm; display:grid;
+      grid-template-columns:10% 14% 9% 10% 15% 19% 23%;
+      align-items:end; margin:0 auto 1.5mm;
+    }
+    .ratio-house {
+      width:18mm; height:14mm; display:flex; align-items:flex-start; justify-content:center;
+      padding-top:2.5mm; background:#eef2f7; color:#111827;
+      clip-path:polygon(0 0,100% 0,100% 68%,50% 100%,0 68%);
+      filter:drop-shadow(0 0 .35mm #111827);
+      font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;
+      font-size:11.5pt; font-weight:800; line-height:1;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    }
+    .ratio-house.daily { grid-column:5; justify-self:center; }
+    .ratio-house.exam { grid-column:6; justify-self:center; }
+
+    .integrated-strip {
+      width:100%; min-height:16mm; display:grid;
+      grid-template-columns:10% 14% 9% 10% 15% 19% 23%;
+      align-items:center; margin:0 auto 1.5mm; padding:1.4mm 0;
+      background:#f1f5f9; border-left:4px solid #64748b;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    }
+    .integrated-copy {
+      grid-column:1 / 5; padding:0 3mm;
+      font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;
+      font-size:11.5pt; font-weight:700; line-height:1.3; color:#334155;
+    }
+    .integrated-strip .ratio-house.daily { grid-column:5; }
+    .integrated-strip .ratio-house.exam { grid-column:6; }
+
     .grade-table { width:100%; margin:0 auto; border-collapse:collapse; table-layout:fixed; font-size:.83em; }
     .grade-table th,.grade-table td { height:var(--row-height); padding:1mm; border:1px solid #000; text-align:center; vertical-align:middle; overflow-wrap:anywhere; font-weight:400; }
     .grade-table th { height:auto; min-height:9mm; white-space:nowrap; }
     .main-table .col-class { width:10%; } .main-table .col-name { width:14%; } .main-table .col-seat { width:9%; }
-    .main-table .col-subject { width:10%; } .main-table .col-daily { width:15%; position:relative; }
-    .main-table .col-exam { width:19%; } .main-table .col-teacher { width:23%; }
-    .daily-ratio { position:absolute; right:0; bottom:0; display:inline-block; padding:.2mm .7mm .1mm; color:#111827; background:#fde047; font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif; font-size:12pt; line-height:1; white-space:nowrap; }
-    .composition-note { display:inline-block; margin-top:1mm; padding:.4mm 1.2mm; background:#fef3c7; border-radius:2mm; font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif; font-size:.72em; line-height:1.15; white-space:nowrap; }
+    .main-table .col-subject { width:10%; }
+    .main-table .col-daily { width:15%; position:relative; }
+    .main-table .col-exam { width:19%; position:relative; }
+    .main-table .col-teacher { width:23%; }
+
+    .ratio-corner {
+      position:absolute; right:1mm; bottom:.7mm;
+      font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;
+      font-size:10.5pt; font-weight:800; line-height:1; color:#111827;
+    }
+    .composition-note {
+      position:absolute; right:1mm; bottom:.7mm;
+      font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;
+      font-size:10pt; font-weight:700; line-height:1; color:#374151; white-space:nowrap;
+    }
+
     .ratio-section + .ratio-section { margin-top:6mm; }
-    .ratio-heading { margin:0 0 2mm; padding:1.5mm 2.5mm; border-left:4px solid #111827; background:#f1f5f9; font:700 .72em "Microsoft JhengHei","Noto Sans TC",sans-serif; }
     .ratio-note { margin:1.8mm 0 0; font-size:.62em; line-height:1.45; }
     .ratio-note p,.notes p { margin:0; }
     .notes { margin-top:3mm; font-size:.65em; line-height:1.45; }
     .cut-line { position:relative; height:8mm; margin:4mm 0 3mm; border-bottom:1.5px dashed #a3a3a3; }
     .cut-line span { position:absolute; left:5mm; bottom:-.58em; padding:0 2mm; color:#737373; background:#fff; font:16px "Microsoft JhengHei","Noto Sans TC",sans-serif; }
     .receipt-title { margin:0 0 1mm; text-align:center; font-size:.9em; font-weight:700; }
-    .receipt-instruction { margin:0 0 2mm; font-size:.62em; line-height:1.45; }
+    .receipt-instruction { margin:0 0 2mm; font-size:.62em; line-height:1.55; }
+    .highlight-mark {
+      padding:0 .3mm;
+      background:linear-gradient(transparent 15%,rgba(250,204,21,.62) 15%,rgba(250,204,21,.62) 90%,transparent 90%);
+      -webkit-box-decoration-break:clone; box-decoration-break:clone;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    }
     .receipt-table { font-size:.72em; }
     .receipt-table th,.receipt-table td { height:10mm; }
     .receipt-table .col-class { width:13%; } .receipt-table .col-name { width:18%; } .receipt-table .col-seat { width:12%; }
     .receipt-table .col-subject { width:12%; } .receipt-table .col-composition { width:18%; } .receipt-table .col-score { width:25%; } .receipt-table .col-return { width:17%; }
     .receipt-table.mixed-teachers .col-class { width:11%; } .receipt-table.mixed-teachers .col-name { width:17%; } .receipt-table.mixed-teachers .col-seat { width:10%; }
     .receipt-table.mixed-teachers .col-subject { width:11%; } .receipt-table.mixed-teachers .col-composition { width:16%; } .receipt-table.mixed-teachers .col-score { width:18%; }
-    .mismatch-table .col-class { width:10%; } .mismatch-table .col-name { width:14%; } .mismatch-table .col-seat { width:9%; }
-    .mismatch-table .col-original { width:17%; } .mismatch-table .col-resource-subject { width:16%; }
-    .mismatch-table .col-score { width:16%; } .mismatch-table .col-teacher { width:18%; }
     .empty { padding:60mm 10mm; color:#64748b; text-align:center; font:16px "Microsoft JhengHei",sans-serif; }
     @page { size:A4 portrait; margin:16mm 12mm; }
     @media print {
@@ -92,48 +141,56 @@
       .no-print { display:none !important; }
       .layout { display:block; width:auto; margin:0; padding:0; }
       .paper { width:auto; min-height:0; margin:0; padding:0; box-shadow:none; }
-      .notice-unit,.mismatch-notice { break-inside:avoid-page !important; page-break-inside:avoid !important; }
+      .notice-unit,.mismatch-notice,.table-block { break-inside:avoid-page !important; page-break-inside:avoid !important; }
       .notice-unit + .notice-unit,.notice-unit + .mismatch-notice,.mismatch-notice + .mismatch-notice { margin-top:10mm; }
-      .daily-ratio,.composition-note,.ratio-heading { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      .ratio-house,.integrated-strip,.highlight-mark { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
     }
   </style>
 </head>
 <body>
   <header class="topbar no-print">
-    <div class="brand"><h1>國文科段考成績通知單產生器</h1><p>115學年度｜含作文分數回條｜A4 直向單面列印</p></div>
+    <div class="brand"><h1>�𧢲�蝘烐挾���蝮暸�𡁶䰻�桃𤩎�笔膥</h1><p>115摮詨僑摨佗��思�����詨�璇嘅�A4 �游��桅𢒰�堒㫲</p></div>
     <div class="sync-area" aria-live="polite">
-      <div id="syncBadge" class="sync-badge connecting"><span class="sync-dot"></span><span id="syncText">正在連線至雲端試算表 A7 抽課分頁……</span></div>
-      <div class="count-badge">收件教師 <strong id="teacherCount">0</strong> 位｜通知紀錄 <strong id="studentCount">0</strong> 筆</div>
+      <div id="syncBadge" class="sync-badge connecting"><span class="sync-dot"></span><span id="syncText">甇�銁����喲𤩅蝡航岫蝞𡑒” A7 �質玨����色��</span></div>
+      <div class="count-badge">�嗡辣�坔葦 <strong id="teacherCount">0</strong> 雿㵪��𡁶䰻蝝��� <strong id="studentCount">0</strong> 蝑�</div>
     </div>
   </header>
   <main class="layout">
     <aside class="sidebar no-print">
       <section class="card">
-        <h2>📋 成績單設定</h2>
-        <label class="field"><span>學年度與段考</span><select id="exam">
-          <option value="115學年度|上學期|第一次">115學年度 上學期 第一次段考</option>
-          <option value="115學年度|上學期|第二次" selected>115學年度 上學期 第二次段考</option>
-          <option value="115學年度|上學期|第三次">115學年度 上學期 第三次段考</option>
-          <option value="115學年度|下學期|第一次">115學年度 下學期 第一次段考</option>
-          <option value="115學年度|下學期|第二次">115學年度 下學期 第二次段考</option>
-          <option value="115學年度|下學期|第三次">115學年度 下學期 第三次段考</option>
+        <h2>�� �鞟蜀�株身摰�</h2>
+        <label class="field"><span>摮詨僑摨西�畾菔��</span><select id="exam">
+          <option value="115摮詨僑摨帆銝𠰴飛�鞺蝚砌�甈�">115摮詨僑摨� 銝𠰴飛�� 蝚砌�甈⊥挾��</option>
+          <option value="115摮詨僑摨帆銝𠰴飛�鞺蝚砌�甈�" selected>115摮詨僑摨� 銝𠰴飛�� 蝚砌�甈⊥挾��</option>
+          <option value="115摮詨僑摨帆銝𠰴飛�鞺蝚砌�甈�">115摮詨僑摨� 銝𠰴飛�� 蝚砌�甈⊥挾��</option>
+          <option value="115摮詨僑摨帆銝见飛�鞺蝚砌�甈�">115摮詨僑摨� 銝见飛�� 蝚砌�甈⊥挾��</option>
+          <option value="115摮詨僑摨帆銝见飛�鞺蝚砌�甈�">115摮詨僑摨� 銝见飛�� 蝚砌�甈⊥挾��</option>
+          <option value="115摮詨僑摨帆銝见飛�鞺蝚砌�甈�">115摮詨僑摨� 銝见飛�� 蝚砌�甈⊥挾��</option>
         </select></label>
-        <label class="field"><span>收件教師（原班教師）</span><select id="teacher"><option value="all">全部教師</option></select></label>
-        <label class="field"><span>異想教室國文老師</span><select id="resourceTeacher"><option value="all">全部教師</option></select></label>
-        <label class="field"><span>成績排列方式</span><select id="viewMode"><option value="class" selected>依班級排列（同班集中）</option><option value="ratio">依比例排列（50%／100%分區）</option></select></label>
+        <label class="field"><span>�嗡辣�坔葦嚗���剜�撣恬�</span><select id="teacher"><option value="all">�券��坔葦</option></select></label>
+        <label class="field"><span>�唳��坔恕�𧢲���葦</span><select id="resourceTeacher"><option value="all">�券��坔葦</option></select></label>
+        <label class="field"><span>��𢒰璅∪�</span><select id="viewMode">
+          <option value="compact" selected>�剔���葉嚚𨀣聢�� 50%</option>
+          <option value="arrow">瘥𥪯����嚚𦦵悌��</option>
+          <option value="integrated">瘥𥪯����嚚𨀣㟲���蝷�</option>
+        </select></label>
       </section>
       <section class="card">
-        <h2>🖨️ 操作與列印</h2>
-        <div class="button-stack"><button id="printPage" class="button green" type="button">列印通知單 (A4)</button><button id="reload" class="button slate" type="button">即時同步雲端資料</button></div>
-        <p class="tip">收件教師選「全部教師」可整批列印；選單一教師可只列印該教師。列印設定：A4、直向、單面、比例 100%。</p>
+        <h2>�㤧儭� �滢���撓��</h2>
+        <div class="button-stack">
+          <button id="printPage" class="button green" type="button">�堒㫲�𡁶䰻�� (A4)</button>
+          <button id="downloadWord" class="button word" type="button">銝贝� Word (.docx)</button>
+          <button id="reload" class="button slate" type="button">�單��峕郊�脩垢鞈��</button>
+        </div>
+        <p class="tip">�剔���葉銝齿� 50%嚗�100%嚗𤤿悌�剛��游��鞟內璅∪��滢�瘥𥪯������Word ����桀�璅∪�頛詨枂��</p>
       </section>
-      <details class="card filter-card"><summary id="filterToggleText">✅ 學生篩選（點此展開）</summary><div class="filter-content">
-        <label class="field"><span>搜尋學生</span><input id="studentSearch" type="search" placeholder="搜尋班級、座號、姓名或教師"></label>
+      <details class="card filter-card"><summary id="filterToggleText">�� 摮貊�蝭拚�嚗��甇文��页�</summary><div class="filter-content">
+        <label class="field"><span>�𨅯�摮貊�</span><input id="studentSearch" type="search" placeholder="�𨅯��剔���漣�麄����齿��坔葦"></label>
         <div id="studentFilters" class="student-filter-list"></div><p id="filterSummary" class="filter-summary"></p>
-        <button id="restoreStudents" class="button small slate" style="width:100%;margin-top:10px" type="button">全部恢復顯示</button>
+        <button id="restoreStudents" class="button small slate" style="width:100%;margin-top:10px" type="button">�券��Ｗ儔憿舐內</button>
       </div></details>
     </aside>
-    <section class="preview"><p class="preview-title no-print">👁️ A4 通知單預覽</p><div id="single-page" class="paper"><div id="notice"><div class="empty">正在讀取雲端試算表 A7 抽課資料……</div></div></div></section>
+    <section class="preview"><p class="preview-title no-print">��儭� A4 �𡁶䰻�桅�閬�</p><div id="single-page" class="paper"><div id="notice"><div class="empty">甇�銁霈��㚚𤩅蝡航岫蝞𡑒” A7 �質玨鞈���色��</div></div></div></section>
   </main>
   <script>
     const SHEET_ID="2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk";
@@ -142,47 +199,300 @@
     const $=selector=>document.querySelector(selector);
     let records=[];
     let excluded=new Set(JSON.parse(sessionStorage.getItem("chinese-score-notice-excluded")||"[]"));
+
     const FALLBACK_RECORDS=[
-      {id:"fallback-match-1",kind:"match",className:"測試班",seat:"1",name:"測試學生甲",originalTeacher:"測試國文老師",resourceTeacher:"陳秋錡",pulloutCount:1,subject:"國文"},
-      {id:"fallback-match-2",kind:"match",className:"測試班",seat:"2",name:"測試學生乙",originalTeacher:"測試國文老師",resourceTeacher:"洪羽晶",pulloutCount:3,subject:"國文"}
+      {id:"fallback-match-1",kind:"match",className:"皜祈岫��",seat:"1",name:"皜祈岫摮貊���",originalTeacher:"皜祈岫�𧢲���葦",resourceTeacher:"�喟���",pulloutCount:1,subject:"�𧢲�"},
+      {id:"fallback-match-2",kind:"match",className:"皜祈岫��",seat:"2",name:"皜祈岫摮貊�銋�",originalTeacher:"皜祈岫�𧢲���葦",resourceTeacher:"瘣芰噬��",pulloutCount:3,subject:"�𧢲�"}
     ];
+
     function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]);}
     function parseCsv(text){const rows=[];let row=[],field="",quoted=false;for(let i=0;i<text.length;i++){const char=text[i],next=text[i+1];if(char==='"'&&quoted&&next==='"'){field+='"';i++;}else if(char==='"')quoted=!quoted;else if(char===","&&!quoted){row.push(field.trim());field="";}else if((char==="\n"||char==="\r")&&!quoted){if(char==="\r"&&next==="\n")i++;row.push(field.trim());if(row.some(Boolean))rows.push(row);row=[];field="";}else field+=char;}row.push(field.trim());if(row.some(Boolean))rows.push(row);return rows;}
-    function normalizeHeader(value){return String(value??"").replace(/[\s　:：()（）_\-]/g,"").toLowerCase();}
+    function normalizeHeader(value){return String(value??"").replace(/[\s��:嚗�()嚗��_\-]/g,"").toLowerCase();}
     function findHeaderIndex(headers,aliases){const normalized=headers.map(normalizeHeader);for(const alias of aliases){const index=normalized.indexOf(normalizeHeader(alias));if(index>=0)return index;}return -1;}
+
     function buildRecordsFromA7Rows(rows){
       if(!rows||rows.length<2)return[];
       const headers=rows[0];
-      const classIndex=findHeaderIndex(headers,["原班","班級","班別"]),seatIndex=findHeaderIndex(headers,["座號","座次"]),nameIndex=findHeaderIndex(headers,["學生","學生姓名","姓名"]);
-      const pulloutIndex=findHeaderIndex(headers,["國文抽離","國文抽離節數","抽離國文","國文節數","國文"]),originalTeacherIndex=findHeaderIndex(headers,["原班國師","原班國文老師","原班國文教師","原班國文任課老師","國文老師"]),resourceTeacherIndex=findHeaderIndex(headers,["特教國師","特教國文老師","異想國師","異想教室國文老師","資源班國文老師"]);
-      const missing=[];if(classIndex<0)missing.push("班級");if(seatIndex<0)missing.push("座號");if(nameIndex<0)missing.push("學生姓名");if(pulloutIndex<0)missing.push("國文抽離");if(originalTeacherIndex<0)missing.push("原班國師");if(resourceTeacherIndex<0)missing.push("特教國師");if(missing.length)throw new Error(`找不到欄位：${missing.join("、")}。請確認 A7抽課表頭名稱。`);
+      const classIndex=findHeaderIndex(headers,["�毺号","�剔�","�剖³�"]),seatIndex=findHeaderIndex(headers,["摨扯�","摨扳活"]),nameIndex=findHeaderIndex(headers,["摮貊�","摮貊�憪枏�","憪枏�"]);
+      const pulloutIndex=findHeaderIndex(headers,["�𧢲��賡𣪧","�𧢲��賡𣪧蝭���","�賡𣪧�𧢲�","�𧢲�蝭���","�𧢲�"]),originalTeacherIndex=findHeaderIndex(headers,["�毺号�见葦","�毺号�𧢲���葦","�毺号�𧢲��坔葦","�毺号�𧢲�隞餉玨��葦","�𧢲���葦"]),resourceTeacherIndex=findHeaderIndex(headers,["�寞��见葦","�寞��𧢲���葦","�唳��见葦","�唳��坔恕�𧢲���葦","鞈���剖�����葦"]);
+      const missing=[];if(classIndex<0)missing.push("�剔�");if(seatIndex<0)missing.push("摨扯�");if(nameIndex<0)missing.push("摮貊�憪枏�");if(pulloutIndex<0)missing.push("�𧢲��賡𣪧");if(originalTeacherIndex<0)missing.push("�毺号�见葦");if(resourceTeacherIndex<0)missing.push("�寞��见葦");if(missing.length)throw new Error(`�曆��唳�雿㵪�${missing.join("��")}���蝣箄� A7�質玨銵券��滨迂��`);
       const parsed=[];
       rows.slice(1).forEach((row,offset)=>{
         const rowNumber=offset+2,className=String(row[classIndex]??"").trim(),seat=String(row[seatIndex]??"").trim(),name=String(row[nameIndex]??"").trim(),originalTeacher=String(row[originalTeacherIndex]??"").trim(),resourceTeacher=String(row[resourceTeacherIndex]??"").trim(),pulloutCount=parseInt(String(row[pulloutIndex]??"").trim(),10)||0;
-        if(className&&name&&originalTeacher&&resourceTeacher&&pulloutCount>0)parsed.push({id:`a7-chinese-match-${className}-${seat}-${name}-${rowNumber}`,kind:"match",className,seat,name,originalTeacher,resourceTeacher,pulloutCount,subject:"國文"});
+        if(className&&name&&originalTeacher&&resourceTeacher&&pulloutCount>0)parsed.push({id:`a7-chinese-match-${className}-${seat}-${name}-${rowNumber}`,kind:"match",className,seat,name,originalTeacher,resourceTeacher,pulloutCount,subject:"�𧢲�"});
       });
       return parsed;
     }
-    async function fetchA7SheetData(){const response=await fetch(`${SHEET_CSV_BASE}${A7_GID}&_=${Date.now()}`,{cache:"no-store"});if(!response.ok)throw new Error(`試算表讀取失敗（${response.status}）`);const data=buildRecordsFromA7Rows(parseCsv(await response.text()));if(!data.length)throw new Error("A7抽課分頁已讀取，但找不到國文通知資料");return data;}
+
+    async function fetchA7SheetData(){const response=await fetch(`${SHEET_CSV_BASE}${A7_GID}&_=${Date.now()}`,{cache:"no-store"});if(!response.ok)throw new Error(`閰衣�銵刻��硋仃�梹�${response.status}嚗头);const data=buildRecordsFromA7Rows(parseCsv(await response.text()));if(!data.length)throw new Error("A7�質玨���撌脰��吔�雿�𪄳銝滚��𧢲��𡁶䰻鞈��");return data;}
     function filteredRecords(){const selected=$("#resourceTeacher")?.value||"all";return records.filter(record=>selected==="all"||record.resourceTeacher===selected);}
     function groups(){const map=new Map();filteredRecords().forEach(record=>{if(!map.has(record.originalTeacher))map.set(record.originalTeacher,[]);map.get(record.originalTeacher).push(record);});return [...map.entries()].sort(([a],[b])=>a.localeCompare(b,"zh-Hant")).map(([teacher,students])=>({teacher,students:students.sort((a,b)=>a.className.localeCompare(b.className,"zh-Hant")||Number(a.seat||999)-Number(b.seat||999))}));}
-    function mainTableHtml(students,showRatioInCell=true){return `<table class="grade-table main-table"><thead><tr><th class="col-class">班級</th><th class="col-name">姓名</th><th class="col-seat">座號</th><th class="col-subject">科目</th><th class="col-daily">日常評量</th><th class="col-exam">定期評量</th><th class="col-teacher">異想教室老師</th></tr></thead><tbody>${students.map(student=>`<tr><td>${escapeHtml(student.className)}</td><td>${escapeHtml(student.name)}</td><td>${escapeHtml(student.seat)}</td><td>國文</td><td class="col-daily">${showRatioInCell&&student.pulloutCount<3?'<span class="daily-ratio">佔50%</span>':""}</td><td><span class="composition-note">＋作文分數</span></td><td>${escapeHtml(student.resourceTeacher)}</td></tr>`).join("")}</tbody></table>`;}
-    function receiptHtml(students){const teachers=[...new Set(students.map(student=>student.resourceTeacher).filter(Boolean))];const mixed=teachers.length>1;const instruction=mixed?"定期評量成績加上作文分數後，請將回條交給異想教室任課老師，以利成績登記，感謝。":`定期評量成績加上作文分數後，請將回條交給${teachers[0]||"異想教室任課"}老師，以利成績登記，感謝。`;return `<div class="cut-line" aria-hidden="true"><span>✂</span></div><section class="receipt"><h3 class="receipt-title">定期評量成績回條</h3><p class="receipt-instruction">${escapeHtml(instruction)}</p><table class="grade-table receipt-table${mixed?" mixed-teachers":""}"><thead><tr><th class="col-class">班級</th><th class="col-name">姓名</th><th class="col-seat">座號</th><th class="col-subject">科目</th><th class="col-composition">作文分</th><th class="col-score">定期評量</th>${mixed?'<th class="col-return">交回老師</th>':""}</tr></thead><tbody>${students.map(student=>`<tr><td>${escapeHtml(student.className)}</td><td>${escapeHtml(student.name)}</td><td>${escapeHtml(student.seat)}</td><td>國文</td><td aria-label="作文分手寫欄"></td><td aria-label="定期評量手寫欄"></td>${mixed?`<td>${escapeHtml(student.resourceTeacher)}</td>`:""}</tr>`).join("")}</tbody></table></section>`;}
-    function matchNoticeHtml(group){const [year,semester,period]=$("#exam").value.split("|");const students=group.students.filter(student=>!excluded.has(student.id));const viewMode=$("#viewMode").value;let body="";if(viewMode==="ratio"){const fifty=students.filter(student=>student.pulloutCount<3),hundred=students.filter(student=>student.pulloutCount>=3);if(fifty.length)body+=`<section class="ratio-section"><h3 class="ratio-heading">日常評量參考比例：50%｜定期評量：100% ＋作文分數</h3>${mainTableHtml(fifty,false)}<div class="ratio-note"><p>異想教室上課節數未達原班 50%者，請老師參閱此成績，依 50%比例評定該生日常成績。</p></div></section>`;if(hundred.length)body+=`<section class="ratio-section"><h3 class="ratio-heading">日常評量評定比例：100%｜定期評量：100% ＋作文分數</h3>${mainTableHtml(hundred,false)}<div class="ratio-note"><p>異想教室上課節數超過原班 50%者，由異想教室評定 100%日常成績。</p></div></section>`;}else body=mainTableHtml(students,true);body+=`<div class="notes"><p>☆依據 104.1.7 特推會決議，請老師參閱此分數作為上傳成績之依據：</p><p>1. 課程科目與原班符合，定期評量成績須加上作文分數後登記。</p><p>2. 異想教室上課節數超過原班 50%者，由異想教室評定 100%日常成績。</p><p>3. 異想教室上課節數未達原班 50%者，請老師參閱此成績依 50%比例評定該生日常成績。</p></div>`;return `<article class="notice-unit"><section class="main-notice"><h2 class="notice-title">${year} ${semester} 異想教室${period}成績</h2><p class="teacher-name"><span class="name">${escapeHtml(group.teacher)}</span> 老師：</p>${body}</section>${receiptHtml(students)}</article>`;}
-    function refreshResourceTeacherOptions(){const current=$("#resourceTeacher").value,teachers=[...new Set(records.map(record=>record.resourceTeacher).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"zh-Hant"));$("#resourceTeacher").innerHTML='<option value="all">全部教師</option>'+teachers.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)} 老師</option>`).join("");$("#resourceTeacher").value=teachers.includes(current)?current:"all";}
-    function refreshTeacherOptions(preserve=false){const current=preserve?$("#teacher").value:"all",teachers=[...new Set(groups().map(group=>group.teacher))];$("#teacher").innerHTML='<option value="all">全部教師</option>'+teachers.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)} 老師</option>`).join("");$("#teacher").value=current==="all"||teachers.includes(current)?current:"all";}
-    function render(){const selected=$("#teacher").value;const visible=groups().filter(group=>selected==="all"||group.teacher===selected).filter(group=>group.students.some(student=>!excluded.has(student.id)));$("#notice").innerHTML=visible.length?visible.map(matchNoticeHtml).join(""):'<div class="empty">目前沒有可顯示的通知單資料。</div>';}
+    function studentRatio(student){return student.pulloutCount<3?50:100;}
+
+    function ratioHouseHtml(ratio,kind){
+      return `<div class="ratio-house ${kind}" aria-label="${kind==="daily"?"�亙虜":"摰𡁏�"}閰閖� ${ratio}%">${ratio}%</div>`;
+    }
+
+    function ratioGuideHtml(dailyRatio){
+      return `<div class="ratio-guide" aria-label="�鞟蜀瘥𥪯�蝞剝�">
+        ${ratioHouseHtml(dailyRatio,"daily")}
+        ${ratioHouseHtml(100,"exam")}
+      </div>`;
+    }
+
+    function integratedGuideHtml(dailyRatio){
+      const copy=dailyRatio===50
+        ?"�砍��亙虜閰閖�靘� 50% 瘥𥪯�閰訫�"
+        :"�砍��亙虜閰閖��梁㺭�單�摰方�摰� 100%";
+      return `<div class="integrated-strip">
+        <div class="integrated-copy">${copy}</div>
+        ${ratioHouseHtml(dailyRatio,"daily")}
+        ${ratioHouseHtml(100,"exam")}
+      </div>`;
+    }
+
+    function mainTableHtml(students,{showCorner=false}={}){
+      return `<table class="grade-table main-table"><thead><tr>
+        <th class="col-class">�剔�</th><th class="col-name">憪枏�</th><th class="col-seat">摨扯�</th>
+        <th class="col-subject">蝘𤑳𤌍</th><th class="col-daily">�亙虜閰閖�</th><th class="col-exam">摰𡁏�閰閖�</th>
+        <th class="col-teacher">�唳��坔恕��葦</th></tr></thead><tbody>${students.map(student=>`<tr>
+        <td>${escapeHtml(student.className)}</td><td>${escapeHtml(student.name)}</td><td>${escapeHtml(student.seat)}</td>
+        <td>�𧢲�</td>
+        <td class="col-daily">${showCorner&&studentRatio(student)===50?'<span class="ratio-corner">50%</span>':""}</td>
+        <td class="col-exam"><span class="composition-note">嚗衤������</span></td>
+        <td>${escapeHtml(student.resourceTeacher)}</td></tr>`).join("")}</tbody></table>`;
+    }
+
+    function tableBlockHtml(students,dailyRatio,mode){
+      if(mode==="arrow") return `<div class="table-block">${ratioGuideHtml(dailyRatio)}${mainTableHtml(students)}</div>`;
+      if(mode==="integrated") return `<div class="table-block">${integratedGuideHtml(dailyRatio)}${mainTableHtml(students)}</div>`;
+      return `<div class="table-block">${mainTableHtml(students,{showCorner:true})}</div>`;
+    }
+
+    function receiptHtml(students){
+      const teachers=[...new Set(students.map(student=>student.resourceTeacher).filter(Boolean))];
+      const mixed=teachers.length>1;
+      const target=mixed?"�唳��坔恕隞餉玨��葦":`${teachers[0]||"�唳��坔恕隞餉玨"}��葦`;
+      const instruction=`<span class="highlight-mark">摰𡁏�閰閖��鞟蜀�牐�雿𨀣���彍敺�</span>嚗諹�撠��璇苷漱蝯�${escapeHtml(target)}嚗䔶誑�拇�蝮曄蒈閮矋��蠘���`;
+      return `<div class="cut-line" aria-hidden="true"><span>��</span></div><section class="receipt">
+        <h3 class="receipt-title">摰𡁏�閰閖��鞟蜀�墧�</h3>
+        <p class="receipt-instruction">�� ${instruction}</p>
+        <table class="grade-table receipt-table${mixed?" mixed-teachers":""}"><thead><tr>
+        <th class="col-class">�剔�</th><th class="col-name">憪枏�</th><th class="col-seat">摨扯�</th><th class="col-subject">蝘𤑳𤌍</th>
+        <th class="col-composition">雿𨀣���</th><th class="col-score">摰𡁏�閰閖�</th>${mixed?'<th class="col-return">鈭文���葦</th>':""}
+        </tr></thead><tbody>${students.map(student=>`<tr><td>${escapeHtml(student.className)}</td><td>${escapeHtml(student.name)}</td>
+        <td>${escapeHtml(student.seat)}</td><td>�𧢲�</td><td aria-label="雿𨀣����撖急�"></td><td aria-label="摰𡁏�閰閖��见神甈�"></td>
+        ${mixed?`<td>${escapeHtml(student.resourceTeacher)}</td>`:""}</tr>`).join("")}</tbody></table></section>`;
+    }
+
+    function matchNoticeHtml(group){
+      const [year,semester,period]=$("#exam").value.split("|");
+      const students=group.students.filter(student=>!excluded.has(student.id));
+      const mode=$("#viewMode").value;
+      let body="";
+
+      if(mode==="compact"){
+        body=tableBlockHtml(students,null,"compact");
+      }else{
+        const fifty=students.filter(student=>studentRatio(student)===50);
+        const hundred=students.filter(student=>studentRatio(student)===100);
+        if(fifty.length)body+=`<section class="ratio-section">${tableBlockHtml(fifty,50,mode)}
+          <div class="ratio-note"><p>�唳��坔恕銝𡃏玨蝭��豢𧊋�𥪜��� 50%���隢贝��葦��鰐甇斗�蝮橘�靘� 50%瘥𥪯�閰訫�閰脩��亙虜�鞟蜀��</p></div></section>`;
+        if(hundred.length)body+=`<section class="ratio-section">${tableBlockHtml(hundred,100,mode)}
+          <div class="ratio-note"><p>�唳��坔恕銝𡃏玨蝭��貉��𤾸��� 50%����梁㺭�單�摰方�摰� 100%�亙虜�鞟蜀��</p></div></section>`;
+      }
+
+      body+=`<div class="notes"><p>����� 104.1.7 �寞綫��捱霅堆�隢贝��葦��鰐甇文��訾��箔��單�蝮曆�靘脲�嚗�</p>
+      <p>1. 隤脩�蝘𤑳𤌍����剔泵���摰𡁏�閰閖��鞟蜀���銝𠹺�����詨��餉���</p>
+      <p>2. �唳��坔恕銝𡃏玨蝭��貉��𤾸��� 50%����梁㺭�單�摰方�摰� 100%�亙虜�鞟蜀��</p>
+      <p>3. �唳��坔恕銝𡃏玨蝭��豢𧊋�𥪜��� 50%���隢贝��葦��鰐甇斗�蝮曆� 50%瘥𥪯�閰訫�閰脩��亙虜�鞟蜀��</p></div>`;
+
+      return `<article class="notice-unit"><section class="main-notice"><h2 class="notice-title">${year} ${semester} �唳��坔恕${period}�鞟蜀</h2>
+      <p class="teacher-name"><span class="name">${escapeHtml(group.teacher)}</span> ��葦嚗�</p>${body}</section>${receiptHtml(students)}</article>`;
+    }
+
+    function refreshResourceTeacherOptions(){const current=$("#resourceTeacher").value,teachers=[...new Set(records.map(record=>record.resourceTeacher).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"zh-Hant"));$("#resourceTeacher").innerHTML='<option value="all">�券��坔葦</option>'+teachers.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)} ��葦</option>`).join("");$("#resourceTeacher").value=teachers.includes(current)?current:"all";}
+    function refreshTeacherOptions(preserve=false){const current=preserve?$("#teacher").value:"all",teachers=[...new Set(groups().map(group=>group.teacher))];$("#teacher").innerHTML='<option value="all">�券��坔葦</option>'+teachers.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)} ��葦</option>`).join("");$("#teacher").value=current==="all"||teachers.includes(current)?current:"all";}
+    function visibleGroups(){const selected=$("#teacher").value;return groups().filter(group=>selected==="all"||group.teacher===selected).map(group=>({...group,students:group.students.filter(student=>!excluded.has(student.id))})).filter(group=>group.students.length);}
+    function render(){const visible=visibleGroups();$("#notice").innerHTML=visible.length?visible.map(matchNoticeHtml).join(""):'<div class="empty">�桀�瘝埝��舫＊蝷箇��𡁶䰻�株��踺��</div>';}
     function selectedStudents(){const selected=$("#teacher").value;return groups().filter(group=>selected==="all"||group.teacher===selected).flatMap(group=>group.students.map(student=>({...student,recipient:group.teacher})));}
+
     function saveExcluded(){sessionStorage.setItem("chinese-score-notice-excluded",JSON.stringify([...excluded]));}
-    function renderStudentFilters(){const keyword=normalizeHeader($("#studentSearch").value),students=selectedStudents(),filtered=students.filter(student=>!keyword||normalizeHeader(`${student.className}${student.seat}${student.name}${student.subject}${student.recipient}${student.resourceTeacher}`).includes(keyword));$("#studentFilters").innerHTML=filtered.length?filtered.map(student=>{const off=excluded.has(student.id);return `<label class="student-filter-item${off?" excluded":""}"><input type="checkbox" data-student-id="${escapeHtml(student.id)}" ${off?"":"checked"}><span>${escapeHtml(student.className)}班 ${escapeHtml(student.seat)}號 ${escapeHtml(student.name)}<br><small>國文 → ${escapeHtml(student.recipient)}老師｜${escapeHtml(student.resourceTeacher)}老師</small></span></label>`;}).join(""):'<div style="padding:12px;color:#64748b;font-size:13px">找不到符合條件的學生。</div>';const included=students.filter(student=>!excluded.has(student.id)).length;$("#filterSummary").textContent=`目前保留 ${included} 筆，排除 ${students.length-included} 筆。`;$("#filterToggleText").textContent=`✅ 學生篩選（保留 ${included}／排除 ${students.length-included}）`;$("#studentFilters").querySelectorAll("[data-student-id]").forEach(input=>input.addEventListener("change",event=>{const id=event.currentTarget.dataset.studentId;if(event.currentTarget.checked)excluded.delete(id);else excluded.add(id);saveExcluded();render();renderStudentFilters();}));}
+    function renderStudentFilters(){
+      const keyword=normalizeHeader($("#studentSearch").value),students=selectedStudents(),filtered=students.filter(student=>!keyword||normalizeHeader(`${student.className}${student.seat}${student.name}${student.subject}${student.recipient}${student.resourceTeacher}`).includes(keyword));
+      $("#studentFilters").innerHTML=filtered.length?filtered.map(student=>{const off=excluded.has(student.id);return `<label class="student-filter-item${off?" excluded":""}"><input type="checkbox" data-student-id="${escapeHtml(student.id)}" ${off?"":"checked"}><span>${escapeHtml(student.className)}�� ${escapeHtml(student.seat)}�� ${escapeHtml(student.name)}<br><small>�𧢲� �� ${escapeHtml(student.recipient)}��葦嚚�${escapeHtml(student.resourceTeacher)}��葦</small></span></label>`;}).join(""):'<div style="padding:12px;color:#64748b;font-size:13px">�曆��啁泵���隞嗥�摮貊���</div>';
+      const included=students.filter(student=>!excluded.has(student.id)).length;
+      $("#filterSummary").textContent=`�桀�靽萘� ${included} 蝑���㘾膄 ${students.length-included} 蝑���`;
+      $("#filterToggleText").textContent=`�� 摮貊�蝭拚�嚗���� ${included}嚗𤩺��� ${students.length-included}嚗头;
+      $("#studentFilters").querySelectorAll("[data-student-id]").forEach(input=>input.addEventListener("change",event=>{const id=event.currentTarget.dataset.studentId;if(event.currentTarget.checked)excluded.delete(id);else excluded.add(id);saveExcluded();render();renderStudentFilters();}));
+    }
+
     function updateConnectionStatus(type,message){$("#syncBadge").className=`sync-badge ${type}`;$("#syncText").textContent=message;$("#teacherCount").textContent=new Set(groups().map(group=>group.teacher)).size;$("#studentCount").textContent=filteredRecords().length;}
-    async function loadData(){updateConnectionStatus("connecting","正在連線至雲端試算表 A7 抽課分頁……");try{records=await fetchA7SheetData();refreshResourceTeacherOptions();refreshTeacherOptions();render();renderStudentFilters();updateConnectionStatus("success","雲端連線成功！已同步國文資料。");}catch(error){console.warn("雲端讀取失敗，載入測試資料：",error);records=FALLBACK_RECORDS.map(record=>({...record}));refreshResourceTeacherOptions();refreshTeacherOptions();render();renderStudentFilters();updateConnectionStatus("fallback",`連線失敗，目前顯示測試資料。原因：${error.message}`);}}
+    async function loadData(){updateConnectionStatus("connecting","甇�銁����喲𤩅蝡航岫蝞𡑒” A7 �質玨����色��");try{records=await fetchA7SheetData();refreshResourceTeacherOptions();refreshTeacherOptions();render();renderStudentFilters();updateConnectionStatus("success","�脩垢����𣂼�嚗�歇�峕郊�𧢲�鞈����");}catch(error){console.warn("�脩垢霈��硋仃�梹�頛匧�皜祈岫鞈��嚗�",error);records=FALLBACK_RECORDS.map(record=>({...record}));refreshResourceTeacherOptions();refreshTeacherOptions();render();renderStudentFilters();updateConnectionStatus("fallback",`���憭望�嚗𣬚𤌍�漤＊蝷箸葫閰西��踺����𩤃�${error.message}`);}}
+
+    async function downloadWord(){
+      const button=$("#downloadWord");
+      const visible=visibleGroups();
+      if(!visible.length){alert("�桀�瘝埝��航撓�箇��𡁶䰻�株��踺��");return;}
+      button.disabled=true;button.textContent="甇�銁�Ｙ� Word��";
+      try{
+        const {
+          AlignmentType, BorderStyle, Document, HighlightColor, Packer, Paragraph, Table, TableCell, TableLayoutType,
+          TableRow, TextRun, VerticalAlign, WidthType
+        }=await import("https://cdn.jsdelivr.net/npm/docx@9.5.1/+esm");
+
+        const FONT="DFKai-SB";
+        const mainWidths=[10,14,9,10,15,19,23];
+        const border={style:BorderStyle.SINGLE,size:4,color:"000000"};
+        const borders={top:border,bottom:border,left:border,right:border};
+        const noBorder={style:BorderStyle.NONE,size:0,color:"FFFFFF"};
+        const noBorders={top:noBorder,bottom:noBorder,left:noBorder,right:noBorder};
+
+        const text=(value,size=28,bold=false)=>new TextRun({text:String(value??""),font:FONT,size,bold});
+        const para=(value,{size=28,bold=false,align=AlignmentType.CENTER,spacingAfter=0,pageBreakBefore=false}={})=>new Paragraph({
+          alignment:align,
+          pageBreakBefore,
+          spacing:{after:spacingAfter},
+          children:[text(value,size,bold)]
+        });
+        const cell=(value,width,{size=28,bold=false,borderSet=borders,align=AlignmentType.CENTER}={})=>new TableCell({
+          width:{size:width,type:WidthType.PERCENTAGE},
+          verticalAlign:VerticalAlign.CENTER,
+          borders:borderSet,
+          children:[para(value,{size,bold,align})]
+        });
+
+        function wordRatioGuide(dailyRatio){
+          const guideCell=(label,width)=>new TableCell({
+            width:{size:width,type:WidthType.PERCENTAGE},
+            verticalAlign:VerticalAlign.CENTER,
+            borders:noBorders,
+            children:label?[
+              para(`${label}%`,{size:26,bold:true,align:AlignmentType.CENTER}),
+              para("��",{size:30,bold:true,align:AlignmentType.CENTER})
+            ]:[para("",{size:10})]
+          });
+          const labels=["","","","",dailyRatio,100,""];
+          return new Table({
+            width:{size:100,type:WidthType.PERCENTAGE},
+            layout:TableLayoutType.FIXED,
+            borders:noBorders,
+            rows:[new TableRow({
+              cantSplit:true,
+              children:labels.map((label,index)=>guideCell(label,mainWidths[index]))
+            })]
+          });
+        }
+
+        function wordMainTable(students,mode){
+          const headers=["�剔�","憪枏�","摨扯�","蝘𤑳𤌍","�亙虜閰閖�","摰𡁏�閰閖�","�唳��坔恕��葦"];
+          const rows=[
+            new TableRow({cantSplit:true,tableHeader:true,children:headers.map((header,index)=>cell(header,mainWidths[index],{size:28}))}),
+            ...students.map(student=>new TableRow({cantSplit:true,children:[
+              cell(student.className,mainWidths[0]),
+              cell(student.name,mainWidths[1]),
+              cell(student.seat,mainWidths[2]),
+              cell("�𧢲�",mainWidths[3]),
+              cell(mode==="compact"&&studentRatio(student)===50?"50%":"",mainWidths[4],{size:22}),
+              cell("嚗衤������",mainWidths[5],{size:20}),
+              cell(student.resourceTeacher,mainWidths[6])
+            ]}))
+          ];
+          return new Table({width:{size:100,type:WidthType.PERCENTAGE},layout:TableLayoutType.FIXED,rows});
+        }
+
+        function wordReceiptTable(students){
+          const teachers=[...new Set(students.map(student=>student.resourceTeacher).filter(Boolean))],mixed=teachers.length>1;
+          const widths=mixed?[11,17,10,11,16,18,17]:[13,18,12,12,18,27];
+          const headers=mixed?["�剔�","憪枏�","摨扯�","蝘𤑳𤌍","雿𨀣���","摰𡁏�閰閖�","鈭文���葦"]:["�剔�","憪枏�","摨扯�","蝘𤑳𤌍","雿𨀣���","摰𡁏�閰閖�"];
+          const rows=[
+            new TableRow({cantSplit:true,tableHeader:true,children:headers.map((header,index)=>cell(header,widths[index],{size:26}))}),
+            ...students.map(student=>new TableRow({cantSplit:true,children:[
+              cell(student.className,widths[0],{size:26}),
+              cell(student.name,widths[1],{size:26}),
+              cell(student.seat,widths[2],{size:26}),
+              cell("�𧢲�",widths[3],{size:26}),
+              cell("",widths[4],{size:26}),
+              cell("",widths[5],{size:26}),
+              ...(mixed?[cell(student.resourceTeacher,widths[6],{size:24})]:[])
+            ]}))
+          ];
+          return new Table({width:{size:100,type:WidthType.PERCENTAGE},layout:TableLayoutType.FIXED,rows});
+        }
+
+        const [year,semester,period]=$("#exam").value.split("|");
+        const children=[];
+        visible.forEach((group,groupIndex)=>{
+          children.push(para(`${year} ${semester} �唳��坔恕${period}�鞟蜀`,{size:36,align:AlignmentType.CENTER,pageBreakBefore:groupIndex>0,spacingAfter:160}));
+          children.push(para(`${group.teacher} ��葦嚗䫤,{size:38,bold:true,align:AlignmentType.LEFT,spacingAfter:120}));
+
+          const mode=$("#viewMode").value;
+          if(mode==="compact"){
+            children.push(wordMainTable(group.students,"compact"));
+          }else{
+            const wordChunks=[50,100].map(ratio=>({ratio,students:group.students.filter(student=>studentRatio(student)===ratio)})).filter(chunk=>chunk.students.length);
+            wordChunks.forEach(chunk=>{
+              children.push(wordRatioGuide(chunk.ratio));
+              children.push(wordMainTable(chunk.students,mode));
+              children.push(para("",{size:10,spacingAfter:80}));
+            });
+          }
+
+          children.push(para("����� 104.1.7 �寞綫��捱霅堆�隢贝��葦��鰐甇文��訾��箔��單�蝮曆�靘脲�嚗�",{size:24,align:AlignmentType.LEFT,spacingAfter:30}));
+          children.push(para("1. 隤脩�蝘𤑳𤌍����剔泵���摰𡁏�閰閖��鞟蜀���銝𠹺�����詨��餉���",{size:24,align:AlignmentType.LEFT,spacingAfter:30}));
+          children.push(para("2. �唳��坔恕銝𡃏玨蝭��貉��𤾸��� 50%����梁㺭�單�摰方�摰� 100%�亙虜�鞟蜀��",{size:24,align:AlignmentType.LEFT,spacingAfter:30}));
+          children.push(para("3. �唳��坔恕銝𡃏玨蝭��豢𧊋�𥪜��� 50%���隢贝��葦��鰐甇斗�蝮曆� 50%瘥𥪯�閰訫�閰脩��亙虜�鞟蜀��",{size:24,align:AlignmentType.LEFT,spacingAfter:180}));
+
+          children.push(para("����������������������������������������������������������������",{size:18,align:AlignmentType.CENTER,spacingAfter:80}));
+          children.push(para("摰𡁏�閰閖��鞟蜀�墧�",{size:32,bold:true,align:AlignmentType.CENTER,spacingAfter:60}));
+          const teachers=[...new Set(group.students.map(student=>student.resourceTeacher).filter(Boolean))];
+          const target=teachers.length>1?"�唳��坔恕隞餉玨��葦":`${teachers[0]||"�唳��坔恕隞餉玨"}��葦`;
+          children.push(new Paragraph({
+            alignment:AlignmentType.LEFT,
+            spacing:{after:80},
+            children:[
+              new TextRun({text:"�� ",font:FONT,size:24}),
+              new TextRun({text:"摰𡁏�閰閖��鞟蜀�牐�雿𨀣���彍敺�",font:FONT,size:24,highlight:HighlightColor.YELLOW}),
+              new TextRun({text:`嚗諹�撠��璇苷漱蝯�${target}嚗䔶誑�拇�蝮曄蒈閮矋��蠘���`,font:FONT,size:24})
+            ]
+          }));
+          children.push(wordReceiptTable(group.students));
+        });
+
+        const doc=new Document({
+          styles:{default:{document:{run:{font:FONT,size:28},paragraph:{spacing:{line:360}}}}},
+          sections:[{
+            properties:{page:{size:{width:11906,height:16838},margin:{top:907,right:680,bottom:907,left:680}}},
+            children
+          }]
+        });
+
+        const blob=await Packer.toBlob(doc);
+        const url=URL.createObjectURL(blob);
+        const link=document.createElement("a");
+        link.href=url;
+        link.download=`${year}_${semester}_${period}_�𧢲�畾菔���蝮暸�𡁶䰻��.docx`;
+        document.body.appendChild(link);link.click();link.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),1000);
+      }catch(error){
+        console.error(error);
+        alert(`Word �Ｙ�憭望�嚗�${error.message}`);
+      }finally{
+        button.disabled=false;button.textContent="銝贝� Word (.docx)";
+      }
+    }
+
     $("#teacher").addEventListener("change",()=>{render();renderStudentFilters();});
-    $("#resourceTeacher").addEventListener("change",()=>{refreshTeacherOptions(true);render();renderStudentFilters();updateConnectionStatus("success","已套用異想教室國文老師篩選。");});
-    $("#exam").addEventListener("change",render);$("#viewMode").addEventListener("change",render);$("#studentSearch").addEventListener("input",renderStudentFilters);
+    $("#resourceTeacher").addEventListener("change",()=>{refreshTeacherOptions(true);render();renderStudentFilters();updateConnectionStatus("success","撌脣��函㺭�單�摰文�����葦蝭拚���");});
+    $("#exam").addEventListener("change",render);
+    $("#viewMode").addEventListener("change",render);
+    $("#studentSearch").addEventListener("input",renderStudentFilters);
     $("#restoreStudents").addEventListener("click",()=>{selectedStudents().forEach(student=>excluded.delete(student.id));saveExcluded();render();renderStudentFilters();});
-    $("#printPage").addEventListener("click",()=>window.print());$("#reload").addEventListener("click",loadData);
-    window.__chineseNoticeTest={parseCsv,buildRecordsFromA7Rows,receiptHtml,mainTableHtml};
+    $("#printPage").addEventListener("click",()=>window.print());
+    $("#downloadWord").addEventListener("click",downloadWord);
+    $("#reload").addEventListener("click",loadData);
+
+    window.__chineseNoticeTest={parseCsv,buildRecordsFromA7Rows,receiptHtml,mainTableHtml,studentRatio};
     loadData();
   </script>
 </body>
