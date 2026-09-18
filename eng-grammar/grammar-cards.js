@@ -14,6 +14,7 @@ window.GRAMMAR_DATA = [
       { id: "9", category: "代名詞", title: "所有格代名詞", desc: "區分「我的書 (my book)」與「我的東西 (mine)」的代名詞用法", filename: "grammar_mine.html", themeColor: "#3B82F6" },
 
       // ==== 日常句型及片語 ====
+      { id: "card-builder", category: "日常句型及片語", title: "英文賀卡製作｜English Card Builder", desc: "選擇收件人、節慶祝賀、想說的話與寄件人，組合英文賀卡並查看寫法提示", filename: "card-builder.html", themeColor: "#2563EB" },
       { id: "10", category: "日常句型及片語", title: "祈使句(please)", desc: "祈使句的禮貌表達與日常應用", filename: "grammar_please.html", themeColor: "#2563EB" },
       { id: "11", category: "日常句型及片語", title: "花錢與花時間 (spend, cost, take)", desc: "主詞是人還是物？花費動詞三大解析", filename: "grammar_spend_cost_take.html", themeColor: "#2563EB" },
       { id: "12", category: "日常句型及片語", title: "我會... (can/can't)", desc: "能力表達與日常助動詞簡答", filename: "grammar_can_can_t.html", themeColor: "#2563EB" },

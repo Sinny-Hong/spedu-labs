@@ -1,0 +1,56 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>English Card Builder V2</title><style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Microsoft JhengHei",sans-serif;color:#34443e;background:#dfe8df}
+.stage{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:3vh;background:radial-gradient(circle at 15% 20%,#f8e9dd 0 12%,transparent 35%),radial-gradient(circle at 88% 82%,#dce9df 0 15%,transparent 38%),#edf1e9}
+.card{width:min(1280px,94vw);min-height:90vh;position:relative;overflow:hidden;padding:5vh 9vw 4vh;background:linear-gradient(145deg,#fffaf0ee,#f7f5e9ee);border:1px solid #bacbbb;border-radius:34px;box-shadow:0 20px 60px #4f645526}
+.card:before,.card:after{position:absolute;pointer-events:none;color:#78927e;opacity:.12;font-size:clamp(100px,17vw,260px);font-weight:300}
+.card:before{content:"✧  ·  ◌";left:-3vw;top:4vh;transform:rotate(-12deg)}.card:after{content:"💡";right:-3vw;bottom:-7vh;filter:grayscale(1)}
+.corner{position:absolute;right:5vw;top:5vh;color:#8ba08e;font-size:clamp(18px,2vw,30px);opacity:.55;letter-spacing:8px}
+header{text-align:center;position:relative;z-index:1;margin-bottom:3vh}h1{font-family:"Comic Sans MS","Comic Sans",Arial,sans-serif;font-size:clamp(34px,4vw,62px);font-weight:500;margin:0;color:#3d594b}
+.tag{font-size:clamp(15px,1.35vw,21px);color:#7b897f;margin-top:7px;letter-spacing:.08em}
+.builder{width:min(980px,86%);margin:auto;position:relative;z-index:2;display:grid;gap:clamp(12px,2.2vh,26px)}
+.line{position:relative;padding:4px 52px 9px 7px;border-bottom:1.7px solid #9fb3a4;cursor:pointer;min-height:76px;background:transparent}
+.line.message{min-height:92px}.meta{display:flex;align-items:center;gap:9px;color:#788a7e;font-size:clamp(13px,1.1vw,17px);font-weight:700;letter-spacing:.04em}
+.badge{display:inline-flex;width:27px;height:27px;border:1px solid #9db2a2;border-radius:50%;align-items:center;justify-content:center;color:#557061;transition:.2s}.line.chosen .badge{opacity:.28}.line.chosen .meta{color:#9eaaa2}
+.value{font-family:"Comic Sans MS","Comic Sans",Arial,sans-serif;font-size:clamp(24px,2.45vw,39px);line-height:1.2;margin-top:4px;color:#283b32}
+.arrow{position:absolute;right:9px;bottom:18px;color:#6f8878;font-size:22px}.info{position:absolute;right:-44px;top:9px;border:1px solid #9eb1a3;background:#f8f7eecc;color:#5e7868;width:34px;height:34px;border-radius:50%;font-weight:bold;cursor:pointer}
+.note{text-align:center;color:#839087;margin-top:3vh;font-size:14px;position:relative;z-index:2}
+.modal{display:none;position:fixed;inset:0;background:#26362f70;z-index:1000;align-items:center;justify-content:center;padding:3vh}.modal.open{display:flex}
+.panel{width:min(820px,92vw);max-height:84vh;overflow:auto;background:#fffaf0;border:1px solid #b9c8ba;border-radius:25px;padding:26px;box-shadow:0 24px 70px #0004}
+.close{float:right;border:0;background:#e8eee8;width:36px;height:36px;border-radius:50%;font-size:18px}.choice{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid #dce4dc;background:transparent;padding:13px;cursor:pointer}.choice:hover{background:#eef3eb}.en{font-family:"Comic Sans MS","Comic Sans",Arial,sans-serif;font-size:21px;font-weight:bold}.zh{font-size:15px;color:#738078;margin-top:3px}.tip{font-size:18px;line-height:1.7}.tip b{color:#365d49}
+@media (min-aspect-ratio:16/10) and (min-width:900px){
+ .card{width:min(1500px,96vw);min-height:min(900px,92vh);padding:3.5vh 8vw 3vh}
+ header{margin-bottom:2vh}.builder{width:min(1080px,84%)}.line{min-height:clamp(68px,10vh,96px)}
+ .line.message{min-height:clamp(78px,12vh,112px)}
+}
+@media(max-width:700px){
+ .stage{padding:0}.card{width:100vw;min-height:100vh;border-width:2px;border-radius:0;padding:5vh 11vw 4vh}
+ .builder{width:100%}.info{right:-40px}.line{padding-right:36px}.corner{display:none}
+}
+</style></head><body><main class=stage><section class=card><div class=corner>◌ · ✧ · ◌</div><header><h1>English Card Builder</h1><div class=tag>WRITE A LITTLE · MEAN A LOT</div></header><div class=builder id=b></div><div class=note>點文字選句　·　ⓘ 查看格式與文化小提示</div></section></main>
+<div class=modal id=m><div class=panel><button class=close onclick=closeM()>×</button><div id=mb></div></div></div>
+<script>
+const D=[
+["收件人","RECIPIENT","收件人 Recipient",[["Dear Teacher,","親愛的老師"],["Dear Ms. ______,","親愛的 ______ 老師（女）"],["Dear Mr. ______,","親愛的 ______ 老師（男）"],["Dear Mom,","親愛的媽媽"],["Dear Dad,","親愛的爸爸"],["Dear ______,","親愛的 ______"]],`<h2>① 收件人怎麼寫？</h2><div class=tip>英文賀卡常用 <b>Dear + 稱呼／名字 + ,</b><br><br><b>Dear Ms. Hong,</b><br><b>Dear Mr. Wang,</b><br><b>Dear Mom,</b><br><br><b>Mr.</b> 用於男性；<b>Ms.</b> 不特別指出女性的婚姻狀況。賀卡或親友書信的稱呼後面通常使用<b>逗號（,）</b>。</div>`],
+["節慶祝賀","GREETING","節慶祝賀 Greeting",[["Happy Teachers’ Day!","教師節快樂！"],["Happy Mother’s Day!","母親節快樂！"],["Happy Father’s Day!","父親節快樂！"],["Happy Birthday!","生日快樂！"],["Merry Christmas!","聖誕快樂！"],["Happy New Year!","新年快樂！"]],`<h2>② 節慶祝賀</h2><div class=tip>節慶祝賀可以獨立成一句，例如：<br><br><b>Happy Teachers’ Day!</b><br><br>祝賀時常使用驚嘆號 <b>!</b>；Christmas 最常說 <b>Merry Christmas!</b></div>`],
+["想說的話","MESSAGE","祝福語 Message",[["Thank you.","謝謝你。"],["Thank you for helping me.","謝謝你幫助我。"],["Thank you for teaching me.","謝謝你教導我。"],["Thank you for taking care of me.","謝謝你照顧我。"],["I love you.","我愛你。"],["I love you very much.","我非常愛你。"],["I miss you.","我想你。"],["You are important to me.","你對我很重要。"],["You are very kind.","你很親切。"],["You are very patient.","你很有耐心。"],["You are great!","你很棒！"],["You are a great teacher.","你是一位很棒的老師。"],["Have a great day!","祝你今天愉快！"],["Be happy every day!","祝你每天開心！"],["Take care!","保重！"],["I wish you all the best.","祝你一切順利。"]],`<h2>③ 想說的話</h2><div class=tip>英文卡片不需要寫得很長。選一句<b>真的符合你的心意</b>的話就很好。<br><br>可以寫感謝、愛與關心、稱讚或祝福。</div>`],
+["寄件人","FROM","寄件人 From",[["Your student,<br>________","你的學生＋自己的名字"],["Your friend,<br>________","你的朋友＋自己的名字"],["Your daughter,<br>________","你的女兒＋自己的名字"],["Your son,<br>________","你的兒子＋自己的名字"],["Love,<br>________","愛你的……＋自己的名字"],["From,<br>________","來自……＋自己的名字"]],`<h2>④ 寄件人怎麼寫？</h2><div class=tip>先寫你和收件人的<b>關係／結尾語</b>，下一行再寫自己的名字：<br><br><b>Your student,</b><br>Amy<br><br><b>Love,</b><br>Amy<br><br><b>Love,</b> 比較適合家人或親近的人；寫給老師可以使用 <b>Your student,</b>。</div>`]
+];
+const b=document.getElementById("b"),m=document.getElementById("m"),mb=document.getElementById("mb");
+D.forEach((d,i)=>{let x=document.createElement("div");x.className="line "+(i===2?"message":"");x.innerHTML=`<div class=meta><span class=badge>${i+1}</span>${d[0]} · ${d[1]}</div><div class=value id=v${i}>${d[2]}</div><span class=arrow>⌄</span><button class=info aria-label="提示" onclick="event.stopPropagation();tip(${i})">i</button>`;x.onclick=()=>choices(i);b.appendChild(x)});
+function choices(i){
+ const reset=`<button class=choice onclick="resetChoice(${i})"><div class=en>↶ ${D[i][2]}</div><div class=zh>回到初始選項</div></button>`;
+ mb.innerHTML=`<h2>${D[i][0]} · ${D[i][1]}</h2>`+reset+D[i][3].map((x,j)=>`<button class=choice onclick="choose(${i},${j})"><div class=en>${x[0]}</div><div class=zh>${x[1]}</div></button>`).join("");
+ m.classList.add("open")
+}
+function choose(i,j){
+ document.getElementById("v"+i).innerHTML=D[i][3][j][0];
+ b.children[i].classList.add("chosen");
+ closeM()
+}
+function resetChoice(i){
+ document.getElementById("v"+i).textContent=D[i][2];
+ b.children[i].classList.remove("chosen");
+ closeM()
+}function tip(i){mb.innerHTML=D[i][4];m.classList.add("open")}function closeM(){m.classList.remove("open")}m.addEventListener("click",e=>{if(e.target===m)closeM()});
+</script></body></html>
