@@ -13,7 +13,7 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:#eef2f7;color:var(--ink);font-family:Arial,"Microsoft JhengHei",sans-serif;font-size:22px;line-height:1.65}
+body{margin:0;background:#eef2f7;color:var(--ink);font-family:Arial,"Microsoft JhengHei",sans-serif;font-size:18px;line-height:1.45}
 .sidebar{position:fixed;z-index:40;top:28px;right:max(10px,calc((100vw - 900px)/2 - 205px));width:190px;max-height:calc(100vh - 56px);padding:10px;background:rgba(255,255,255,.97);border:1px solid #dbe2ea;border-radius:12px;overflow:auto;box-shadow:0 4px 16px rgba(15,23,42,.08)}
 .sidebar h1{font-size:19px;margin:2px 8px 9px;line-height:1.35;color:#334155}
 .sidebar .nav-group{margin:9px 8px 3px;font-size:12px;font-weight:800;color:#64748b;letter-spacing:.06em}
@@ -22,28 +22,28 @@ body{margin:0;background:#eef2f7;color:var(--ink);font-family:Arial,"Microsoft J
 .sidebar a.active{background:#e0edff;color:#1d4ed8}
 .sidebar a span{font-weight:900;min-width:34px}
 .sidebar-toggle{display:none;width:100%;border:0;background:#334155;color:#fff;border-radius:8px;padding:7px 11px;font-weight:800}
-main{width:min(900px,calc(100% - 24px));margin:22px auto 80px;padding:28px 34px 80px;background:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(15,23,42,.09)}
-.hero{background:linear-gradient(100deg,#eff6ff,#f8fafc);border:1px solid #bfdbfe;border-left:7px solid #2563eb;border-radius:14px;padding:18px 22px;margin-bottom:24px}
-.hero h1{font-size:34px;margin:0 0 3px;color:#1e3a5f} .hero p{margin:0;color:#526277}
-.section-head{--stage:#2563eb;--stage-bg:#eff6ff;position:relative;scroll-margin-top:18px;margin-top:28px;background:var(--stage-bg);border:1px solid color-mix(in srgb,var(--stage) 35%,#dbe2ea);border-radius:12px;padding:11px 15px 11px 21px;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 2px 7px rgba(15,23,42,.04)}
+main{width:min(900px,calc(100% - 24px));margin:18px auto 60px;padding:22px 30px 60px;background:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(15,23,42,.09)}
+.hero{background:linear-gradient(100deg,#eff6ff,#f8fafc);border:1px solid #bfdbfe;border-left:7px solid #2563eb;border-radius:14px;padding:14px 18px;margin-bottom:18px}
+.hero h1{font-size:29px;margin:0 0 2px;color:#1e3a5f} .hero p{margin:0;color:#526277}
+.section-head{--stage:#2563eb;--stage-bg:#eff6ff;position:relative;scroll-margin-top:18px;margin-top:22px;background:var(--stage-bg);border:1px solid color-mix(in srgb,var(--stage) 35%,#dbe2ea);border-radius:12px;padding:8px 12px 8px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 7px rgba(15,23,42,.04)}
 .section-head::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:6px;border-radius:0 5px 5px 0;background:var(--stage)}
 .section-head:has(h2[id^="1-"]){--stage:#64748b;--stage-bg:#f8fafc}
 .section-head:has(h2[id^="2-"]){--stage:#2563eb;--stage-bg:#eff6ff}
 .section-head:has(h2[id^="3-"]){--stage:#4f46e5;--stage-bg:#eef2ff}
 .section-head:has(h2[id^="4-"]){--stage:#b45309;--stage-bg:#fff7ed}
 .section-head:has(h2[id^="5-"]){--stage:#0f766e;--stage-bg:#f0fdfa}
-.section-head h2{font-size:25px;margin:0;line-height:1.35}
+.section-head h2{font-size:22px;margin:0;line-height:1.3}
 .actions{display:flex;gap:8px;flex:none}
 button{font:inherit;cursor:pointer}
-.actions button{font-size:17px;padding:6px 13px;border:1px solid #94a3b8;border-radius:8px;background:#fff;color:#334155;font-weight:700}
+.actions button{font-size:15px;padding:5px 11px;border:1px solid #94a3b8;border-radius:8px;background:#fff;color:#334155;font-weight:700}
 .actions button:hover{background:#f8fafc;border-color:#64748b}
 .actions .clear{color:#555}
 .note,.exercise,.reading,.fill-table,.instruction{background:#fff}
-.note{padding:16px 22px;border:1px solid var(--line);border-top:0}
-.note p{margin:7px 0} .example{font-size:1.08em;font-weight:700}
-.instruction{margin:0;padding:12px 18px 0;color:#555}
-.exercise{padding:10px 18px 18px;border:1px solid var(--line);border-top:0}
-.q{padding:11px 4px;border-bottom:1px dashed #ddd}
+.note{padding:12px 18px;border:1px solid var(--line);border-top:0}
+.note p{margin:5px 0} .example{font-size:1.05em;font-weight:700}
+.instruction{margin:0;padding:9px 16px 0;color:#555}
+.exercise{padding:7px 16px 14px;border:1px solid var(--line);border-top:0}
+.q{padding:7px 4px;border-bottom:1px dashed #ddd}
 .q:last-child{border-bottom:0} .num{display:inline-block;min-width:72px}
 .choice,.card,.token{border:2px solid transparent;background:#f6f6f6;border-radius:9px;padding:4px 10px;margin:2px 3px;color:inherit}
 .choice.selected,.card.selected,.token.selected{background:var(--blue-bg);border-color:var(--blue);color:#0d57a1}
@@ -72,9 +72,9 @@ input.answer{background:var(--pink);color:var(--red);border-color:var(--red);fon
 .position-guide{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .position-guide div{padding:8px 12px;border-radius:9px;background:#f8fafc;border:1px solid #cbd5e1;text-align:center;font-weight:800}
 .mc-options{margin:4px 0 0 72px;display:flex;gap:10px;flex-wrap:wrap}
-.reading{border:1px solid var(--line);border-top:0;padding:22px 25px;font-size:24px;line-height:2.05}
+.reading{border:1px solid var(--line);border-top:0;padding:16px 20px;font-size:19px;line-height:1.65}
 .dialogue{white-space:normal}
-.token{font-weight:700;padding:1px 5px;background:#fff}
+.token{font-weight:400;padding:1px 4px;background:#fff}
 @media(max-width:1320px){
  .sidebar{top:auto;right:12px;bottom:12px;width:auto;max-width:calc(100vw - 24px);max-height:calc(100vh - 24px);padding:6px;overflow:auto}
  .sidebar-toggle{display:block}
@@ -85,12 +85,12 @@ input.answer{background:var(--pink);color:var(--red);border-color:var(--red);fon
  .sidebar.expanded .sidebar-toggle{margin-bottom:6px}
 }
 @media(max-width:800px){
- body{font-size:18px;background:#fff}
+ body{font-size:16px;background:#fff}
  main{width:100%;margin:0;padding:64px 14px 54px;border-radius:0;box-shadow:none}
- .hero{padding:15px 17px;margin-bottom:18px}.hero h1{font-size:27px}
+ .hero{padding:13px 15px;margin-bottom:16px}.hero h1{font-size:24px}
  .section-head{align-items:flex-start;padding:10px 11px 10px 17px;margin-top:22px}
- .section-head h2{font-size:20px}.actions{gap:5px}.actions button{font-size:14px;padding:5px 8px}
- .blank input{min-width:150px}.reading{font-size:20px}
+ .section-head h2{font-size:18px}.actions{gap:5px}.actions button{font-size:13px;padding:4px 7px}
+ .blank input{min-width:150px}.reading{font-size:17px;line-height:1.55}
  .reorder.q{grid-template-columns:1fr}.reorder.q .card-bank{padding-left:38px}.reorder.q .answer-zone{grid-column:1;margin-left:38px}
  .fill-table{font-size:16px}.fill-table th,.fill-table td{padding:7px 5px}.position-guide{grid-template-columns:1fr}
 }
@@ -439,7 +439,27 @@ input.answer{background:var(--pink);color:var(--red);border-color:var(--red);fon
 <div class="q mc" data-answer="0"><span class="num">（　）7.</span> ______ are my friends.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) They</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) Their</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Them</button></div></div>
 <div class="q mc" data-answer="1"><span class="num">（　）8.</span> ______ father is Mr. Lin.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) You</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) Your</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Yours</button></div></div>
 <div class="q mc" data-answer="1"><span class="num">（　）9.</span> She ______ my aunt.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) am</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) is</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) are</button></div></div>
-<div class="q mc" data-answer="0"><span class="num">（　）10.</span> ______ teacher is very nice.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) Our</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) We</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Us</button></div></div></div>
+<div class="q mc" data-answer="0"><span class="num">（　）10.</span> ______ teacher is very nice.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) Our</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) We</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Us</button></div></div>
+<div class="q mc" data-answer="0"><span class="num">（　）11.</span> ______ is my English teacher.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) She</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) Her</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Hers</button></div></div>
+<div class="q mc" data-answer="0"><span class="num">（　）12.</span> This is ______ dog. Its name is Lucky.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) my</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) I</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) me</button></div></div>
+<div class="q mc" data-answer="2"><span class="num">（　）13.</span> You ______ a good student.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) am</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) is</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) are</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（　）14.</span> ______ name is Peter.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) He</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) His</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Him</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（　）15.</span> It ______ a cute cat.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) am</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) is</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) are</button></div></div>
+<div class="q mc" data-answer="2"><span class="num">（　）16.</span> We ______ happy today.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) am</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) is</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) are</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（　）17.</span> ______ brother is tall and thin.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) She</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) Her</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Hers</button></div></div>
+<div class="q mc" data-answer="0"><span class="num">（　）18.</span> That boy is ______ classmate.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) our</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) we</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) us</button></div></div>
+<div class="q mc" data-answer="0"><span class="num">（　）19.</span> ______ are doctor and nurse.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) They</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) Their</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Them</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（　）20.</span> My mother loves ______ very much.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) I</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) me</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) my</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（　）21.</span> Where is ______ pencil case?<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) you</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) your</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) yours</button></div></div>
+<div class="q mc" data-answer="2"><span class="num">（　）22.</span> Tom and Mary ______ busy now.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) am</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) is</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) are</button></div></div>
+<div class="q mc" data-answer="0"><span class="num">（　）23.</span> ______ are my new classmates.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) You</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) Your</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Yours</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（　）24.</span> Look at ______! She is dancing.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) she</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) her</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) hers</button></div></div>
+<div class="q mc" data-answer="0"><span class="num">（　）25.</span> That is not my bag. It is ______ bag.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) his</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) he</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) him</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（　）26.</span> Listen to ______! I have good news.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) I</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) me</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) my</button></div></div>
+<div class="q mc" data-answer="0"><span class="num">（　）27.</span> ______ mother is a cook.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) Their</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) They</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Them</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（　）28.</span> The dog wags ______ tail happily.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) it</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) its</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) it's</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（　）29.</span> He ______ in the classroom.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) am</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) is</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) are</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（　）30.</span> Can you help ______ with the heavy box?<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) we</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) us</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) our</button></div></div></div>
 
 <div class="section-head"><h2 id="5-2">5-2　閱讀文章：圈出 10 個「主格」</h2><div class="actions"><button onclick="showAnswers('5-2')">解答</button><button class="clear" onclick="clearSection('5-2')">清除</button></div></div>
 <p class="instruction">直接點文章中的人稱代名詞主格，共 10 個。</p>
