@@ -13,20 +13,29 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,"Microsoft JhengHei",sans-serif;font-size:22px;line-height:1.65}
-.sidebar{position:fixed;left:calc(50% + 470px);top:28px;bottom:auto;width:190px;max-height:calc(100vh - 56px);background:#fff;border:1px solid #d7d7d7;border-radius:10px;padding:12px 10px;overflow:auto;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-.sidebar h1{font-size:20px;margin:0 8px 12px;line-height:1.35}
-.sidebar a{display:flex;gap:8px;text-decoration:none;color:#333;padding:7px 9px;border-radius:8px;font-size:16px;line-height:1.3}
-.sidebar a:hover{background:#f0f3f7}
-.sidebar a span{font-weight:700;min-width:36px}
-main{width:min(900px,calc(100% - 24px));margin:0 auto 100px;padding:28px 0 80px}
-.hero{background:#fff;border:2px solid #333;padding:20px 26px;margin-bottom:24px}
-.hero h1{font-size:34px;margin:0 0 4px} .hero p{margin:0;color:#555}
-.section-head{scroll-margin-top:18px;margin-top:28px;background:#fff;border:2px solid #333;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+body{margin:0;background:#eef2f7;color:var(--ink);font-family:Arial,"Microsoft JhengHei",sans-serif;font-size:22px;line-height:1.65}
+.sidebar{position:fixed;z-index:40;top:28px;right:max(10px,calc((100vw - 900px)/2 - 205px));width:190px;max-height:calc(100vh - 56px);padding:10px;background:rgba(255,255,255,.97);border:1px solid #dbe2ea;border-radius:12px;overflow:auto;box-shadow:0 4px 16px rgba(15,23,42,.08)}
+.sidebar h1{font-size:19px;margin:2px 8px 9px;line-height:1.35;color:#334155}
+.sidebar .nav-group{margin:9px 8px 3px;font-size:12px;font-weight:800;color:#64748b;letter-spacing:.06em}
+.sidebar a{display:flex;gap:7px;text-decoration:none;color:#475569;padding:6px 8px;border-radius:7px;font-size:14px;line-height:1.3;font-weight:700}
+.sidebar a:hover{background:#f1f5f9}
+.sidebar a.active{background:#e0edff;color:#1d4ed8}
+.sidebar a span{font-weight:900;min-width:34px}
+.sidebar-toggle{display:none;width:100%;border:0;background:#334155;color:#fff;border-radius:8px;padding:7px 11px;font-weight:800}
+main{width:min(900px,calc(100% - 24px));margin:22px auto 80px;padding:28px 34px 80px;background:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(15,23,42,.09)}
+.hero{background:linear-gradient(100deg,#eff6ff,#f8fafc);border:1px solid #bfdbfe;border-left:7px solid #2563eb;border-radius:14px;padding:18px 22px;margin-bottom:24px}
+.hero h1{font-size:34px;margin:0 0 3px;color:#1e3a5f} .hero p{margin:0;color:#526277}
+.section-head{--stage:#2563eb;--stage-bg:#eff6ff;position:relative;scroll-margin-top:18px;margin-top:28px;background:var(--stage-bg);border:1px solid color-mix(in srgb,var(--stage) 35%,#dbe2ea);border-radius:12px;padding:11px 15px 11px 21px;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 2px 7px rgba(15,23,42,.04)}
+.section-head::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:6px;border-radius:0 5px 5px 0;background:var(--stage)}
+.section-head:has(h2[id^="1-"]){--stage:#64748b;--stage-bg:#f8fafc}
+.section-head:has(h2[id^="2-"]){--stage:#2563eb;--stage-bg:#eff6ff}
+.section-head:has(h2[id^="3-"]){--stage:#4f46e5;--stage-bg:#eef2ff}
+.section-head:has(h2[id^="4-"]){--stage:#b45309;--stage-bg:#fff7ed}
 .section-head h2{font-size:25px;margin:0;line-height:1.35}
 .actions{display:flex;gap:8px;flex:none}
 button{font:inherit;cursor:pointer}
-.actions button{font-size:17px;padding:6px 13px;border:1.5px solid #555;border-radius:8px;background:#fff}
+.actions button{font-size:17px;padding:6px 13px;border:1px solid #94a3b8;border-radius:8px;background:#fff;color:#334155;font-weight:700}
+.actions button:hover{background:#f8fafc;border-color:#64748b}
 .actions .clear{color:#555}
 .note,.exercise,.reading,.fill-table,.instruction{background:#fff}
 .note{padding:16px 22px;border:1px solid var(--line);border-top:0}
@@ -59,34 +68,41 @@ input.answer{background:var(--pink);color:var(--red);border-color:var(--red);fon
 .dialogue{white-space:normal}
 .token{font-weight:700;padding:1px 5px;background:#fff}
 @media(max-width:1320px){
- .mobile-menu-btn{display:block}
- .sidebar{left:0;top:0;bottom:0;width:230px;max-height:none;border:0;border-right:1px solid #ddd;border-radius:0;padding:58px 12px 18px;box-shadow:4px 0 18px rgba(0,0,0,.18);transform:translateX(-110%);transition:transform .2s ease;z-index:25}
- .sidebar.open{transform:translateX(0)}
- .menu-overlay.open{display:block;position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:20}
- main{width:min(900px,calc(100% - 24px));margin:0 auto;padding:62px 0 80px}
+ .sidebar{top:auto;right:12px;bottom:12px;width:auto;max-width:calc(100vw - 24px);max-height:calc(100vh - 24px);padding:6px;overflow:auto}
+ .sidebar-toggle{display:block}
+ .sidebar h1,.sidebar .nav-group,.sidebar a{display:none}
+ .sidebar.expanded{width:210px;padding:8px}
+ .sidebar.expanded h1,.sidebar.expanded .nav-group,.sidebar.expanded a{display:flex}
+ .sidebar.expanded h1,.sidebar.expanded .nav-group{display:block}
+ .sidebar.expanded .sidebar-toggle{margin-bottom:6px}
 }
 @media(max-width:800px){
- .sidebar{width:150px;padding:12px 6px} .sidebar h1{font-size:16px} .sidebar a{font-size:13px;padding:6px}
- main{width:calc(100% - 165px);padding-top:14px} body{font-size:18px} .hero h1{font-size:26px}
- .section-head{align-items:flex-start} .section-head h2{font-size:20px} .actions button{font-size:14px;padding:5px 8px}
- .blank input{min-width:150px} .reading{font-size:20px}
+ body{font-size:18px;background:#fff}
+ main{width:100%;margin:0;padding:64px 14px 54px;border-radius:0;box-shadow:none}
+ .hero{padding:15px 17px;margin-bottom:18px}.hero h1{font-size:27px}
+ .section-head{align-items:flex-start;padding:10px 11px 10px 17px;margin-top:22px}
+ .section-head h2{font-size:20px}.actions{gap:5px}.actions button{font-size:14px;padding:5px 8px}
+ .blank input{min-width:150px}.reading{font-size:20px}
 }
 </style>
 </head>
 <body>
-<nav class="sidebar"><h1>人稱代名詞<br>跳頁目錄</h1><a href="#1-1"><span>1-1</span>說明</a>
+<nav class="sidebar" aria-label="章節快轉"><button class="sidebar-toggle" type="button" aria-expanded="false" onclick="toggleSidebar(this)">章節 ▾</button><h1>人稱代名詞<br>跳頁目錄</h1><div class="nav-group">第一階段　基礎資料</div><a href="#1-1"><span>1-1</span>說明</a>
 <a href="#1-2"><span>1-2</span>家人表</a>
 <a href="#1-3"><span>1-3</span>代名詞表</a>
+<div class="nav-group">第二階段　所有格＋家人</div>
 <a href="#2-1"><span>2-1</span>所有格翻譯</a>
 <a href="#2-2"><span>2-2</span>所有格是非</a>
 <a href="#2-3"><span>2-3</span>所有格圈選</a>
 <a href="#2-4"><span>2-4</span>排列</a>
 <a href="#2-5"><span>2-5</span>造句</a>
+<div class="nav-group">第三階段　完整句</div>
 <a href="#3-1"><span>3-1</span>完整句翻譯</a>
 <a href="#3-2"><span>3-2</span>完整句是非</a>
 <a href="#3-3"><span>3-3</span>完整句圈選</a>
 <a href="#3-4"><span>3-4</span>排列</a>
 <a href="#3-5"><span>3-5</span>造句</a>
+<div class="nav-group">第四階段　綜合練習</div>
 <a href="#4-1"><span>4-1</span>一般選擇題</a>
 <a href="#4-2"><span>4-2</span>找主格</a>
 <a href="#4-3"><span>4-3</span>找所有格</a></nav>
@@ -435,6 +451,29 @@ function clearSection(id) {
     root.querySelectorAll('.reorder').forEach(q=>{q.querySelector('.answer-zone').innerHTML='';q.querySelectorAll('.card').forEach(b=>b.classList.remove('used','answer','correct','selected'))});
   });
 }
+function toggleSidebar(button) {
+  const nav=button.closest('.sidebar');
+  nav.classList.toggle('expanded');
+  const open=nav.classList.contains('expanded');
+  button.setAttribute('aria-expanded',String(open));
+  button.textContent=open?'收起目錄 ×':'章節 ▾';
+}
+const sidebar=document.querySelector('.sidebar');
+const sidebarToggle=sidebar.querySelector('.sidebar-toggle');
+const sectionLinks=[...sidebar.querySelectorAll('a[href^="#"]')];
+sectionLinks.forEach(link=>link.addEventListener('click',()=>{
+  if(window.matchMedia('(max-width:1320px)').matches){
+    sidebar.classList.remove('expanded');
+    sidebarToggle.setAttribute('aria-expanded','false');
+    sidebarToggle.textContent='章節 ▾';
+  }
+}));
+const sectionObserver=new IntersectionObserver(entries=>{
+  const current=entries.filter(entry=>entry.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+  if(!current) return;
+  sectionLinks.forEach(link=>link.classList.toggle('active',link.getAttribute('href')==='#'+current.target.id));
+},{rootMargin:'-18% 0px -62% 0px',threshold:[0,.15,.4]});
+document.querySelectorAll('.section-head h2[id]').forEach(heading=>sectionObserver.observe(heading));
 /* Reserved color semantics for a later "批改" feature:
    student's selection = blue (.selected)
    correct after grading = green (.correct)
