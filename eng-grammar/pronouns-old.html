@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>人稱代名詞｜英文文法講義</title>
+<style>
+:root {
+  --blue:#1976d2; --blue-bg:#e8f2ff;
+  --green:#16833b; --green-bg:#e8f7ed;
+  --red:#c62828; --pink:#ffe3ea;
+  --ink:#222; --muted:#666; --line:#d7d7d7; --paper:#fff; --bg:#f3f4f6;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,"Microsoft JhengHei",sans-serif;font-size:22px;line-height:1.65}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:225px;background:#fff;border-right:1px solid #ddd;padding:18px 12px;overflow:auto;z-index:10}
+.sidebar h1{font-size:20px;margin:0 8px 12px;line-height:1.35}
+.sidebar a{display:flex;gap:8px;text-decoration:none;color:#333;padding:7px 9px;border-radius:8px;font-size:16px;line-height:1.3}
+.sidebar a:hover{background:#f0f3f7}
+.sidebar a span{font-weight:700;min-width:36px}
+main{width:min(900px,calc(100% - 265px));margin:0 auto 100px;padding:28px 0 80px}
+.hero{background:#fff;border:2px solid #333;padding:20px 26px;margin-bottom:24px}
+.hero h1{font-size:34px;margin:0 0 4px} .hero p{margin:0;color:#555}
+.section-head{scroll-margin-top:18px;margin-top:28px;background:#fff;border:2px solid #333;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.section-head h2{font-size:25px;margin:0;line-height:1.35}
+.actions{display:flex;gap:8px;flex:none}
+button{font:inherit;cursor:pointer}
+.actions button{font-size:17px;padding:6px 13px;border:1.5px solid #555;border-radius:8px;background:#fff}
+.actions .clear{color:#555}
+.note,.exercise,.reading,.fill-table,.instruction{background:#fff}
+.note{padding:16px 22px;border:1px solid var(--line);border-top:0}
+.note p{margin:7px 0} .example{font-size:1.08em;font-weight:700}
+.instruction{margin:0;padding:12px 18px 0;color:#555}
+.exercise{padding:10px 18px 18px;border:1px solid var(--line);border-top:0}
+.q{padding:11px 4px;border-bottom:1px dashed #ddd}
+.q:last-child{border-bottom:0} .num{display:inline-block;min-width:72px}
+.num .answer-key{color:var(--red);font-weight:800}
+
+.choice,.card,.token{border:2px solid transparent;background:#f6f6f6;border-radius:9px;padding:4px 10px;margin:2px 3px;color:inherit}
+.choice.selected,.card.selected,.token.selected{background:var(--blue-bg);border-color:var(--blue);color:#0d57a1}
+.choice.correct,.card.correct,.token.correct{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.choice.answer,.card.answer,.token.answer{background:var(--pink);border-color:#ef9aac;color:var(--red);font-weight:700}
+.word{font-weight:700;background:#fff;padding:1px 7px}
+.tfBtns{margin-left:18px}
+.card-bank{margin:7px 0 6px 52px}
+.card{padding:6px 14px;border-color:#bbb;background:#fff}
+.card.used{display:none}
+.answer-zone{margin-left:52px;min-height:48px;border:2px dashed #aaa;border-radius:10px;padding:6px 10px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.answer-zone:empty:before{content:"答案區";color:#aaa}
+.answer-zone .placed{background:var(--blue-bg);border:2px solid var(--blue);color:#0d57a1;border-radius:8px;padding:3px 10px}
+.blank input,.fill-table input{font:inherit;border:0;border-bottom:2px solid #777;min-width:280px;padding:2px 6px;outline:none;background:#fff}
+.blank input:focus,.fill-table input:focus{border-color:var(--blue)}
+input.answer{background:var(--pink);color:var(--red);border-color:var(--red);font-weight:700}
+.fill-table{width:100%;border-collapse:collapse;margin:0}
+.fill-table th,.fill-table td{border:1px solid #aaa;padding:9px 12px;text-align:center}
+.fill-table th{background:#f5f5f5}
+.fill-table input{min-width:0;width:100%;text-align:center}
+.mc-options{margin:4px 0 0 72px;display:flex;gap:10px;flex-wrap:wrap}
+.reading{border:1px solid var(--line);border-top:0;padding:22px 25px;font-size:24px;line-height:2.05}
+.dialogue{white-space:normal}
+.token{font-weight:700;padding:1px 5px;background:#fff}
+
+.mobile-menu-btn{display:none;position:fixed;top:10px;left:10px;z-index:30;border:2px solid #444;border-radius:9px;background:#fff;padding:7px 12px;font-weight:700;font-size:16px}
+.menu-overlay{display:none}
+
+@media(max-width:800px){
+ .mobile-menu-btn{display:block}
+ .sidebar{transform:translateX(-110%);transition:transform .2s ease;width:230px;padding:58px 12px 18px;box-shadow:4px 0 18px rgba(0,0,0,.18);z-index:25}
+ .sidebar.open{transform:translateX(0)}
+ .menu-overlay.open{display:block;position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:20}
+ main{width:min(100% - 18px,900px);margin:0 auto;padding:62px 0 80px}
+
+ .sidebar h1{font-size:18px} .sidebar a{font-size:15px;padding:7px} body{font-size:18px} .hero h1{font-size:26px}
+ .section-head{align-items:flex-start} .section-head h2{font-size:20px} .actions button{font-size:14px;padding:5px 8px}
+ .blank input{min-width:150px} .reading{font-size:20px}
+}
+</style>
+</head>
+<body>
+<button class="mobile-menu-btn" type="button" onclick="toggleMenu()" aria-label="開啟目錄">☰ 目錄</button>
+<div class="menu-overlay" onclick="closeMenu()"></div>
+<nav class="sidebar"><h1>人稱代名詞<br>跳頁目錄</h1><a href="#1-1" onclick="closeMenu()"><span>1-1</span>說明</a>
+<a href="#1-2" onclick="closeMenu()"><span>1-2</span>家人表</a>
+<a href="#1-3" onclick="closeMenu()"><span>1-3</span>代名詞表</a>
+<a href="#2-1" onclick="closeMenu()"><span>2-1</span>所有格翻譯</a>
+<a href="#2-2" onclick="closeMenu()"><span>2-2</span>所有格是非</a>
+<a href="#2-3" onclick="closeMenu()"><span>2-3</span>所有格圈選</a>
+<a href="#2-4" onclick="closeMenu()"><span>2-4</span>排列</a>
+<a href="#2-5" onclick="closeMenu()"><span>2-5</span>造句</a>
+<a href="#3-1" onclick="closeMenu()"><span>3-1</span>完整句翻譯</a>
+<a href="#3-2" onclick="closeMenu()"><span>3-2</span>完整句是非</a>
+<a href="#3-3" onclick="closeMenu()"><span>3-3</span>完整句圈選</a>
+<a href="#3-4" onclick="closeMenu()"><span>3-4</span>排列</a>
+<a href="#3-5" onclick="closeMenu()"><span>3-5</span>造句</a>
+<a href="#4-1" onclick="closeMenu()"><span>4-1</span>一般選擇題</a>
+<a href="#4-2" onclick="closeMenu()"><span>4-2</span>找主格</a>
+<a href="#4-3" onclick="closeMenu()"><span>4-3</span>找所有格</a></nav>
+<main>
+<div class="hero"><h1>人稱代名詞</h1><p>主格・Be 動詞・所有格・家人稱謂</p></div>
+
+<div class="section-head"><h2 id="1-1">1-1　先認識：主格、Be 動詞、所有格</h2><div class="actions"><button onclick="showAnswers('1-1')">解答</button><button class="clear" onclick="clearSection('1-1')">清除</button></div></div>
+<div class="note">
+<p><b>主格</b>：表示「我、你、他、她……」，常放在句子的主角位置。</p>
+<p><b>Be 動詞</b>：am / is / are，要和前面的主格搭配。</p>
+<p><b>所有格</b>：表示「我的、你的、他的……」，後面接人物或東西。</p>
+<p class="example">她是我的媽媽。→ She is my mother.</p>
+</div>
+
+<div class="section-head"><h2 id="1-2">1-2　家人稱謂：請找答案並填入</h2><div class="actions"><button onclick="showAnswers('1-2')">解答</button><button class="clear" onclick="clearSection('1-2')">清除</button></div></div>
+<table class="fill-table family"><thead><tr><th>中文</th><th>英文</th></tr></thead><tbody><tr><th>爸爸</th><td><input data-answer="father" type="text"></td></tr>
+<tr><th>媽媽</th><td><input data-answer="mother" type="text"></td></tr>
+<tr><th>爺爺／外公</th><td><input data-answer="grandfather" type="text"></td></tr>
+<tr><th>奶奶／外婆</th><td><input data-answer="grandmother" type="text"></td></tr>
+<tr><th>兄弟</th><td><input data-answer="brother" type="text"></td></tr>
+<tr><th>姊妹</th><td><input data-answer="sister" type="text"></td></tr>
+<tr><th>叔伯／舅舅</th><td><input data-answer="uncle" type="text"></td></tr>
+<tr><th>阿姨／姑姑</th><td><input data-answer="aunt" type="text"></td></tr>
+<tr><th>兒子</th><td><input data-answer="son" type="text"></td></tr>
+<tr><th>女兒</th><td><input data-answer="daughter" type="text"></td></tr></tbody></table>
+
+<div class="section-head"><h2 id="1-3">1-3　人稱代名詞：請找答案並填入</h2><div class="actions"><button onclick="showAnswers('1-3')">解答</button><button class="clear" onclick="clearSection('1-3')">清除</button></div></div>
+<table class="fill-table"><thead><tr><th>中文</th><th>主格</th><th>Be 動詞</th><th>所有格</th></tr></thead><tbody><tr><th>我</th><td><input data-answer="I" type="text"></td><td><input data-answer="am" type="text"></td><td><input data-answer="my" type="text"></td></tr>
+<tr><th>你</th><td><input data-answer="you" type="text"></td><td><input data-answer="are" type="text"></td><td><input data-answer="your" type="text"></td></tr>
+<tr><th>他</th><td><input data-answer="he" type="text"></td><td><input data-answer="is" type="text"></td><td><input data-answer="his" type="text"></td></tr>
+<tr><th>她</th><td><input data-answer="she" type="text"></td><td><input data-answer="is" type="text"></td><td><input data-answer="her" type="text"></td></tr>
+<tr><th>它／牠</th><td><input data-answer="it" type="text"></td><td><input data-answer="is" type="text"></td><td><input data-answer="its" type="text"></td></tr>
+<tr><th>我們</th><td><input data-answer="we" type="text"></td><td><input data-answer="are" type="text"></td><td><input data-answer="our" type="text"></td></tr>
+<tr><th>你們</th><td><input data-answer="you" type="text"></td><td><input data-answer="are" type="text"></td><td><input data-answer="your" type="text"></td></tr>
+<tr><th>他們／她們／它們</th><td><input data-answer="they" type="text"></td><td><input data-answer="are" type="text"></td><td><input data-answer="their" type="text"></td></tr></tbody></table>
+
+<div class="section-head"><h2 id="2-1">2-1　所有格＋家人：翻譯配對</h2><div class="actions"><button onclick="showAnswers('2-1')">解答</button><button class="clear" onclick="clearSection('2-1')">清除</button></div></div>
+<div class="exercise"><div class="q pair" data-answer="2"><span class="num">（<span class="answer-slot">　</span>）1.</span> <b>his father</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 她的爸爸</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 他的爸爸</button></div>
+<div class="q pair" data-answer="2"><span class="num">（<span class="answer-slot">　</span>）2.</span> <b>her mother</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 他的媽媽</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 她的媽媽</button></div>
+<div class="q pair" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）3.</span> <b>my sister</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 我的姊妹</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 我們的姊妹</button></div>
+<div class="q pair" data-answer="2"><span class="num">（<span class="answer-slot">　</span>）4.</span> <b>our teacher</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 我的老師</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 我們的老師</button></div>
+<div class="q pair" data-answer="2"><span class="num">（<span class="answer-slot">　</span>）5.</span> <b>their grandfather</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 他的爺爺</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 他們的爺爺</button></div>
+<div class="q pair" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）6.</span> <b>your brother</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 你的兄弟</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 他的兄弟</button></div>
+<div class="q pair" data-answer="2"><span class="num">（<span class="answer-slot">　</span>）7.</span> <b>her aunt</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 他的阿姨</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 她的阿姨</button></div>
+<div class="q pair" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）8.</span> <b>our mother</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 我們的媽媽</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 他們的媽媽</button></div></div>
+
+<div class="section-head"><h2 id="2-2">2-2　所有格＋家人：文法是非</h2><div class="actions"><button onclick="showAnswers('2-2')">解答</button><button class="clear" onclick="clearSection('2-2')">清除</button></div></div>
+<p class="instruction">正確選 ○，錯誤選 ×。</p><div class="exercise"><div class="q tf" data-answer="o"><span class="num">（<span class="answer-slot">　</span>）1.</span>
+    <b>my mother</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="x"><span class="num">（<span class="answer-slot">　</span>）2.</span>
+    <b>I mother</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="x"><span class="num">（<span class="answer-slot">　</span>）3.</span>
+    <b>he father</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="o"><span class="num">（<span class="answer-slot">　</span>）4.</span>
+    <b>his father</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="x"><span class="num">（<span class="answer-slot">　</span>）5.</span>
+    <b>she sister</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="o"><span class="num">（<span class="answer-slot">　</span>）6.</span>
+    <b>her sister</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="x"><span class="num">（<span class="answer-slot">　</span>）7.</span>
+    <b>we teacher</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="o"><span class="num">（<span class="answer-slot">　</span>）8.</span>
+    <b>our teacher</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="x"><span class="num">（<span class="answer-slot">　</span>）9.</span>
+    <b>they grandfather</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="o"><span class="num">（<span class="answer-slot">　</span>）10.</span>
+    <b>their grandfather</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div></div>
+
+<div class="section-head"><h2 id="2-3">2-3　所有格＋家人：圈出正確答案</h2><div class="actions"><button onclick="showAnswers('2-3')">解答</button><button class="clear" onclick="clearSection('2-3')">清除</button></div></div>
+<div class="exercise"><div class="q circle" data-answer="1"><span class="num">1.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">I</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">my</button> ) mother</div>
+<div class="q circle" data-answer="1"><span class="num">2.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">he</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">his</button> ) father</div>
+<div class="q circle" data-answer="1"><span class="num">3.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">she</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">her</button> ) sister</div>
+<div class="q circle" data-answer="1"><span class="num">4.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">we</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">our</button> ) teacher</div>
+<div class="q circle" data-answer="1"><span class="num">5.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">they</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">their</button> ) grandfather</div>
+<div class="q circle" data-answer="1"><span class="num">6.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">you</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">your</button> ) brother</div>
+<div class="q circle" data-answer="1"><span class="num">7.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">she</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">her</button> ) aunt</div>
+<div class="q circle" data-answer="1"><span class="num">8.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">we</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">our</button> ) mother</div></div>
+
+<div class="section-head"><h2 id="2-4">2-4　所有格＋家人：排列造句</h2><div class="actions"><button onclick="showAnswers('2-4')">解答</button><button class="clear" onclick="clearSection('2-4')">清除</button></div></div>
+<p class="instruction">依照正確順序點選字卡。點答案區可退回最後一張。</p><div class="exercise"><div class="q reorder" data-answer='[&quot;my&quot;, &quot;mother&quot;]'><div><span class="num">1.</span> 我的媽媽</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">mother</button> <button class="card" onclick="moveCard(this)">my</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;his&quot;, &quot;father&quot;]'><div><span class="num">2.</span> 他的爸爸</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">father</button> <button class="card" onclick="moveCard(this)">his</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;her&quot;, &quot;sister&quot;]'><div><span class="num">3.</span> 她的姊妹</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">sister</button> <button class="card" onclick="moveCard(this)">her</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;our&quot;, &quot;teacher&quot;]'><div><span class="num">4.</span> 我們的老師</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">teacher</button> <button class="card" onclick="moveCard(this)">our</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;their&quot;, &quot;grandfather&quot;]'><div><span class="num">5.</span> 他們的爺爺</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">grandfather</button> <button class="card" onclick="moveCard(this)">their</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;your&quot;, &quot;brother&quot;]'><div><span class="num">6.</span> 你的兄弟</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">brother</button> <button class="card" onclick="moveCard(this)">your</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;her&quot;, &quot;aunt&quot;]'><div><span class="num">7.</span> 她的阿姨</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">aunt</button> <button class="card" onclick="moveCard(this)">her</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;our&quot;, &quot;mother&quot;]'><div><span class="num">8.</span> 我們的媽媽</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">mother</button> <button class="card" onclick="moveCard(this)">our</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div></div>
+
+<div class="section-head"><h2 id="2-5">2-5　所有格＋家人：空白造句</h2><div class="actions"><button onclick="showAnswers('2-5')">解答</button><button class="clear" onclick="clearSection('2-5')">清除</button></div></div>
+<div class="exercise"><div class="q blank" data-answer="my mother"><span class="num">1.</span> 我的媽媽
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="his father"><span class="num">2.</span> 他的爸爸
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="her sister"><span class="num">3.</span> 她的姊妹
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="our teacher"><span class="num">4.</span> 我們的老師
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="their grandfather"><span class="num">5.</span> 他們的爺爺
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="your brother"><span class="num">6.</span> 你的兄弟
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="her aunt"><span class="num">7.</span> 她的阿姨
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="our mother"><span class="num">8.</span> 我們的媽媽
+    <input type="text" autocomplete="off" spellcheck="false"></div></div>
+
+<div class="section-head"><h2 id="3-1">3-1　主格＋Be＋所有格＋家人：翻譯配對</h2><div class="actions"><button onclick="showAnswers('3-1')">解答</button><button class="clear" onclick="clearSection('3-1')">清除</button></div></div>
+<div class="exercise"><div class="q pair" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）1.</span> <b>She is my mother.</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 她是我的媽媽。</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 她的媽媽。</button></div>
+<div class="q pair" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）2.</span> <b>He is my father.</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 他是我的爸爸。</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 他的爸爸。</button></div>
+<div class="q pair" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）3.</span> <b>I am her sister.</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 我是她的姊妹。</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 我的姊妹。</button></div>
+<div class="q pair" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）4.</span> <b>We are his friends.</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 我們是他的朋友。</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 他們是我們的朋友。</button></div>
+<div class="q pair" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）5.</span> <b>They are our teachers.</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 他們是我們的老師。</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 我們是他們的老師。</button></div>
+<div class="q pair" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）6.</span> <b>You are my brother.</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 你是我的兄弟。</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 你的兄弟。</button></div>
+<div class="q pair" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）7.</span> <b>She is your aunt.</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 她是你的阿姨。</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 她的阿姨。</button></div>
+<div class="q pair" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）8.</span> <b>He is our teacher.</b> → 
+        <button class="choice" data-v="1" onclick="choose(this)">1. 他是我們的老師。</button>
+        <button class="choice" data-v="2" onclick="choose(this)">2. 他的老師。</button></div></div>
+
+<div class="section-head"><h2 id="3-2">3-2　完整句：文法是非</h2><div class="actions"><button onclick="showAnswers('3-2')">解答</button><button class="clear" onclick="clearSection('3-2')">清除</button></div></div>
+<p class="instruction">正確選 ○，錯誤選 ×。</p><div class="exercise"><div class="q tf" data-answer="o"><span class="num">（<span class="answer-slot">　</span>）1.</span>
+    <b>She is my mother.</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="x"><span class="num">（<span class="answer-slot">　</span>）2.</span>
+    <b>Her is my mother.</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="o"><span class="num">（<span class="answer-slot">　</span>）3.</span>
+    <b>He is his father.</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="x"><span class="num">（<span class="answer-slot">　</span>）4.</span>
+    <b>His is my father.</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="o"><span class="num">（<span class="answer-slot">　</span>）5.</span>
+    <b>We are her friends.</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="x"><span class="num">（<span class="answer-slot">　</span>）6.</span>
+    <b>Our are her friends.</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="o"><span class="num">（<span class="answer-slot">　</span>）7.</span>
+    <b>They are our teachers.</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="x"><span class="num">（<span class="answer-slot">　</span>）8.</span>
+    <b>Their are our teachers.</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="o"><span class="num">（<span class="answer-slot">　</span>）9.</span>
+    <b>I am her sister.</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div>
+<div class="q tf" data-answer="x"><span class="num">（<span class="answer-slot">　</span>）10.</span>
+    <b>My am her sister.</b><span class="tfBtns"><button class="choice" data-v="o" onclick="choose(this)">○</button><button class="choice" data-v="x" onclick="choose(this)">×</button></span></div></div>
+
+<div class="section-head"><h2 id="3-3">3-3　完整句：圈出正確答案</h2><div class="actions"><button onclick="showAnswers('3-3')">解答</button><button class="clear" onclick="clearSection('3-3')">清除</button></div></div>
+<div class="exercise"><div class="q circle" data-answer="0"><span class="num">1.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">She</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">Her</button> ) is my mother.</div>
+<div class="q circle" data-answer="0"><span class="num">2.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">He</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">His</button> ) is my father.</div>
+<div class="q circle" data-answer="0"><span class="num">3.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">I</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">My</button> ) am her sister.</div>
+<div class="q circle" data-answer="0"><span class="num">4.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">We</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">Our</button> ) are his friends.</div>
+<div class="q circle" data-answer="0"><span class="num">5.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">They</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">Their</button> ) are our teachers.</div>
+<div class="q circle" data-answer="0"><span class="num">6.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">You</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">Your</button> ) are my brother.</div>
+<div class="q circle" data-answer="0"><span class="num">7.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">She</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">Her</button> ) is your aunt.</div>
+<div class="q circle" data-answer="0"><span class="num">8.</span>
+        ( <button class="word choice" data-v="0" onclick="choose(this)">He</button> /
+        <button class="word choice" data-v="1" onclick="choose(this)">His</button> ) is our teacher.</div></div>
+
+<div class="section-head"><h2 id="3-4">3-4　完整句：排列造句</h2><div class="actions"><button onclick="showAnswers('3-4')">解答</button><button class="clear" onclick="clearSection('3-4')">清除</button></div></div>
+<p class="instruction">依照正確順序點選字卡。</p><div class="exercise"><div class="q reorder" data-answer='[&quot;She&quot;, &quot;is&quot;, &quot;my&quot;, &quot;mother&quot;]'><div><span class="num">1.</span> 她是我的媽媽。</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">mother</button> <button class="card" onclick="moveCard(this)">my</button> <button class="card" onclick="moveCard(this)">is</button> <button class="card" onclick="moveCard(this)">She</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;He&quot;, &quot;is&quot;, &quot;my&quot;, &quot;father&quot;]'><div><span class="num">2.</span> 他是我的爸爸。</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">father</button> <button class="card" onclick="moveCard(this)">He</button> <button class="card" onclick="moveCard(this)">my</button> <button class="card" onclick="moveCard(this)">is</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;I&quot;, &quot;am&quot;, &quot;her&quot;, &quot;sister&quot;]'><div><span class="num">3.</span> 我是她的姊妹。</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">sister</button> <button class="card" onclick="moveCard(this)">her</button> <button class="card" onclick="moveCard(this)">am</button> <button class="card" onclick="moveCard(this)">I</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;We&quot;, &quot;are&quot;, &quot;his&quot;, &quot;friends&quot;]'><div><span class="num">4.</span> 我們是他的朋友。</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">friends</button> <button class="card" onclick="moveCard(this)">are</button> <button class="card" onclick="moveCard(this)">his</button> <button class="card" onclick="moveCard(this)">We</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;They&quot;, &quot;are&quot;, &quot;our&quot;, &quot;teachers&quot;]'><div><span class="num">5.</span> 他們是我們的老師。</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">teachers</button> <button class="card" onclick="moveCard(this)">our</button> <button class="card" onclick="moveCard(this)">They</button> <button class="card" onclick="moveCard(this)">are</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;You&quot;, &quot;are&quot;, &quot;my&quot;, &quot;brother&quot;]'><div><span class="num">6.</span> 你是我的兄弟。</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">brother</button> <button class="card" onclick="moveCard(this)">are</button> <button class="card" onclick="moveCard(this)">my</button> <button class="card" onclick="moveCard(this)">You</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;She&quot;, &quot;is&quot;, &quot;your&quot;, &quot;aunt&quot;]'><div><span class="num">7.</span> 她是你的阿姨。</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">aunt</button> <button class="card" onclick="moveCard(this)">your</button> <button class="card" onclick="moveCard(this)">is</button> <button class="card" onclick="moveCard(this)">She</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div>
+<div class="q reorder" data-answer='[&quot;He&quot;, &quot;is&quot;, &quot;our&quot;, &quot;teacher&quot;]'><div><span class="num">8.</span> 他是我們的老師。</div>
+        <div class="card-bank"><button class="card" onclick="moveCard(this)">teacher</button> <button class="card" onclick="moveCard(this)">our</button> <button class="card" onclick="moveCard(this)">is</button> <button class="card" onclick="moveCard(this)">He</button></div><div class="answer-zone" onclick="returnLast(this)" title="點答案區可退回最後一張卡"></div></div></div>
+
+<div class="section-head"><h2 id="3-5">3-5　完整句：空白造句</h2><div class="actions"><button onclick="showAnswers('3-5')">解答</button><button class="clear" onclick="clearSection('3-5')">清除</button></div></div>
+<div class="exercise"><div class="q blank" data-answer="She is my mother."><span class="num">1.</span> 她是我的媽媽。
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="He is my father."><span class="num">2.</span> 他是我的爸爸。
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="I am her sister."><span class="num">3.</span> 我是她的姊妹。
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="We are his friends."><span class="num">4.</span> 我們是他的朋友。
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="They are our teachers."><span class="num">5.</span> 他們是我們的老師。
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="You are my brother."><span class="num">6.</span> 你是我的兄弟。
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="She is your aunt."><span class="num">7.</span> 她是你的阿姨。
+    <input type="text" autocomplete="off" spellcheck="false"></div>
+<div class="q blank" data-answer="He is our teacher."><span class="num">8.</span> 他是我們的老師。
+    <input type="text" autocomplete="off" spellcheck="false"></div></div>
+
+<div class="section-head"><h2 id="4-1">4-1　一般考試選擇題（三選一）</h2><div class="actions"><button onclick="showAnswers('4-1')">解答</button><button class="clear" onclick="clearSection('4-1')">清除</button></div></div>
+<div class="exercise"><div class="q mc" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）1.</span> ______ mother is a teacher.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) She</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) Her</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Hers</button></div></div>
+<div class="q mc" data-answer="0"><span class="num">（<span class="answer-slot">　</span>）2.</span> ______ is my father.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) He</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) His</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Him</button></div></div>
+<div class="q mc" data-answer="0"><span class="num">（<span class="answer-slot">　</span>）3.</span> I ______ her brother.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) am</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) is</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) are</button></div></div>
+<div class="q mc" data-answer="2"><span class="num">（<span class="answer-slot">　</span>）4.</span> They ______ our teachers.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) am</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) is</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) are</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）5.</span> ______ sister is a student.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) He</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) His</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Him</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）6.</span> We love ______ teacher.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) we</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) our</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) us</button></div></div>
+<div class="q mc" data-answer="0"><span class="num">（<span class="answer-slot">　</span>）7.</span> ______ are my friends.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) They</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) Their</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Them</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）8.</span> ______ father is Mr. Lin.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) You</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) Your</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Yours</button></div></div>
+<div class="q mc" data-answer="1"><span class="num">（<span class="answer-slot">　</span>）9.</span> She ______ my aunt.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) am</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) is</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) are</button></div></div>
+<div class="q mc" data-answer="0"><span class="num">（<span class="answer-slot">　</span>）10.</span> ______ teacher is very nice.<div class="mc-options"><button class="choice mcopt" data-v="0" onclick="choose(this)">(A) Our</button> <button class="choice mcopt" data-v="1" onclick="choose(this)">(B) We</button> <button class="choice mcopt" data-v="2" onclick="choose(this)">(C) Us</button></div></div></div>
+
+<div class="section-head"><h2 id="4-2">4-2　閱讀文章：圈出 10 個「主格」</h2><div class="actions"><button onclick="showAnswers('4-2')">解答</button><button class="clear" onclick="clearSection('4-2')">清除</button></div></div>
+<p class="instruction">直接點文章中的人稱代名詞主格，共 10 個。</p>
+<div class="reading q token-question"><button class="token choice" data-v="1" data-answer="1" onclick="toggleToken(this)">I</button> am Kevin. <button class="token choice" data-v="2" data-answer="1" onclick="toggleToken(this)">I</button> am a student. My sister is Amy. <button class="token choice" data-v="3" data-answer="1" onclick="toggleToken(this)">She</button> is a student, too. My father is a teacher. <button class="token choice" data-v="4" data-answer="1" onclick="toggleToken(this)">He</button> is very nice. My mother is a nurse. <button class="token choice" data-v="5" data-answer="1" onclick="toggleToken(this)">She</button> is busy. <button class="token choice" data-v="6" data-answer="1" onclick="toggleToken(this)">We</button> are a happy family. Amy and I have a dog. <button class="token choice" data-v="7" data-answer="1" onclick="toggleToken(this)">It</button> is small. My grandparents live near us. <button class="token choice" data-v="8" data-answer="1" onclick="toggleToken(this)">They</button> are very kind. <button class="token choice" data-v="9" data-answer="1" onclick="toggleToken(this)">You</button> can see our family photo on my desk.</div>
+
+<div class="section-head"><h2 id="4-3">4-3　閱讀對話：圈出 10 個「所有格」</h2><div class="actions"><button onclick="showAnswers('4-3')">解答</button><button class="clear" onclick="clearSection('4-3')">清除</button></div></div>
+<p class="instruction">直接點對話中的人稱代名詞所有格，共 10 個。</p>
+<div class="reading dialogue q token-question">Amy: Hi, Ben. Is this <button class="token choice" data-v="1" data-answer="1" onclick="toggleToken(this)">your</button> family photo?<br>Ben: Yes. This is <button class="token choice" data-v="2" data-answer="1" onclick="toggleToken(this)">my</button> father, and this is <button class="token choice" data-v="3" data-answer="1" onclick="toggleToken(this)">my</button> mother.<br>Amy: Is that <button class="token choice" data-v="4" data-answer="1" onclick="toggleToken(this)">your</button> sister?<br>Ben: Yes. <button class="token choice" data-v="5" data-answer="1" onclick="toggleToken(this)">Her</button> name is Mia. This boy is <button class="token choice" data-v="6" data-answer="1" onclick="toggleToken(this)">my</button> brother. <button class="token choice" data-v="7" data-answer="1" onclick="toggleToken(this)">His</button> name is Leo.<br>Amy: Is this <button class="token choice" data-v="8" data-answer="1" onclick="toggleToken(this)">your</button> dog, too?<br>Ben: Yes. <button class="token choice" data-v="9" data-answer="1" onclick="toggleToken(this)">Its</button> name is Lucky. We love <button class="token choice" data-v="10" data-answer="1" onclick="toggleToken(this)">our</button> dog.<br>Amy: Your family looks happy!<br>Ben: Thanks! Their house is near our school.</div>
+
+</main>
+<script>
+function sectionOf(el) {
+  let node=el;
+  while(node && !node.previousElementSibling?.classList?.contains('section-head')) {
+    node=node.parentElement;
+    if(node===document.body) break;
+  }
+}
+function getBlock(id) {
+  const head=document.getElementById(id).closest('.section-head');
+  let nodes=[], n=head.nextElementSibling;
+  while(n && !n.classList.contains('section-head')) { nodes.push(n); n=n.nextElementSibling; }
+  return {head,nodes};
+}
+function choose(btn) {
+  const q=btn.closest('.q');
+  q.querySelectorAll('.choice').forEach(b=>b.classList.remove('selected','answer','correct'));
+  btn.classList.add('selected');
+}
+function toggleToken(btn) {
+  btn.classList.toggle('selected');
+  btn.classList.remove('answer','correct');
+}
+function moveCard(btn) {
+  const q=btn.closest('.reorder');
+  const zone=q.querySelector('.answer-zone');
+  const chip=document.createElement('span');
+  chip.className='placed';
+  chip.textContent=btn.textContent;
+  chip.dataset.source=[...q.querySelectorAll('.card')].indexOf(btn);
+  zone.appendChild(chip);
+  btn.classList.add('used');
+}
+function returnLast(zone) {
+  const last=zone.querySelector('.placed:last-child');
+  if(!last) return;
+  const q=zone.closest('.reorder');
+  const cards=[...q.querySelectorAll('.card')];
+  const idx=Number(last.dataset.source);
+  if(cards[idx]) cards[idx].classList.remove('used');
+  last.remove();
+}
+function normalize(s) { return s.trim().replace(/\s+/g,' ').replace(/[.。]$/,'').toLowerCase(); }
+function showAnswers(id) {
+  const block=getBlock(id);
+  block.nodes.forEach(root=>{
+    root.querySelectorAll('.q').forEach(q=>{
+      if(q.classList.contains('pair')||q.classList.contains('tf')||q.classList.contains('circle')||q.classList.contains('mc')) {
+        const ans=q.dataset.answer;
+        q.querySelectorAll('.choice').forEach(b=>{
+          b.classList.remove('answer');
+          if(b.dataset.v===ans) b.classList.add('answer');
+        });
+        const slot=q.querySelector('.answer-slot');
+        if(slot){
+          let key=ans;
+          if(q.classList.contains('mc')) key=String.fromCharCode(65+Number(ans));
+          if(q.classList.contains('tf')) key=(ans==='o'?'○':'×');
+          slot.textContent=key;
+          slot.classList.add('answer-key');
+        }
+      }
+      if(q.classList.contains('reorder')) {
+        const answer=JSON.parse(q.dataset.answer);
+        const zone=q.querySelector('.answer-zone');
+        zone.innerHTML='';
+        q.querySelectorAll('.card').forEach(b=>b.classList.add('used'));
+        answer.forEach(w=>{const s=document.createElement('span');s.className='placed answer';s.textContent=w;zone.appendChild(s);});
+      }
+      if(q.classList.contains('blank')) {
+        const input=q.querySelector('input'); input.value=q.dataset.answer; input.classList.add('answer');
+      }
+      if(q.classList.contains('token-question')) {
+        q.querySelectorAll('.token[data-answer="1"]').forEach(b=>b.classList.add('answer'));
+      }
+    });
+    root.querySelectorAll('input[data-answer]').forEach(input=>{input.value=input.dataset.answer;input.classList.add('answer')});
+  });
+}
+function clearSection(id) {
+  const block=getBlock(id);
+  block.nodes.forEach(root=>{
+    root.querySelectorAll('.choice,.token').forEach(b=>b.classList.remove('selected','answer','correct'));
+    root.querySelectorAll('.answer-slot').forEach(x=>{x.textContent='　';x.classList.remove('answer-key')});
+    root.querySelectorAll('input').forEach(i=>{i.value='';i.classList.remove('answer','correct')});
+    root.querySelectorAll('.reorder').forEach(q=>{q.querySelector('.answer-zone').innerHTML='';q.querySelectorAll('.card').forEach(b=>b.classList.remove('used','answer','correct','selected'))});
+  });
+}
+function toggleMenu(){
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.querySelector('.menu-overlay').classList.toggle('open');
+}
+function closeMenu(){
+  document.querySelector('.sidebar').classList.remove('open');
+  document.querySelector('.menu-overlay').classList.remove('open');
+}
+/* Reserved color semantics for a later "批改" feature:
+   student's selection = blue (.selected)
+   correct after grading = green (.correct)
+   wrong after grading = removed/cleared
+   revealed answer = pink background + red text (.answer)
+*/
+</script>
+</body></html>

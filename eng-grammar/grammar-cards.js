@@ -2,6 +2,7 @@
 // 本檔只保存卡片與分類資訊；搜尋、篩選、收藏功能仍由 index.html 負責。
 window.GRAMMAR_DATA = [
       // ==== 代名詞 ====
+      { id: "pronouns-basic", category: "代名詞", title: "人稱代名詞｜互動講義", desc: "主格、Be 動詞、所有格與家人稱謂，從配對、是非、圈選到排列造句與閱讀練習", filename: "pronouns.html", themeColor: "#3B82F6" },
       { id: "52", category: "代名詞", title: "人稱代名詞配對板", desc: "主格、受格、所有格、Be 動詞、所有格代名詞與反身代名詞的互動配對複習", filename: "game-pronoun-match.html", themeColor: "#3B82F6" },
       { id: "1", category: "代名詞", title: "我、你、他 (主格)", desc: "我是...，自我介紹與主詞用法", filename: "grammar_I.html", themeColor: "#3B82F6" },
       { id: "2", category: "代名詞", title: "我、你、他 (受格)", desc: "動作的接受者 (love me, love him)", filename: "grammar_me.html", themeColor: "#3B82F6" },
@@ -89,7 +90,8 @@ window.GRAMMAR_DATA = [
       { id: "e3", category: "能力挑戰評估", title: "📝 評估｜生活英文 (V2)", desc: "進階生活常用口語與情境英語綜合評估 (第二版挑戰卷)", filename: "exam-lifeenglish-v2.html", themeColor: "#14B8A6" },
       { id: "e4", category: "能力挑戰評估", title: "📝 評估｜生活英文 (V3)", desc: "多元情境、基礎生活指標英語口說與寫作評量 (第三版挑戰卷)", filename: "exam-lifeenglish-v3.html", themeColor: "#14B8A6" },
       { id: "e5", category: "能力挑戰評估", title: "📝 評估｜生活數學 (V1)", desc: "特教功能性數學：找零、算錢、公車票價與日常加減計算挑戰", filename: "exam-lifemath-v1.html", themeColor: "#14B8A6" },
-      { id: "e6", category: "能力挑戰評估", title: "📝 評估｜生活語文 (V1)", desc: "特教功能性語文：公共標誌、重要指示語與口語表達溝通檢測", filename: "exam-lifechinese-v1.html", themeColor: "#14B8A6" }
+      { id: "e6", category: "能力挑戰評估", title: "📝 評估｜生活語文 (V1)", desc: "特教功能性語文：公共標誌、重要指示語與口語表達溝通檢測", filename: "exam-lifechinese-v1.html", themeColor: "#14B8A6" }
+
 ];
 
 window.GRAMMAR_CATEGORIES = ["代名詞", "日常句型及片語", "時態表達", "名詞與數量", "形容詞、副詞、其他", "數字與時間", "圖表閱讀測驗", "互動遊戲區", "能力挑戰評估"];
