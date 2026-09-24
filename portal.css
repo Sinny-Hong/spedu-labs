@@ -125,8 +125,10 @@ button{cursor:pointer}
 .info-card h3{margin:0 0 7px;font-size:22px}
 .info-card p,.info-card li{font-size:21px;line-height:1.58}
 .info-card p{margin:5px 0}
-.card-title{display:inline-flex;align-items:baseline;gap:9px;white-space:nowrap}
-.card-title-meta{font-size:.7em;font-weight:800;color:var(--muted)}
+.card-title{display:inline-flex;align-items:center;gap:9px;white-space:nowrap}
+.card-title-meta{font-size:1em;font-weight:900;line-height:1;padding:4px 10px;border-radius:999px;color:#fff}
+.date-badge{background:var(--orange)}
+.week-badge{background:#1458b8}
 .info-card.blue{background:#f5f9ff;border-color:#cfe0f5}.info-card.blue h3{color:#1458b8}
 .info-card.green{background:#f5fcf7;border-color:#cfe9d6}.info-card.green h3{color:#22864b}
 .info-card.orange{background:#fffaf3;border-color:#f5d9ad}.info-card.orange h3{color:#e36e00}
