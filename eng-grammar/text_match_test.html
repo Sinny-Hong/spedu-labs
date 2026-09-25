@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>七上 L3｜課文翻譯配對</title>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#e8edf3;color:#1e293b;font-family:"DFKai-SB","BiauKai","標楷體",serif}
+.app-toolbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #cbd5e1;box-shadow:0 2px 8px #0f172a18}
+.toolbar-inner{max-width:1040px;margin:auto;padding:12px 16px;display:flex;align-items:end;gap:10px;flex-wrap:wrap}
+.control{display:flex;flex-direction:column;gap:3px}.control label{font-size:12px;font-weight:700;color:#475569}
+.control select{height:36px;padding:0 32px 0 10px;border:1px solid #94a3b8;border-radius:6px;background:#fff;font-weight:600}
+.print-button{height:36px;border:1px solid #0f766e;border-radius:6px;background:#0f766e;color:#fff;font-weight:700;padding:0 14px;cursor:pointer;margin-left:auto}
+.stage{padding:18px 12px 40px}.lesson{width:min(210mm,100%);margin:auto;background:#fff;box-shadow:0 8px 24px #0f172a20}
+.sheet{width:210mm;min-height:297mm;padding:6mm 8mm;background:#fff}
+.sheet+.sheet{margin-top:16px}.main-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:4mm}
+.main-head h1{font-size:22px;margin:0;font-weight:800;letter-spacing:.03em}.student{font-size:15px;white-space:nowrap}
+.block{margin-top:4mm}.block-head{min-height:38px;background:#f1f5f9;border-left:4px solid #94a3b8;border-radius:7px;padding:6px 9px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.block-title{font-size:15px;font-weight:800;color:#334155}.actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.action{border:1px solid #cbd5e1;background:#fff;border-radius:6px;padding:5px 9px;font-weight:700;color:#475569;cursor:pointer;font-size:12px}
+.action.active{background:#e0f2fe;border-color:#7dd3fc;color:#0369a1}.action.answer.active{background:#ffe4e6;border-color:#fda4af;color:#be123c}
+.refbox{margin-top:2.5mm;border:1px dashed #b8c7d8;border-radius:10px;background:#f8fbfe;padding:3mm 4mm;display:grid;grid-template-columns:1fr;column-gap:8mm;row-gap:1.5mm}
+.ref{font-size:12.5pt;line-height:1.35;cursor:pointer;border-radius:5px;padding:1.5px 4px 1.5px calc(4px + 2em);text-indent:-2em;transition:.12s}.ref:hover,.ref.pending{background:#dbeafe;outline:2px solid #7dd3fc}
+.kw{border:1.5px solid transparent;border-radius:4px;padding:0 .08em}.zhhint .ref .kw{border-color:#b6c8dc;background:#f5f9fd}
+.match-list{margin-top:2mm}.row{display:flex;align-items:flex-start;gap:2mm;min-height:13mm;padding:1.6mm 2mm;border-radius:7px;cursor:pointer}
+.row.active{background:#fef3c7}.num{width:8mm;color:#64748b;font-size:11pt;padding-top:1.5mm;text-align:right}.slot{position:relative;width:13mm;min-width:13mm;height:8mm;margin-top:.5mm;border:0;border-radius:0;display:grid;place-items:center;font-size:13pt;font-weight:800;color:#2563eb;background:transparent}.slot::before{content:"(";position:absolute;left:0}.slot::after{content:")";position:absolute;right:0}
+.eng{font-family:"Comic Sans MS","Comic Sans","Trebuchet MS",sans-serif;font-size:15.5pt;line-height:1.65;flex:1}.enhint .eng .kw{border-color:#b6c8dc;background:#f5f9fd}
+.row.correct .slot{color:#15803d;background:#f0fdf4}.row.reveal .slot{color:#be123c;background:#ffe4e6}
+.sheet.dense .block{margin-top:2mm}.sheet.dense .block-head{min-height:34px;padding-top:4px;padding-bottom:4px}.sheet.dense .refbox{margin-top:1.2mm;padding:1.8mm 3mm;row-gap:.5mm}.sheet.dense .ref{line-height:1.15}.sheet.dense .row{min-height:9mm;padding:.6mm 2mm}.sheet.dense .eng{line-height:1.3}
+.print-pagebreak{break-before:page;page-break-before:always}
+@page{size:A4;margin:0}
+@media(max-width:720px){.toolbar-inner{align-items:stretch}.control{flex:1}.control select{width:100%}.print-button{margin-left:0}.stage{padding:10px 0 24px}.lesson{width:100%;box-shadow:none;overflow-x:auto}.sheet{transform-origin:top left}}
+@media print{body{background:#fff}.app-toolbar{display:none!important}.stage{padding:0}.lesson{width:210mm;margin:0;box-shadow:none}.sheet{margin:0!important;box-shadow:none;page-break-after:always;break-after:page}.sheet:last-child{page-break-after:auto;break-after:auto}.action{display:none}.block-head{padding-right:9px}}
+</style></head>
+<body>
+<header class="app-toolbar"><div class="toolbar-inner">
+<div class="control"><label>冊別／年級</label><select id="gradeSelect"><option value="7">七上</option><option value="8">八上</option><option value="9">九上</option></select></div>
+<div class="control"><label>課次</label><select id="lessonSelect"><option>L1</option><option>L2</option><option selected>L3</option><option>L4</option><option>L5</option><option>L6</option></select></div>
+<button class="print-button" onclick="window.print()">列印</button>
+</div></header>
+<main class="stage"><div class="lesson" id="lesson"></div></main>
+<script src="text_match_data.js"></script>
+<script>
+let pending=null;
+
+function mark(text, kws=[]){let s=text; kws.forEach(k=>{s=s.replace(k,`<span class="kw">${k}</span>`)});return s}
+function partLabel(part){
+ const labels={Dialogue:'Dialogue 對話篇','對話':'Dialogue 對話篇',Reading:'Reading 閱讀篇','閱讀':'Reading 閱讀篇','Reading I':'Reading I 閱讀篇 I','Reading II':'Reading II 閱讀篇 II'};
+ return labels[part]||part
+}
+function buildSection(d,pageNo,gradeLabel,lessonKey){
+ const label=partLabel(d.part),sec=document.createElement('section');sec.className='sheet';sec.dataset.key=`${d.part}-${d.group}`;
+ const pageItems=d.items;
+ const pageOrder=d.order;
+ if(pageItems.length>7)sec.classList.add('dense');
+ sec.innerHTML=`<div class="main-head"><h1>${gradeLabel} ${lessonKey}｜課文翻譯配對　<span style="font-size:15px">P${pageNo}</span></h1><div class="student">____ 班　姓名：____________</div></div>
+ <div class="block"><div class="block-head"><div class="block-title">◎ ${label}｜參考翻譯</div><div class="actions"><button class="action zhbtn">中文提示</button></div></div>
+ <div class="refbox"></div></div>
+ <div class="block"><div class="block-head"><div class="block-title">◎ ${label}｜課文配對</div><div class="actions">
+ <button class="action check">批改</button><button class="action enbtn">英文提示</button><button class="action clear">清空</button><button class="action answer">解答</button>
+ </div></div><div class="match-list"></div></div>`;
+ const refs=sec.querySelector('.refbox');
+ pageItems.forEach(x=>{const el=document.createElement('div');el.className='ref';el.dataset.id=x.id;el.innerHTML=`<b>${x.id}.</b> ${mark(x.zh,x.zhkw)}`;el.onclick=()=>pickRef(sec,x.id,el);refs.appendChild(el)});
+ const list=sec.querySelector('.match-list');
+ pageOrder.forEach((idx,n)=>{const x=d.items[idx],row=document.createElement('div');row.className='row';row.dataset.answer=x.id;row.innerHTML=`<div class="num">${n+1}.</div><div class="slot"></div><div class="eng">${mark(x.en,x.enkw)}</div>`;row.onclick=()=>activate(sec,row);list.appendChild(row)});
+ sec.querySelector('.zhbtn').onclick=e=>{e.stopPropagation();sec.classList.toggle('zhhint');e.currentTarget.classList.toggle('active')};
+ sec.querySelector('.enbtn').onclick=e=>{e.stopPropagation();sec.classList.toggle('enhint');e.currentTarget.classList.toggle('active')};
+ sec.querySelector('.clear').onclick=e=>{e.stopPropagation();sec.querySelectorAll('.slot').forEach(s=>s.textContent='');sec.querySelectorAll('.row').forEach(r=>r.classList.remove('correct','reveal','active'));sec.classList.remove('showanswer');sec.querySelector('.answer').classList.remove('active');pending=null;sec.querySelectorAll('.ref').forEach(r=>r.classList.remove('pending'))};
+ sec.querySelector('.check').onclick=e=>{e.stopPropagation();sec.querySelectorAll('.row').forEach(r=>{r.classList.remove('correct','reveal');const s=r.querySelector('.slot');if(!s.textContent)return;if(s.textContent===r.dataset.answer)r.classList.add('correct');else s.textContent=''})};
+ sec.querySelector('.answer').onclick=e=>{e.stopPropagation();const on=!sec.classList.contains('showanswer');sec.classList.toggle('showanswer',on);e.currentTarget.classList.toggle('active',on);sec.querySelectorAll('.row').forEach(r=>{r.classList.toggle('reveal',on);if(on)r.querySelector('.slot').textContent=r.dataset.answer;else r.querySelector('.slot').textContent=''})};
+ return sec
+}
+function activate(sec,row){sec.querySelectorAll('.row').forEach(r=>r.classList.remove('active'));row.classList.add('active');pending={sec,row};}
+function pickRef(sec,id,el){if(pending&&pending.sec===sec){pending.row.querySelector('.slot').textContent=id;pending.row.classList.remove('active');pending=null;sec.querySelectorAll('.ref').forEach(r=>r.classList.remove('pending'));return}
+ sec.querySelectorAll('.ref').forEach(r=>r.classList.remove('pending'));el.classList.add('pending');pending={sec,id,ref:el,row:null};
+ sec.querySelectorAll('.row').forEach(row=>{row.onclick=()=>{row.querySelector('.slot').textContent=id;el.classList.remove('pending');pending=null;sec.querySelectorAll('.row').forEach(r=>r.classList.remove('active'))}})
+}
+const lesson=document.getElementById('lesson');
+const gradeSelect=document.getElementById('gradeSelect');
+const lessonSelect=document.getElementById('lessonSelect');
+const gradeLabels={7:'七上',8:'八上',9:'九上'};
+function renderLesson(){
+ pending=null;lesson.innerHTML='';
+ const grade=gradeSelect.value,lessonKey=lessonSelect.value,gradeLabel=gradeLabels[grade];
+ const data=TEXT_MATCH_DATA[grade][lessonKey];
+ document.title=`${gradeLabel} ${lessonKey}｜課文翻譯配對`;
+ data.groups.forEach((group,index)=>lesson.append(buildSection(group,index+1,gradeLabel,lessonKey)));
+}
+gradeSelect.onchange=renderLesson;
+lessonSelect.onchange=renderLesson;
+renderLesson();
+</script></body></html>
