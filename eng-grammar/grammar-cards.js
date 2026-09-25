@@ -4,12 +4,8 @@ window.GRAMMAR_DATA = [
       // ==== 代名詞 ====
       { id: "pronouns-basic", category: "代名詞", title: "人稱代名詞｜互動講義", desc: "主格、Be 動詞、所有格與家人稱謂，從配對、是非、圈選到排列造句與閱讀練習", filename: "pronouns.html", themeColor: "#3B82F6" },
       { id: "52", category: "代名詞", title: "人稱代名詞配對板", desc: "主格、受格、所有格、Be 動詞、所有格代名詞與反身代名詞的互動配對複習", filename: "game-pronoun-match.html", themeColor: "#3B82F6" },
-      { id: "1", category: "代名詞", title: "我、你、他 (主格)", desc: "我是...，自我介紹與主詞用法", filename: "grammar_I.html", themeColor: "#3B82F6" },
-      { id: "2", category: "代名詞", title: "我、你、他 (受格)", desc: "動作的接受者 (love me, love him)", filename: "grammar_me.html", themeColor: "#3B82F6" },
-      { id: "3", category: "代名詞", title: "我的、你的、他的 (所有格)", desc: "物品的主人 (my book, your dog)", filename: "grammar_my.html", themeColor: "#3B82F6" },
       { id: "4", category: "代名詞", title: "所有格與複數所有格", desc: "男孩們的...，名詞單複數所有格變化規則", filename: "grammar_boys_.html", themeColor: "#3B82F6" },
       { id: "5", category: "代名詞", title: "這個、那個、這些、那些", desc: "指示代名詞單複數與遠近距離辨析", filename: "grammar_this_that_these_those.html", themeColor: "#3B82F6" },
-      { id: "6", category: "代名詞", title: "Be動詞 (am, are, is)", desc: "Be動詞的主詞搭配與現在式基本用法", filename: "grammar_be_am_are_is.html", themeColor: "#3B82F6" },
       { id: "7", category: "代名詞", title: "反身代名詞 (單數)", desc: "我自己、你自己、他自己 (myself, yourself, himself) 的用法", filename: "grammar_myself.html", themeColor: "#3B82F6" },
       { id: "8", category: "代名詞", title: "反身代名詞 (複數)", desc: "我們自己、你們自己、他們自己 (ourselves, yourselves) 的用法", filename: "grammar_ourselves.html", themeColor: "#3B82F6" },
       { id: "9", category: "代名詞", title: "所有格代名詞", desc: "區分「我的書 (my book)」與「我的東西 (mine)」的代名詞用法", filename: "grammar_mine.html", themeColor: "#3B82F6" },
@@ -21,7 +17,6 @@ window.GRAMMAR_DATA = [
       { id: "12", category: "日常句型及片語", title: "我會... (can/can't)", desc: "能力表達與日常助動詞簡答", filename: "grammar_can_can_t.html", themeColor: "#2563EB" },
       { id: "13", category: "日常句型及片語", title: "男女稱謂 (Mr., Miss, Mrs.)", desc: "社交場合必備的先生、小姐、太太等禮貌稱謂與用法", filename: "grammar_mr_miss.html", themeColor: "#2563EB" },
       { id: "14", category: "日常句型及片語", title: "家人稱謂與關係", desc: "爸爸、媽媽、兄弟姊妹等家庭成員的英文名稱與介紹", filename: "grammar_family.html", themeColor: "#2563EB" },
-      { id: "15", category: "日常句型及片語", title: "家人稱謂複數與所有格", desc: "結合家人稱謂與複數所有格的進階練習 (如 my sons)", filename: "grammar_my_sons.html", themeColor: "#2563EB" },
       { id: "16", category: "日常句型及片語", title: "連接詞 (and, but, or)", desc: "語意轉折「但是」與選擇「或者」的日常句子連結", filename: "grammar_and_but_or.html", themeColor: "#2563EB" },
       { id: "17", category: "日常句型及片語", title: "連接詞 (because, so)", desc: "表達因果關係「因為...所以...」的正確日常句型", filename: "grammar_because_so.html", themeColor: "#2563EB" },
       { id: "18", category: "日常句型及片語", title: "時間連接詞 (before, after)", desc: "連接詞之前之後 before、after 的生活句型與前後順序判讀", filename: "grammar_before_after.html", themeColor: "#2563EB" },
@@ -29,15 +24,11 @@ window.GRAMMAR_DATA = [
 
       // ==== 時態表達 ====
       { id: "past-simple", category: "時態表達", title: "過去簡單式｜八頁互動講義", desc: "從 was / were、動詞過去式到 did＋原形，含進階練習與找過去式任務", filename: "prototype-past-simple.html", themeColor: "#F59E0B" },
+      { id: "present-simple-next", category: "時態表達", title: "現在簡單式｜新版講義", desc: "新版教材製作中；完成前保留原有三份舊教材", status: "preparing", themeColor: "#F59E0B" },
       { id: "20", category: "時態表達", title: "現在簡單式的判讀(do, does)", desc: "現在簡單式問句與否定的靈魂助動詞用法", filename: "grammar_do_does.html", themeColor: "#F59E0B" },
       { id: "21", category: "時態表達", title: "第三人稱單數動詞變化", desc: "當主詞為第三人稱單數時，一般動詞加 s/es (goes, plays)", filename: "grammar_goes_plays.html", themeColor: "#F59E0B" },
       { id: "22", category: "時態表達", title: "頻率副詞 (always)", desc: "習慣與動作發生頻率的表達與句中位置", filename: "grammar_always.html", themeColor: "#F59E0B" },
-      { id: "23", category: "時態表達", title: "過去式(was, were)", desc: "過去狀態與位置 (I was busy yesterday.)", filename: "grammar_was_were.html", themeColor: "#F59E0B" },
-      { id: "24", category: "時態表達", title: "過去式(did, didn't)", desc: "過去問句與否定 (I didn't play soccer.)", filename: "grammar_did_didn_t.html", themeColor: "#F59E0B" },
-      { id: "25", category: "時態表達", title: "過去式(動詞加ed)", desc: "規則動詞過去式變化與發音規律", filename: "grammar_Ved.html", themeColor: "#F59E0B" },
-      { id: "26", category: "時態表達", title: "過去式(不規則變化)", desc: "常見不規則動詞 (went, saw, ate) 的過去式", filename: "grammar_went_saw.html", themeColor: "#F59E0B" },
       { id: "27", category: "時態表達", title: "現在進行式：動詞變化", desc: "現在進行式的使用時機與動詞加 -ing 的變化規則", filename: "grammar_Ving.html", themeColor: "#F59E0B" },
-      { id: "28", category: "時態表達", title: "過去時間副詞", desc: "過去式常搭配的時間副詞 (如 yesterday, last week 上週)", filename: "grammar_yesterday.html", themeColor: "#F59E0B" },
       { id: "50", category: "時態表達", title: "現在進行式：句型結構", desc: "am/is/are + V-ing 的肯定句、否定句與問句結構", filename: "grammar_are_Ving.html", themeColor: "#F59E0B" },
 
       // ==== 名詞與數量 ====
@@ -84,6 +75,13 @@ window.GRAMMAR_DATA = [
       { id: "g6", category: "互動遊戲區", title: "🧩 配對板｜時間與日期", desc: "星期、月份、日期與時間的三排對照語音配對", filename: "match-time-date.html", themeColor: "#F43F5E" },
       { id: "g7", category: "互動遊戲區", title: "🧩 配對板｜人稱代名詞", desc: "限時配對、亂序、干擾卡與課堂訂正挑戰", filename: "match-pronouns.html", themeColor: "#F43F5E" },
 
+      // ==== 教師測試區：五張卡共用 test.html，只替換對應資料檔 ====
+      { id: "test-1", category: "教師測試區", title: "Test 1", desc: "固定測試槽 1", filename: "test.html?slot=1", themeColor: "#64748B" },
+      { id: "test-2", category: "教師測試區", title: "Test 2", desc: "固定測試槽 2", filename: "test.html?slot=2", themeColor: "#64748B" },
+      { id: "test-3", category: "教師測試區", title: "Test 3", desc: "固定測試槽 3", filename: "test.html?slot=3", themeColor: "#64748B" },
+      { id: "test-4", category: "教師測試區", title: "Test 4", desc: "固定測試槽 4", filename: "test.html?slot=4", themeColor: "#64748B" },
+      { id: "test-5", category: "教師測試區", title: "Test 5", desc: "固定測試槽 5", filename: "test.html?slot=5", themeColor: "#64748B" },
+
       // ==== 能力挑戰評估 ====
       { id: "e1", category: "能力挑戰評估", title: "📝 評估｜生活英文 (V1)", desc: "高中職特教班及資源班生活英語聽說讀寫綜合評量 (第一版)", filename: "exam-lifeenglish-v1.html", themeColor: "#14B8A6" },
       { id: "e2", category: "能力挑戰評估", title: "📝 評估｜生活常識 (V1)", desc: "社會適應能力評估：自我保護、公共規章與基本生活常識", filename: "exam-lifesocial-v1.html", themeColor: "#14B8A6" },
@@ -94,5 +92,5 @@ window.GRAMMAR_DATA = [
 
 ];
 
-window.GRAMMAR_CATEGORIES = ["代名詞", "日常句型及片語", "時態表達", "名詞與數量", "形容詞、副詞、其他", "數字與時間", "圖表閱讀測驗", "互動遊戲區", "能力挑戰評估"];
+window.GRAMMAR_CATEGORIES = ["代名詞", "日常句型及片語", "時態表達", "名詞與數量", "形容詞、副詞、其他", "數字與時間", "圖表閱讀測驗", "互動遊戲區", "能力挑戰評估", "教師測試區"];
 

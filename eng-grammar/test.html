@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>教材測試槽｜Sinny Spedu Labs</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body { display: grid; grid-template-rows: auto 1fr; font-family: system-ui, "Noto Sans TC", sans-serif; background: #f8fafc; color: #0f172a; }
+    header { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #0f2748; color: white; }
+    header strong { flex: 1; }
+    header a { color: white; text-decoration: none; font-weight: 700; }
+    #status { font-size: 13px; color: #cbd5e1; }
+    iframe { width: 100%; height: 100%; border: 0; background: white; }
+    .empty { align-self: start; max-width: 720px; margin: 48px auto; padding: 28px; border: 1px solid #cbd5e1; border-radius: 16px; background: white; line-height: 1.8; }
+    code { padding: 2px 6px; border-radius: 5px; background: #e2e8f0; }
+  </style>
+</head>
+<body>
+  <header><a href="index.html">← 文法入口</a><strong id="slotTitle">教材測試槽</strong><span id="status"></span></header>
+  <main class="empty" id="empty" hidden></main>
+  <iframe id="preview" title="教材測試預覽" hidden></iframe>
+  <script>
+    const slot = Number(new URLSearchParams(location.search).get("slot"));
+    const safeSlot = Number.isInteger(slot) && slot >= 1 && slot <= 5 ? slot : 1;
+    const script = document.createElement("script");
+    script.src = `test-slots/test-${safeSlot}.js?v=${Date.now()}`;
+    script.onload = () => {
+      const data = window.GRAMMAR_TEST_SLOT;
+      const title = data?.title || `Test ${safeSlot}`;
+      document.title = `${title}｜Sinny Spedu Labs`;
+      document.getElementById("slotTitle").textContent = title;
+      document.getElementById("status").textContent = data?.updatedAt ? `更新：${data.updatedAt}` : "";
+      const frame = document.getElementById("preview");
+      if (data?.html) {
+        frame.srcdoc = data.html;
+        frame.hidden = false;
+      } else if (data?.source) {
+        frame.src = data.source;
+        frame.hidden = false;
+      } else {
+        const empty = document.getElementById("empty");
+        empty.innerHTML = `<h1>${title} 尚未放入教材</h1><p>用手機覆蓋 <code>test-slots/test-${safeSlot}.js</code>，固定網址不用更改。</p>`;
+        empty.hidden = false;
+      }
+    };
+    script.onerror = () => {
+      const empty = document.getElementById("empty");
+      empty.textContent = `找不到 Test ${safeSlot} 的資料檔。`;
+      empty.hidden = false;
+    };
+    document.head.append(script);
+  </script>
+</body>
+</html>

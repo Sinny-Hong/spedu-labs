@@ -93,7 +93,7 @@
     </main>
   </div>
 
-  <script src="grammar-cards.js?v=2.2"></script>
+  <script src="grammar-cards.js?v=2.3"></script>
   <script>
     const unavailableFiles = new Set([
       "grammar_first.html",
@@ -117,7 +117,7 @@
 
     document.getElementById("grammarCards").innerHTML = window.GRAMMAR_CATEGORIES.map(category => {
       const cards = window.GRAMMAR_DATA.filter(item => item.category === category).map(item => {
-        const unavailable = unavailableFiles.has(item.filename);
+        const unavailable = item.status === "preparing" || unavailableFiles.has(item.filename);
         const href = unavailable ? "" : ` data-href="${escapeHtml(item.filename)}" tabindex="0" role="link"`;
         const status = unavailable ? ` <span class="resource-status">（教材準備中）</span>` : "";
         return `<article class="resource-card${unavailable ? " is-placeholder" : ""}" data-category="${escapeHtml(item.category)}" style="border-left-color:${escapeHtml(item.themeColor)}"${href}>
