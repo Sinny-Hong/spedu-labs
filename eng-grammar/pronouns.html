@@ -644,7 +644,7 @@ const sidebarToggle=sidebar.querySelector('.sidebar-toggle');
 const sectionLinks=[...sidebar.querySelectorAll('a[href^="#"]')];
 sectionLinks.forEach(link=>link.addEventListener('click',event=>{
   event.preventDefault();
-  const target=document.querySelector(link.getAttribute('href'));
+  const target=document.getElementById(link.getAttribute('href').slice(1));
   if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
   if(window.matchMedia('(max-width:1320px)').matches){
     sidebar.classList.remove('expanded');
