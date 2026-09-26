@@ -678,7 +678,8 @@ function toggleSideJump(btn){const nav=btn.closest('.side-jump');nav.classList.t
 const chapterLinks=[...document.querySelectorAll('.side-jump a[href^="#p"]')];
 const chapterObserver=new IntersectionObserver(entries=>{const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(visible)chapterLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+visible.target.id))},{rootMargin:'-20% 0px -50% 0px',threshold:[0,.2,.5]});
 document.querySelectorAll('.page[id^="p"]').forEach(page=>chapterObserver.observe(page));
-chapterLinks.forEach(a=>a.addEventListener('click',()=>{const nav=a.closest('.side-jump');nav.classList.remove('expanded');nav.querySelector('.side-toggle').setAttribute('aria-expanded','false')}));
+chapterLinks.forEach(a=>a.addEventListener('click',event=>{event.preventDefault();const target=document.querySelector(a.getAttribute('href'));if(target)target.scrollIntoView({behavior:'smooth',block:'start'});const nav=a.closest('.side-jump');nav.classList.remove('expanded');nav.querySelector('.side-toggle').setAttribute('aria-expanded','false')}));
+document.querySelector('.side-jump .top-link').addEventListener('click',event=>{event.preventDefault();document.getElementById('top').scrollIntoView({behavior:'smooth',block:'start'})});
 
 /* P7: one selected answer per question */
 document.querySelectorAll('#p7 .mc-item').forEach(item=>{const stem=item.querySelector('.mc-stem'),match=stem.textContent.match(/^(\d+\.)\s*(.*)$/);if(!match)return;const slot=document.createElement('span'),number=document.createElement('span'),question=document.createElement('span');slot.className='mc-answer-slot';slot.textContent='（　）';number.className='mc-question-number';number.textContent=match[1];question.textContent=match[2];stem.replaceChildren(slot,number,question)});
