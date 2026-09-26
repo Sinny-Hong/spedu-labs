@@ -23,9 +23,9 @@
 .kw{border:1.5px solid transparent;border-radius:4px;padding:0 .08em}.zhhint .ref .kw{border-color:#b6c8dc;background:#f5f9fd}
 .match-list{margin-top:2mm}.row{display:flex;align-items:flex-start;gap:2mm;min-height:13mm;padding:1.6mm 2mm;border-radius:7px;cursor:pointer}
 .row.active{background:#fef3c7}.num{width:8mm;color:#64748b;font-size:11pt;padding-top:1.5mm;text-align:right}.slot{position:relative;width:13mm;min-width:13mm;height:8mm;margin-top:.5mm;border:0;border-radius:0;display:grid;place-items:center;font-size:13pt;font-weight:800;color:#2563eb;background:transparent}.slot::before{content:"(";position:absolute;left:0}.slot::after{content:")";position:absolute;right:0}
-.eng{font-family:"Comic Sans MS","Comic Sans","Trebuchet MS",sans-serif;font-size:15.5pt;line-height:1.65;flex:1}.enhint .eng .kw{border-color:#b6c8dc;background:#f5f9fd}
+.eng{font-family:"Comic Sans MS","Comic Sans","Trebuchet MS",sans-serif;font-size:15.5pt;line-height:var(--eng-line-height,1.65);flex:1}.enhint .eng .kw{border-color:#b6c8dc;background:#f5f9fd}
 .row.correct .slot{color:#15803d;background:#f0fdf4}.row.reveal .slot{color:#be123c;background:#ffe4e6}
-.sheet.dense .block{margin-top:2mm}.sheet.dense .block-head{min-height:34px;padding-top:4px;padding-bottom:4px}.sheet.dense .refbox{margin-top:1.2mm;padding:1.8mm 3mm;row-gap:.5mm}.sheet.dense .ref{line-height:1.15}.sheet.dense .row{min-height:9mm;padding:.6mm 2mm}.sheet.dense .eng{line-height:1.3}
+.sheet.dense .block{margin-top:2mm}.sheet.dense .block-head{min-height:34px;padding-top:4px;padding-bottom:4px}.sheet.dense .refbox{margin-top:1.2mm;padding:1.8mm 3mm;row-gap:.5mm}.sheet.dense .ref{line-height:1.15}.sheet.dense .row{min-height:9mm;padding:.6mm 2mm}
 .print-pagebreak{break-before:page;page-break-before:always}
 @page{size:A4;margin:0}
 @media(max-width:720px){.toolbar-inner{align-items:stretch}.control{flex:1}.control select{width:100%}.print-button{margin-left:0}.stage{padding:10px 0 24px}.lesson{width:100%;box-shadow:none;overflow-x:auto}.sheet{transform-origin:top left}}
@@ -35,7 +35,8 @@
 <header class="app-toolbar"><div class="toolbar-inner">
 <div class="control"><label>冊別／年級</label><select id="gradeSelect"><option value="7">七上</option><option value="8">八上</option><option value="9">九上</option></select></div>
 <div class="control"><label>課次</label><select id="lessonSelect"><option>L1</option><option>L2</option><option selected>L3</option><option>L4</option><option>L5</option><option>L6</option></select></div>
-<button class="print-button" onclick="window.print()">列印</button>
+<div class="control"><label>列印模式</label><select id="printMode"><option value="lesson">列印本課</option><option value="book">列印本冊</option><option value="teacher">列印本冊（教師版）</option></select></div>
+<button class="print-button" id="printButton" type="button">列印</button>
 </div></header>
 <main class="stage"><div class="lesson" id="lesson"></div></main>
 <script src="text_match_data.js"></script>
@@ -47,7 +48,7 @@ function partLabel(part){
  const labels={Dialogue:'Dialogue 對話篇','對話':'Dialogue 對話篇',Reading:'Reading 閱讀篇','閱讀':'Reading 閱讀篇','Reading I':'Reading I 閱讀篇 I','Reading II':'Reading II 閱讀篇 II'};
  return labels[part]||part
 }
-function buildSection(d,pageNo,gradeLabel,lessonKey){
+function buildSection(d,pageNo,gradeLabel,lessonKey,teacherMode=false){
  const label=partLabel(d.part),sec=document.createElement('section');sec.className='sheet';sec.dataset.key=`${d.part}-${d.group}`;
  const pageItems=d.items;
  const pageOrder=d.order;
@@ -67,6 +68,7 @@ function buildSection(d,pageNo,gradeLabel,lessonKey){
  sec.querySelector('.clear').onclick=e=>{e.stopPropagation();sec.querySelectorAll('.slot').forEach(s=>s.textContent='');sec.querySelectorAll('.row').forEach(r=>r.classList.remove('correct','reveal','active'));sec.classList.remove('showanswer');sec.querySelector('.answer').classList.remove('active');pending=null;sec.querySelectorAll('.ref').forEach(r=>r.classList.remove('pending'))};
  sec.querySelector('.check').onclick=e=>{e.stopPropagation();sec.querySelectorAll('.row').forEach(r=>{r.classList.remove('correct','reveal');const s=r.querySelector('.slot');if(!s.textContent)return;if(s.textContent===r.dataset.answer)r.classList.add('correct');else s.textContent=''})};
  sec.querySelector('.answer').onclick=e=>{e.stopPropagation();const on=!sec.classList.contains('showanswer');sec.classList.toggle('showanswer',on);e.currentTarget.classList.toggle('active',on);sec.querySelectorAll('.row').forEach(r=>{r.classList.toggle('reveal',on);if(on)r.querySelector('.slot').textContent=r.dataset.answer;else r.querySelector('.slot').textContent=''})};
+ if(teacherMode){sec.classList.add('showanswer');sec.querySelectorAll('.row').forEach(r=>{r.classList.add('reveal');r.querySelector('.slot').textContent=r.dataset.answer})}
  return sec
 }
 function activate(sec,row){sec.querySelectorAll('.row').forEach(r=>r.classList.remove('active'));row.classList.add('active');pending={sec,row};}
@@ -77,15 +79,52 @@ function pickRef(sec,id,el){if(pending&&pending.sec===sec){pending.row.querySele
 const lesson=document.getElementById('lesson');
 const gradeSelect=document.getElementById('gradeSelect');
 const lessonSelect=document.getElementById('lessonSelect');
+const printMode=document.getElementById('printMode');
+const printButton=document.getElementById('printButton');
 const gradeLabels={7:'七上',8:'八上',9:'九上'};
+function fitEnglishLineHeight(scope=lesson){
+ scope.querySelectorAll('.sheet').forEach(sheet=>{
+  const base=sheet.classList.contains('dense')?1.3:1.65;
+  const max=2.6,step=.05;
+  sheet.style.setProperty('--eng-line-height',base);
+  const width=sheet.getBoundingClientRect().width;
+  const safeBottom=sheet.getBoundingClientRect().top+(width*297/210)-(width*6/210);
+  const lastRow=sheet.querySelector('.match-list .row:last-child');
+  if(!lastRow)return;
+  let accepted=base;
+  for(let value=base+step;value<=max+.001;value+=step){
+   sheet.style.setProperty('--eng-line-height',value.toFixed(2));
+   if(lastRow.getBoundingClientRect().bottom<=safeBottom-2)accepted=value;
+   else break;
+  }
+  sheet.style.setProperty('--eng-line-height',accepted.toFixed(2));
+ });
+}
+function appendLesson(grade,lessonKey,teacherMode=false){
+ const gradeLabel=gradeLabels[grade];
+ const data=TEXT_MATCH_DATA[grade][lessonKey];
+ data.groups.forEach((group,index)=>lesson.append(buildSection(group,index+1,gradeLabel,lessonKey,teacherMode)));
+}
 function renderLesson(){
  pending=null;lesson.innerHTML='';
  const grade=gradeSelect.value,lessonKey=lessonSelect.value,gradeLabel=gradeLabels[grade];
- const data=TEXT_MATCH_DATA[grade][lessonKey];
  document.title=`${gradeLabel} ${lessonKey}｜課文翻譯配對`;
- data.groups.forEach((group,index)=>lesson.append(buildSection(group,index+1,gradeLabel,lessonKey)));
+ appendLesson(grade,lessonKey);
+ fitEnglishLineHeight();
+}
+function preparePrint(){
+ const mode=printMode.value;
+ const grade=gradeSelect.value;
+ const lessonKey=lessonSelect.value;
+ pending=null;lesson.innerHTML='';
+ if(mode==='lesson')appendLesson(grade,lessonKey);
+ else Object.keys(TEXT_MATCH_DATA[grade]).forEach(key=>appendLesson(grade,key,mode==='teacher'));
+ fitEnglishLineHeight();
+ window.print();
 }
 gradeSelect.onchange=renderLesson;
 lessonSelect.onchange=renderLesson;
+printButton.onclick=preparePrint;
+window.addEventListener('afterprint',renderLesson);
 renderLesson();
 </script></body></html>
