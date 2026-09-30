@@ -275,10 +275,18 @@
                 margin: 0 !important;
                 box-shadow: none !important;
                 border: none !important;
-                page-break-after: always;
+                page-break-after: auto;
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: space-between !important;
+            }
+
+            body.print-single-active #timetable-preview-container {
+                display: block !important;
+            }
+
+            body.print-single-active #print-all-section {
+                display: none !important;
             }
 
             body.print-all-active #timetable-preview-container {
@@ -291,6 +299,16 @@
 
             body.print-all-active #print-all-section {
                 display: block !important;
+            }
+
+            body.print-all-active #print-all-section .page-container {
+                page-break-after: always;
+                break-after: page;
+            }
+
+            body.print-all-active #print-all-section .page-container:last-child {
+                page-break-after: auto;
+                break-after: auto;
             }
 
             * {
@@ -361,7 +379,7 @@
             <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
                 <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">🖨️ 列印與檔案輸出</h2>
                 <div class="flex flex-col gap-3">
-                    <button onclick="window.print()" class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors cursor-pointer">
+                    <button onclick="printCurrentStudent()" class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors cursor-pointer">
                         <span>🖨️</span> 列印目前學生課表 (單頁)
                     </button>
                     <button id="btn-print-all" onclick="printAllStudents()" class="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors cursor-pointer">
@@ -925,12 +943,25 @@
             printSection.innerHTML = allHtml;
         }
 
-        function printAllStudents() {
-            document.body.classList.add('print-all-active');
+        function clearPrintMode() {
+            document.body.classList.remove('print-single-active', 'print-all-active');
+        }
+
+        function startPrintMode(modeClass) {
+            clearPrintMode();
+            document.body.classList.add(modeClass);
             requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
         }
 
-        window.addEventListener('afterprint', () => document.body.classList.remove('print-all-active'));
+        function printCurrentStudent() {
+            startPrintMode('print-single-active');
+        }
+
+        function printAllStudents() {
+            startPrintMode('print-all-active');
+        }
+
+        window.addEventListener('afterprint', clearPrintMode);
     </script>
 </body>
 </html>
