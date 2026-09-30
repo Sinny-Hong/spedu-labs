@@ -268,6 +268,10 @@
                 padding: 0 !important;
             }
 
+            #app-main {
+                display: none !important;
+            }
+
             .page-container {
                 width: 210mm !important;
                 height: 297mm !important;
@@ -281,15 +285,12 @@
                 justify-content: space-between !important;
             }
 
-            body.print-single-active #timetable-preview-container {
+            #print-single-section,
+            body.print-single-active #print-single-section {
                 display: block !important;
             }
 
-            body.print-single-active #print-all-section {
-                display: none !important;
-            }
-
-            body.print-all-active #timetable-preview-container {
+            body.print-all-active #print-single-section {
                 display: none !important;
             }
 
@@ -317,6 +318,7 @@
             }
         }
 
+        #print-single-section,
         #print-all-section {
             display: none;
         }
@@ -348,7 +350,7 @@
     </header>
 
     <!-- 網頁操作介面 -->
-    <main class="no-print max-w-7xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <main id="app-main" class="no-print max-w-7xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
         
         <!-- 左側控制面板 -->
         <div class="lg:col-span-1 flex flex-col gap-6">
@@ -411,6 +413,9 @@
         </div>
 
     </main>
+
+    <!-- 列印專區：避開畫面預覽的 grid 與捲動容器，確保單頁列印不會偏出紙張 -->
+    <div id="print-single-section"></div>
 
     <!-- 列印專區：用於全班一鍵列印的隱藏 HTML 容器 -->
     <div id="print-all-section"></div>
@@ -614,7 +619,9 @@
 
         function renderSelectedStudent() {
             const student = studentsData[selectedStudentIndex];
-            document.getElementById('timetable-preview-container').innerHTML = generateStudentPageHTML(student);
+            const pageHtml = generateStudentPageHTML(student);
+            document.getElementById('timetable-preview-container').innerHTML = pageHtml;
+            document.getElementById('print-single-section').innerHTML = pageHtml;
         }
 
         function formatTimeCode(code) {
