@@ -76,11 +76,11 @@ window.GRAMMAR_DATA = [
       { id: "g7", category: "互動遊戲區", title: "🧩 配對板｜人稱代名詞", desc: "限時配對、亂序、干擾卡與課堂訂正挑戰", filename: "match-pronouns.html", themeColor: "#F43F5E" },
 
       // ==== 教師測試區：五張卡共用 test.html，只替換對應資料檔 ====
-      { id: "test-1", category: "教師測試區", title: "Test 1", desc: "固定測試槽 1", filename: "test.html?slot=1", themeColor: "#64748B" },
-      { id: "test-2", category: "教師測試區", title: "Test 2", desc: "固定測試槽 2", filename: "test.html?slot=2", themeColor: "#64748B" },
-      { id: "test-3", category: "教師測試區", title: "Test 3", desc: "固定測試槽 3", filename: "test.html?slot=3", themeColor: "#64748B" },
-      { id: "test-4", category: "教師測試區", title: "Test 4", desc: "固定測試槽 4", filename: "test.html?slot=4", themeColor: "#64748B" },
-      { id: "test-5", category: "教師測試區", title: "Test 5", desc: "固定測試槽 5", filename: "test.html?slot=5", themeColor: "#64748B" },
+      { id: "test-1", category: "教師測試區", title: "Test 1", desc: "固定測試槽 1", filename: "test1.html", themeColor: "#64748B" },
+      { id: "test-2", category: "教師測試區", title: "Test 2", desc: "固定測試槽 2", filename: "test2.html", themeColor: "#64748B" },
+      { id: "test-3", category: "教師測試區", title: "Test 3", desc: "固定測試槽 3", filename: "test3.html", themeColor: "#64748B" },
+      { id: "test-4", category: "教師測試區", title: "Test 4", desc: "固定測試槽 4", filename: "test4.html", themeColor: "#64748B" },
+      { id: "test-5", category: "教師測試區", title: "Test 5", desc: "固定測試槽 5", filename: "test5.html", themeColor: "#64748B" },
 
       // ==== 能力挑戰評估 ====
       { id: "e1", category: "能力挑戰評估", title: "📝 評估｜生活英文 (V1)", desc: "高中職特教班及資源班生活英語聽說讀寫綜合評量 (第一版)", filename: "exam-lifeenglish-v1.html", themeColor: "#14B8A6" },
