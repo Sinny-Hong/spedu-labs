@@ -1,35 +1,1221 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>English Card Builder V2</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My English Card</title>
+
 <style>
-:root{--navy:#0b2f5f;--blue:#123f77;--orange:#f59e0b;--orange-dark:#a75200;--ink:#14213d;--muted:#667085;--line:#dfe6ef;--bg:#f5f8fc;--pale-orange:#fff7e8;--pale-blue:#f4f8fc;--shadow:0 12px 30px rgba(18,63,119,.09)}
-*{box-sizing:border-box}html{min-height:100%}body{margin:0;min-height:100vh;overflow-x:hidden;color:var(--ink);font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;background-color:var(--bg);background-image:linear-gradient(rgba(18,63,119,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(18,63,119,.03) 1px,transparent 1px);background-size:28px 28px}button{font:inherit}
-.stage{padding:clamp(20px,4vh,46px) clamp(16px,3vw,38px)}.card{width:min(1280px,100%);margin:auto;position:relative;overflow:hidden;padding:clamp(24px,3vw,42px);background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
-.brand-watermark{position:absolute;right:-42px;bottom:-52px;width:clamp(230px,26vw,380px);height:auto;opacity:.06;pointer-events:none;user-select:none;z-index:0}
-header{position:relative;z-index:1;padding-bottom:clamp(20px,3vh,30px);text-align:center}h1{margin:0;color:var(--navy);font-family:"Trebuchet MS","Arial Rounded MT Bold",Arial,sans-serif;font-size:clamp(34px,4.2vw,56px);font-weight:800;line-height:1.1;letter-spacing:-.025em}.tagline{margin-top:9px;color:var(--orange-dark);font-size:clamp(13px,1.3vw,17px);font-weight:900;letter-spacing:.14em}
-.builder{position:relative;z-index:1;display:grid;grid-template-columns:minmax(250px,30%) minmax(0,1fr);gap:clamp(18px,2.5vw,30px);align-items:start}.steps{display:grid;gap:12px}
-.step-card{width:100%;min-width:0;padding:17px 18px;position:relative;overflow:hidden;color:var(--navy);background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 5px 16px rgba(18,63,119,.055);text-align:left;cursor:pointer;transition:border-color .18s,background .18s,transform .18s}.step-card:hover{transform:translateY(-1px);border-color:#bccbdd}.step-card:focus-visible,.tab-button:focus-visible,.choice:focus-visible{outline:3px solid rgba(245,158,11,.32);outline-offset:2px}.step-card.active{background:var(--pale-orange);border-color:rgba(245,158,11,.72);box-shadow:0 8px 22px rgba(245,158,11,.11)}.step-card.active:before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--orange)}
-.step-heading{display:flex;align-items:center;gap:11px}.step-number{flex:0 0 auto;display:grid;place-items:center;width:31px;height:31px;color:var(--navy);background:#edf3f9;border-radius:50%;font-weight:900}.step-card.active .step-number{color:#fff;background:var(--orange)}.step-title{min-width:0}.step-title strong{display:block;font-size:16px;line-height:1.3}.step-title small{display:block;margin-top:2px;color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.08em}.step-value{display:block;margin:11px 0 0 42px;overflow-wrap:anywhere;color:var(--muted);font-family:"Trebuchet MS","Arial Rounded MT Bold",Arial,sans-serif;font-size:15px;line-height:1.45}.step-card.chosen .step-value{color:var(--navy);font-weight:800}
-.content-panel{min-width:0;position:relative;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 7px 22px rgba(18,63,119,.065)}.panel-top{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 22px;border-bottom:1px solid var(--line)}.panel-kicker{margin:0 0 4px;color:var(--orange-dark);font-size:12px;font-weight:900;letter-spacing:.1em}.panel-title{margin:0;color:var(--navy);font-size:clamp(22px,2.5vw,30px);line-height:1.25}
-.view-tabs{flex:0 0 auto;display:flex;padding:4px;background:#eef3f8;border:1px solid #e2e9f1;border-radius:11px}.tab-button{min-height:40px;padding:8px 15px;color:var(--muted);background:transparent;border:0;border-radius:8px;font-weight:900;cursor:pointer}.tab-button.active{color:var(--navy);background:#fff;box-shadow:0 3px 10px rgba(18,63,119,.1)}.panel-body{padding:18px 22px 22px}.choice-list{display:grid;gap:10px}.choice{display:block;width:100%;min-height:72px;padding:13px 16px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 3px 11px rgba(18,63,119,.035);text-align:left;cursor:pointer;transition:border-color .18s,background .18s,transform .18s}.choice:hover{transform:translateY(-1px);border-color:var(--orange);background:#fffaf1}.choice.selected{border-color:var(--orange);background:var(--pale-orange)}.choice.reset{min-height:58px;background:var(--pale-blue)}.en{color:var(--navy);font-family:"Trebuchet MS","Arial Rounded MT Bold",Arial,sans-serif;font-size:clamp(19px,2vw,25px);font-weight:800;line-height:1.35}.choice.reset .en{font-size:17px}.zh{margin-top:4px;color:var(--muted);font-size:14px;line-height:1.45}
-.tip-panel{min-height:250px;padding:clamp(18px,3vw,28px);color:var(--ink);background:var(--pale-blue);border:1px solid var(--line);border-left:5px solid var(--orange);border-radius:14px}.tip-panel h2{margin:0 0 18px;color:var(--navy);font-size:clamp(21px,2.4vw,28px)}.tip{font-size:clamp(17px,1.7vw,20px);line-height:1.75}.tip b{color:var(--blue)}.note{position:relative;z-index:1;margin:20px 0 0;color:var(--muted);font-size:13px;text-align:center}
-@media(max-width:760px){.stage{width:100%;padding:0}.card{width:100%;min-width:0;padding:22px 14px 28px;border:0;border-radius:0}header{min-width:0;padding-bottom:20px}h1{max-width:100%;font-size:clamp(28px,9vw,42px);overflow-wrap:anywhere}.builder,.content-panel,.panel-top,.panel-body{min-width:0;max-width:100%}.builder{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.step-card{padding:13px 12px}.step-heading{gap:8px}.step-number{width:28px;height:28px}.step-title strong{font-size:14px}.step-title small{font-size:10px;letter-spacing:.03em}.step-value{margin:8px 0 0;font-size:13px}.panel-top{align-items:flex-start;flex-direction:column;padding:17px}.view-tabs{width:100%;min-width:0}.tab-button{min-width:0;flex:1}.panel-body{padding:13px}.choice{min-width:0;min-height:68px}.en,.zh,.note{overflow-wrap:anywhere}.brand-watermark{width:210px;right:-30px;bottom:-30px}}@media(max-width:430px){.steps{grid-template-columns:1fr}.step-value{margin-left:36px}}@media(prefers-reduced-motion:reduce){.step-card,.choice{transition:none}}
+:root{
+  --navy:#0B3768;
+  --navy2:#164D83;
+  --orange:#F59E0B;
+  --orange-soft:#FFF4DC;
+  --bg:#F3F7FB;
+  --card:#FFFFFF;
+  --line:#D5E2EE;
+  --soft:#EEF4F9;
+  --muted:#71849A;
+  --green:#7FAE91;
+  --green-soft:#DDEBDD;
+  --shadow:0 12px 30px rgba(23,62,101,.08);
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+}
+
+body{
+  font-family:
+    "Noto Sans TC",
+    "Microsoft JhengHei",
+    Arial,
+    sans-serif;
+  color:var(--navy);
+  background:
+    linear-gradient(rgba(11,55,104,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(11,55,104,.025) 1px,transparent 1px),
+    var(--bg);
+  background-size:28px 28px;
+}
+
+button{
+  font:inherit;
+}
+
+button:focus-visible{
+  outline:3px solid rgba(245,158,11,.28);
+  outline-offset:3px;
+}
+
+/* =========================
+   整體
+========================= */
+
+.page{
+  width:min(1540px,96vw);
+  margin:auto;
+  padding:clamp(20px,3vh,34px) 0;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:minmax(0,2fr) minmax(330px,1fr);
+  gap:clamp(20px,2.4vw,34px);
+  align-items:start;
+}
+
+/* =========================
+   左側標題
+========================= */
+
+.left-column{
+  min-width:0;
+}
+
+.page-title{
+  margin:0 0 6px 10px;
+  font-family:
+    "Arial Rounded MT Bold",
+    "Trebuchet MS",
+    "Noto Sans TC",
+    sans-serif;
+  color:var(--navy);
+  font-size:clamp(38px,4.3vw,66px);
+  line-height:1.05;
+  font-weight:900;
+  letter-spacing:-.035em;
+}
+
+.page-subtitle{
+  margin:0 0 20px 13px;
+  color:var(--orange);
+  font-family:
+    "Arial Rounded MT Bold",
+    "Trebuchet MS",
+    sans-serif;
+  font-size:clamp(17px,1.55vw,24px);
+  font-weight:800;
+  letter-spacing:.025em;
+}
+
+/* =========================
+   左側：完整卡片
+========================= */
+
+.card-shell{
+  position:relative;
+  overflow:hidden;
+  min-height:660px;
+  padding:
+    clamp(52px,6vh,78px)
+    clamp(60px,6vw,96px)
+    clamp(48px,5vh,70px);
+  background:
+    linear-gradient(145deg,#FFFFFF 0%,#FFFEFA 100%);
+  border:1.5px solid var(--line);
+  border-radius:34px;
+  box-shadow:var(--shadow);
+}
+
+/* 淡淡內框 */
+.card-shell::before{
+  content:"";
+  position:absolute;
+  inset:20px;
+  border:1px solid rgba(127,174,145,.22);
+  border-radius:25px;
+  pointer-events:none;
+}
+
+/* 左上葉子裝飾 */
+.botanical{
+  position:absolute;
+  pointer-events:none;
+  user-select:none;
+  z-index:0;
+  opacity:.74;
+}
+
+.botanical.top-left{
+  width:175px;
+  left:-15px;
+  top:-8px;
+}
+
+.botanical.bottom-right{
+  width:195px;
+  right:-16px;
+  bottom:-15px;
+  transform:rotate(180deg);
+  opacity:.58;
+}
+
+/* 小雲朵點綴 */
+.cloud{
+  position:absolute;
+  width:78px;
+  height:28px;
+  border-radius:999px;
+  background:#F4F8FC;
+  opacity:.8;
+  pointer-events:none;
+}
+
+.cloud::before,
+.cloud::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  background:#F4F8FC;
+}
+
+.cloud::before{
+  width:34px;
+  height:34px;
+  left:14px;
+  top:-17px;
+}
+
+.cloud::after{
+  width:26px;
+  height:26px;
+  left:38px;
+  top:-11px;
+}
+
+.cloud.c1{
+  right:100px;
+  top:42px;
+}
+
+.cloud.c2{
+  left:120px;
+  bottom:45px;
+  transform:scale(.72);
+  opacity:.58;
+}
+
+/* 真正文字區 */
+.card-content{
+  position:relative;
+  z-index:2;
+  width:min(760px,88%);
+  margin:auto;
+  padding-top:20px;
+}
+
+/* 四段 */
+.card-line{
+  position:relative;
+  margin:0 0 24px;
+}
+
+.card-line.message-line{
+  margin-top:4px;
+  margin-bottom:28px;
+}
+
+/* 按下去展開選單的文字本體 */
+.card-choice{
+  width:100%;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  min-height:72px;
+  padding:10px 42px 11px 8px;
+  color:var(--navy);
+  background:transparent;
+  border:0;
+  border-bottom:2px solid rgba(11,55,104,.19);
+  text-align:left;
+  cursor:pointer;
+  transition:
+    border-color .18s,
+    background .18s;
+}
+
+.card-choice:hover{
+  border-bottom-color:var(--orange);
+  background:linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(245,158,11,.035) 15%,
+    rgba(245,158,11,.035) 85%,
+    transparent 100%
+  );
+}
+
+.card-choice.open{
+  border-bottom-color:var(--orange);
+}
+
+.card-value{
+  display:block;
+  color:var(--navy);
+  font-family:
+    "Arial Rounded MT Bold",
+    "Trebuchet MS",
+    "Noto Sans TC",
+    sans-serif;
+  font-size:clamp(29px,2.6vw,43px);
+  font-weight:800;
+  line-height:1.28;
+}
+
+/* 尚未選英文時的中文預設項 */
+.card-value.placeholder{
+  color:var(--navy);
+  font-family:
+    "Noto Sans TC",
+    "Microsoft JhengHei",
+    sans-serif;
+  font-size:clamp(26px,2.25vw,37px);
+  font-weight:800;
+}
+
+/* 下拉小箭頭 */
+.chevron{
+  flex:0 0 auto;
+  position:absolute;
+  right:9px;
+  top:50%;
+  transform:translateY(-50%);
+  color:var(--orange);
+  font-size:23px;
+  font-weight:900;
+  transition:transform .18s;
+}
+
+.card-choice.open .chevron{
+  transform:translateY(-50%) rotate(180deg);
+}
+
+/* =========================
+   下拉選單
+========================= */
+
+.dropdown{
+  display:none;
+  position:relative;
+  margin-top:6px;
+  padding:8px;
+  max-height:315px;
+  overflow-y:auto;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:0 12px 28px rgba(11,55,104,.12);
+}
+
+.dropdown.open{
+  display:block;
+}
+
+.dropdown-option{
+  display:block;
+  width:100%;
+  padding:12px 14px;
+  color:var(--navy);
+  background:#fff;
+  border:0;
+  border-radius:10px;
+  text-align:left;
+  cursor:pointer;
+}
+
+.dropdown-option:hover{
+  background:var(--orange-soft);
+}
+
+.dropdown-option.selected{
+  color:#8A4C00;
+  background:var(--orange-soft);
+  font-weight:800;
+}
+
+/* 第一個中文預設選項 */
+.dropdown-option.reset-option{
+  color:var(--muted);
+  background:var(--soft);
+  font-family:
+    "Noto Sans TC",
+    "Microsoft JhengHei",
+    sans-serif;
+  font-weight:800;
+}
+
+.dropdown-en{
+  display:block;
+  font-family:
+    "Arial Rounded MT Bold",
+    "Trebuchet MS",
+    sans-serif;
+  font-size:18px;
+  font-weight:800;
+  line-height:1.35;
+}
+
+.dropdown-zh{
+  display:block;
+  margin-top:2px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.4;
+}
+
+/* =========================
+   右側提示區
+========================= */
+
+.tips-panel{
+  position:relative;
+  overflow:hidden;
+  margin-top:76px;
+  padding:24px;
+  background:rgba(255,255,255,.97);
+  border:1px solid var(--line);
+  border-radius:28px;
+  box-shadow:var(--shadow);
+}
+
+.tips-title{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:16px;
+}
+
+.tips-title h2{
+  margin:0;
+  color:var(--navy);
+  font-size:clamp(25px,2vw,32px);
+  font-weight:900;
+}
+
+.tips-title small{
+  color:var(--orange);
+  font-family:
+    "Arial Rounded MT Bold",
+    "Trebuchet MS",
+    sans-serif;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.04em;
+}
+
+/* 線稿燈泡浮水印 */
+.bulb-watermark{
+  position:absolute;
+  right:-35px;
+  bottom:-55px;
+  width:270px;
+  height:270px;
+  opacity:.045;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* accordion */
+.tips-list{
+  position:relative;
+  z-index:2;
+  display:grid;
+  gap:11px;
+}
+
+.tip-item{
+  overflow:hidden;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  transition:border-color .18s;
+}
+
+.tip-item.open{
+  border-color:rgba(245,158,11,.62);
+}
+
+.tip-button{
+  width:100%;
+  min-height:62px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:13px 15px;
+  color:var(--navy);
+  background:#fff;
+  border:0;
+  cursor:pointer;
+  text-align:left;
+}
+
+.tip-item.open .tip-button{
+  background:var(--orange-soft);
+}
+
+.tip-heading{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  min-width:0;
+}
+
+.tip-number{
+  flex:0 0 auto;
+  width:32px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  color:var(--navy);
+  background:var(--soft);
+  border-radius:50%;
+  font-weight:900;
+}
+
+.tip-item.open .tip-number{
+  color:#fff;
+  background:var(--orange);
+}
+
+.tip-name{
+  font-size:17px;
+  font-weight:900;
+}
+
+.tip-plus{
+  flex:0 0 auto;
+  color:var(--orange);
+  font-size:25px;
+  font-weight:500;
+  line-height:1;
+}
+
+.tip-body{
+  display:none;
+  padding:4px 17px 18px 58px;
+  color:#233D5A;
+  font-size:15px;
+  line-height:1.72;
+}
+
+.tip-item.open .tip-body{
+  display:block;
+}
+
+.tip-body b{
+  color:var(--navy2);
+}
+
+.tip-body .example{
+  margin:10px 0;
+  padding:10px 12px;
+  color:var(--navy);
+  background:var(--soft);
+  border-radius:10px;
+  font-family:
+    "Arial Rounded MT Bold",
+    "Trebuchet MS",
+    sans-serif;
+  font-weight:800;
+  line-height:1.55;
+}
+
+.tip-body .muted{
+  color:var(--muted);
+}
+
+/* =========================
+   底部小字
+========================= */
+
+.footer-note{
+  margin:16px 0 0 12px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* =========================
+   RWD
+========================= */
+
+@media(max-width:900px){
+
+  .page{
+    width:100%;
+    padding:0;
+  }
+
+  .layout{
+    grid-template-columns:1fr;
+    gap:16px;
+  }
+
+  .left-column{
+    padding:20px 14px 0;
+  }
+
+  .tips-panel{
+    margin:0 14px 22px;
+  }
+
+  .card-shell{
+    min-height:auto;
+    padding:
+      58px
+      clamp(28px,7vw,60px)
+      52px;
+  }
+
+  .card-content{
+    width:100%;
+  }
+
+  .page-title{
+    margin-left:4px;
+  }
+
+  .page-subtitle{
+    margin-left:6px;
+  }
+}
+
+@media(max-width:520px){
+
+  .card-shell{
+    border-radius:22px;
+    padding:48px 22px 42px;
+  }
+
+  .card-shell::before{
+    inset:12px;
+    border-radius:16px;
+  }
+
+  .card-choice{
+    min-height:64px;
+  }
+
+  .botanical.top-left{
+    width:120px;
+  }
+
+  .botanical.bottom-right{
+    width:135px;
+  }
+
+  .tips-panel{
+    border-radius:20px;
+    padding:17px;
+  }
+
+  .tip-body{
+    padding-left:17px;
+  }
+}
 </style>
 </head>
-<body><main class="stage"><section class="card"><img class="brand-watermark" src="../assets/watermark-icon.png" alt="" aria-hidden="true"><header><h1>English Card Builder</h1><div class="tagline">WRITE A LITTLE · MEAN A LOT</div></header><div class="builder"><nav class="steps" id="b" aria-label="賀卡撰寫步驟"></nav><section class="content-panel" aria-live="polite"><div class="panel-top"><div><p class="panel-kicker" id="panelKicker"></p><h2 class="panel-title" id="panelTitle"></h2></div><div class="view-tabs" role="tablist" aria-label="內容顯示方式"><button class="tab-button active" id="choicesTab" type="button" role="tab" aria-selected="true" onclick="showView('choices')">選句</button><button class="tab-button" id="tipTab" type="button" role="tab" aria-selected="false" onclick="showView('tip')">ⓘ 提示</button></div></div><div class="panel-body" id="mb"></div></section></div><p class="note">先選擇左側步驟，再從右側挑選句子；需要協助時可切換至「提示」。</p></section></main>
+
+<body>
+
+<main class="page">
+
+  <div class="layout">
+
+    <!-- =========================
+         左側：卡片
+    ========================== -->
+
+    <section class="left-column">
+
+      <h1 class="page-title">My English Card</h1>
+      <p class="page-subtitle">A Little Card for You</p>
+
+      <div class="card-shell">
+
+        <!-- 左上植物裝飾 -->
+        <svg
+          class="botanical top-left"
+          viewBox="0 0 180 180"
+          aria-hidden="true"
+        >
+          <g
+            fill="none"
+            stroke="#7FAE91"
+            stroke-width="4"
+            stroke-linecap="round"
+          >
+            <path d="M20 160 C62 118, 78 68, 76 18"/>
+            <path d="M48 123 C27 117, 20 99, 24 83"/>
+            <path d="M59 100 C84 99, 97 84, 99 67"/>
+            <path d="M67 73 C45 66, 37 48, 43 31"/>
+            <path d="M74 50 C96 48, 109 35, 112 20"/>
+          </g>
+
+          <g fill="#DDEBDD">
+            <ellipse
+              cx="31"
+              cy="94"
+              rx="12"
+              ry="24"
+              transform="rotate(-38 31 94)"
+            />
+            <ellipse
+              cx="91"
+              cy="80"
+              rx="12"
+              ry="25"
+              transform="rotate(45 91 80)"
+            />
+            <ellipse
+              cx="47"
+              cy="48"
+              rx="11"
+              ry="23"
+              transform="rotate(-39 47 48)"
+            />
+            <ellipse
+              cx="104"
+              cy="35"
+              rx="11"
+              ry="23"
+              transform="rotate(45 104 35)"
+            />
+          </g>
+
+          <circle cx="34" cy="137" r="7" fill="#FBCB7A"/>
+          <circle cx="46" cy="139" r="6" fill="#FFDDA1"/>
+          <circle cx="39" cy="128" r="6" fill="#F59E0B" opacity=".55"/>
+        </svg>
+
+        <!-- 右下植物裝飾 -->
+        <svg
+          class="botanical bottom-right"
+          viewBox="0 0 180 180"
+          aria-hidden="true"
+        >
+          <g
+            fill="none"
+            stroke="#7FAE91"
+            stroke-width="4"
+            stroke-linecap="round"
+          >
+            <path d="M20 160 C62 118, 78 68, 76 18"/>
+            <path d="M48 123 C27 117, 20 99, 24 83"/>
+            <path d="M59 100 C84 99, 97 84, 99 67"/>
+            <path d="M67 73 C45 66, 37 48, 43 31"/>
+            <path d="M74 50 C96 48, 109 35, 112 20"/>
+          </g>
+
+          <g fill="#DDEBDD">
+            <ellipse
+              cx="31"
+              cy="94"
+              rx="12"
+              ry="24"
+              transform="rotate(-38 31 94)"
+            />
+            <ellipse
+              cx="91"
+              cy="80"
+              rx="12"
+              ry="25"
+              transform="rotate(45 91 80)"
+            />
+            <ellipse
+              cx="47"
+              cy="48"
+              rx="11"
+              ry="23"
+              transform="rotate(-39 47 48)"
+            />
+            <ellipse
+              cx="104"
+              cy="35"
+              rx="11"
+              ry="23"
+              transform="rotate(45 104 35)"
+            />
+          </g>
+
+          <circle cx="34" cy="137" r="7" fill="#FBCB7A"/>
+          <circle cx="46" cy="139" r="6" fill="#FFDDA1"/>
+          <circle cx="39" cy="128" r="6" fill="#F59E0B" opacity=".55"/>
+        </svg>
+
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+
+        <div class="card-content" id="cardContent"></div>
+
+      </div>
+
+      <p class="footer-note">
+        點卡片上的文字選句；完成後可以直接照著卡片抄寫。
+      </p>
+
+    </section>
+
+    <!-- =========================
+         右側：提示
+    ========================== -->
+
+    <aside class="tips-panel">
+
+      <div class="tips-title">
+        <h2>小卡提示</h2>
+        <small>WRITE A LITTLE · MEAN A LOT</small>
+      </div>
+
+      <!-- 線稿燈泡浮水印 -->
+      <svg
+        class="bulb-watermark"
+        viewBox="0 0 220 220"
+        aria-hidden="true"
+      >
+        <g
+          fill="none"
+          stroke="#0B3768"
+          stroke-width="7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="
+              M110 24
+              C67 24 38 57 38 96
+              C38 123 51 141 69 157
+              C80 167 84 176 84 188
+              H136
+              C136 176 140 167 151 157
+              C169 141 182 123 182 96
+              C182 57 153 24 110 24
+            "
+          />
+          <path d="M88 188 H132"/>
+          <path d="M91 202 H129"/>
+          <path d="M102 214 H118"/>
+          <path d="M85 100 C92 113 99 120 110 120 C121 120 128 113 135 100"/>
+        </g>
+      </svg>
+
+      <div class="tips-list" id="tipsList"></div>
+
+    </aside>
+
+  </div>
+
+</main>
+
 <script>
-const D=[
-["收件人","RECIPIENT","收件人 Recipient",[["Dear Teacher,","親愛的老師"],["Dear Ms. ______,","親愛的 ______ 老師（女）"],["Dear Mr. ______,","親愛的 ______ 老師（男）"],["Dear Mom,","親愛的媽媽"],["Dear Dad,","親愛的爸爸"],["Dear ______,","親愛的 ______"]],`<h2>① 收件人怎麼寫？</h2><div class=tip>英文賀卡常用 <b>Dear + 稱呼／名字 + ,</b><br><br><b>Dear Ms. Hong,</b><br><b>Dear Mr. Wang,</b><br><b>Dear Mom,</b><br><br><b>Mr.</b> 用於男性；<b>Ms.</b> 不特別指出女性的婚姻狀況。賀卡或親友書信的稱呼後面通常使用<b>逗號（,）</b>。</div>`],
-["節慶祝賀","GREETING","節慶祝賀 Greeting",[["Happy Teachers’ Day!","教師節快樂！"],["Happy Mother’s Day!","母親節快樂！"],["Happy Father’s Day!","父親節快樂！"],["Happy Birthday!","生日快樂！"],["Merry Christmas!","聖誕快樂！"],["Happy New Year!","新年快樂！"]],`<h2>② 節慶祝賀</h2><div class=tip>節慶祝賀可以獨立成一句，例如：<br><br><b>Happy Teachers’ Day!</b><br><br>祝賀時常使用驚嘆號 <b>!</b>；Christmas 最常說 <b>Merry Christmas!</b></div>`],
-["想說的話","MESSAGE","祝福語 Message",[["Thank you.","謝謝你。"],["Thank you for helping me.","謝謝你幫助我。"],["Thank you for teaching me.","謝謝你教導我。"],["Thank you for taking care of me.","謝謝你照顧我。"],["I love you.","我愛你。"],["I love you very much.","我非常愛你。"],["I miss you.","我想你。"],["You are important to me.","你對我很重要。"],["You are very kind.","你很親切。"],["You are very patient.","你很有耐心。"],["You are great!","你很棒！"],["You are a great teacher.","你是一位很棒的老師。"],["Have a great day!","祝你今天愉快！"],["Be happy every day!","祝你每天開心！"],["Take care!","保重！"],["I wish you all the best.","祝你一切順利。"]],`<h2>③ 想說的話</h2><div class=tip>英文卡片不需要寫得很長。選一句<b>真的符合你的心意</b>的話就很好。<br><br>可以寫感謝、愛與關心、稱讚或祝福。</div>`],
-["寄件人","FROM","寄件人 From",[["Your student,<br>________","你的學生＋自己的名字"],["Your friend,<br>________","你的朋友＋自己的名字"],["Your daughter,<br>________","你的女兒＋自己的名字"],["Your son,<br>________","你的兒子＋自己的名字"],["Love,<br>________","愛你的……＋自己的名字"],["From,<br>________","來自……＋自己的名字"]],`<h2>④ 寄件人怎麼寫？</h2><div class=tip>先寫你和收件人的<b>關係／結尾語</b>，下一行再寫自己的名字：<br><br><b>Your student,</b><br>Amy<br><br><b>Love,</b><br>Amy<br><br><b>Love,</b> 比較適合家人或親近的人；寫給老師可以使用 <b>Your student,</b>。</div>`]
+
+/* =========================================================
+   原有資料
+========================================================= */
+
+const D = [
+
+  {
+    zh:"收件人",
+    en:"RECIPIENT",
+
+    choices:[
+      ["Dear Teacher,","親愛的老師"],
+      ["Dear Ms. ______,","親愛的 ______ 老師（女）"],
+      ["Dear Mr. ______,","親愛的 ______ 老師（男）"],
+      ["Dear Mom,","親愛的媽媽"],
+      ["Dear Dad,","親愛的爸爸"],
+      ["Dear ______,","親愛的 ______"]
+    ],
+
+    tip:`
+      英文賀卡常用
+      <b>Dear + 稱呼／名字 + ,</b>
+
+      <div class="example">
+        Dear Ms. Hong,<br>
+        Dear Mr. Wang,<br>
+        Dear Mom,
+      </div>
+
+      <b>Mr.</b> 用於男性；
+      <b>Ms.</b> 不特別指出女性的婚姻狀況。
+
+      <br><br>
+
+      賀卡或親友書信的稱呼後面，
+      通常使用<b>逗號（,）</b>。
+    `
+  },
+
+  {
+    zh:"節慶祝賀",
+    en:"GREETING",
+
+    choices:[
+      ["Happy Teachers’ Day!","教師節快樂！"],
+      ["Happy Mother’s Day!","母親節快樂！"],
+      ["Happy Father’s Day!","父親節快樂！"],
+      ["Happy Birthday!","生日快樂！"],
+      ["Merry Christmas!","聖誕快樂！"],
+      ["Happy New Year!","新年快樂！"]
+    ],
+
+    tip:`
+      節慶祝賀可以獨立成一句。
+
+      <div class="example">
+        Happy Teachers’ Day!<br>
+        Happy Birthday!<br>
+        Merry Christmas!
+      </div>
+
+      祝賀時常使用驚嘆號 <b>!</b>
+
+      <br><br>
+
+      Christmas 最常說
+      <b>Merry Christmas!</b>
+    `
+  },
+
+  {
+    zh:"想說的話",
+    en:"MESSAGE",
+
+    choices:[
+      ["Thank you.","謝謝你。"],
+      ["Thank you for helping me.","謝謝你幫助我。"],
+      ["Thank you for teaching me.","謝謝你教導我。"],
+      ["Thank you for taking care of me.","謝謝你照顧我。"],
+
+      ["I love you.","我愛你。"],
+      ["I love you very much.","我非常愛你。"],
+      ["I miss you.","我想你。"],
+      ["You are important to me.","你對我很重要。"],
+
+      ["You are very kind.","你很親切。"],
+      ["You are very patient.","你很有耐心。"],
+      ["You are great!","你很棒！"],
+      ["You are a great teacher.","你是一位很棒的老師。"],
+
+      ["Have a great day!","祝你今天愉快！"],
+      ["Be happy every day!","祝你每天開心！"],
+      ["Take care!","保重！"],
+      ["I wish you all the best.","祝你一切順利。"]
+    ],
+
+    tip:`
+      英文小卡不需要寫得很長。
+
+      <br><br>
+
+      請參考提示卡，
+      找出<b>你最想對這個人說的話</b>。
+
+      <br><br>
+
+      可以寫感謝、愛與關心、
+      稱讚或祝福。
+
+      <div class="example">
+        Thank you for helping me.<br>
+        You are very kind.<br>
+        Have a great day!
+      </div>
+
+      <span class="muted">
+        展示時選一句就可以；
+        實際寫卡片時也可以再加第二句、第三句。
+      </span>
+    `
+  },
+
+  {
+    zh:"寄件人",
+    en:"FROM",
+
+    choices:[
+      ["Your student,<br>________","你的學生＋自己的名字"],
+      ["Your friend,<br>________","你的朋友＋自己的名字"],
+      ["Your daughter,<br>________","你的女兒＋自己的名字"],
+      ["Your son,<br>________","你的兒子＋自己的名字"],
+      ["Love,<br>________","愛你的……＋自己的名字"],
+      ["From,<br>________","來自……＋自己的名字"]
+    ],
+
+    tip:`
+      先寫你和收件人的
+      <b>關係／結尾語</b>，
+      下一行再寫自己的名字。
+
+      <div class="example">
+        Your student,<br>
+        Amy
+        <br><br>
+        Love,<br>
+        Amy
+      </div>
+
+      <b>Love,</b>
+      比較適合家人或親近的人。
+
+      <br><br>
+
+      寫給老師可以使用
+      <b>Your student,</b>
+    `
+  }
+
 ];
-const b=document.getElementById("b"),mb=document.getElementById("mb"),panelKicker=document.getElementById("panelKicker"),panelTitle=document.getElementById("panelTitle"),choicesTab=document.getElementById("choicesTab"),tipTab=document.getElementById("tipTab");let activeStep=0,activeView="choices";const selected=Array(D.length).fill(null);
-D.forEach((d,i)=>{const x=document.createElement("button");x.type="button";x.className="step-card";x.setAttribute("aria-current",i===0?"step":"false");x.innerHTML=`<span class="step-heading"><span class="step-number">${i+1}</span><span class="step-title"><strong>${d[0]}</strong><small>${d[1]}</small></span></span><span class="step-value" id="v${i}">${d[2]}</span>`;x.onclick=()=>choices(i);b.appendChild(x)});
-function updateStepState(){Array.from(b.children).forEach((step,i)=>{step.classList.toggle("active",i===activeStep);step.classList.toggle("chosen",selected[i]!==null);step.setAttribute("aria-current",i===activeStep?"step":"false")})}
-function renderChoices(){const i=activeStep,reset=`<button type="button" class="choice reset" onclick="resetChoice(${i})"><div class="en">↶ ${D[i][2]}</div><div class="zh">回到初始選項</div></button>`;mb.innerHTML=`<div class="choice-list">${reset}${D[i][3].map((x,j)=>`<button type="button" class="choice${selected[i]===j?" selected":""}" onclick="choose(${i},${j})"><div class="en">${x[0]}</div><div class="zh">${x[1]}</div></button>`).join("")}</div>`}
-function render(){panelKicker.textContent=`STEP ${activeStep+1} · ${D[activeStep][1]}`;panelTitle.textContent=D[activeStep][0];choicesTab.classList.toggle("active",activeView==="choices");tipTab.classList.toggle("active",activeView==="tip");choicesTab.setAttribute("aria-selected",activeView==="choices"?"true":"false");tipTab.setAttribute("aria-selected",activeView==="tip"?"true":"false");if(activeView==="choices")renderChoices();else mb.innerHTML=`<div class="tip-panel">${D[activeStep][4]}</div>`;updateStepState()}
-function choices(i){activeStep=i;activeView="choices";render()}function choose(i,j){selected[i]=j;document.getElementById("v"+i).innerHTML=D[i][3][j][0];render()}function resetChoice(i){selected[i]=null;document.getElementById("v"+i).textContent=D[i][2];render()}function tip(i=activeStep){activeStep=i;activeView="tip";render()}function showView(view){activeView=view;render()}render();
-</script></body></html>
+
+
+/* =========================================================
+   狀態
+========================================================= */
+
+const selected = Array(D.length).fill(null);
+
+let openDropdown = null;
+
+
+/* =========================================================
+   卡片
+========================================================= */
+
+function renderCard(){
+
+  const root = document.getElementById("cardContent");
+
+  root.innerHTML = D.map((item,index)=>{
+
+    const selectedIndex = selected[index];
+
+    const currentText =
+      selectedIndex === null
+      ? item.zh
+      : item.choices[selectedIndex][0];
+
+    const isPlaceholder =
+      selectedIndex === null;
+
+    const options = [
+
+      `
+      <button
+        type="button"
+        class="dropdown-option reset-option
+        ${selectedIndex===null ? "selected" : ""}"
+        onclick="chooseOption(${index},null)"
+      >
+        ${item.zh}
+      </button>
+      `,
+
+      ...item.choices.map((choice,choiceIndex)=>`
+
+        <button
+          type="button"
+          class="dropdown-option
+          ${selectedIndex===choiceIndex ? "selected" : ""}"
+          onclick="chooseOption(${index},${choiceIndex})"
+        >
+
+          <span class="dropdown-en">
+            ${choice[0]}
+          </span>
+
+          <span class="dropdown-zh">
+            ${choice[1]}
+          </span>
+
+        </button>
+
+      `)
+
+    ].join("");
+
+    return `
+
+      <div
+        class="
+          card-line
+          ${index===2 ? "message-line" : ""}
+        "
+      >
+
+        <button
+          type="button"
+          class="
+            card-choice
+            ${openDropdown===index ? "open" : ""}
+          "
+          onclick="toggleDropdown(${index})"
+        >
+
+          <span
+            class="
+              card-value
+              ${isPlaceholder ? "placeholder" : ""}
+            "
+          >
+            ${currentText}
+          </span>
+
+          <span class="chevron">⌄</span>
+
+        </button>
+
+        <div
+          class="
+            dropdown
+            ${openDropdown===index ? "open" : ""}
+          "
+        >
+
+          ${options}
+
+        </div>
+
+      </div>
+
+    `;
+
+  }).join("");
+
+}
+
+
+/* =========================================================
+   下拉操作
+========================================================= */
+
+function toggleDropdown(index){
+
+  openDropdown =
+    openDropdown===index
+    ? null
+    : index;
+
+  renderCard();
+
+}
+
+
+function chooseOption(sectionIndex,choiceIndex){
+
+  selected[sectionIndex] = choiceIndex;
+
+  openDropdown = null;
+
+  renderCard();
+
+}
+
+
+/* 點卡片其他區域時不做事；
+   未來如有需要可再加入點外部收起 */
+
+
+/* =========================================================
+   提示 Accordion
+========================================================= */
+
+function renderTips(){
+
+  const root = document.getElementById("tipsList");
+
+  root.innerHTML = D.map((item,index)=>`
+
+    <section
+      class="tip-item"
+      id="tipItem${index}"
+    >
+
+      <button
+        type="button"
+        class="tip-button"
+        onclick="toggleTip(${index})"
+      >
+
+        <span class="tip-heading">
+
+          <span class="tip-number">
+            ${index+1}
+          </span>
+
+          <span class="tip-name">
+            ${item.zh}
+          </span>
+
+        </span>
+
+        <span
+          class="tip-plus"
+          id="tipPlus${index}"
+        >
+          ＋
+        </span>
+
+      </button>
+
+      <div class="tip-body">
+        ${item.tip}
+      </div>
+
+    </section>
+
+  `).join("");
+
+}
+
+
+function toggleTip(index){
+
+  const item =
+    document.getElementById(
+      `tipItem${index}`
+    );
+
+  const plus =
+    document.getElementById(
+      `tipPlus${index}`
+    );
+
+  const willOpen =
+    !item.classList.contains("open");
+
+  item.classList.toggle(
+    "open",
+    willOpen
+  );
+
+  plus.textContent =
+    willOpen
+    ? "−"
+    : "＋";
+
+}
+
+
+/* =========================================================
+   初始化
+========================================================= */
+
+renderCard();
+
+renderTips();
+
+</script>
+
+</body>
+</html>
