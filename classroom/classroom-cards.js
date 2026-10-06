@@ -1,4 +1,12 @@
-window.CLASSROOM_CATEGORIES = ["課表查詢", "班務紀錄", "段考相關", "後台管理"];
+window.CLASSROOM_CATEGORIES = ["課表查詢", "班務紀錄", "段考相關", "後台管理", "測試網頁"];
+
+window.CLASSROOM_CATEGORY_LABELS = {
+  "課表查詢": "課表",
+  "班務紀錄": "班務紀錄",
+  "段考相關": "段考",
+  "後台管理": "後台管理",
+  "測試網頁": "測試網頁"
+};
 
 window.CLASSROOM_DATA = [
   { id: "student", category: "課表查詢", tag: "學生", title: "學生個人課表", desc: "每位學生的個別化課表，方便學生、家長與教師查詢。", filename: "table-student.html", themeColor: "#3b82f6" },
@@ -14,6 +22,9 @@ window.CLASSROOM_DATA = [
   { id: "exam-score2", category: "段考相關", tag: "段考成績", title: "段考成績通知單(英文科)", desc: "依段考與原班任課教師整理英文科成績通知單。", filename: "report_card2.html", themeColor: "#d97706" },
   { id: "exam-score3", category: "段考相關", tag: "段考成績", title: "段考成績通知單(數學科)", desc: "依段考與原班任課教師整理數學科成績通知單。", filename: "report_card3.html", themeColor: "#d97706" },
   { id: "exam-score4", category: "段考相關", tag: "段考成績", title: "段考成績通知單(國文科)", desc: "依段考與原班任課教師整理國文科成績通知單及作文成績回條。", filename: "report_card4.html", themeColor: "#d97706" },
+  { id: "exam-board", category: "段考相關", tag: "監考", title: "段考監考座位表", desc: "依段考日期、節次與考場安排學生座位，並提供手寫備註區。", filename: "exam-board-v4.html", themeColor: "#ea580c", linkLabel: "開啟座位表 →" },
   { id: "student-guidance-responses", category: "班務紀錄", tag: "限定共用", title: "學生輔導紀錄（回覆）", desc: "僅限具有共用資料夾權限的授權帳號查看學生輔導紀錄回覆。", filename: "https://docs.google.com/spreadsheets/d/1NSbmw9PpUnAsjqJpWLTALgiZODqSpdlmv9XscfdmX64/edit?gid=460017595#gid=460017595", themeColor: "#f59e0b", external: true, linkLabel: "查看回覆 ↗" },
-  { id: "student-sheet-admin", category: "後台管理", tag: "限定共用", title: "115學生課表後台試算表", desc: "僅限已加入共用對象的授權帳號開啟與編輯。", filename: "https://docs.google.com/spreadsheets/d/1RUvk22m4pEClx3nqrbn6684t6T_KS8XEB1EXubEw7A4/edit?usp=sharing", themeColor: "#f59e0b", external: true }
+  { id: "student-sheet-admin", category: "後台管理", tag: "限定共用", title: "115學生課表後台試算表", desc: "僅限已加入共用對象的授權帳號開啟與編輯。", filename: "https://docs.google.com/spreadsheets/d/1RUvk22m4pEClx3nqrbn6684t6T_KS8XEB1EXubEw7A4/edit?usp=sharing", themeColor: "#f59e0b", external: true },
+  { id: "test-1", category: "測試網頁", tag: "Test 1", title: "測試網頁 Test 1", desc: "獨立的空白測試 HTML，可供下一個實驗直接覆蓋，不影響正式頁面。", filename: "test-1.html", themeColor: "#64748b", linkLabel: "開啟 Test 1 →" },
+  { id: "test-2", category: "測試網頁", tag: "Test 2", title: "測試網頁 Test 2", desc: "另一份獨立的空白測試 HTML，可與 Test 1 分開使用。", filename: "test-2.html", themeColor: "#64748b", linkLabel: "開啟 Test 2 →" }
 ];

@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>段考監考底板 V4</title>
+<style>
+:root{
+  --navy:#0b3768;
+  --navy2:#164d83;
+  --orange:#f59e0b;
+  --orange-soft:#fff4dc;
+  --bg:#f3f7fb;
+  --card:#fff;
+  --line:#d5e2ee;
+  --muted:#708399;
+  --soft:#eef4f9;
+  --placed:#edf3f8;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;color:var(--navy);background:var(--bg)}
+button{font:inherit}
+.app{height:100vh;display:grid;grid-template-columns:25% 75%;gap:14px;padding:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 8px 24px rgba(23,62,101,.06)}
+
+/* 左側考程：一體式表格 */
+.schedule{padding:18px 18px 16px;display:grid;grid-template-rows:auto 1fr;min-height:0}
+.exam-title{font-size:clamp(18px,1.45vw,28px);font-weight:950;white-space:nowrap;margin:0 0 14px;letter-spacing:.01em}
+.schedule-table{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto repeat(7,1fr);min-height:0;border:1.5px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+.tcell{display:flex;align-items:center;justify-content:center;text-align:center;min-width:0;padding:5px 4px;font-size:clamp(15px,1.15vw,22px);font-weight:850;line-height:1.05;border-left:1px solid var(--line);border-top:1px solid var(--line)}
+.tcell:nth-child(3n+1){border-left:none}
+.tcell:nth-child(-n+3){border-top:none}
+.tcell.head{font-size:clamp(14px,1vw,19px);font-weight:950;background:#f8fbfd;line-height:1.18}
+.tcell.head small{font-size:.72em;color:var(--muted);font-weight:800;margin-left:3px}
+.tcell.period{background:var(--soft);font-size:clamp(14px,1vw,19px);font-weight:950}
+.tcell.subject{cursor:pointer;transition:.12s;background:#fff}
+.tcell.subject:hover{background:#fff9ee}
+.tcell.subject.selected{background:var(--orange-soft);color:#6e4300;box-shadow:inset 0 0 0 2px var(--orange)}
+.tcell.muted{color:#7d8b9a;background:#fbfcfd;cursor:default;font-weight:750}
+.subject-two-line{line-height:1.0}
+
+/* 右側主區 */
+.main{display:grid;grid-template-rows:20% 80%;gap:14px;min-width:0;min-height:0}
+.topbar{padding:16px 22px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:18px;min-width:0}
+.focus{min-width:0;align-self:center}
+.focus-line1{font-size:clamp(28px,2.5vw,48px);font-weight:950;line-height:1.05;white-space:nowrap;letter-spacing:.01em}
+.focus-line2{font-size:clamp(36px,3.15vw,60px);font-weight:950;line-height:1.02;white-space:nowrap;margin-top:8px}
+.focus-line2 .subject-name{color:var(--navy)}
+.rooms{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:nowrap;max-width:100%}
+.room-btn{border:1.5px solid #bfd0df;background:#fff;color:var(--navy);border-radius:12px;padding:8px 12px;font-size:clamp(14px,1vw,18px);font-weight:900;cursor:pointer;white-space:nowrap}
+.room-btn.active{background:var(--orange);border-color:var(--orange);color:#fff}
+
+.workspace{display:grid;grid-template-columns:30% 70%;gap:14px;min-height:0}
+.students{padding:18px 20px;min-height:0;display:grid;grid-template-rows:auto auto 1fr;overflow:hidden}
+.room-title{font-size:clamp(23px,1.7vw,32px);font-weight:950;color:var(--navy);margin:0 0 4px;white-space:nowrap}
+.room-teacher{font-size:clamp(17px,1.15vw,22px);font-weight:700;color:var(--navy2);margin:0 0 14px;white-space:nowrap}
+.student-list{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;align-content:start;min-height:0;overflow:hidden}
+.student{border:1.5px solid transparent;border-radius:10px;padding:8px 8px;font-size:clamp(20px,1.35vw,26px);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#fff;cursor:pointer;transition:.12s}
+.student:hover{border-color:#c7d7e5;background:#f9fbfd}
+.student.selected{background:var(--orange-soft);border-color:var(--orange);color:#6e4300}
+.student.placed{background:var(--placed);color:#8a9aab;font-weight:800}
+.student.placed::before{content:"✓ ";color:#6d8aa5}
+.empty{grid-column:1/-1;color:var(--muted);font-weight:700;padding-top:12px}
+
+.panel{padding:14px 16px;display:grid;grid-template-rows:auto 1fr;min-height:0}
+.tabs{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.tab{border:1.5px solid #c7d5e3;background:#fff;color:var(--navy);border-radius:12px;padding:8px 15px;font-size:clamp(14px,1vw,18px);font-weight:900;cursor:pointer}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.reset-btn{margin-left:auto;border:1px solid #d7e1ea;background:#fff;color:#7a8da1;border-radius:10px;padding:7px 11px;font-size:clamp(12px,.85vw,15px);font-weight:800;cursor:pointer}
+.reset-btn:hover{border-color:var(--orange);color:#8a5a00}
+.canvas-area{position:relative;min-height:0;border:1.5px solid #d9e5ef;border-radius:18px;background:#fff;overflow:hidden}
+.view{position:absolute;inset:0;display:none}
+.view.active{display:block}
+.note-view{background:#fff}
+
+/* 座位 */
+.seatmap{position:relative;width:100%;height:100%}
+.small-seat,.big-desk-seat{position:absolute;cursor:pointer;user-select:none}
+.small-seat{width:10%;height:13%;border:2px solid #7d91a6;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;color:var(--navy);font-size:clamp(18px,1.25vw,24px);font-weight:950;line-height:1.0}
+.small-seat:hover,.big-desk-seat:hover{outline:2px solid #f7c45d;outline-offset:2px}
+.small-seat.available::after,.big-desk-seat.available::after{content:"";position:absolute;inset:3px;border:2px dashed #f6bd4b;border-radius:4px;pointer-events:none}
+.small-seat.occupied{background:#f8fbfd}
+.teacher-desk{position:absolute;left:31%;top:5%;width:12%;height:13%;border:2px solid #7d91a6;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:clamp(18px,1.25vw,24px);font-weight:950}
+.s1{left:4%;top:5%}.s2{left:4%;top:25%}.s3{left:25%;top:25%}.s4{left:46%;top:25%}.s5{left:69%;top:25%}
+.s6{left:4%;top:45%}.s7{left:25%;top:45%}.s8{left:46%;top:45%}.s9{left:69%;top:45%}
+
+.big-desk{position:absolute;width:24%;height:13%;border:2.5px solid #72879d;border-radius:5px;background:#fff}
+.big1{left:4%;top:76%}.big2{left:52%;top:76%}
+.big-desk-seat{width:44%;height:34%;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--navy);font-size:clamp(18px,1.25vw,24px);font-weight:950;line-height:1.0;border-radius:5px;background:transparent}
+.big-desk-seat.top-left{left:3%;top:-33%}.big-desk-seat.top-right{right:3%;top:-33%}
+.big-desk-seat.bottom-left{left:3%;bottom:-33%}.big-desk-seat.bottom-right{right:3%;bottom:-33%}
+.big-desk-seat.occupied{background:#f8fbfd}
+
+@media (max-width:1280px){
+  .app{grid-template-columns:26% 74%;gap:10px;padding:10px}
+  .main{gap:10px}.workspace{gap:10px;grid-template-columns:31% 69%}
+  .topbar{padding:12px 16px}.students,.panel{padding:12px}
+  .student{padding:6px 6px}.room-btn{padding:7px 9px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="schedule card">
+    <h1 class="exam-title" id="examTitle">115學年度上學期 第一次段考</h1>
+    <div class="schedule-table" id="scheduleTable"></div>
+  </aside>
+
+  <main class="main">
+    <section class="topbar card">
+      <div class="focus">
+        <div class="focus-line1" id="focusLine1">10/13 星期二｜第3節</div>
+        <div class="focus-line2" id="focusLine2">10:10–10:55｜<span class="subject-name">國文</span></div>
+      </div>
+      <div class="rooms" id="roomButtons"></div>
+    </section>
+
+    <section class="workspace">
+      <aside class="students card">
+        <div class="room-title" id="roomTitle">異想教室 C</div>
+        <div class="room-teacher" id="roomTeacher">監考老師 洪欣怡</div>
+        <div class="student-list" id="studentList"></div>
+      </aside>
+
+      <section class="panel card">
+        <div class="tabs">
+          <button class="tab active" data-view="seatView">座位表</button>
+          <button class="tab" data-view="noteView">手寫備註</button>
+          <button class="reset-btn" id="resetSeats">全部退回</button>
+        </div>
+        <div class="canvas-area">
+          <div class="view active" id="seatView">
+            <div class="seatmap" id="seatmap">
+              <div class="small-seat s1" data-seat="s1"></div>
+              <div class="teacher-desk">老師</div>
+              <div class="small-seat s2" data-seat="s2"></div>
+              <div class="small-seat s3" data-seat="s3"></div>
+              <div class="small-seat s4" data-seat="s4"></div>
+              <div class="small-seat s5" data-seat="s5"></div>
+              <div class="small-seat s6" data-seat="s6"></div>
+              <div class="small-seat s7" data-seat="s7"></div>
+              <div class="small-seat s8" data-seat="s8"></div>
+              <div class="small-seat s9" data-seat="s9"></div>
+
+              <div class="big-desk big1">
+                <div class="big-desk-seat top-left" data-seat="b1tl"></div>
+                <div class="big-desk-seat top-right" data-seat="b1tr"></div>
+                <div class="big-desk-seat bottom-left" data-seat="b1bl"></div>
+                <div class="big-desk-seat bottom-right" data-seat="b1br"></div>
+              </div>
+              <div class="big-desk big2">
+                <div class="big-desk-seat top-left" data-seat="b2tl"></div>
+                <div class="big-desk-seat top-right" data-seat="b2tr"></div>
+                <div class="big-desk-seat bottom-left" data-seat="b2bl"></div>
+                <div class="big-desk-seat bottom-right" data-seat="b2br"></div>
+              </div>
+            </div>
+          </div>
+          <div class="view note-view" id="noteView"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+</div>
+
+<script>
+const EXAM_DATA = {
+  title:"115學年度上學期 第一次段考",
+  dates:[
+    {date:"10/13",weekday:"星期二",periods:[
+      {period:1,subject:"作文"},{period:2,subject:"自習"},{period:3,subject:"國文"},{period:4,subject:"自習"},{period:5,subject:"英聽／數手寫"},{period:6,subject:"自習"},{period:7,subject:"自然"}]},
+    {date:"10/14",weekday:"星期三",periods:[
+      {period:1,subject:"自習"},{period:2,subject:"英文"},{period:3,subject:"自習"},{period:4,subject:"數學"},{period:5,subject:"自習"},{period:6,subject:"社會"},{period:7,subject:"上課"}]}
+  ],
+  periodTimes:{1:"08:20–09:05",2:"09:15–10:00",3:"10:10–10:55",4:"11:05–11:50",5:"13:15–14:00",6:"14:10–14:55",7:"15:05–15:50",8:"16:00–16:45"},
+  subjects:{
+    "作文":{rooms:{"異想 M":{teacher:"許杏凰",students:["106 鍾啟玄"]}}},
+    "國文":{rooms:{
+      "異想 C":{teacher:"陳秋錡",students:["102 何芃穎","104 翁凡喬","104 蔡欣蒨","105 林宸仰","105 鍾佩璇","108 陳建凱","205 吳柏翰","207 洪裔宸","207 黃湛晉","208 傅子豪"]},
+      "異想 L":{teacher:"洪羽晶",students:["301 程品涵","303 吳幸穎","303 呂雅菁","304 林獻堂","309 葉秀甄"]},
+      "異想 E":{teacher:"洪欣怡",students:["302 陳炯浩","305 潘正貴","305 陳暐澄","307 周晉全","307 鄭佩雯","308 劉濬紳","310 陳軒琛","201 朱昱慈","201 莊証翔","202 吳至浩"]}
+    }},
+    "英文":{rooms:{
+      "異想 E":{teacher:"洪欣怡",students:["205 吳柏翰","207 洪裔宸","207 黃湛晉","208 傅子豪","201 莊証翔","202 吳至浩","102 何芃穎","104 翁凡喬","104 蔡欣蒨","105 林宸仰","105 鍾佩璇","108 陳建凱"]},
+      "異想 C":{teacher:"陳秋錡",students:["201 朱昱慈","204 李禹衡","305 潘正貴","305 陳暐澄","306 吳奕翰","307 周晉全","307 鄭佩雯","308 劉濬紳","310 林晟銘","310 陳軒琛"]},
+      "異想 M":{teacher:"許杏凰",students:["301 程品涵","303 吳幸穎","303 呂雅菁","304 林獻堂","309 葉秀甄"]}
+    }},
+    "數學":{rooms:{
+      "異想 E":{teacher:"洪雨晶",students:["301 程品涵","303 吳幸穎","303 呂雅菁","304 林獻堂","309 葉秀甄","205 吳柏翰","207 洪裔宸","207 黃湛晉","208 傅子豪","102 何芃穎","104 翁凡喬","104 蔡欣蒨"]},
+      "異想 C":{teacher:"陳秋錡",students:["302 陳炯浩","304 黃佳羽","305 潘正貴","306 吳奕翰","307 周晉全","307 鄭佩雯","308 劉濬紳","310 陳軒琛","201 朱昱慈","105 鍾佩璇"]},
+      "異想 L":{teacher:"洪欣怡",students:["201 莊証翔","204 李禹衡","105 林宸仰","108 陳建凱","302 李孟頫","305 陳暐澄"]}
+    }},
+    "社會":{rooms:{"異想 E":{teacher:"洪欣怡",students:["305 潘正貴","307 周晉全","310 陳軒琛"]},"異想 L":{teacher:"洪羽晶",students:["207 洪裔宸"]}}},
+    "自然":{rooms:{"異想 C":{teacher:"陳秋錡",students:["305 潘正貴","307 周晉全","310 陳軒琛"]},"異想 M":{teacher:"許杏凰",students:["207 洪裔宸"]}}}
+  }
+};
+
+const scheduleTable=document.getElementById('scheduleTable');
+const examTitle=document.getElementById('examTitle');
+const focusLine1=document.getElementById('focusLine1');
+const focusLine2=document.getElementById('focusLine2');
+const roomButtons=document.getElementById('roomButtons');
+const roomTitle=document.getElementById('roomTitle');
+const roomTeacher=document.getElementById('roomTeacher');
+const studentList=document.getElementById('studentList');
+const resetSeats=document.getElementById('resetSeats');
+
+let selectedSubject='國文', selectedDisplaySubject='國文', selectedPeriod=3, selectedDay=0;
+let selectedRoom='', selectedStudent='';
+let currentRoomInfo=null;
+let seatAssignments={};
+
+examTitle.textContent=EXAM_DATA.title;
+
+function cell(text, cls=''){
+  const d=document.createElement('div'); d.className='tcell '+cls; d.innerHTML=text; return d;
+}
+
+scheduleTable.appendChild(cell('節次','head'));
+EXAM_DATA.dates.forEach(day=>scheduleTable.appendChild(cell(`${day.date}<small>${day.weekday}</small>`,'head')));
+for(let p=1;p<=7;p++){
+  scheduleTable.appendChild(cell(`第${p}節`,'period'));
+  EXAM_DATA.dates.forEach((day,di)=>{
+    const item=day.periods.find(x=>x.period===p)||{subject:''};
+    const muted=['自習','上課',''].includes(item.subject);
+    let html=item.subject||'—';
+    if(item.subject==='英聽／數手寫') html='<span class="subject-two-line">英聽<br>數手寫</span>';
+    const c=cell(html,'subject '+(muted?'muted':''));
+    if(!muted){
+      c.dataset.subject=item.subject; c.dataset.period=p; c.dataset.day=di;
+      c.onclick=()=>selectSubject(item.subject,p,di,c);
+    }
+    if(item.subject==='國文'&&p===3&&di===0)c.classList.add('selected');
+    scheduleTable.appendChild(c);
+  });
+}
+
+function normalizeSubject(s){return s==='英聽／數手寫'?'英文':s}
+function selectSubject(subject,period,dayIndex,el){
+  document.querySelectorAll('.tcell.subject').forEach(x=>x.classList.remove('selected'));
+  if(el)el.classList.add('selected');
+  selectedSubject=normalizeSubject(subject); selectedDisplaySubject=subject; selectedPeriod=period; selectedDay=dayIndex;
+  renderHeader(); renderRooms();
+}
+function renderHeader(){
+  const day=EXAM_DATA.dates[selectedDay];
+  focusLine1.textContent=`${day.date} ${day.weekday}｜第${selectedPeriod}節`;
+  focusLine2.innerHTML=`${EXAM_DATA.periodTimes[selectedPeriod]}｜<span class="subject-name">${selectedDisplaySubject}</span>`;
+}
+function renderRooms(){
+  roomButtons.innerHTML=''; studentList.innerHTML=''; selectedStudent='';
+  const data=EXAM_DATA.subjects[selectedSubject];
+  if(!data){ roomTitle.textContent='此考科目前沒有設定教室名單'; roomTeacher.textContent=''; return; }
+  Object.entries(data.rooms).forEach(([room,info],i)=>{
+    const b=document.createElement('button'); b.className='room-btn'; b.textContent=room;
+    b.onclick=()=>selectRoom(room,info,b); roomButtons.appendChild(b);
+    if(i===0)setTimeout(()=>b.click(),0);
+  });
+}
+function storageKey(){return `exam-board-v4|${selectedSubject}|${selectedRoom}`}
+function loadSeats(){
+  try{ seatAssignments=JSON.parse(localStorage.getItem(storageKey())||'{}')||{}; }catch{ seatAssignments={}; }
+}
+function saveSeats(){localStorage.setItem(storageKey(),JSON.stringify(seatAssignments))}
+function selectRoom(room,info,button){
+  document.querySelectorAll('.room-btn').forEach(x=>x.classList.remove('active')); button.classList.add('active');
+  selectedRoom=room; currentRoomInfo=info; selectedStudent=''; loadSeats();
+  roomTitle.textContent=`異想教室 ${room.replace('異想 ','')}`;
+  roomTeacher.textContent=`監考老師 ${info.teacher||''}`;
+  renderStudents(); renderSeatMap();
+}
+function placedStudents(){return new Set(Object.values(seatAssignments).filter(Boolean))}
+function renderStudents(){
+  studentList.innerHTML=''; if(!currentRoomInfo)return;
+  const placed=placedStudents();
+  currentRoomInfo.students.forEach(name=>{
+    const d=document.createElement('div'); d.className='student'; d.textContent=name;
+    if(placed.has(name)) d.classList.add('placed');
+    if(selectedStudent===name) d.classList.add('selected');
+    d.onclick=()=>{
+      // 已放置：點左側姓名即退回
+      const found=Object.entries(seatAssignments).find(([,v])=>v===name);
+      if(found){ delete seatAssignments[found[0]]; selectedStudent=''; saveSeats(); renderStudents(); renderSeatMap(); return; }
+      selectedStudent=(selectedStudent===name?'':name);
+      renderStudents(); renderSeatMap();
+    };
+    studentList.appendChild(d);
+  });
+}
+function rawName(full){ return full.replace(/^\d+\s*/, ''); }
+function seatLabel(full){
+  const names=currentRoomInfo ? currentRoomInfo.students.map(rawName) : [];
+  const short=rawName(full).slice(-2);
+  const dup=names.filter(n=>n.slice(-2)===short).length>1;
+  return dup ? rawName(full) : short;
+}
+function findSeatByStudent(full){
+  return Object.entries(seatAssignments).find(([,v])=>v===full)?.[0] || '';
+}
+function renderSeatMap(){
+  document.querySelectorAll('[data-seat]').forEach(el=>{
+    const id=el.dataset.seat; const occupant=seatAssignments[id]||'';
+    el.textContent=occupant ? seatLabel(occupant) : '';
+    el.classList.toggle('occupied',!!occupant);
+    el.classList.toggle('available',!!selectedStudent && occupant!==selectedStudent);
+    el.onclick=()=>{
+      if(!selectedStudent){
+        if(occupant){ selectedStudent=occupant; renderStudents(); renderSeatMap(); }
+        return;
+      }
+      const fromSeat=findSeatByStudent(selectedStudent);
+      if(occupant===selectedStudent){ selectedStudent=''; renderStudents(); renderSeatMap(); return; }
+      if(occupant){
+        // A 點亮後再點 B：交換座位；若 A 尚未落座，則 B 回名單、A 進座位。
+        if(fromSeat){
+          seatAssignments[fromSeat]=occupant;
+          seatAssignments[id]=selectedStudent;
+        }else{
+          delete seatAssignments[id];
+          seatAssignments[id]=selectedStudent;
+        }
+      }else{
+        if(fromSeat) delete seatAssignments[fromSeat];
+        seatAssignments[id]=selectedStudent;
+      }
+      selectedStudent=''; saveSeats(); renderStudents(); renderSeatMap();
+    };
+  });
+}
+resetSeats.onclick=()=>{
+  if(!selectedRoom)return;
+  seatAssignments={}; selectedStudent=''; saveSeats(); renderStudents(); renderSeatMap();
+};
+
+document.querySelectorAll('.tab').forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); btn.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(btn.dataset.view).classList.add('active');
+  resetSeats.style.display=btn.dataset.view==='seatView'?'inline-block':'none';
+});
+
+renderHeader(); renderRooms();
+</script>
+</body>
+</html>
+

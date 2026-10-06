@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>課表與班務工作區｜Sinny Spedu Labs</title>
   <link rel="stylesheet" href="../shared/css/workspace.css?v=2.3">
+  <style>
+    .classroom-sections { display: grid; gap: 30px; }
+    .classroom-section[hidden] { display: none; }
+    .classroom-section-heading {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 0 0 14px;
+      color: var(--navy);
+      font-size: 21px;
+      font-weight: 800;
+    }
+    .classroom-section-heading::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: var(--line);
+    }
+  </style>
 </head>
 <body class="grammar-page classroom-page">
   <button class="mobile-toggle" id="mobileToggle" aria-label="開啟選單">☰</button>
@@ -29,8 +48,7 @@
         <input class="search-box" id="resourceSearch" type="search" placeholder="搜尋學生、班級、教師、教室、日誌或點名…" aria-label="搜尋課表與班務功能">
         <div class="count-badge" id="resultCount"></div>
       </div>
-      <h2 class="section-heading">課表工具與班務紀錄</h2>
-      <section class="card-grid" id="classroomCards"></section>
+      <div class="classroom-sections" id="classroomSections"></div>
       <div class="empty-state" id="emptyState">目前沒有符合條件的功能。</div>
     </main>
   </div>
@@ -49,7 +67,7 @@
       ).join("")
     );
 
-    document.getElementById("classroomCards").innerHTML = window.CLASSROOM_DATA.map(item => {
+    const renderCard = item => {
       const action = item.available === false
         ? '<span class="card-link">功能準備中</span>'
         : `<a class="card-link" href="${escapeHtml(item.filename)}"${item.external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${escapeHtml(item.linkLabel || (item.external ? '開啟試算表 ↗' : '開啟功能 →'))}</a>`;
@@ -57,8 +75,30 @@
         <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
         <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>${action}
       </article>`;
+    };
+
+    document.getElementById("classroomSections").innerHTML = window.CLASSROOM_CATEGORIES.map(category => {
+      const cards = window.CLASSROOM_DATA.filter(item => item.category === category).map(renderCard).join("");
+      return `<section class="classroom-section" data-category-section="${escapeHtml(category)}">
+        <h2 class="classroom-section-heading">${escapeHtml(window.CLASSROOM_CATEGORY_LABELS[category] || category)}</h2>
+        <div class="card-grid">${cards}</div>
+      </section>`;
     }).join("");
   </script>
   <script src="../shared/js/workspace.js?v=2.4"></script>
+  <script>
+    const updateVisibleSections = () => {
+      document.querySelectorAll("[data-category-section]").forEach(section => {
+        const shouldHide = ![...section.querySelectorAll(".resource-card")].some(card => !card.hidden);
+        if (section.hidden !== shouldHide) section.hidden = shouldHide;
+      });
+    };
+    new MutationObserver(updateVisibleSections).observe(document.getElementById("classroomSections"), {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["hidden"]
+    });
+    updateVisibleSections();
+  </script>
 </body>
 </html>
