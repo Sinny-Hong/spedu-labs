@@ -3,957 +3,937 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>點餐學習單 - 互動電子書</title>
-  <!-- 引入 Tailwind CSS -->
+  <title>點餐學習單</title>
+  <!-- 引入 Google Fonts: Comic Neue (Comic Sans 替代備援) 與 圓體備援 -->
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Varela+Round&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- 引入 Google Fonts: Lexend 與 Noto Sans TC -->
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
+    /* 四、字型、字級與行距規格：英文 Comic Sans 優先，中文圓體優先 */
+    :root {
+      --font-main: 'Comic Sans MS', 'Comic Neue', 'Chalkboard SE', 'Varela Round', 'GenSenRounded TW', '微軟正黑體', 'PingFang TC', 'Noto Sans TC', sans-serif;
+    }
     body {
-      font-family: 'Lexend', 'Noto Sans TC', sans-serif;
-      background-color: #334155; /* 深色背景凸顯紙張 */
-      user-select: none;
+      font-family: var(--font-main);
+      background-color: #e2e8f0;
+      color: #1e293b;
+      line-height: 1.55;
+      margin: 0;
+      padding: 1.5rem 0.75rem 4rem 0.75rem;
+      -webkit-tap-highlight-color: transparent;
     }
-    /* 模擬 A4 紙本在電視上的寬螢幕最佳化顯示 */
-    .ebook-page {
+
+    /* 六、A4 寬度與螢幕版面：固定 A4 寬度概念 (約 840px)，不固定高度 */
+    .a4-container {
+      max-width: 840px;
+      margin: 0 auto 2rem auto;
       background-color: #ffffff;
-      max-width: 1100px;
-      margin: 1.5rem auto;
-      padding: 2.5rem 3.5rem;
-      border-radius: 12px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
-      min-height: 85vh;
+      padding: 2rem 2.5rem;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12);
     }
-    /* 填空題底線互動樣式 */
-    .blank-box {
+    @media (max-width: 640px) {
+      .a4-container {
+        padding: 1.25rem 1rem;
+      }
+    }
+
+    /* 二、固定表頭列樣式：12-14pt (約 16-18px)，深藍灰、扁平 */
+    .fixed-sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 16px;
+      color: #475569;
+      border-bottom: 2px solid #cbd5e1;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    /* 三、標題列樣式：本頁大標題 20-24pt (約 26-30px) 粗體 + 班級姓名 */
+    .sheet-title-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .sheet-main-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .sheet-student-info {
+      font-size: 18px;
+      color: #334155;
+      font-weight: 600;
+    }
+
+    /* 題型／區塊標題 16-18pt (約 22-24px)；正文、題目、選項 14-16pt (約 20-21px) */
+    .section-subtitle {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .question-text {
+      font-size: 20px;
+      line-height: 1.6;
+    }
+
+    /* 九、互動顏色與批改邏輯 (固定預留邊框避免畫面跳動) */
+    .opt-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 120px;
-      height: 42px;
-      border-bottom: 3px solid #1e293b;
-      margin: 0 8px;
-      padding: 0 12px;
-      cursor: pointer;
-      font-weight: 700;
-      color: #dc2626;
-      background-color: #f8fafc;
-      border-radius: 6px 6px 0 0;
-      transition: all 0.2s;
-      vertical-align: baseline;
-    }
-    .blank-box:hover {
-      background-color: #fef2f2;
-      border-bottom-color: #dc2626;
-    }
-    .blank-placeholder {
-      color: #94a3b8;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-    /* 選擇題正確答案亮起樣式 */
-    .mc-option {
       padding: 6px 14px;
       border-radius: 8px;
-      border: 2px solid transparent;
-      transition: all 0.2s;
+      border: 2px solid #cbd5e1;
+      background-color: #f8fafc;
+      color: #1e293b;
+      font-size: 19px;
+      font-weight: 600;
       cursor: pointer;
+      transition: background-color 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+      user-select: none;
+      min-height: 44px; /* 足夠觸控面積 */
     }
-    .mc-option.correct-reveal {
-      background-color: #dcfce7;
-      border-color: #16a34a;
-      color: #15803d;
+    .opt-btn:hover {
+      border-color: #94a3b8;
+      background-color: #f1f5f9;
+    }
+
+    /* 狀態 1：學生目前選擇 -> 藍色 */
+    .opt-btn.state-selected {
+      background-color: #dbeafe !important;
+      border-color: #2563eb !important;
+      color: #1d4ed8 !important;
       font-weight: 700;
-      transform: scale(1.03);
+    }
+    /* 狀態 2：按『批改』後正確答案 -> 綠色 */
+    .opt-btn.state-correct {
+      background-color: #dcfce7 !important;
+      border-color: #16a34a !important;
+      color: #15803d !important;
+      font-weight: 700;
+    }
+    /* 狀態 3：按『批改』後錯誤選項 -> 消失，不另外標紅叉，保留位置或乾淨隱藏 */
+    .opt-btn.state-wrong-hidden {
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+    /* 狀態 4：按『解答』時 -> 淡粉紅底＋紅字 */
+    .opt-btn.state-answer {
+      background-color: #ffe4e6 !important;
+      border-color: #f43f5e !important;
+      color: #dc2626 !important;
+      font-weight: 700;
+    }
+
+    /* 填空題底線顯示槽 (預留固定寬度不跳動) */
+    .blank-slot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 96px;
+      height: 38px;
+      border-bottom: 2px solid #0f172a;
+      margin: 0 6px;
+      padding: 0 10px;
+      font-weight: 700;
+      font-size: 20px;
+      vertical-align: baseline;
+      border-radius: 6px 6px 0 0;
+      transition: all 0.15s;
+    }
+    .blank-slot.state-selected {
+      background-color: #dbeafe;
+      border-bottom-color: #2563eb;
+      color: #1d4ed8;
+    }
+    .blank-slot.state-correct {
+      background-color: #dcfce7;
+      border-bottom-color: #16a34a;
+      color: #15803d;
+    }
+    .blank-slot.state-answer {
+      background-color: #ffe4e6;
+      border-bottom-color: #e11d48;
+      color: #dc2626;
+    }
+
+    /* 操作按鈕群 (批改 / 解答 / 清除) */
+    .ctrl-btn {
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      min-height: 40px;
+    }
+
+    /* 七、純淨列印規範 (@media print) */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 12mm 14mm;
+      }
+      body {
+        background-color: #ffffff !important;
+        padding: 0 !important;
+        color: #000000 !important;
+      }
+      /* 隱藏目錄、懸浮工具列、解答／批改／清除按鈕、填答輔助籌碼列 */
+      .no-print {
+        display: none !important;
+      }
+      .a4-container {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 0 16px 0 !important;
+        max-width: 100% !important;
+      }
+      /* 大題與說明框盡量不跨頁切半 */
+      .print-avoid-break {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .print-page-break {
+        break-before: page;
+        page-break-before: always;
+      }
+      /* 不論螢幕上是否已揭答或批改，列印一律回到純學生版 */
+      .blank-slot {
+        background-color: transparent !important;
+        border-bottom: 2px solid #000000 !important;
+        color: transparent !important; /* 隱藏螢幕上的文字，讓學生手寫 */
+      }
+      .opt-btn {
+        background-color: transparent !important;
+        border: none !important;
+        color: #000000 !important;
+        font-weight: 400 !important;
+        visibility: visible !important;
+        padding: 2px 8px !important;
+        min-height: auto !important;
+      }
+      .ans-note {
+        display: none !important;
+      }
     }
   </style>
 </head>
-<body class="pb-12">
+<body>
 
-  <!-- 頂部大電視教學控制列 -->
-  <header class="sticky top-0 z-50 bg-slate-900 text-white shadow-lg border-b border-slate-700 px-6 py-3">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-      <!-- 標題 -->
-      <div class="flex items-center space-x-3">
-        <span class="text-2xl">📖</span>
-        <h1 class="text-2xl font-bold tracking-wide text-amber-400">點餐學習單</h1>
-        <span class="text-sm bg-slate-700 text-slate-300 px-3 py-1 rounded-full">紙本同步電子書</span>
-      </div>
-
-      <!-- 頁碼快速切換 -->
-      <div class="flex items-center space-x-2">
-        <button onclick="prevPage()" id="btn-prev" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold disabled:opacity-40">◀ 上一頁</button>
-        <div class="flex space-x-1" id="page-dots">
-          <button onclick="goToPage(1)" class="page-btn w-10 h-10 rounded-lg font-bold bg-amber-500 text-slate-900">1</button>
-          <button onclick="goToPage(2)" class="page-btn w-10 h-10 rounded-lg font-bold bg-slate-800 hover:bg-slate-700">2</button>
-          <button onclick="goToPage(3)" class="page-btn w-10 h-10 rounded-lg font-bold bg-slate-800 hover:bg-slate-700">3</button>
-          <button onclick="goToPage(4)" class="page-btn w-10 h-10 rounded-lg font-bold bg-slate-800 hover:bg-slate-700">4</button>
-          <button onclick="goToPage(5)" class="page-btn w-10 h-10 rounded-lg font-bold bg-slate-800 hover:bg-slate-700">5</button>
-          <button onclick="goToPage(6)" class="page-btn w-10 h-10 rounded-lg font-bold bg-slate-800 hover:bg-slate-700">6</button>
-        </div>
-        <button onclick="nextPage()" id="btn-next" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold disabled:opacity-40">下一頁 ▶</button>
-      </div>
-
-      <!-- 本頁解答全開/全關 -->
-      <div class="flex items-center space-x-2">
-        <button onclick="toggleCurrentPageAnswers(true)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg shadow transition">
-          👁️ 顯示本頁全部解答
+  <!-- 五、章節目錄與滑動：懸浮可收折目錄，平常不遮住正文，不改網址 -->
+  <div class="no-print fixed top-4 right-4 z-50 flex items-center gap-2">
+    <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 text-base">
+      <span>🖨️</span><span class="hidden sm:inline">純淨列印</span>
+    </button>
+    <div class="relative">
+      <button onclick="toggleTocMenu()" id="toc-toggle-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 text-base">
+        <span>📑 章節目錄</span>
+      </button>
+      <!-- 下拉式收折目錄 -->
+      <div id="toc-dropdown" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-2xl border-2 border-slate-200 p-2 z-50">
+        <div class="text-xs font-bold text-slate-400 px-3 py-1 border-b border-slate-100">點擊平滑跳轉（不改網址）</div>
+        <button onclick="scrollToSection('sec-p1')" class="w-full text-left px-3 py-2.5 hover:bg-indigo-50 rounded-lg font-bold text-slate-700 flex justify-between items-center">
+          <span>1. 單品點餐問答 (1~10)</span><span class="text-xs bg-slate-200 px-2 py-0.5 rounded">P.1</span>
         </button>
-        <button onclick="toggleCurrentPageAnswers(false)" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg shadow transition">
-          🔄 隱藏本頁解答
+        <button onclick="scrollToSection('sec-p2')" class="w-full text-left px-3 py-2.5 hover:bg-indigo-50 rounded-lg font-bold text-slate-700 flex justify-between items-center">
+          <span>2. 雙品點餐計算 (11~20)</span><span class="text-xs bg-slate-200 px-2 py-0.5 rounded">P.2</span>
+        </button>
+        <button onclick="scrollToSection('sec-p3')" class="w-full text-left px-3 py-2.5 hover:bg-indigo-50 rounded-lg font-bold text-slate-700 flex justify-between items-center">
+          <span>3. 閱測：Ordering Drinks</span><span class="text-xs bg-slate-200 px-2 py-0.5 rounded">P.3</span>
+        </button>
+        <button onclick="scrollToSection('sec-p4')" class="w-full text-left px-3 py-2.5 hover:bg-indigo-50 rounded-lg font-bold text-slate-700 flex justify-between items-center">
+          <span>4. 閱測：Special Orders</span><span class="text-xs bg-slate-200 px-2 py-0.5 rounded">P.4</span>
+        </button>
+        <button onclick="scrollToSection('sec-p5')" class="w-full text-left px-3 py-2.5 hover:bg-indigo-50 rounded-lg font-bold text-slate-700 flex justify-between items-center">
+          <span>5. 閱測：A Sweet Treat</span><span class="text-xs bg-slate-200 px-2 py-0.5 rounded">P.5</span>
+        </button>
+        <button onclick="scrollToSection('sec-p6')" class="w-full text-left px-3 py-2.5 hover:bg-indigo-50 rounded-lg font-bold text-slate-700 flex justify-between items-center">
+          <span>6. 閱測：Afternoon Tea</span><span class="text-xs bg-slate-200 px-2 py-0.5 rounded">P.6</span>
         </button>
       </div>
     </div>
-  </header>
+  </div>
 
-  <!-- 電子書內容區 -->
-  <main class="px-4">
+  <!-- 顏色狀態圖例說明列 (僅螢幕顯示) -->
+  <div class="no-print max-w-[840px] mx-auto mb-4 bg-white/90 backdrop-blur px-4 py-2.5 rounded-xl shadow-sm border border-slate-300 flex flex-wrap items-center justify-between gap-2 text-sm font-bold">
+    <div class="flex flex-wrap items-center gap-3">
+      <span class="text-slate-600">💡 互動狀態說明：</span>
+      <span class="px-2.5 py-0.5 rounded bg-[#dbeafe] border border-[#2563eb] text-[#1d4ed8]">藍＝學生點選</span>
+      <span class="px-2.5 py-0.5 rounded bg-[#dcfce7] border border-[#16a34a] text-[#15803d]">綠＝批改正確（錯誤會自動隱藏）</span>
+      <span class="px-2.5 py-0.5 rounded bg-[#ffe4e6] border border-[#f43f5e] text-[#dc2626]">粉底紅字＝教師解答</span>
+    </div>
+  </div>
 
-    <!-- ==================== 第 1 頁 ==================== -->
-    <section id="page-1" class="ebook-page block">
-      <!-- 考卷標頭 -->
-      <div class="flex justify-between items-end border-b-2 border-slate-800 pb-3 mb-6">
-        <h2 class="text-3xl font-bold text-slate-900">點餐學習單</h2>
-        <div class="text-xl font-medium text-slate-700 space-x-6">
-          <span>新市國中 英文科講義</span>
-          <span>班級：_______</span>
-          <span>姓名：____________</span>
+  <!-- ==================== P.1 單品點餐問答 ==================== -->
+  <section id="sec-p1" class="a4-container">
+    <!-- 二、固定表頭列 -->
+    <div class="fixed-sheet-header">
+      <span>點餐學習單｜單品點餐與價格問答</span>
+      <span>P.1</span>
+    </div>
+    <!-- 三、標題列樣式 (已刪除新市國中英文科講義) -->
+    <div class="sheet-title-row">
+      <h1 class="sheet-main-title">點餐學習單</h1>
+      <div class="sheet-student-info">班級：________　姓名：_______________</div>
+    </div>
+
+    <!-- 快餐店價目表與對話說明框 -->
+    <div class="print-avoid-break bg-sky-50 border-2 border-sky-300 rounded-2xl p-4 mb-6">
+      <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 text-center mb-4">
+        <div class="bg-white rounded-xl p-2.5 border border-sky-200 shadow-sm">
+          <div class="text-3xl">🥪</div>
+          <div class="text-2xl font-bold text-sky-900">$80</div>
+          <div class="text-lg font-bold text-slate-700">a sandwich</div>
+        </div>
+        <div class="bg-white rounded-xl p-2.5 border border-sky-200 shadow-sm">
+          <div class="text-3xl">🌭</div>
+          <div class="text-2xl font-bold text-sky-900">$70</div>
+          <div class="text-lg font-bold text-slate-700">a hot dog</div>
+        </div>
+        <div class="bg-white rounded-xl p-2.5 border border-sky-200 shadow-sm">
+          <div class="text-3xl">🍪</div>
+          <div class="text-2xl font-bold text-sky-900">$40</div>
+          <div class="text-lg font-bold text-slate-700">cookies</div>
+        </div>
+        <div class="bg-white rounded-xl p-2.5 border border-sky-200 shadow-sm">
+          <div class="text-3xl">☕</div>
+          <div class="text-2xl font-bold text-sky-900">$90</div>
+          <div class="text-lg font-bold text-slate-700">hot coffee</div>
+        </div>
+        <div class="bg-white rounded-xl p-2.5 border border-sky-200 shadow-sm">
+          <div class="text-3xl">🍵</div>
+          <div class="text-2xl font-bold text-sky-900">$45</div>
+          <div class="text-lg font-bold text-slate-700">tea</div>
+        </div>
+        <div class="bg-white rounded-xl p-2.5 border border-sky-200 shadow-sm">
+          <div class="text-3xl">🍨</div>
+          <div class="text-2xl font-bold text-sky-900">$50</div>
+          <div class="text-lg font-bold text-slate-700">ice cream</div>
+        </div>
+        <div class="bg-white rounded-xl p-2.5 border border-sky-200 shadow-sm">
+          <div class="text-3xl">🧃</div>
+          <div class="text-2xl font-bold text-sky-900">$50</div>
+          <div class="text-lg font-bold text-slate-700">juice</div>
         </div>
       </div>
 
-      <!-- 快餐店菜單視覺區 (對應紙本圖片 1) -->
-      <div class="bg-gradient-to-b from-cyan-500 to-sky-400 rounded-2xl p-5 border-4 border-cyan-300 shadow-md mb-6 text-white">
-        <div class="grid grid-cols-3 md:grid-cols-4 gap-4 text-center mb-4">
-          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex flex-col items-center justify-center">
-            <span class="text-4xl mb-1">🥪</span>
-            <div class="text-3xl font-extrabold drop-shadow">$80</div>
-            <div class="text-lg font-semibold">a sandwich</div>
-          </div>
-          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex flex-col items-center justify-center">
-            <span class="text-4xl mb-1">🌭</span>
-            <div class="text-3xl font-extrabold drop-shadow">$70</div>
-            <div class="text-lg font-semibold">a hot dog</div>
-          </div>
-          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex flex-col items-center justify-center">
-            <span class="text-4xl mb-1">🍪</span>
-            <div class="text-3xl font-extrabold drop-shadow">$40</div>
-            <div class="text-lg font-semibold">cookies</div>
-          </div>
-          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex flex-col items-center justify-center">
-            <span class="text-4xl mb-1">☕</span>
-            <div class="text-3xl font-extrabold drop-shadow">$90</div>
-            <div class="text-lg font-semibold">hot coffee</div>
-          </div>
-          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex flex-col items-center justify-center">
-            <span class="text-4xl mb-1">🍵</span>
-            <div class="text-3xl font-extrabold drop-shadow">$45</div>
-            <div class="text-lg font-semibold">tea</div>
-          </div>
-          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex flex-col items-center justify-center">
-            <span class="text-4xl mb-1">🍨</span>
-            <div class="text-3xl font-extrabold drop-shadow">$50</div>
-            <div class="text-lg font-semibold">ice cream</div>
-          </div>
-          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3 flex flex-col items-center justify-center">
-            <span class="text-4xl mb-1">🧃</span>
-            <div class="text-3xl font-extrabold drop-shadow">$50</div>
-            <div class="text-lg font-semibold">juice</div>
-          </div>
+      <!-- 範例句型 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-white p-3.5 rounded-xl border border-sky-200 text-lg">
+        <div>
+          <p><span class="font-bold text-emerald-700">How much</span> is the juice?</p>
+          <p class="font-bold text-slate-700">➔ It is fifty dollars.</p>
         </div>
-        <!-- 範例對話氣泡 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-sky-100 text-slate-800 p-4 rounded-xl border-2 border-white">
-          <div class="space-y-2">
-            <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-200 inline-block font-semibold">
-              🧑 <span class="text-emerald-600 font-bold">How much</span> is the juice?
-            </div>
-            <br>
-            <div class="bg-amber-50 px-4 py-2 rounded-lg shadow-sm border border-amber-200 inline-block font-semibold">
-              👩‍🍳 It is fifty dollars.
-            </div>
-          </div>
-          <div class="space-y-2">
-            <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-200 inline-block font-semibold">
-              👩 <span class="text-emerald-600 font-bold">How much</span> are the cookies?
-            </div>
-            <br>
-            <div class="bg-amber-50 px-4 py-2 rounded-lg shadow-sm border border-amber-200 inline-block font-semibold">
-              👩‍‍🍳 They are forty dollars.
-            </div>
-          </div>
+        <div>
+          <p><span class="font-bold text-emerald-700">How much</span> are the cookies?</p>
+          <p class="font-bold text-slate-700">➔ They are forty dollars.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第一大題：1~10 題 -->
+    <div id="block-p1-q1" class="print-avoid-break">
+      <div class="flex flex-wrap justify-between items-center gap-2 mb-4 pb-2 border-b-2 border-slate-200">
+        <h2 class="section-subtitle">Part A. 單品價格問答 (1~10)</h2>
+        <!-- 九、每個有學生作答的大題提供『批改／解答／清除』 -->
+        <div class="no-print flex items-center gap-2">
+          <button onclick="gradeBlock('block-p1-q1')" class="ctrl-btn bg-emerald-600 hover:bg-emerald-700 text-white">✓ 批改</button>
+          <button onclick="revealBlock('block-p1-q1')" class="ctrl-btn bg-rose-500 hover:bg-rose-600 text-white">👁️ 解答</button>
+          <button onclick="clearBlock('block-p1-q1')" class="ctrl-btn bg-slate-200 hover:bg-slate-300 text-slate-700">↺ 清除</button>
         </div>
       </div>
 
-      <!-- 1~10 題填空題 -->
-      <div class="space-y-4 text-2xl leading-relaxed text-slate-800">
-        <div class="flex flex-wrap items-baseline justify-between p-2 hover:bg-slate-50 rounded-lg border-b border-slate-100">
-          <div class="w-full md:w-7/12"><span class="font-bold mr-2">1.</span>Customer: How much is a sandwich?</div>
-          <div class="w-full md:w-5/12">Clerk: It is <span class="blank-box" onclick="toggleBlank(this)" data-ans="80"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-        </div>
-        <div class="flex flex-wrap items-baseline justify-between p-2 hover:bg-slate-50 rounded-lg border-b border-slate-100">
-          <div class="w-full md:w-7/12"><span class="font-bold mr-2">2.</span>Customer: How much is a hot dog?</div>
-          <div class="w-full md:w-5/12">Clerk: It is <span class="blank-box" onclick="toggleBlank(this)" data-ans="70"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-        </div>
-        <div class="flex flex-wrap items-baseline justify-between p-2 hover:bg-slate-50 rounded-lg border-b border-slate-100">
-          <div class="w-full md:w-7/12"><span class="font-bold mr-2">3.</span>Customer: How much are the cookies?</div>
-          <div class="w-full md:w-5/12">Clerk: They are <span class="blank-box" onclick="toggleBlank(this)" data-ans="40"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-        </div>
-        <div class="flex flex-wrap items-baseline justify-between p-2 hover:bg-slate-50 rounded-lg border-b border-slate-100">
-          <div class="w-full md:w-7/12"><span class="font-bold mr-2">4.</span>Customer: How much is the tea?</div>
-          <div class="w-full md:w-5/12">Clerk: It is <span class="blank-box" onclick="toggleBlank(this)" data-ans="45"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-        </div>
-        <div class="flex flex-wrap items-baseline justify-between p-2 hover:bg-slate-50 rounded-lg border-b border-slate-100">
-          <div class="w-full md:w-7/12"><span class="font-bold mr-2">5.</span>Customer: How much is the hot coffee?</div>
-          <div class="w-full md:w-5/12">Clerk: It is <span class="blank-box" onclick="toggleBlank(this)" data-ans="90"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-        </div>
-        <div class="flex flex-wrap items-baseline justify-between p-2 hover:bg-slate-50 rounded-lg border-b border-slate-100">
-          <div class="w-full md:w-7/12"><span class="font-bold mr-2">6.</span>Customer: I want a sandwich.</div>
-          <div class="w-full md:w-5/12">Clerk: It is <span class="blank-box" onclick="toggleBlank(this)" data-ans="80"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-        </div>
-        <div class="flex flex-wrap items-baseline justify-between p-2 hover:bg-slate-50 rounded-lg border-b border-slate-100">
-          <div class="w-full md:w-7/12"><span class="font-bold mr-2">7.</span>Customer: I want a hot dog.</div>
-          <div class="w-full md:w-5/12">Clerk: It is <span class="blank-box" onclick="toggleBlank(this)" data-ans="70"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-        </div>
-        <div class="flex flex-wrap items-baseline justify-between p-2 hover:bg-slate-50 rounded-lg border-b border-slate-100">
-          <div class="w-full md:w-7/12"><span class="font-bold mr-2">8.</span>Customer: I want cookies.</div>
-          <div class="w-full md:w-5/12">Clerk: They are <span class="blank-box" onclick="toggleBlank(this)" data-ans="40"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-        </div>
-        <div class="flex flex-wrap items-baseline justify-between p-2 hover:bg-slate-50 rounded-lg border-b border-slate-100">
-          <div class="w-full md:w-7/12"><span class="font-bold mr-2">9.</span>Customer: I want ice cream.</div>
-          <div class="w-full md:w-5/12">Clerk: It is <span class="blank-box" onclick="toggleBlank(this)" data-ans="50"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-        </div>
-        <div class="flex flex-wrap items-baseline justify-between p-2 hover:bg-slate-50 rounded-lg border-b border-slate-100">
-          <div class="w-full md:w-7/12"><span class="font-bold mr-2">10.</span>Customer: I want juice.</div>
-          <div class="w-full md:w-5/12">Clerk: It is <span class="blank-box" onclick="toggleBlank(this)" data-ans="50"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
+      <p class="no-print text-sm text-slate-500 mb-3">💡 學生可點選下方金額籌碼填入空格（藍色），再按「批改」或直接按「解答」。</p>
+
+      <!-- 1~10 題容器 (由 JS 生成以保持乾淨結構) -->
+      <div id="list-p1-q1" class="space-y-4 question-text"></div>
+    </div>
+  </section>
+
+  <!-- ==================== P.2 雙品點餐計算 ==================== -->
+  <section id="sec-p2" class="a4-container print-page-break">
+    <div class="fixed-sheet-header">
+      <span>點餐學習單｜雙品合併點餐計算</span>
+      <span>P.2</span>
+    </div>
+    <div class="sheet-title-row">
+      <h2 class="sheet-main-title">點餐學習單</h2>
+      <div class="sheet-student-info">班級：________　姓名：_______________</div>
+    </div>
+
+    <!-- 精簡價目表提示 -->
+    <div class="print-avoid-break bg-sky-50 border-2 border-sky-300 rounded-xl p-3 mb-6">
+      <div class="grid grid-cols-4 sm:grid-cols-7 gap-2 text-center">
+        <div class="bg-white rounded-lg p-1.5 border border-sky-200"><div class="text-xl">🥪</div><div class="font-bold text-sky-900">$80</div><div class="text-xs font-bold">a sandwich</div></div>
+        <div class="bg-white rounded-lg p-1.5 border border-sky-200"><div class="text-xl">🌭</div><div class="font-bold text-sky-900">$70</div><div class="text-xs font-bold">a hot dog</div></div>
+        <div class="bg-white rounded-lg p-1.5 border border-sky-200"><div class="text-xl">🍪</div><div class="font-bold text-sky-900">$40</div><div class="text-xs font-bold">cookies</div></div>
+        <div class="bg-white rounded-lg p-1.5 border border-sky-200"><div class="text-xl">☕</div><div class="font-bold text-sky-900">$90</div><div class="text-xs font-bold">hot coffee</div></div>
+        <div class="bg-white rounded-lg p-1.5 border border-sky-200"><div class="text-xl">🍵</div><div class="font-bold text-sky-900">$45</div><div class="text-xs font-bold">tea</div></div>
+        <div class="bg-white rounded-lg p-1.5 border border-sky-200"><div class="text-xl">🍨</div><div class="font-bold text-sky-900">$50</div><div class="text-xs font-bold">ice cream</div></div>
+        <div class="bg-white rounded-lg p-1.5 border border-sky-200"><div class="text-xl">🧃</div><div class="font-bold text-sky-900">$50</div><div class="text-xs font-bold">juice</div></div>
+      </div>
+    </div>
+
+    <!-- 第二大題上半：11~15 選擇題 -->
+    <div id="block-p2-mc" class="print-avoid-break mb-8">
+      <div class="flex flex-wrap justify-between items-center gap-2 mb-4 pb-2 border-b-2 border-slate-200">
+        <h3 class="section-subtitle">Part B. 雙品點餐選擇題 (11~15)</h3>
+        <div class="no-print flex items-center gap-2">
+          <button onclick="gradeBlock('block-p2-mc')" class="ctrl-btn bg-emerald-600 hover:bg-emerald-700 text-white">✓ 批改</button>
+          <button onclick="revealBlock('block-p2-mc')" class="ctrl-btn bg-rose-500 hover:bg-rose-600 text-white">👁️ 解答</button>
+          <button onclick="clearBlock('block-p2-mc')" class="ctrl-btn bg-slate-200 hover:bg-slate-300 text-slate-700">↺ 清除</button>
         </div>
       </div>
-    </section>
+      <div id="list-p2-mc" class="space-y-4 question-text"></div>
+    </div>
 
-    <!-- ==================== 第 2 頁 ==================== -->
-    <section id="page-2" class="ebook-page hidden">
-      <div class="flex justify-between items-end border-b-2 border-slate-800 pb-3 mb-6">
-        <h2 class="text-3xl font-bold text-slate-900">點餐學習單</h2>
-        <div class="text-xl font-medium text-slate-700 space-x-6">
-          <span>新市國中 英文科講義</span>
-          <span>班級：_______</span>
-          <span>姓名：____________</span>
+    <!-- 第二大題下半：16~20 填空計算題 -->
+    <div id="block-p2-blank" class="print-avoid-break">
+      <div class="flex flex-wrap justify-between items-center gap-2 mb-4 pb-2 border-b-2 border-slate-200">
+        <h3 class="section-subtitle">Part C. 雙人點餐總計 (16~20)</h3>
+        <div class="no-print flex items-center gap-2">
+          <button onclick="gradeBlock('block-p2-blank')" class="ctrl-btn bg-emerald-600 hover:bg-emerald-700 text-white">✓ 批改</button>
+          <button onclick="revealBlock('block-p2-blank')" class="ctrl-btn bg-rose-500 hover:bg-rose-600 text-white">👁️ 解答</button>
+          <button onclick="clearBlock('block-p2-blank')" class="ctrl-btn bg-slate-200 hover:bg-slate-300 text-slate-700">↺ 清除</button>
         </div>
       </div>
+      <div id="list-p2-blank" class="space-y-4 question-text"></div>
+    </div>
+  </section>
 
-      <!-- 快餐店菜單視覺區 (第 2 頁重複顯示方便對照) -->
-      <div class="bg-gradient-to-b from-cyan-500 to-sky-400 rounded-2xl p-4 border-4 border-cyan-300 shadow-md mb-6 text-white">
-        <div class="grid grid-cols-4 md:grid-cols-7 gap-2 text-center">
-          <div class="bg-white/20 rounded-xl p-2"><span class="text-3xl">🥪</span><div class="text-2xl font-bold">$80</div><div class="text-sm font-semibold">a sandwich</div></div>
-          <div class="bg-white/20 rounded-xl p-2"><span class="text-3xl">🌭</span><div class="text-2xl font-bold">$70</div><div class="text-sm font-semibold">a hot dog</div></div>
-          <div class="bg-white/20 rounded-xl p-2"><span class="text-3xl">🍪</span><div class="text-2xl font-bold">$40</div><div class="text-sm font-semibold">cookies</div></div>
-          <div class="bg-white/20 rounded-xl p-2"><span class="text-3xl">☕</span><div class="text-2xl font-bold">$90</div><div class="text-sm font-semibold">hot coffee</div></div>
-          <div class="bg-white/20 rounded-xl p-2"><span class="text-3xl">🍵</span><div class="text-2xl font-bold">$45</div><div class="text-sm font-semibold">tea</div></div>
-          <div class="bg-white/20 rounded-xl p-2"><span class="text-3xl">🍨</span><div class="text-2xl font-bold">$50</div><div class="text-sm font-semibold">ice cream</div></div>
-          <div class="bg-white/20 rounded-xl p-2"><span class="text-3xl">🧃</span><div class="text-2xl font-bold">$50</div><div class="text-sm font-semibold">juice</div></div>
-        </div>
-      </div>
-
-      <!-- 11~15 題選擇題 -->
-      <div class="space-y-4 text-2xl text-slate-800 mb-8 border-b-2 border-dashed border-slate-300 pb-6">
-        <div class="mc-group flex flex-wrap items-center justify-between p-2 hover:bg-slate-50 rounded-lg" onclick="toggleMC(this)">
-          <div class="flex items-center space-x-3">
-            <button class="text-sm bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded font-bold hover:bg-amber-200">解答</button>
-            <span><span class="font-bold mr-2">11.</span>Customer: I want a sandwich and juice.</span>
-          </div>
-          <div class="flex space-x-6 mt-2 md:mt-0">
-            <span class="mc-option">(A) 80</span>
-            <span class="mc-option">(B) 50</span>
-            <span class="mc-option" data-correct="true">(C) 130 <span class="ans-note hidden text-sm ml-1">(80+50)</span></span>
-          </div>
-        </div>
-
-        <div class="mc-group flex flex-wrap items-center justify-between p-2 hover:bg-slate-50 rounded-lg" onclick="toggleMC(this)">
-          <div class="flex items-center space-x-3">
-            <button class="text-sm bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded font-bold hover:bg-amber-200">解答</button>
-            <span><span class="font-bold mr-2">12.</span>Customer: I want cookies and tea.</span>
-          </div>
-          <div class="flex space-x-6 mt-2 md:mt-0">
-            <span class="mc-option">(A) 40</span>
-            <span class="mc-option" data-correct="true">(B) 85 <span class="ans-note hidden text-sm ml-1">(40+45)</span></span>
-            <span class="mc-option">(C) 45</span>
-          </div>
-        </div>
-
-        <div class="mc-group flex flex-wrap items-center justify-between p-2 hover:bg-slate-50 rounded-lg" onclick="toggleMC(this)">
-          <div class="flex items-center space-x-3">
-            <button class="text-sm bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded font-bold hover:bg-amber-200">解答</button>
-            <span><span class="font-bold mr-2">13.</span>Customer: I want a hot dog and ice cream.</span>
-          </div>
-          <div class="flex space-x-6 mt-2 md:mt-0">
-            <span class="mc-option" data-correct="true">(A) 120 <span class="ans-note hidden text-sm ml-1">(70+50)</span></span>
-            <span class="mc-option">(B) 70</span>
-            <span class="mc-option">(C) 50</span>
-          </div>
-        </div>
-
-        <div class="mc-group flex flex-wrap items-center justify-between p-2 hover:bg-slate-50 rounded-lg" onclick="toggleMC(this)">
-          <div class="flex items-center space-x-3">
-            <button class="text-sm bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded font-bold hover:bg-amber-200">解答</button>
-            <span><span class="font-bold mr-2">14.</span>Customer: I want a hot coffee and cookies.</span>
-          </div>
-          <div class="flex space-x-6 mt-2 md:mt-0">
-            <span class="mc-option">(A) 90</span>
-            <span class="mc-option">(B) 40</span>
-            <span class="mc-option" data-correct="true">(C) 130 <span class="ans-note hidden text-sm ml-1">(90+40)</span></span>
-          </div>
-        </div>
-
-        <div class="mc-group flex flex-wrap items-center justify-between p-2 hover:bg-slate-50 rounded-lg" onclick="toggleMC(this)">
-          <div class="flex items-center space-x-3">
-            <button class="text-sm bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded font-bold hover:bg-amber-200">解答</button>
-            <span><span class="font-bold mr-2">15.</span>Customer: I want tea and juice.</span>
-          </div>
-          <div class="flex space-x-6 mt-2 md:mt-0">
-            <span class="mc-option">(A) 45</span>
-            <span class="mc-option" data-correct="true">(B) 95 <span class="ans-note hidden text-sm ml-1">(45+50)</span></span>
-            <span class="mc-option">(C) 50</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 16~20 題合併計算填空題 -->
-      <div class="space-y-5 text-2xl text-slate-800">
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-baseline">
-            <div><span class="font-bold mr-2">16.</span>Customer A: I want a sandwich.</div>
-            <div>Customer B: I want juice.</div>
-            <div>Clerk: That is <span class="blank-box" onclick="toggleBlank(this)" data-ans="130 (80+50)"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-          </div>
-        </div>
-
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-baseline">
-            <div><span class="font-bold mr-2">17.</span>Customer A: I want cookies.</div>
-            <div>Customer B: I want tea.</div>
-            <div>Clerk: That is <span class="blank-box" onclick="toggleBlank(this)" data-ans="85 (40+45)"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-          </div>
-        </div>
-
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-baseline">
-            <div><span class="font-bold mr-2">18.</span>Customer A: I want a hot dog.</div>
-            <div>Customer B: I want ice cream.</div>
-            <div>Clerk: That is <span class="blank-box" onclick="toggleBlank(this)" data-ans="120 (70+50)"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-          </div>
-        </div>
-
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-baseline">
-            <div><span class="font-bold mr-2">19.</span>Customer A: I want hot coffee.</div>
-            <div>Customer B: I want cookies.</div>
-            <div>Clerk: That is <span class="blank-box" onclick="toggleBlank(this)" data-ans="130 (90+40)"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-          </div>
-        </div>
-
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-baseline">
-            <div><span class="font-bold mr-2">20.</span>Customer A: I want a sandwich.</div>
-            <div>Customer B: I want tea.</div>
-            <div>Clerk: That is <span class="blank-box" onclick="toggleBlank(this)" data-ans="125 (80+45)"><span class="blank-placeholder">[ 點擊顯示 ]</span></span> dollars.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 飲料店菜單共用模板將透過 JS 自動渲染至第 3~6 頁 -->
-
-    <!-- ==================== 第 3 頁 (閱測 1~5) ==================== -->
-    <section id="page-3" class="ebook-page hidden">
-      <div class="flex justify-between items-end border-b-2 border-slate-800 pb-3 mb-4">
-        <h2 class="text-3xl font-bold text-slate-900">點餐學習單 <span class="text-xl font-normal text-slate-600 ml-2">閱讀測驗 (一)</span></h2>
-        <div class="text-xl font-medium text-slate-700 space-x-6">
-          <span>新市國中 英文科講義</span>
-          <span>班級：_______</span>
-          <span>姓名：____________</span>
-        </div>
-      </div>
-
-      <!-- 飲料店菜單插入點 -->
-      <div class="drink-menu-container mb-6"></div>
-
-      <!-- 對話與題目並排或上下排列 -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <!-- 對話區 -->
-        <div class="lg:col-span-5 bg-amber-50/70 p-5 rounded-2xl border-2 border-amber-200 text-xl leading-relaxed space-y-2">
-          <h3 class="text-2xl font-bold text-amber-900 border-b border-amber-300 pb-2 mb-3">Reading Comprehension: Ordering Drinks</h3>
-          <p><strong class="text-slate-700">Clerk:</strong> May I help you?</p>
-          <p><strong class="text-blue-700">Tom:</strong> Yes, I want a large Black Tea with no sugar and no ice.</p>
-          <p><strong class="text-pink-700">Mary:</strong> And I want a medium Pearl Milk Tea.</p>
-          <p><strong class="text-slate-700">Clerk:</strong> Sure. Would you like to add anything to your pearl milk tea?</p>
-          <p><strong class="text-pink-700">Mary:</strong> Yes, please add some pudding.</p>
-          <p><strong class="text-slate-700">Clerk:</strong> No problem. That will be one large drink and one medium drink.</p>
-          <p><strong class="text-blue-700">Tom:</strong> How much is the total?</p>
-          <p><strong class="text-slate-700">Clerk:</strong> That’s $130 in total.</p>
-        </div>
-
-        <!-- 選擇題 1~5 -->
-        <div class="lg:col-span-7 space-y-4 text-xl">
-          <h3 class="text-2xl font-bold text-slate-800 mb-2">Multiple Choice Questions</h3>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>1. What drink does Tom order?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) Green Tea</span>
-              <span class="mc-option" data-correct="true">(B) Black Tea</span>
-              <span class="mc-option">(C) Lemon Juice</span>
-              <span class="mc-option">(D) Coffee Latte</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>2. What size is Mary’s drink?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) Small</span>
-              <span class="mc-option" data-correct="true">(B) Medium</span>
-              <span class="mc-option">(C) Large</span>
-              <span class="mc-option">(D) Extra Large</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>3. What does Mary add (加料) to her drink?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) Pearl</span>
-              <span class="mc-option">(B) Coconut Jelly</span>
-              <span class="mc-option" data-correct="true">(C) Pudding</span>
-              <span class="mc-option">(D) Honey</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>4. How does Tom want his ice level?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) Regular Ice</span>
-              <span class="mc-option">(B) Less Ice</span>
-              <span class="mc-option" data-correct="true">(C) No Ice</span>
-              <span class="mc-option">(D) Warm</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>5. How much does Tom’s large Black Tea cost?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) $55</span>
-              <span class="mc-option" data-correct="true">(B) $65 <span class="ans-note hidden text-sm block">(菜單 L: $65)</span></span>
-              <span class="mc-option">(C) $100</span>
-              <span class="mc-option">(D) $130</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== 第 4 頁 (閱測 6~10) ==================== -->
-    <section id="page-4" class="ebook-page hidden">
-      <div class="flex justify-between items-end border-b-2 border-slate-800 pb-3 mb-4">
-        <h2 class="text-3xl font-bold text-slate-900">點餐學習單 <span class="text-xl font-normal text-slate-600 ml-2">閱讀測驗 (二)</span></h2>
-        <div class="text-xl font-medium text-slate-700 space-x-6">
-          <span>新市國中 英文科講義</span>
-          <span>班級：_______</span>
-          <span>姓名：____________</span>
-        </div>
-      </div>
-
-      <div class="drink-menu-container mb-6"></div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <div class="lg:col-span-5 bg-amber-50/70 p-5 rounded-2xl border-2 border-amber-200 text-xl leading-relaxed space-y-2">
-          <h3 class="text-2xl font-bold text-amber-900 border-b border-amber-300 pb-2 mb-3">Reading Comprehension: Special Orders</h3>
-          <p><strong class="text-slate-700">Clerk:</strong> Hello! What would you like today?</p>
-          <p><strong class="text-blue-700">Kevin:</strong> I’d like a medium Orange Green Tea with half sugar.</p>
-          <p><strong class="text-pink-700">Sarah:</strong> I want a large Winter Melon Tea with less ice.</p>
-          <p><strong class="text-slate-700">Clerk:</strong> Would you like any add-ons for the Winter Melon Tea?</p>
-          <p><strong class="text-pink-700">Sarah:</strong> Yes, please add coconut jelly.</p>
-          <p><strong class="text-blue-700">Kevin:</strong> Also, can I have my drink warm? It's a bit cold today.</p>
-          <p><strong class="text-slate-700">Clerk:</strong> Of course. That will be $130 total. Here are your drinks!</p>
-        </div>
-
-        <div class="lg:col-span-7 space-y-4 text-xl">
-          <h3 class="text-2xl font-bold text-slate-800 mb-2">Multiple Choice Questions</h3>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>6. What drink does Kevin order?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) Green Tea</span>
-              <span class="mc-option">(B) Fresh Milk Tea</span>
-              <span class="mc-option" data-correct="true">(C) Orange Green Tea</span>
-              <span class="mc-option">(D) Honey Lemon</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>7. How much sugar does Kevin want in his drink?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) 0%</span>
-              <span class="mc-option" data-correct="true">(B) 50%</span>
-              <span class="mc-option">(C) 100%</span>
-              <span class="mc-option">(D) No Sugar</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>8. What is the temperature of Kevin’s drink?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) Hot</span>
-              <span class="mc-option" data-correct="true">(B) Warm</span>
-              <span class="mc-option">(C) No Ice</span>
-              <span class="mc-option">(D) Less Ice</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>9. What add-on does Sarah choose?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) Pearl</span>
-              <span class="mc-option">(B) Pudding</span>
-              <span class="mc-option" data-correct="true">(C) Coconut Jelly</span>
-              <span class="mc-option">(D) No add-ons</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>10. How much is Sarah’s large Winter Melon Tea?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) $55</span>
-              <span class="mc-option" data-correct="true">(B) $65 <span class="ans-note hidden text-sm block">(菜單 L: $65)</span></span>
-              <span class="mc-option">(C) $75</span>
-              <span class="mc-option">(D) $130</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== 第 5 頁 (閱測 11~15) ==================== -->
-    <section id="page-5" class="ebook-page hidden">
-      <div class="flex justify-between items-end border-b-2 border-slate-800 pb-3 mb-4">
-        <h2 class="text-3xl font-bold text-slate-900">點餐學習單 <span class="text-xl font-normal text-slate-600 ml-2">閱讀測驗 (三)</span></h2>
-        <div class="text-xl font-medium text-slate-700 space-x-6">
-          <span>新市國中 英文科講義</span>
-          <span>班級：_______</span>
-          <span>姓名：____________</span>
-        </div>
-      </div>
-
-      <div class="drink-menu-container mb-6"></div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <div class="lg:col-span-5 bg-amber-50/70 p-5 rounded-2xl border-2 border-amber-200 text-xl leading-relaxed space-y-2">
-          <h3 class="text-2xl font-bold text-amber-900 border-b border-amber-300 pb-2 mb-3">Reading Comprehension: A Sweet Treat</h3>
-          <p><strong class="text-slate-700">Clerk:</strong> Good afternoon! What can I get for you?</p>
-          <p><strong class="text-pink-700">Linda:</strong> I want a medium Coffee Latte, please.</p>
-          <p><strong class="text-slate-700">Clerk:</strong> Would you like that hot or cold?</p>
-          <p><strong class="text-pink-700">Linda:</strong> I want it hot with regular sugar.</p>
-          <p><strong class="text-blue-700">Peter:</strong> And I would like a large Honey Lemon.</p>
-          <p><strong class="text-slate-700">Clerk:</strong> Sure. Would you like to add anything to the Honey Lemon?</p>
-          <p><strong class="text-blue-700">Peter:</strong> Yes, please add some pearls and coconut jelly.</p>
-          <p><strong class="text-slate-700">Clerk:</strong> Okay! That will be $140 in total.</p>
-        </div>
-
-        <div class="lg:col-span-7 space-y-4 text-xl">
-          <h3 class="text-2xl font-bold text-slate-800 mb-2">Multiple Choice Questions</h3>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>11. What drink does Linda order?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) Black Tea</span>
-              <span class="mc-option">(B) Fresh Milk Tea</span>
-              <span class="mc-option" data-correct="true">(C) Coffee Latte</span>
-              <span class="mc-option">(D) Ice Cream Black Tea</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>12. How much sugar does Linda want in her coffee?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) No Sugar</span>
-              <span class="mc-option">(B) Half Sugar</span>
-              <span class="mc-option" data-correct="true">(C) Regular Sugar <span class="ans-note hidden text-sm block">(100% 全糖)</span></span>
-              <span class="mc-option">(D) 0% Sugar</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>13. What is the temperature of Linda’s drink?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option" data-correct="true">(A) Hot</span>
-              <span class="mc-option">(B) Warm</span>
-              <span class="mc-option">(C) No Ice</span>
-              <span class="mc-option">(D) Room Temperature</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>14. Which two add-ons does Peter want?</span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <span class="mc-option">(A) Pearl and Pudding</span>
-              <span class="mc-option">(B) Pudding and Coconut Jelly</span>
-              <span class="mc-option" data-correct="true">(C) Pearl and Coconut Jelly</span>
-              <span class="mc-option">(D) No add-ons</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>15. How much is a large Honey Lemon (without add-ons)?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) $55</span>
-              <span class="mc-option" data-correct="true">(B) $65 <span class="ans-note hidden text-sm block">(菜單 L: $65)</span></span>
-              <span class="mc-option">(C) $130</span>
-              <span class="mc-option">(D) $140</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== 第 6 頁 (閱測 16~20) ==================== -->
-    <section id="page-6" class="ebook-page hidden">
-      <div class="flex justify-between items-end border-b-2 border-slate-800 pb-3 mb-4">
-        <h2 class="text-3xl font-bold text-slate-900">點餐學習單 <span class="text-xl font-normal text-slate-600 ml-2">閱讀測驗 (四)</span></h2>
-        <div class="text-xl font-medium text-slate-700 space-x-6">
-          <span>新市國中 英文科講義</span>
-          <span>班級：_______</span>
-          <span>姓名：____________</span>
-        </div>
-      </div>
-
-      <div class="drink-menu-container mb-6"></div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <div class="lg:col-span-5 bg-amber-50/70 p-5 rounded-2xl border-2 border-amber-200 text-xl leading-relaxed space-y-2">
-          <h3 class="text-2xl font-bold text-amber-900 border-b border-amber-300 pb-2 mb-3">Reading Comprehension: Afternoon Tea</h3>
-          <p><strong class="text-slate-700">Clerk:</strong> Welcome! Ready to order?</p>
-          <p><strong class="text-pink-700">Amy:</strong> Yes. I want a medium Ice Cream Black Tea.</p>
-          <p><strong class="text-slate-700">Clerk:</strong> How about the sugar and ice?</p>
-          <p><strong class="text-pink-700">Amy:</strong> No sugar and less ice, please.</p>
-          <p><strong class="text-blue-700">Ben:</strong> I want a large Green Tea, hot, with regular sugar.</p>
-          <p><strong class="text-slate-700">Clerk:</strong> Would you like any add-ons?</p>
-          <p><strong class="text-blue-700">Ben:</strong> Yes, please add some pudding to my green tea.</p>
-          <p><strong class="text-slate-700">Clerk:</strong> No problem. That will be $130 total. Please wait a moment.</p>
-        </div>
-
-        <div class="lg:col-span-7 space-y-4 text-xl">
-          <h3 class="text-2xl font-bold text-slate-800 mb-2">Multiple Choice Questions</h3>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>16. What drink does Amy order?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) Green Tea</span>
-              <span class="mc-option" data-correct="true">(B) Ice Cream Black Tea</span>
-              <span class="mc-option">(C) Pearl Milk Tea</span>
-              <span class="mc-option">(D) Lemon Juice</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>17. How much ice does Amy want?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) No Ice</span>
-              <span class="mc-option" data-correct="true">(B) Less Ice</span>
-              <span class="mc-option">(C) Hot</span>
-              <span class="mc-option">(D) Regular Ice</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>18. What is the temperature of Ben’s Green Tea?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) No Ice</span>
-              <span class="mc-option">(B) Warm</span>
-              <span class="mc-option" data-correct="true">(C) Hot</span>
-              <span class="mc-option">(D) Less Ice</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>19. What does Ben add to his drink?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option">(A) Pearl</span>
-              <span class="mc-option">(B) Coconut Jelly</span>
-              <span class="mc-option" data-correct="true">(C) Pudding</span>
-              <span class="mc-option">(D) Ice Cream</span>
-            </div>
-          </div>
-
-          <div class="mc-group p-3 bg-slate-50 rounded-xl border border-slate-200" onclick="toggleMC(this)">
-            <div class="font-bold mb-2 flex items-center space-x-2">
-              <button class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-1 rounded font-bold">解答</button>
-              <span>20. According to the menu, how much is a medium (M) Green Tea?</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <span class="mc-option" data-correct="true">(A) $55 <span class="ans-note hidden text-sm block">(菜單 M: $55)</span></span>
-              <span class="mc-option">(B) $65</span>
-              <span class="mc-option">(C) $130</span>
-              <span class="mc-option">(D) $15</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </main>
+  <!-- ==================== P.3 ~ P.6 閱讀測驗容器 ==================== -->
+  <div id="reading-pages-root"></div>
 
   <script>
-    // 渲染精選飲品菜單 (對應紙本迷客夏風菜單)
-    const drinkMenuHTML = `
-      <div class="bg-[#fdfbf7] border-2 border-stone-800 rounded-2xl p-4 shadow-sm">
+    // =========================================================================
+    // 資料定義區 (保留完整題數，答案位置固定與紙本講義一致)
+    // =========================================================================
+
+    // P.1 第 1~10 題單品填空題資料
+    const p1BlankData = [
+      { id: 'q1', num: 1, cust: 'How much is a sandwich?', clerkPrefix: 'It is', ans: '80', options: ['40', '50', '70', '80', '90'] },
+      { id: 'q2', num: 2, cust: 'How much is a hot dog?', clerkPrefix: 'It is', ans: '70', options: ['45', '50', '70', '80', '90'] },
+      { id: 'q3', num: 3, cust: 'How much are the cookies?', clerkPrefix: 'They are', ans: '40', options: ['40', '45', '50', '70', '80'] },
+      { id: 'q4', num: 4, cust: 'How much is the tea?', clerkPrefix: 'It is', ans: '45', options: ['40', '45', '50', '70', '90'] },
+      { id: 'q5', num: 5, cust: 'How much is the hot coffee?', clerkPrefix: 'It is', ans: '90', options: ['45', '50', '70', '80', '90'] },
+      { id: 'q6', num: 6, cust: 'I want a sandwich.', clerkPrefix: 'It is', ans: '80', options: ['40', '50', '70', '80', '90'] },
+      { id: 'q7', num: 7, cust: 'I want a hot dog.', clerkPrefix: 'It is', ans: '70', options: ['45', '50', '70', '80', '90'] },
+      { id: 'q8', num: 8, cust: 'I want cookies.', clerkPrefix: 'They are', ans: '40', options: ['40', '45', '50', '70', '80'] },
+      { id: 'q9', num: 9, cust: 'I want ice cream.', clerkPrefix: 'It is', ans: '50', options: ['40', '45', '50', '70', '80'] },
+      { id: 'q10', num: 10, cust: 'I want juice.', clerkPrefix: 'It is', ans: '50', options: ['40', '45', '50', '70', '90'] }
+    ];
+
+    // P.2 第 11~15 題選擇題資料
+    const p2McData = [
+      { id: 'q11', num: 11, prompt: 'Customer: I want a sandwich and juice.', opts: [{ label: '(A) 80', val: 'A' }, { label: '(B) 50', val: 'B' }, { label: '(C) 130', val: 'C' }], ans: 'C', note: '(80+50=130)' },
+      { id: 'q12', num: 12, prompt: 'Customer: I want cookies and tea.', opts: [{ label: '(A) 40', val: 'A' }, { label: '(B) 85', val: 'B' }, { label: '(C) 45', val: 'C' }], ans: 'B', note: '(40+45=85)' },
+      { id: 'q13', num: 13, prompt: 'Customer: I want a hot dog and ice cream.', opts: [{ label: '(A) 120', val: 'A' }, { label: '(B) 70', val: 'B' }, { label: '(C) 50', val: 'C' }], ans: 'A', note: '(70+50=120)' },
+      { id: 'q14', num: 14, prompt: 'Customer: I want a hot coffee and cookies.', opts: [{ label: '(A) 90', val: 'A' }, { label: '(B) 40', val: 'B' }, { label: '(C) 130', val: 'C' }], ans: 'C', note: '(90+40=130)' },
+      { id: 'q15', num: 15, prompt: 'Customer: I want tea and juice.', opts: [{ label: '(A) 45', val: 'A' }, { label: '(B) 95', val: 'B' }, { label: '(C) 50', val: 'C' }], ans: 'B', note: '(45+50=95)' }
+    ];
+
+    // P.2 第 16~20 題雙人計算填空題資料
+    const p2BlankData = [
+      { id: 'q16', num: 16, custA: 'I want a sandwich.', custB: 'I want juice.', ans: '130', note: '(80+50)', options: ['85', '120', '125', '130'] },
+      { id: 'q17', num: 17, custA: 'I want cookies.', custB: 'I want tea.', ans: '85', note: '(40+45)', options: ['85', '95', '120', '130'] },
+      { id: 'q18', num: 18, custA: 'I want a hot dog.', custB: 'I want ice cream.', ans: '120', note: '(70+50)', options: ['85', '120', '125', '130'] },
+      { id: 'q19', num: 19, custA: 'I want hot coffee.', custB: 'I want cookies.', ans: '130', note: '(90+40)', options: ['95', '120', '125', '130'] },
+      { id: 'q20', num: 20, custA: 'I want a sandwich.', custB: 'I want tea.', ans: '125', note: '(80+45)', options: ['85', '120', '125', '130'] }
+    ];
+
+    // P.3 ~ P.6 閱讀測驗資料
+    const readingSections = [
+      {
+        secId: 'sec-p3',
+        blockId: 'block-p3-rc',
+        pageStr: 'P.3',
+        headerSub: '閱讀測驗 (一) Ordering Drinks',
+        dialogueTitle: 'Reading Comprehension: Ordering Drinks',
+        dialogueLines: [
+          { speaker: 'Clerk', text: 'May I help you?' },
+          { speaker: 'Tom', text: 'Yes, I want a large Black Tea with no sugar and no ice.' },
+          { speaker: 'Mary', text: 'And I want a medium Pearl Milk Tea.' },
+          { speaker: 'Clerk', text: 'Sure. Would you like to add anything to your pearl milk tea?' },
+          { speaker: 'Mary', text: 'Yes, please add some pudding.' },
+          { speaker: 'Clerk', text: 'No problem. That will be one large drink and one medium drink.' },
+          { speaker: 'Tom', text: 'How much is the total?' },
+          { speaker: 'Clerk', text: 'That’s $130 in total.' }
+        ],
+        questions: [
+          { id: 'rc1', num: 1, q: 'What drink does Tom order?', opts: [{ label: '(A) Green Tea', val: 'A' }, { label: '(B) Black Tea', val: 'B' }, { label: '(C) Lemon Juice', val: 'C' }, { label: '(D) Coffee Latte', val: 'D' }], ans: 'B' },
+          { id: 'rc2', num: 2, q: 'What size is Mary’s drink?', opts: [{ label: '(A) Small', val: 'A' }, { label: '(B) Medium', val: 'B' }, { label: '(C) Large', val: 'C' }, { label: '(D) Extra Large', val: 'D' }], ans: 'B' },
+          { id: 'rc3', num: 3, q: 'What does Mary add (加料) to her drink?', opts: [{ label: '(A) Pearl', val: 'A' }, { label: '(B) Coconut Jelly', val: 'B' }, { label: '(C) Pudding', val: 'C' }, { label: '(D) Honey', val: 'D' }], ans: 'C' },
+          { id: 'rc4', num: 4, q: 'How does Tom want his ice level?', opts: [{ label: '(A) Regular Ice', val: 'A' }, { label: '(B) Less Ice', val: 'B' }, { label: '(C) No Ice', val: 'C' }, { label: '(D) Warm', val: 'D' }], ans: 'C' },
+          { id: 'rc5', num: 5, q: 'How much does Tom’s large Black Tea cost?', opts: [{ label: '(A) $55', val: 'A' }, { label: '(B) $65', val: 'B' }, { label: '(C) $100', val: 'C' }, { label: '(D) $130', val: 'D' }], ans: 'B', note: '(根據菜單 L: $65)' }
+        ]
+      },
+      {
+        secId: 'sec-p4',
+        blockId: 'block-p4-rc',
+        pageStr: 'P.4',
+        headerSub: '閱讀測驗 (二) Special Orders',
+        dialogueTitle: 'Reading Comprehension: Special Orders',
+        dialogueLines: [
+          { speaker: 'Clerk', text: 'Hello! What would you like today?' },
+          { speaker: 'Kevin', text: 'I’d like a medium Orange Green Tea with half sugar.' },
+          { speaker: 'Sarah', text: 'I want a large Winter Melon Tea with less ice.' },
+          { speaker: 'Clerk', text: 'Would you like any add-ons for the Winter Melon Tea?' },
+          { speaker: 'Sarah', text: 'Yes, please add coconut jelly.' },
+          { speaker: 'Kevin', text: "Also, can I have my drink warm? It's a bit cold today." },
+          { speaker: 'Clerk', text: 'Of course. That will be $130 total. Here are your drinks!' }
+        ],
+        questions: [
+          { id: 'rc6', num: 6, q: 'What drink does Kevin order?', opts: [{ label: '(A) Green Tea', val: 'A' }, { label: '(B) Fresh Milk Tea', val: 'B' }, { label: '(C) Orange Green Tea', val: 'C' }, { label: '(D) Honey Lemon', val: 'D' }], ans: 'C' },
+          { id: 'rc7', num: 7, q: 'How much sugar does Kevin want in his drink?', opts: [{ label: '(A) 0%', val: 'A' }, { label: '(B) 50%', val: 'B' }, { label: '(C) 100%', val: 'C' }, { label: '(D) No Sugar', val: 'D' }], ans: 'B' },
+          { id: 'rc8', num: 8, q: 'What is the temperature of Kevin’s drink?', opts: [{ label: '(A) Hot', val: 'A' }, { label: '(B) Warm', val: 'B' }, { label: '(C) No Ice', val: 'C' }, { label: '(D) Less Ice', val: 'D' }], ans: 'B' },
+          { id: 'rc9', num: 9, q: 'What add-on does Sarah choose?', opts: [{ label: '(A) Pearl', val: 'A' }, { label: '(B) Pudding', val: 'B' }, { label: '(C) Coconut Jelly', val: 'C' }, { label: '(D) No add-ons', val: 'D' }], ans: 'C' },
+          { id: 'rc10', num: 10, q: 'How much is Sarah’s large Winter Melon Tea?', opts: [{ label: '(A) $55', val: 'A' }, { label: '(B) $65', val: 'B' }, { label: '(C) $75', val: 'C' }, { label: '(D) $130', val: 'D' }], ans: 'B', note: '(根據菜單 Winter Melon Tea L: $65)' }
+        ]
+      },
+      {
+        secId: 'sec-p5',
+        blockId: 'block-p5-rc',
+        pageStr: 'P.5',
+        headerSub: '閱讀測驗 (三) A Sweet Treat',
+        dialogueTitle: 'Reading Comprehension: A Sweet Treat',
+        dialogueLines: [
+          { speaker: 'Clerk', text: 'Good afternoon! What can I get for you?' },
+          { speaker: 'Linda', text: 'I want a medium Coffee Latte, please.' },
+          { speaker: 'Clerk', text: 'Would you like that hot or cold?' },
+          { speaker: 'Linda', text: 'I want it hot with regular sugar.' },
+          { speaker: 'Peter', text: 'And I would like a large Honey Lemon.' },
+          { speaker: 'Clerk', text: 'Sure. Would you like to add anything to the Honey Lemon?' },
+          { speaker: 'Peter', text: 'Yes, please add some pearls and coconut jelly.' },
+          { speaker: 'Clerk', text: 'Okay! That will be $140 in total.' }
+        ],
+        questions: [
+          { id: 'rc11', num: 11, q: 'What drink does Linda order?', opts: [{ label: '(A) Black Tea', val: 'A' }, { label: '(B) Fresh Milk Tea', val: 'B' }, { label: '(C) Coffee Latte', val: 'C' }, { label: '(D) Ice Cream Black Tea', val: 'D' }], ans: 'C' },
+          { id: 'rc12', num: 12, q: 'How much sugar does Linda want in her coffee?', opts: [{ label: '(A) No Sugar', val: 'A' }, { label: '(B) Half Sugar', val: 'B' }, { label: '(C) Regular Sugar', val: 'C' }, { label: '(D) 0% Sugar', val: 'D' }], ans: 'C', note: '(Regular Sugar 即 100% 全糖)' },
+          { id: 'rc13', num: 13, q: 'What is the temperature of Linda’s drink?', opts: [{ label: '(A) Hot', val: 'A' }, { label: '(B) Warm', val: 'B' }, { label: '(C) No Ice', val: 'C' }, { label: '(D) Room Temperature', val: 'D' }], ans: 'A' },
+          { id: 'rc14', num: 14, q: 'Which two add-ons does Peter want?', opts: [{ label: '(A) Pearl and Pudding', val: 'A' }, { label: '(B) Pudding and Coconut Jelly', val: 'B' }, { label: '(C) Pearl and Coconut Jelly', val: 'C' }, { label: '(D) No add-ons', val: 'D' }], ans: 'C' },
+          { id: 'rc15', num: 15, q: 'How much is a large Honey Lemon (without add-ons)?', opts: [{ label: '(A) $55', val: 'A' }, { label: '(B) $65', val: 'B' }, { label: '(C) $130', val: 'C' }, { label: '(D) $140', val: 'D' }], ans: 'B', note: '(根據菜單 Honey Lemon L: $65)' }
+        ]
+      },
+      {
+        secId: 'sec-p6',
+        blockId: 'block-p6-rc',
+        pageStr: 'P.6',
+        headerSub: '閱讀測驗 (四) Afternoon Tea',
+        dialogueTitle: 'Reading Comprehension: Afternoon Tea',
+        dialogueLines: [
+          { speaker: 'Clerk', text: 'Welcome! Ready to order?' },
+          { speaker: 'Amy', text: 'Yes. I want a medium Ice Cream Black Tea.' },
+          { speaker: 'Clerk', text: 'How about the sugar and ice?' },
+          { speaker: 'Amy', text: 'No sugar and less ice, please.' },
+          { speaker: 'Ben', text: 'I want a large Green Tea, hot, with regular sugar.' },
+          { speaker: 'Clerk', text: 'Would you like any add-ons?' },
+          { speaker: 'Ben', text: 'Yes, please add some pudding to my green tea.' },
+          { speaker: 'Clerk', text: 'No problem. That will be $130 total. Please wait a moment.' }
+        ],
+        questions: [
+          { id: 'rc16', num: 16, q: 'What drink does Amy order?', opts: [{ label: '(A) Green Tea', val: 'A' }, { label: '(B) Ice Cream Black Tea', val: 'B' }, { label: '(C) Pearl Milk Tea', val: 'C' }, { label: '(D) Lemon Juice', val: 'D' }], ans: 'B' },
+          { id: 'rc17', num: 17, q: 'How much ice does Amy want?', opts: [{ label: '(A) No Ice', val: 'A' }, { label: '(B) Less Ice', val: 'B' }, { label: '(C) Hot', val: 'C' }, { label: '(D) Regular Ice', val: 'D' }], ans: 'B' },
+          { id: 'rc18', num: 18, q: 'What is the temperature of Ben’s Green Tea?', opts: [{ label: '(A) No Ice', val: 'A' }, { label: '(B) Warm', val: 'B' }, { label: '(C) Hot', val: 'C' }, { label: '(D) Less Ice', val: 'D' }], ans: 'C' },
+          { id: 'rc19', num: 19, q: 'What does Ben add to his drink?', opts: [{ label: '(A) Pearl', val: 'A' }, { label: '(B) Coconut Jelly', val: 'B' }, { label: '(C) Pudding', val: 'C' }, { label: '(D) Ice Cream', val: 'D' }], ans: 'C' },
+          { id: 'rc20', num: 20, q: 'According to the menu, how much is a medium (M) Green Tea?', opts: [{ label: '(A) $55', val: 'A' }, { label: '(B) $65', val: 'B' }, { label: '(C) $130', val: 'C' }, { label: '(D) $15', val: 'D' }], ans: 'A', note: '(根據菜單 Green Tea M: $55)' }
+        ]
+      }
+    ];
+
+    // 精選飲品菜單 HTML 模板
+    const drinkMenuTemplate = `
+      <div class="print-avoid-break bg-[#fdfbf7] border-2 border-stone-800 rounded-2xl p-3.5 mb-5 shadow-sm">
         <div class="flex justify-between items-center border-b-2 border-stone-300 pb-2 mb-3">
           <div class="flex items-center space-x-2">
             <span class="text-2xl">🐄</span>
             <div>
-              <div class="font-bold text-stone-800 leading-none">Milk Shop</div>
-              <div class="text-xs text-stone-600">迷客夏風精選飲品</div>
+              <div class="font-bold text-stone-800 leading-none text-base">Milk Shop</div>
+              <div class="text-xs text-stone-600 font-bold">迷客夏精選飲品</div>
             </div>
           </div>
           <div class="text-right">
-            <div class="font-bold text-lg text-stone-800 leading-none">FEATURED DRINK MENU</div>
-            <div class="text-sm font-semibold text-stone-600">精選飲品菜單</div>
+            <div class="font-bold text-base text-stone-800 leading-none">FEATURED DRINK MENU</div>
+            <div class="text-xs font-bold text-stone-600">精選飲品菜單</div>
           </div>
         </div>
-
-        <!-- 10種飲品網格 -->
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center mb-3">
-          <div class="bg-white border border-stone-300 rounded-xl p-2">
-            <div class="text-2xl">🥃</div>
-            <div class="font-bold text-stone-900">紅茶</div>
-            <div class="text-sm font-semibold text-stone-700">Black Tea</div>
-            <div class="text-xs font-bold text-amber-800 mt-1">M: $55 &nbsp; L: $65</div>
-          </div>
-          <div class="bg-white border border-stone-300 rounded-xl p-2">
-            <div class="text-2xl">🍵</div>
-            <div class="font-bold text-stone-900">綠茶</div>
-            <div class="text-sm font-semibold text-stone-700">Green Tea</div>
-            <div class="text-xs font-bold text-amber-800 mt-1">M: $55 &nbsp; L: $65</div>
-          </div>
-          <div class="bg-white border border-stone-300 rounded-xl p-2">
-            <div class="text-2xl">🧋</div>
-            <div class="font-bold text-stone-900">珍珠奶茶</div>
-            <div class="text-sm font-semibold text-stone-700">Pearl Milk Tea</div>
-            <div class="text-xs font-bold text-amber-800 mt-1">M: $55</div>
-          </div>
-          <div class="bg-white border border-stone-300 rounded-xl p-2">
-            <div class="text-2xl">🥛</div>
-            <div class="font-bold text-stone-900">鮮奶茶</div>
-            <div class="text-sm font-semibold text-stone-700">Fresh Milk Tea</div>
-            <div class="text-xs font-bold text-amber-800 mt-1">M: $55 &nbsp; L: $65</div>
-          </div>
-          <div class="bg-white border border-stone-300 rounded-xl p-2">
-            <div class="text-2xl">☕</div>
-            <div class="font-bold text-stone-900">咖啡拿鐵</div>
-            <div class="text-sm font-semibold text-stone-700">Coffee Latte</div>
-            <div class="text-xs font-bold text-amber-800 mt-1">M: $55 &nbsp; L: $65</div>
-          </div>
-          <div class="bg-white border border-stone-300 rounded-xl p-2">
-            <div class="text-2xl">🍋</div>
-            <div class="font-bold text-stone-900">檸檬汁</div>
-            <div class="text-sm font-semibold text-stone-700">Lemon Juice</div>
-            <div class="text-xs font-bold text-amber-800 mt-1">M: $55 &nbsp; L: $65</div>
-          </div>
-          <div class="bg-white border border-stone-300 rounded-xl p-2">
-            <div class="text-2xl">🍯</div>
-            <div class="font-bold text-stone-900">蜂蜜檸檬</div>
-            <div class="text-sm font-semibold text-stone-700">Honey Lemon</div>
-            <div class="text-xs font-bold text-amber-800 mt-1">M: $55 &nbsp; L: $65</div>
-          </div>
-          <div class="bg-white border border-stone-300 rounded-xl p-2">
-            <div class="text-2xl">🧊</div>
-            <div class="font-bold text-stone-900">冬瓜茶</div>
-            <div class="text-sm font-semibold text-stone-700">Winter Melon Tea</div>
-            <div class="text-xs font-bold text-amber-800 mt-1">M: $55 &nbsp; L: $65</div>
-          </div>
-          <div class="bg-white border border-stone-300 rounded-xl p-2">
-            <div class="text-2xl">🍊</div>
-            <div class="font-bold text-stone-900">柳丁綠茶</div>
-            <div class="text-sm font-semibold text-stone-700">Orange Green Tea</div>
-            <div class="text-xs font-bold text-amber-800 mt-1">M: $55 &nbsp; L: $65</div>
-          </div>
-          <div class="bg-white border border-stone-300 rounded-xl p-2">
-            <div class="text-2xl">🍨</div>
-            <div class="font-bold text-stone-900">冰淇淋紅茶</div>
-            <div class="text-sm font-semibold text-stone-700">Ice Cream Black Tea</div>
-            <div class="text-xs font-bold text-amber-800 mt-1">M: $55 &nbsp; L: $65</div>
-          </div>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center mb-3">
+          <div class="bg-white border border-stone-300 rounded-xl p-1.5"><div class="text-xl">🥃</div><div class="font-bold text-stone-900 text-base">紅茶</div><div class="text-sm font-bold text-stone-700">Black Tea</div><div class="text-xs font-bold text-amber-800">M: $55 / L: $65</div></div>
+          <div class="bg-white border border-stone-300 rounded-xl p-1.5"><div class="text-xl">🍵</div><div class="font-bold text-stone-900 text-base">綠茶</div><div class="text-sm font-bold text-stone-700">Green Tea</div><div class="text-xs font-bold text-amber-800">M: $55 / L: $65</div></div>
+          <div class="bg-white border border-stone-300 rounded-xl p-1.5"><div class="text-xl">🧋</div><div class="font-bold text-stone-900 text-base">珍珠奶茶</div><div class="text-sm font-bold text-stone-700">Pearl Milk Tea</div><div class="text-xs font-bold text-amber-800">M: $55</div></div>
+          <div class="bg-white border border-stone-300 rounded-xl p-1.5"><div class="text-xl">🥛</div><div class="font-bold text-stone-900 text-base">鮮奶茶</div><div class="text-sm font-bold text-stone-700">Fresh Milk Tea</div><div class="text-xs font-bold text-amber-800">M: $55 / L: $65</div></div>
+          <div class="bg-white border border-stone-300 rounded-xl p-1.5"><div class="text-xl">☕</div><div class="font-bold text-stone-900 text-base">咖啡拿鐵</div><div class="text-sm font-bold text-stone-700">Coffee Latte</div><div class="text-xs font-bold text-amber-800">M: $55 / L: $65</div></div>
+          <div class="bg-white border border-stone-300 rounded-xl p-1.5"><div class="text-xl">🍋</div><div class="font-bold text-stone-900 text-base">檸檬汁</div><div class="text-sm font-bold text-stone-700">Lemon Juice</div><div class="text-xs font-bold text-amber-800">M: $55 / L: $65</div></div>
+          <div class="bg-white border border-stone-300 rounded-xl p-1.5"><div class="text-xl">🍯</div><div class="font-bold text-stone-900 text-base">蜂蜜檸檬</div><div class="text-sm font-bold text-stone-700">Honey Lemon</div><div class="text-xs font-bold text-amber-800">M: $55 / L: $65</div></div>
+          <div class="bg-white border border-stone-300 rounded-xl p-1.5"><div class="text-xl">🧊</div><div class="font-bold text-stone-900 text-base">冬瓜茶</div><div class="text-sm font-bold text-stone-700">Winter Melon Tea</div><div class="text-xs font-bold text-amber-800">M: $55 / L: $65</div></div>
+          <div class="bg-white border border-stone-300 rounded-xl p-1.5"><div class="text-xl">🍊</div><div class="font-bold text-stone-900 text-base">柳丁綠茶</div><div class="text-sm font-bold text-stone-700">Orange Green Tea</div><div class="text-xs font-bold text-amber-800">M: $55 / L: $65</div></div>
+          <div class="bg-white border border-stone-300 rounded-xl p-1.5"><div class="text-xl">🍨</div><div class="font-bold text-stone-900 text-base">冰淇淋紅茶</div><div class="text-sm font-bold text-stone-700">Ice Cream Black Tea</div><div class="text-xs font-bold text-amber-800">M: $55 / L: $65</div></div>
         </div>
-
-        <!-- 點餐自定義區 -->
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-2 bg-stone-100 p-2.5 rounded-xl border border-stone-300 text-center text-xs sm:text-sm">
-          <div class="md:col-span-4 border-b md:border-b-0 md:border-r border-stone-300 pr-2">
-            <div class="font-bold text-stone-800 mb-1">Sweetness / 糖度</div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-2 bg-stone-100 p-2 rounded-xl border border-stone-300 text-center text-xs font-bold">
+          <div class="md:col-span-4 border-b md:border-b-0 md:border-r border-stone-300 pr-1">
+            <div class="text-stone-800 mb-1">Sweetness / 糖度</div>
             <div class="flex justify-around">
-              <div><span class="font-bold">0%</span><br>無糖 No Sugar</div>
-              <div><span class="font-bold">50%</span><br>半糖 Half Sugar</div>
-              <div><span class="font-bold">100%</span><br>全糖 Regular Sugar</div>
+              <div>0% 無糖<br>No Sugar</div>
+              <div>50% 半糖<br>Half Sugar</div>
+              <div>100% 全糖<br>Regular Sugar</div>
             </div>
           </div>
-          <div class="md:col-span-5 border-b md:border-b-0 md:border-r border-stone-300 px-2">
-            <div class="font-bold text-stone-800 mb-1">Temperature / 冰熱</div>
+          <div class="md:col-span-5 border-b md:border-b-0 md:border-r border-stone-300 px-1">
+            <div class="text-stone-800 mb-1">Temperature / 冰熱</div>
             <div class="flex justify-around">
-              <div>🧊 去冰<br>No Ice</div>
-              <div>💧 微冰<br>Less Ice</div>
-              <div>🔥 熱飲<br>Hot</div>
-              <div>🌡️ 常溫<br>Temperature</div>
-              <div>♨️ 溫飲<br>Warm</div>
+              <div>去冰<br>No Ice</div>
+              <div>微冰<br>Less Ice</div>
+              <div>熱飲<br>Hot</div>
+              <div>常溫<br>Temperature</div>
+              <div>溫飲<br>Warm</div>
             </div>
           </div>
-          <div class="md:col-span-3 pl-2">
-            <div class="font-bold text-stone-800 mb-1">Add-ons / 加料</div>
+          <div class="md:col-span-3 pl-1">
+            <div class="text-stone-800 mb-1">Add-ons / 加料</div>
             <div class="flex justify-around">
-              <div>⚫ 珍珠<br>Pearl</div>
-              <div>🍮 布丁<br>Pudding</div>
-              <div>🥥 椰果<br>Coconut Jelly</div>
+              <div>珍珠<br>Pearl</div>
+              <div>布丁<br>Pudding</div>
+              <div>椰果<br>Coconut Jelly</div>
             </div>
           </div>
         </div>
       </div>
     `;
 
-    document.querySelectorAll('.drink-menu-container').forEach(el => {
-      el.innerHTML = drinkMenuHTML;
-    });
+    // =========================================================================
+    // 渲染題目 DOM
+    // =========================================================================
 
-    // 頁面切換邏輯
-    let currentPage = 1;
-    const totalPages = 6;
+    function renderAllQuestions() {
+      // 1. 渲染 P.1 (1~10 題單品填空)
+      const p1Container = document.getElementById('list-p1-q1');
+      p1Container.innerHTML = p1BlankData.map(item => `
+        <div class="q-item print-avoid-break p-3 rounded-xl border border-slate-200 bg-slate-50/50" data-qid="${item.id}" data-qtype="blank" data-ans="${item.ans}">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <div><span class="font-bold mr-2">${item.num}.</span>Customer: ${item.cust}</div>
+            <div class="flex items-baseline flex-wrap">
+              <span>Clerk: ${item.clerkPrefix}</span>
+              <span class="blank-slot" id="slot-${item.id}"></span>
+              <span>dollars.</span>
+            </div>
+          </div>
+          <!-- 螢幕互動專用：點選籌碼與單題解答鈕 (列印時自動隱藏) -->
+          <div class="no-print mt-2.5 pt-2 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-sm font-bold text-slate-500">點選作答：</span>
+              ${item.options.map(opt => `
+                <button type="button" onclick="selectOption('${item.id}', '${opt}', this)" data-val="${opt}" class="opt-btn">${opt}</button>
+              `).join('')}
+            </div>
+            <button type="button" onclick="revealSingleQuestion('${item.id}')" class="text-sm font-bold px-3 py-1.5 rounded-lg bg-rose-100 text-rose-700 hover:bg-rose-200">單題解答</button>
+          </div>
+        </div>
+      `).join('');
 
-    function goToPage(page) {
-      currentPage = page;
-      for (let i = 1; i <= totalPages; i++) {
-        const section = document.getElementById(`page-${i}`);
-        if (i === page) {
-          section.classList.remove('hidden');
-          section.classList.add('block');
-        } else {
-          section.classList.remove('block');
-          section.classList.add('hidden');
-        }
+      // 2. 渲染 P.2 上半部 (11~15 選擇題)
+      const p2McContainer = document.getElementById('list-p2-mc');
+      p2McContainer.innerHTML = p2McData.map(item => `
+        <div class="q-item print-avoid-break p-3 rounded-xl border border-slate-200 bg-slate-50/50" data-qid="${item.id}" data-qtype="mc" data-ans="${item.ans}" data-note="${item.note || ''}">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="font-bold mr-2">${item.num}.</span>${item.prompt}
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5">
+              ${item.opts.map(o => `
+                <button type="button" onclick="selectOption('${item.id}', '${o.val}', this)" data-val="${o.val}" class="opt-btn">
+                  <span>${o.label}</span>${o.val === item.ans && item.note ? `<span class="ans-note hidden ml-1.5 text-sm font-bold">${item.note}</span>` : ''}
+                </button>
+              `).join('')}
+              <button type="button" onclick="revealSingleQuestion('${item.id}')" class="no-print text-sm font-bold px-2.5 py-1.5 rounded-lg bg-rose-100 text-rose-700 hover:bg-rose-200">解答</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // 3. 渲染 P.2 下半部 (16~20 雙人填空題)
+      const p2BlankContainer = document.getElementById('list-p2-blank');
+      p2BlankContainer.innerHTML = p2BlankData.map(item => `
+        <div class="q-item print-avoid-break p-3 rounded-xl border border-slate-200 bg-slate-50/50" data-qid="${item.id}" data-qtype="blank" data-ans="${item.ans}" data-note="${item.note || ''}">
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-baseline">
+            <div class="sm:col-span-4"><span class="font-bold mr-2">${item.num}.</span>Customer A: ${item.custA}</div>
+            <div class="sm:col-span-4">Customer B: ${item.custB}</div>
+            <div class="sm:col-span-4">
+              Clerk: That is <span class="blank-slot" id="slot-${item.id}"></span> dollars.
+            </div>
+          </div>
+          <div class="no-print mt-2.5 pt-2 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-sm font-bold text-slate-500">點選作答：</span>
+              ${item.options.map(opt => `
+                <button type="button" onclick="selectOption('${item.id}', '${opt}', this)" data-val="${opt}" class="opt-btn">${opt}</button>
+              `).join('')}
+            </div>
+            <button type="button" onclick="revealSingleQuestion('${item.id}')" class="text-sm font-bold px-3 py-1.5 rounded-lg bg-rose-100 text-rose-700 hover:bg-rose-200">單題解答</button>
+          </div>
+        </div>
+      `).join('');
+
+      // 4. 渲染 P.3 ~ P.6 閱讀測驗
+      const rcRoot = document.getElementById('reading-pages-root');
+      rcRoot.innerHTML = readingSections.map(sec => `
+        <section id="${sec.secId}" class="a4-container print-page-break">
+          <div class="fixed-sheet-header">
+            <span>點餐學習單｜${sec.headerSub}</span>
+            <span>${sec.pageStr}</span>
+          </div>
+          <div class="sheet-title-row">
+            <h2 class="sheet-main-title">點餐學習單</h2>
+            <div class="sheet-student-info">班級：________　姓名：_______________</div>
+          </div>
+
+          ${drinkMenuTemplate}
+
+          <!-- 對話框 -->
+          <div class="print-avoid-break bg-amber-50/70 border-2 border-amber-200 rounded-2xl p-4 mb-5 question-text">
+            <h3 class="font-bold text-xl text-amber-900 border-b border-amber-300 pb-1.5 mb-2.5">${sec.dialogueTitle}</h3>
+            <div class="space-y-1.5">
+              ${sec.dialogueLines.map(line => `
+                <p><strong class="text-slate-800">${line.speaker}:</strong>${line.text}</p>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- 閱讀測驗選擇題大題 -->
+          <div id="${sec.blockId}" class="print-avoid-break">
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-4 pb-2 border-b-2 border-slate-200">
+              <h3 class="section-subtitle">Multiple Choice Questions</h3>
+              <div class="no-print flex items-center gap-2">
+                <button onclick="gradeBlock('${sec.blockId}')" class="ctrl-btn bg-emerald-600 hover:bg-emerald-700 text-white">✓ 批改</button>
+                <button onclick="revealBlock('${sec.blockId}')" class="ctrl-btn bg-rose-500 hover:bg-rose-600 text-white">👁️ 解答</button>
+                <button onclick="clearBlock('${sec.blockId}')" class="ctrl-btn bg-slate-200 hover:bg-slate-300 text-slate-700">↺ 清除</button>
+              </div>
+            </div>
+
+            <div class="space-y-4 question-text">
+              ${sec.questions.map(q => `
+                <div class="q-item print-avoid-break p-3 rounded-xl border border-slate-200 bg-slate-50/50" data-qid="${q.id}" data-qtype="mc" data-ans="${q.ans}" data-note="${q.note || ''}">
+                  <div class="flex justify-between items-start gap-2 mb-2.5">
+                    <div class="font-bold">${q.num}.${q.q}</div>
+                    <button type="button" onclick="revealSingleQuestion('${q.id}')" class="no-print shrink-0 text-sm font-bold px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 hover:bg-rose-200">解答</button>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+                    ${q.opts.map(o => `
+                      <button type="button" onclick="selectOption('${q.id}', '${o.val}', this)" data-val="${o.val}" class="opt-btn justify-start text-left">
+                        <span>${o.label}</span>
+                        ${o.val === q.ans && q.note ? `<span class="ans-note hidden ml-1 text-xs font-bold block">${q.note}</span>` : ''}
+                      </button>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>
+      `).join('');
+    }
+
+    // =========================================================================
+    // 九、互動顏色與批改邏輯實作
+    // =========================================================================
+
+    // 1. 學生點選選項（呈現藍色 state-selected）
+    function selectOption(qid, val, btnEl) {
+      const qItem = document.querySelector(`.q-item[data-qid="${qid}"]`);
+      if (!qItem) return;
+
+      const currentSelected = qItem.getAttribute('data-selected');
+      const qType = qItem.getAttribute('data-qtype');
+      const allBtns = qItem.querySelectorAll('.opt-btn');
+
+      // 若該題已處於批改或解答狀態，重新點選時先清除舊狀態
+      resetQuestionVisuals(qItem);
+
+      // 若再次點擊同一個選項則取消選取
+      if (currentSelected === val) {
+        qItem.removeAttribute('data-selected');
+        return;
       }
-      // 更新頁碼按鈕樣式
-      const btns = document.querySelectorAll('#page-dots .page-btn');
-      btns.forEach((btn, idx) => {
-        if (idx + 1 === page) {
-          btn.className = 'page-btn w-10 h-10 rounded-lg font-bold bg-amber-500 text-slate-900 shadow';
-        } else {
-          btn.className = 'page-btn w-10 h-10 rounded-lg font-bold bg-slate-800 text-white hover:bg-slate-700';
+
+      // 設定目前學生選擇為藍色
+      qItem.setAttribute('data-selected', val);
+      allBtns.forEach(b => {
+        if (b.getAttribute('data-val') === val) {
+          b.classList.add('state-selected');
         }
       });
-      document.getElementById('btn-prev').disabled = (page === 1);
-      document.getElementById('btn-next').disabled = (page === totalPages);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
 
-    function prevPage() {
-      if (currentPage > 1) goToPage(currentPage - 1);
-    }
-
-    function nextPage() {
-      if (currentPage < totalPages) goToPage(currentPage + 1);
-    }
-
-    // 單一填空題點擊切換
-    function toggleBlank(el, forceState = null) {
-      const isShowing = el.getAttribute('data-showing') === 'true';
-      const targetState = forceState !== null ? forceState : !isShowing;
-      const ans = el.getAttribute('data-ans');
-
-      if (targetState) {
-        el.innerHTML = `<span>${ans}</span>`;
-        el.setAttribute('data-showing', 'true');
-      } else {
-        el.innerHTML = `<span class="blank-placeholder">[ 點擊顯示 ]</span>`;
-        el.setAttribute('data-showing', 'false');
-      }
-    }
-
-    // 單一選擇題點擊切換
-    function toggleMC(groupEl, forceState = null) {
-      const correctOpt = groupEl.querySelector('[data-correct="true"]');
-      if (!correctOpt) return;
-
-      const isShowing = correctOpt.classList.contains('correct-reveal');
-      const targetState = forceState !== null ? forceState : !isShowing;
-      const note = correctOpt.querySelector('.ans-note');
-
-      if (targetState) {
-        correctOpt.classList.add('correct-reveal');
-        if (!correctOpt.innerHTML.includes('✔')) {
-          correctOpt.insertAdjacentHTML('afterbegin', '<span class="check-mark mr-1">✔</span>');
+      // 若是填空題，同步把學生選的數字藍色顯示在底線空格上
+      if (qType === 'blank') {
+        const slot = document.getElementById(`slot-${qid}`);
+        if (slot) {
+          slot.textContent = val;
+          slot.className = 'blank-slot state-selected';
         }
-        if (note) note.classList.remove('hidden');
-      } else {
-        correctOpt.classList.remove('correct-reveal');
-        const checkMark = correctOpt.querySelector('.check-mark');
-        if (checkMark) checkMark.remove();
-        if (note) note.classList.add('hidden');
       }
     }
 
-    // 整頁解答一鍵全開 / 全關
-    function toggleCurrentPageAnswers(show) {
-      const activeSection = document.getElementById(`page-${currentPage}`);
-      activeSection.querySelectorAll('.blank-box').forEach(el => toggleBlank(el, show));
-      activeSection.querySelectorAll('.mc-group').forEach(el => toggleMC(el, show));
+    // 重置單題視覺（供重新點選或清除使用）
+    function resetQuestionVisuals(qItem) {
+      const qid = qItem.getAttribute('data-qid');
+      const qType = qItem.getAttribute('data-qtype');
+
+      qItem.querySelectorAll('.opt-btn').forEach(b => {
+        b.classList.remove('state-selected', 'state-correct', 'state-wrong-hidden', 'state-answer');
+      });
+      qItem.querySelectorAll('.ans-note').forEach(n => n.classList.add('hidden'));
+
+      if (qType === 'blank') {
+        const slot = document.getElementById(`slot-${qid}`);
+        if (slot) {
+          slot.textContent = '';
+          slot.className = 'blank-slot';
+        }
+      }
     }
+
+    // 2. 按『批改』邏輯：
+    // - 未作答題目保持原樣，不判錯、不顯示答案
+    // - 已作答且正確：綠色 (state-correct)
+    // - 已作答且錯誤：錯誤選項消失 (state-wrong-hidden)，不標紅叉
+    function gradeBlock(blockId) {
+      const block = document.getElementById(blockId);
+      if (!block) return;
+
+      block.querySelectorAll('.q-item').forEach(qItem => {
+        const selected = qItem.getAttribute('data-selected');
+        // 未作答題目保持原樣
+        if (!selected) return;
+
+        const ans = qItem.getAttribute('data-ans');
+        const qid = qItem.getAttribute('data-qid');
+        const qType = qItem.getAttribute('data-qtype');
+        const allBtns = qItem.querySelectorAll('.opt-btn');
+
+        if (selected === ans) {
+          // 答對：綠色
+          allBtns.forEach(b => {
+            b.classList.remove('state-selected', 'state-answer');
+            if (b.getAttribute('data-val') === ans) {
+              b.classList.add('state-correct');
+              const note = b.querySelector('.ans-note');
+              if (note) note.classList.remove('hidden');
+            }
+          });
+          if (qType === 'blank') {
+            const slot = document.getElementById(`slot-${qid}`);
+            if (slot) {
+              slot.textContent = ans;
+              slot.className = 'blank-slot state-correct';
+            }
+          }
+        } else {
+          // 答錯：錯誤選項消失，不另外標紅叉；清除藍色選取記錄讓學生可重選
+          allBtns.forEach(b => {
+            if (b.getAttribute('data-val') === selected) {
+              b.classList.remove('state-selected');
+              b.classList.add('state-wrong-hidden');
+            }
+          });
+          qItem.removeAttribute('data-selected');
+          if (qType === 'blank') {
+            const slot = document.getElementById(`slot-${qid}`);
+            if (slot) {
+              slot.textContent = '';
+              slot.className = 'blank-slot';
+            }
+          }
+        }
+      });
+    }
+
+    // 3. 按『解答』邏輯：淡粉紅底＋紅字 (state-answer)，明確區分於學生作答與批改狀態
+    function revealSingleQuestion(qid) {
+      const qItem = document.querySelector(`.q-item[data-qid="${qid}"]`);
+      if (!qItem) return;
+      applyAnswerToQuestion(qItem);
+    }
+
+    function revealBlock(blockId) {
+      const block = document.getElementById(blockId);
+      if (!block) return;
+      block.querySelectorAll('.q-item').forEach(qItem => {
+        applyAnswerToQuestion(qItem);
+      });
+    }
+
+    function applyAnswerToQuestion(qItem) {
+      const qid = qItem.getAttribute('data-qid');
+      const ans = qItem.getAttribute('data-ans');
+      const noteText = qItem.getAttribute('data-note') || '';
+      const qType = qItem.getAttribute('data-qtype');
+
+      // 先恢復所有消失的選項並移除藍/綠狀態
+      qItem.querySelectorAll('.opt-btn').forEach(b => {
+        b.classList.remove('state-selected', 'state-correct', 'state-wrong-hidden');
+        if (b.getAttribute('data-val') === ans) {
+          b.classList.add('state-answer');
+          const note = b.querySelector('.ans-note');
+          if (note) note.classList.remove('hidden');
+        }
+      });
+
+      if (qType === 'blank') {
+        const slot = document.getElementById(`slot-${qid}`);
+        if (slot) {
+          slot.textContent = noteText ? `${ans} ${noteText}` : ans;
+          slot.className = 'blank-slot state-answer';
+        }
+      }
+    }
+
+    // 4. 按『清除』邏輯：恢復初始狀態（移除藍色選擇、綠色批改、粉紅解答，錯誤選項重新出現）
+    function clearBlock(blockId) {
+      const block = document.getElementById(blockId);
+      if (!block) return;
+      block.querySelectorAll('.q-item').forEach(qItem => {
+        qItem.removeAttribute('data-selected');
+        resetQuestionVisuals(qItem);
+      });
+    }
+
+    // =========================================================================
+    // 五、章節目錄與平滑捲動 (scrollIntoView，不改網址、不寫入歷史)
+    // =========================================================================
+    function toggleTocMenu() {
+      const menu = document.getElementById('toc-dropdown');
+      menu.classList.toggle('hidden');
+    }
+
+    function scrollToSection(targetId) {
+      const target = document.getElementById(targetId);
+      const menu = document.getElementById('toc-dropdown');
+      if (menu) menu.classList.add('hidden'); // 跳轉後自動收起目錄
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // 點擊畫面其他區域時自動收起目錄
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('toc-dropdown');
+      const btn = document.getElementById('toc-toggle-btn');
+      if (menu && !menu.classList.contains('hidden')) {
+        if (!menu.contains(e.target) && !btn.contains(e.target)) {
+          menu.classList.add('hidden');
+        }
+      }
+    });
+
+    // 初始化渲染
+    renderAllQuestions();
   </script>
 </body>
 </html>
