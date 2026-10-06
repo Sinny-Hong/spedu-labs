@@ -1,1031 +1,1852 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>生活英文｜服飾店閱讀測驗</title>
+
 <style>
-  :root{
-    --blue:#123f7a;
-    --blue-2:#274f8c;
-    --light-blue:#edf3fb;
-    --line:#cfd9e8;
-    --text:#1f2d3d;
-    --orange:#f2a51a;
-    --green:#dff1e4;
-    --green-text:#1c6d3f;
-    --red:#d94b4b;
-    --yellow:#fff2a8;
-    --paper:#ffffff;
-    --bg:#eef3f8;
-    --gray:#6b7280;
-  }
+:root{
+  --navy:#0B3768;
+  --orange:#F59E0B;
 
-  *{ box-sizing:border-box; }
+  --page-bg:#EAF1F7;
+  --soft:#F3F7FB;
+  --line:#D6E2EC;
+  --text:#173552;
 
-  body{
-    margin:0;
-    font-family:"Arial","Noto Sans TC","Microsoft JhengHei",sans-serif;
-    color:var(--text);
-    background:var(--bg);
-  }
+  --blue:#2879BA;
+  --blue-soft:#EAF4FC;
 
-  .screen-toolbar{
-    position:sticky;
-    top:0;
-    z-index:999;
-    display:flex;
-    justify-content:flex-end;
-    gap:10px;
-    padding:12px 16px;
-    background:rgba(238,243,248,.94);
-    backdrop-filter: blur(6px);
-    border-bottom:1px solid #dbe6f3;
-  }
+  --green:#218653;
+  --green-soft:#E7F5ED;
 
-  .top-btn{
-    border:1px solid #c9d5e6;
-    background:#fff;
-    color:var(--blue);
-    border-radius:12px;
-    padding:8px 14px;
-    font-size:15px;
-    font-weight:700;
-    cursor:pointer;
-  }
+  --red:#C62828;
 
-  .pages{
-    width:210mm;
-    margin:18px auto 32px;
-  }
+  --hint:#FFF0A6;
+  --hint-line:#F1C44A;
 
-  .a4-page{
-    width:210mm;
-    min-height:297mm;
-    background:var(--paper);
-    box-shadow:0 8px 24px rgba(0,0,0,.08);
-    padding:10mm 8mm 10mm;
-    margin:0 auto 16px;
-    page-break-after:always;
-  }
-
-  .a4-page:last-child{ page-break-after:auto; }
-
-  .half-sheet{
-    min-height:133mm;
-    padding-bottom:8mm;
-  }
-
-  .half-sheet + .half-sheet{
-    border-top:2px dashed #d7dee8;
-    padding-top:8mm;
-  }
-
-  .section-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    gap:12px;
-    margin-bottom:6px;
-  }
-
-  .section-title{
-    font-size:16pt;
-    font-weight:900;
-    color:var(--blue);
-    line-height:1.15;
-    white-space:nowrap;
-  }
-
-  .title-sub{
-    color:#d19018;
-    font-size:11pt;
-    font-weight:800;
-    margin-left:8px;
-    white-space:nowrap;
-  }
-
-  .student-line{
-    flex-shrink:0;
-    font-size:16pt;
-    font-weight:800;
-    color:#333;
-    display:flex;
-    gap:12px;
-    align-items:flex-end;
-    white-space:nowrap;
-  }
-
-  .line-slot{
-    display:inline-block;
-    min-width:88px;
-    border-bottom:2px solid #9ca7b5;
-    height:24px;
-    vertical-align:bottom;
-  }
-
-  .content-grid{
-    display:grid;
-    grid-template-columns: 52% 48%;
-    gap:12px;
-    align-items:start;
-  }
-
-  /* LEFT */
-  .menu-box{
-    border:2px solid var(--blue);
-    border-radius:14px;
-    overflow:hidden;
-    background:#fff;
-  }
-
-  .menu-title{
-    background:var(--blue);
-    color:#fff;
-    text-align:center;
-    font-size:13pt;
-    font-weight:900;
-    letter-spacing:.5px;
-    padding:6px 8px;
-  }
-
-  .menu-grid{
-    display:grid;
-    background:#fff;
-  }
-
-  .menu-grid.cols-3{ grid-template-columns:repeat(3, 1fr); }
-  .menu-grid.cols-2{ grid-template-columns:repeat(2, 1fr); }
-
-  .item-card{
-    min-height:96px;
-    border-right:1px solid #d7dde6;
-    border-top:1px solid #d7dde6;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-start;
-    padding:4px 6px 6px;
-    background:#fff;
-  }
-
-  .menu-grid .item-card:nth-child(-n+3){ border-top:none; }
-  .menu-grid.cols-2 .item-card:nth-child(-n+2){ border-top:none; }
-
-  .menu-grid.cols-3 .item-card:nth-child(3n){ border-right:none; }
-  .menu-grid.cols-2 .item-card:nth-child(2n){ border-right:none; }
-
-  .tag-area{
-    width:100%;
-    min-height:26px;
-    display:flex;
-    align-items:flex-start;
-    justify-content:flex-start;
-    margin-bottom:2px;
-  }
-
-  .promo-tag{
-    display:inline-flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    min-width:58px;
-    max-width:84px;
-    min-height:22px;
-    padding:2px 6px;
-    border-radius:8px;
-    background:#ef5547;
-    color:#fff;
-    font-size:7.5pt;
-    line-height:1.05;
-    font-weight:900;
-    text-align:center;
-    box-shadow:0 1px 0 rgba(0,0,0,.06);
-  }
-
-  .promo-tag.sale{
-    background:#f06b52;
-  }
-
-  .promo-tag.bogo{
-    background:#ef5547;
-  }
-
-  .item-icon{
-    font-size:22px;
-    line-height:1;
-    margin:0 0 3px;
-  }
-
-  .item-name{
-    font-size:15pt;
-    font-weight:900;
-    color:var(--blue);
-    line-height:1.08;
-    text-align:center;
-    margin-bottom:1px;
-  }
-
-  .item-price{
-    font-size:13pt;
-    font-weight:900;
-    color:#111;
-    line-height:1.08;
-  }
-
-  .dialogue-block{
-    margin-top:8px;
-  }
-
-  .block-title{
-    background:#eef2f8;
-    border:1px solid #d8e0ec;
-    border-radius:10px;
-    color:var(--blue);
-    font-size:10.5pt;
-    font-weight:900;
-    padding:4px 8px;
-    margin-bottom:6px;
-    line-height:1;
-  }
-
-  .dialogue-lines{
-    padding:0 4px;
-  }
-
-  .dialogue-line{
-    display:flex;
-    align-items:flex-start;
-    gap:6px;
-    margin:3px 0;
-    font-size:14pt;
-    line-height:1.35;
-  }
-
-  .speaker{
-    min-width:48px;
-    font-weight:900;
-    color:#222;
-  }
-
-  .speech{
-    flex:1;
-  }
-
-  .hint-mark{
-    background:transparent;
-    padding:0 1px;
-    border-radius:3px;
-  }
-
-  .hint-on .hint-mark{
-    background:#fff0a8;
-  }
-
-  /* RIGHT */
-  .questions-panel{
-    padding-top:0;
-  }
-
-  .q-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:8px;
-    background:#eef2f8;
-    border:1px solid #d8e0ec;
-    border-radius:10px;
-    padding:4px 8px;
-    margin-bottom:6px;
-  }
-
-  .q-head-left{
-    display:flex;
-    align-items:baseline;
-    gap:8px;
-  }
-
-  .q-head-title{
-    color:var(--blue);
-    font-size:10.5pt;
-    font-weight:900;
-    line-height:1;
-  }
-
-  .score-text{
-    font-size:10pt;
-    font-weight:900;
-    color:#2d8a52;
-  }
-
-  .q-controls{
-    display:flex;
-    gap:4px;
-    flex-wrap:wrap;
-    justify-content:flex-end;
-  }
-
-  .mini-btn{
-    border:1px solid #c9d4e3;
-    background:#fff;
-    color:#475569;
-    border-radius:8px;
-    padding:3px 8px;
-    font-size:8.5pt;
-    font-weight:800;
-    cursor:pointer;
-    line-height:1.15;
-  }
-
-  .mini-btn:hover{ background:#f8fbff; }
-  .mini-btn.hint-active{
-    background:#fff7df;
-    border-color:#f0cf7c;
-    color:#8a5c00;
-  }
-
-  .question{
-    margin-bottom:8px;
-  }
-
-  .q-stem{
-    display:flex;
-    align-items:flex-start;
-    gap:6px;
-    font-size:14pt;
-    line-height:1.3;
-    font-weight:800;
-    margin-bottom:2px;
-  }
-
-  .q-slot{
-    min-width:28px;
-    text-align:center;
-    font-weight:900;
-    color:#333;
-  }
-
-  .q-slot.selected{
-    color:var(--blue);
-  }
-
-  .q-slot.answer{
-    color:var(--red);
-  }
-
-  .stem-text{
-    flex:1;
-  }
-
-  .choices{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:2px 16px;
-    padding-left:34px;
-  }
-
-  .choice{
-    border:none;
-    background:none;
-    padding:0;
-    margin:0;
-    text-align:left;
-    cursor:pointer;
-    font-size:12.8pt;
-    line-height:1.25;
-    color:#222;
-    border-radius:6px;
-  }
-
-  .choice-text{
-    display:block;
-    padding:1px 4px;
-    padding-left:28px;
-    text-indent:-28px;
-    border-radius:6px;
-  }
-
-  .choice.selected .choice-text{
-    background:#edf4ff;
-  }
-
-  .choice.correct .choice-text{
-    background:var(--green);
-    color:var(--green-text);
-  }
-
-  .choice.wrong .choice-text{
-    background:#fde8e8;
-    color:#9b1c1c;
-  }
-
-  .choice.reveal .choice-text{
-    background:var(--green);
-    color:var(--green-text);
-  }
-
-  .foot-note{
-    margin-top:2px;
-    font-size:10pt;
-    color:#667085;
-  }
-
-  /* PRINT */
-  @media print {
-    @page{
-      size:A4 portrait;
-      margin:0;
-    }
-
-    body{
-      background:#fff;
-    }
-
-    .screen-toolbar{
-      display:none !important;
-    }
-
-    .pages{
-      width:210mm;
-      margin:0;
-    }
-
-    .a4-page{
-      box-shadow:none;
-      margin:0;
-      min-height:297mm;
-    }
-
-    .mini-btn{
-      display:none !important;
-    }
-
-    .top-btn{
-      display:none !important;
-    }
-
-    .half-sheet{
-      break-inside:avoid;
-    }
-  }
-
-  /* small screens */
-  @media (max-width: 900px){
-    .pages{
-      width:100%;
-      padding:0 8px 24px;
-    }
-    .a4-page{
-      width:100%;
-      min-height:auto;
-      padding:14px;
-    }
-    .content-grid{
-      grid-template-columns:1fr;
-    }
-    .section-header{
-      flex-direction:column;
-      align-items:flex-start;
-    }
-    .student-line{
-      font-size:14pt;
-    }
-    .choices{
-      grid-template-columns:1fr;
-    }
-  }
-</style>
-</head>
-<body>
-  <div class="screen-toolbar">
-    <button class="top-btn" onclick="window.print()">列印</button>
-  </div>
-
-  <div id="pages" class="pages"></div>
-
-<script>
-const worksheets = [
-  {
-    code: "A1",
-    subtitle: "Clothes Shop",
-    menuCols: 3,
-    items: [
-      { icon:"👕", name:"T-shirt", price:"NT$400" },
-      { icon:"👚", name:"Shirt", price:"NT$500" },
-      { icon:"🧥", name:"Jacket", price:"NT$800" },
-      { icon:"👗", name:"Dress", price:"NT$1000" },
-      { icon:"👖", name:"Pants", price:"NT$700" },
-      { icon:"👟", name:"Shoes", price:"NT$1200" }
-    ],
-    keywords:["jacket","dress","NT$800","NT$1200","Amy","Ben"],
-    dialogue: [
-      ["Clerk", "May I help you?"],
-      ["Amy", "Yes. I like the jacket."],
-      ["Clerk", "It is NT$800."],
-      ["Amy", "OK. I will take the jacket."],
-      ["Ben", "I like the dress."],
-      ["Ben", "It is nice."]
-    ],
-    questions: [
-      {
-        stem: "What does Amy want to buy?",
-        answer: "A",
-        options: {
-          A:"A jacket",
-          B:"A shirt",
-          C:"A dress",
-          D:"Shoes"
-        }
-      },
-      {
-        stem: "How much is the jacket?",
-        answer: "C",
-        options: {
-          A:"NT$500",
-          B:"NT$700",
-          C:"NT$800",
-          D:"NT$1000"
-        }
-      },
-      {
-        stem: "What does Ben like?",
-        answer: "B",
-        options: {
-          A:"A jacket",
-          B:"A dress",
-          C:"Pants",
-          D:"Shoes"
-        }
-      },
-      {
-        stem: "Who buys the jacket?",
-        answer: "A",
-        options: {
-          A:"Amy",
-          B:"Ben",
-          C:"The clerk",
-          D:"We don't know"
-        }
-      },
-      {
-        stem: "Which item is NT$1200?",
-        answer: "D",
-        options: {
-          A:"Pants",
-          B:"Jacket",
-          C:"Dress",
-          D:"Shoes"
-        }
-      }
-    ]
-  },
-  {
-    code: "A2",
-    subtitle: "Clothes Shop",
-    menuCols: 3,
-    items: [
-      { icon:"🧥", name:"Jacket", price:"NT$800", promo:{type:"sale", text:"20% OFF"} },
-      { icon:"👕", name:"T-shirt", price:"NT$500", promo:{type:"sale", text:"10% OFF"} },
-      { icon:"🧶", name:"Sweater", price:"NT$900", promo:{type:"sale", text:"30% OFF"} },
-      { icon:"👗", name:"Dress", price:"NT$1000", promo:{type:"sale", text:"20% OFF"} },
-      { icon:"🧢", name:"Cap", price:"NT$400" },
-      { icon:"👟", name:"Shoes", price:"NT$1200", promo:{type:"sale", text:"30% OFF"} }
-    ],
-    keywords:["20% off","30% off","80%","NT$800","NT$640","cheaper"],
-    dialogue: [
-      ["Ben", "Look! The jacket is 20% off."],
-      ["Amy", "The original price is NT$800."],
-      ["Ben", "So we pay 80% of the price."],
-      ["Amy", "Right. The sale price is NT$640."],
-      ["Ben", "The sweater is 30% off, too."],
-      ["Amy", "Let's check which one is cheaper."]
-    ],
-    questions: [
-      {
-        stem: "What does 20% off mean?",
-        answer: "B",
-        options: {
-          A:"Pay 20% of the price",
-          B:"Pay 80% of the price",
-          C:"Save NT$20",
-          D:"Pay NT$80"
-        }
-      },
-      {
-        stem: "What is the original price of the jacket?",
-        answer: "C",
-        options: {
-          A:"NT$640",
-          B:"NT$700",
-          C:"NT$800",
-          D:"NT$900"
-        }
-      },
-      {
-        stem: "How much is the jacket after the discount?",
-        answer: "B",
-        options: {
-          A:"NT$600",
-          B:"NT$640",
-          C:"NT$680",
-          D:"NT$720"
-        }
-      },
-      {
-        stem: "How much money do they save on the jacket?",
-        answer: "C",
-        options: {
-          A:"NT$80",
-          B:"NT$120",
-          C:"NT$160",
-          D:"NT$200"
-        }
-      },
-      {
-        stem: "Which item is 30% off?",
-        answer: "B",
-        options: {
-          A:"The T-shirt",
-          B:"The sweater",
-          C:"The jacket",
-          D:"The cap"
-        }
-      }
-    ]
-  },
-  {
-    code: "A3",
-    subtitle: "Clothes Shop",
-    menuCols: 2,
-    items: [
-      { icon:"👕", name:"T-shirt", price:"NT$400", promo:{type:"bogo"} },
-      { icon:"🧦", name:"Socks", price:"NT$200", promo:{type:"bogo"} },
-      { icon:"👗", name:"Dress", price:"NT$1000", promo:{type:"sale", text:"20% OFF"} },
-      { icon:"👖", name:"Pants", price:"NT$700", promo:{type:"sale", text:"10% OFF"} }
-    ],
-    keywords:["Buy 1","Get 1 Free","20% off","10% off","two T-shirts","socks"],
-    dialogue: [
-      ["Amy", "The T-shirts are buy 1 get 1 free."],
-      ["Ben", "Great! I want two T-shirts."],
-      ["Amy", "The socks are buy 1 get 1 free, too."],
-      ["Ben", "Nice. My sister likes socks."],
-      ["Amy", "The dress is 20% off."],
-      ["Ben", "The pants are 10% off."]
-    ],
-    questions: [
-      {
-        stem: "What is special about the T-shirts?",
-        answer: "B",
-        options: {
-          A:"They are 20% off",
-          B:"They are buy 1, get 1 free",
-          C:"They are free",
-          D:"They are NT$200"
-        }
-      },
-      {
-        stem: "If Ben buys one T-shirt, how many T-shirts can he get?",
-        answer: "C",
-        options: {
-          A:"One",
-          B:"One and a half",
-          C:"Two",
-          D:"Three"
-        }
-      },
-      {
-        stem: "Which item is 20% off?",
-        answer: "C",
-        options: {
-          A:"The pants",
-          B:"The socks",
-          C:"The dress",
-          D:"The T-shirt"
-        }
-      },
-      {
-        stem: "Who likes socks?",
-        answer: "D",
-        options: {
-          A:"Amy",
-          B:"Ben",
-          C:"The clerk",
-          D:"Ben's sister"
-        }
-      },
-      {
-        stem: "Which item is 10% off?",
-        answer: "A",
-        options: {
-          A:"The pants",
-          B:"The dress",
-          C:"The T-shirt",
-          D:"The socks"
-        }
-      }
-    ]
-  },
-  {
-    code: "A4",
-    subtitle: "Clothes Shop",
-    menuCols: 2,
-    items: [
-      { icon:"👚", name:"Skirt", price:"NT$500", promo:{type:"sale", text:"20% OFF"} },
-      { icon:"🧢", name:"Cap", price:"NT$300" },
-      { icon:"👕", name:"T-shirt", price:"NT$400", promo:{type:"bogo"} },
-      { icon:"👖", name:"Pants", price:"NT$700", promo:{type:"sale", text:"10% OFF"} }
-    ],
-    keywords:["skirt","cap","buy 1 get 1 free","20% off","NT$400","Ken"],
-    dialogue: [
-      ["Mia", "I need a skirt and a cap."],
-      ["Ken", "I want two T-shirts."],
-      ["Clerk", "The T-shirts are buy 1 get 1 free."],
-      ["Mia", "Great! The skirt is 20% off."],
-      ["Ken", "Nice. I can save money today."],
-      ["Clerk", "Welcome to our weekend sale."]
-    ],
-    questions: [
-      {
-        stem: "What does Mia want to buy?",
-        answer: "A",
-        options: {
-          A:"A skirt and a cap",
-          B:"A T-shirt and a cap",
-          C:"Pants and a cap",
-          D:"A dress and a cap"
-        }
-      },
-      {
-        stem: "What is special about the T-shirts?",
-        answer: "D",
-        options: {
-          A:"They are 10% off",
-          B:"They are free",
-          C:"They are NT$300",
-          D:"They are buy 1, get 1 free"
-        }
-      },
-      {
-        stem: "How much is the skirt after 20% off?",
-        answer: "B",
-        options: {
-          A:"NT$300",
-          B:"NT$400",
-          C:"NT$450",
-          D:"NT$500"
-        }
-      },
-      {
-        stem: "How much does Mia pay for the skirt and the cap?",
-        answer: "C",
-        options: {
-          A:"NT$600",
-          B:"NT$650",
-          C:"NT$700",
-          D:"NT$800"
-        }
-      },
-      {
-        stem: "Who gets two T-shirts?",
-        answer: "B",
-        options: {
-          A:"Mia",
-          B:"Ken",
-          C:"The clerk",
-          D:"Mia and Ken"
-        }
-      }
-    ]
-  }
-];
-
-const state = {};
-worksheets.forEach(ws => {
-  state[ws.code] = {
-    selected: {},
-    grading: null,
-    showAnswers: false,
-    hintOn: false
-  };
-});
-
-function escapeRegExp(str){
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  --sale:#E95345;
 }
 
-function markKeywords(text, keywords, enabled){
-  if(!enabled || !keywords || !keywords.length) return text;
-  let result = text;
-  const sorted = [...keywords].sort((a,b)=>b.length-a.length);
-  sorted.forEach(keyword => {
-    const re = new RegExp(escapeRegExp(keyword), 'gi');
-    result = result.replace(re, (m)=>`<mark class="hint-mark">${m}</mark>`);
+/* =========================================================
+   BASIC
+========================================================= */
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  margin:0;
+  padding:0;
+}
+
+body{
+  background:var(--page-bg);
+  color:var(--text);
+
+  font-family:
+    "Noto Sans TC",
+    "Microsoft JhengHei",
+    Arial,
+    sans-serif;
+
+  padding:18px 0 40px;
+}
+
+button{
+  font:inherit;
+}
+
+/* =========================================================
+   GLOBAL PRINT
+========================================================= */
+
+.global-tools{
+  position:fixed;
+  right:16px;
+  top:16px;
+  z-index:1000;
+}
+
+.global-tools button{
+  padding:10px 16px;
+
+  border:1px solid #C8D5E0;
+  border-radius:12px;
+
+  background:white;
+  color:var(--navy);
+
+  font-weight:900;
+
+  box-shadow:
+    0 3px 12px rgba(0,0,0,.14);
+
+  cursor:pointer;
+}
+
+/* =========================================================
+   A4 PORTRAIT
+========================================================= */
+
+.sheet{
+  width:210mm;
+  height:297mm;
+
+  margin:0 auto 18px;
+  padding:7mm 8mm;
+
+  background:#fff;
+
+  box-shadow:
+    0 5px 18px rgba(0,0,0,.12);
+
+  overflow:hidden;
+
+  display:grid;
+  grid-template-rows:1fr 1fr;
+  gap:5mm;
+
+  page-break-after:always;
+}
+
+.sheet:last-child{
+  page-break-after:auto;
+}
+
+/* =========================================================
+   HALF PAGE
+========================================================= */
+
+.level-block{
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+
+  overflow:hidden;
+}
+
+.level-block:first-child{
+  padding-bottom:2.5mm;
+
+  border-bottom:
+    1.5px dashed #D5E0E9;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.level-header{
+  min-height:12mm;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:5mm;
+
+  margin-bottom:2.5mm;
+}
+
+.level-title{
+  margin:0;
+
+  color:var(--navy);
+
+  font-size:16.5pt;
+  line-height:1;
+
+  font-weight:900;
+
+  white-space:nowrap;
+}
+
+.student-info{
+  display:flex;
+  align-items:center;
+
+  gap:3mm;
+
+  color:#273E52;
+
+  font-size:14pt;
+  font-weight:700;
+
+  white-space:nowrap;
+}
+
+.info-line{
+  display:inline-block;
+
+  min-width:25mm;
+  height:5mm;
+
+  border-bottom:1.4px solid #647789;
+}
+
+.name-line{
+  min-width:36mm;
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.level-content{
+  flex:1;
+
+  min-height:0;
+
+  display:grid;
+  grid-template-columns:52% 48%;
+
+  gap:4mm;
+}
+
+.left-side,
+.right-side{
+  min-width:0;
+  min-height:0;
+}
+
+/* =========================================================
+   LEFT SIDE
+========================================================= */
+
+.left-side{
+  display:grid;
+  grid-template-rows:49mm 1fr;
+  gap:2.5mm;
+}
+
+/* =========================================================
+   CLOTHES SHOP
+========================================================= */
+
+.menu-box{
+  min-height:0;
+
+  overflow:hidden;
+
+  border:1.5px solid var(--navy);
+  border-radius:3mm;
+
+  background:white;
+}
+
+.menu-title{
+  height:7mm;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:var(--navy);
+  color:white;
+
+  font-size:10.5pt;
+  font-weight:900;
+}
+
+.menu-grid{
+  height:calc(100% - 7mm);
+
+  display:grid;
+}
+
+.menu-grid.count-6{
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(2,1fr);
+}
+
+.menu-grid.count-4{
+  grid-template-columns:repeat(2,1fr);
+  grid-template-rows:repeat(2,1fr);
+}
+
+.menu-item{
+  position:relative;
+
+  min-width:0;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:3mm .8mm 1mm;
+
+  text-align:center;
+
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+
+.menu-grid.count-6 .menu-item:nth-child(3n){
+  border-right:none;
+}
+
+.menu-grid.count-4 .menu-item:nth-child(2n){
+  border-right:none;
+}
+
+.menu-icon{
+  height:9mm;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:19pt;
+  line-height:1;
+}
+
+.menu-name{
+  margin-top:.7mm;
+
+  color:var(--navy);
+
+  font-family:
+    "Comic Sans MS",
+    "Comic Sans",
+    "Comic Neue",
+    cursive;
+
+  font-size:12.5pt;
+  line-height:1.05;
+
+  font-weight:900;
+}
+
+.menu-price{
+  margin-top:.5mm;
+
+  color:#111;
+
+  font-size:10.5pt;
+  line-height:1;
+
+  font-weight:800;
+}
+
+/* =========================================================
+   PROMO TAG
+   小角標，不遮衣服
+========================================================= */
+
+.promo-tag{
+  position:absolute;
+
+  top:-1px;
+  left:-1px;
+
+  z-index:2;
+
+  min-width:16mm;
+  max-width:25mm;
+
+  padding:1mm 1.5mm;
+
+  background:var(--sale);
+  color:#fff;
+
+  border:1.2px solid var(--sale);
+  border-radius:0 0 7px 0;
+
+  font-size:7.4pt;
+  line-height:1.05;
+
+  font-weight:900;
+  text-align:center;
+
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.12);
+
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+}
+
+.promo-tag.bogo{
+  min-width:21mm;
+}
+
+.promo-line{
+  display:block;
+}
+
+/* =========================================================
+   DIALOGUE
+========================================================= */
+
+.dialogue-section{
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+}
+
+.dialogue-title{
+  margin:0 0 1.5mm;
+
+  padding:1.4mm 2.2mm;
+
+  color:var(--navy);
+
+  background:var(--soft);
+
+  border:1px solid var(--line);
+  border-radius:2.5mm;
+
+  font-size:12pt;
+  line-height:1;
+
+  font-weight:900;
+}
+
+.dialogue-content{
+  flex:1;
+
+  min-height:0;
+  overflow:hidden;
+
+  padding:.6mm 1.5mm 0;
+}
+
+.dialogue-line{
+  display:grid;
+
+  grid-template-columns:max-content 1fr;
+
+  column-gap:2mm;
+
+  margin-bottom:1.35mm;
+
+  font-family:
+    "Comic Sans MS",
+    "Comic Sans",
+    "Comic Neue",
+    cursive;
+
+  font-size:12.5pt;
+  line-height:1.28;
+}
+
+.dialogue-line:last-child{
+  margin-bottom:0;
+}
+
+.speaker{
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.speech{
+  min-width:0;
+}
+
+.long-dialogue .dialogue-line{
+  font-size:11.5pt;
+  line-height:1.22;
+
+  margin-bottom:1mm;
+}
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+.right-side{
+  display:flex;
+  flex-direction:column;
+
+  min-height:0;
+}
+
+.question-head{
+  min-height:9mm;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:2mm;
+
+  padding:1.2mm 2mm;
+  margin-bottom:1.5mm;
+
+  background:var(--soft);
+
+  border:1px solid var(--line);
+  border-radius:2.5mm;
+}
+
+.question-title-wrap{
+  display:flex;
+  align-items:center;
+
+  gap:2mm;
+}
+
+.question-title{
+  margin:0;
+
+  color:var(--navy);
+
+  font-size:12pt;
+  font-weight:900;
+}
+
+.score{
+  min-width:11mm;
+
+  color:var(--green);
+
+  font-size:10.5pt;
+  font-weight:900;
+
+  text-align:center;
+}
+
+.tools{
+  display:flex;
+  align-items:center;
+
+  gap:.8mm;
+}
+
+.tools button{
+  padding:1mm 1.6mm;
+
+  border:1px solid #BFCFDE;
+  border-radius:6px;
+
+  background:white;
+
+  color:var(--navy);
+
+  font-size:8pt;
+  font-weight:900;
+
+  cursor:pointer;
+}
+
+.tools button.active{
+  color:#875100;
+
+  background:#FFF2D7;
+
+  border-color:var(--orange);
+}
+
+.questions{
+  flex:1;
+
+  min-height:0;
+
+  overflow:hidden;
+
+  padding:0 .5mm;
+
+  font-family:
+    "Comic Sans MS",
+    "Comic Sans",
+    "Comic Neue",
+    cursive;
+}
+
+.question{
+  margin-bottom:1.7mm;
+}
+
+.question:last-child{
+  margin-bottom:0;
+}
+
+.q-row{
+  display:grid;
+
+  grid-template-columns:11mm 1fr;
+
+  column-gap:1mm;
+
+  align-items:start;
+
+  font-size:11.5pt;
+  line-height:1.22;
+
+  font-weight:800;
+}
+
+.answer-slot{
+  white-space:nowrap;
+  text-align:right;
+}
+
+.answer-letter{
+  display:inline-block;
+
+  min-width:3.5mm;
+
+  color:var(--blue);
+
+  font-weight:900;
+}
+
+.answer-letter.correct{
+  color:var(--green);
+}
+
+.answer-letter.solution{
+  color:var(--red);
+}
+
+.q-text{
+  min-width:0;
+}
+
+/* =========================================================
+   OPTIONS
+   懸掛縮排
+========================================================= */
+
+.options{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:.6mm 2mm;
+
+  margin-top:.6mm;
+  margin-left:13mm;
+}
+
+.option{
+  padding:.5mm 1mm;
+
+  border:1px solid transparent;
+  border-radius:5px;
+
+  font-size:9.8pt;
+  line-height:1.18;
+
+  cursor:pointer;
+}
+
+.option-inner{
+  display:block;
+
+  padding-left:5.5mm;
+  text-indent:-5.5mm;
+}
+
+.option:hover{
+  background:var(--blue-soft);
+}
+
+.option.selected{
+  color:var(--navy);
+
+  background:var(--blue-soft);
+
+  border-color:#6CA6D3;
+}
+
+.option.correct{
+  color:var(--green);
+
+  background:var(--green-soft);
+
+  border-color:#8BC4A3;
+
+  font-weight:900;
+}
+
+/* =========================================================
+   HINT
+========================================================= */
+
+.hint-word{
+  padding:0 .4mm;
+
+  border-radius:3px;
+}
+
+.level-block.hint-on .hint-word{
+  background:var(--hint);
+
+  box-shadow:
+    inset 0 -1px 0 var(--hint-line);
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@page{
+  size:A4 portrait;
+  margin:0;
+}
+
+@media print{
+
+  html,
+  body{
+    width:210mm;
+
+    margin:0;
+    padding:0;
+
+    background:white;
+  }
+
+  body{
+    padding:0;
+  }
+
+  .global-tools{
+    display:none !important;
+  }
+
+  .sheet{
+    width:210mm;
+    height:297mm;
+
+    margin:0;
+
+    box-shadow:none;
+  }
+
+  .tools,
+  .score{
+    display:none !important;
+  }
+
+  /* 就算印表機不印背景色，
+     折扣仍然清楚 */
+  .promo-tag{
+    background:#fff !important;
+    color:#111 !important;
+
+    border:1.5px solid #111 !important;
+
+    box-shadow:none !important;
+
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+}
+
+/* =========================================================
+   MOBILE PREVIEW
+   不改成單欄，只維持紙張比例
+========================================================= */
+
+@media screen and (max-width:900px){
+
+  body{
+    overflow-x:auto;
+  }
+
+  .sheet{
+    margin-left:0;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="global-tools">
+  <button onclick="window.print()">
+    列印
+  </button>
+</div>
+
+<div id="pages"></div>
+
+<script>
+
+/* =========================================================
+   DATA
+========================================================= */
+
+const levels = [
+
+/* =========================================================
+   A1
+   無折扣：單字、人物、價格、簡單加法
+========================================================= */
+
+{
+  code:"A1",
+
+  menu:[
+    ["👕","T-shirt",400,null],
+    ["👚","Shirt",500,null],
+    ["🧥","Jacket",800,null],
+    ["👗","Dress",1000,null],
+    ["👖","Pants",700,null],
+    ["👟","Shoes",1200,null]
+  ],
+
+  dialogue:[
+    ["Clerk","May I help you?"],
+    ["Amy","Yes. I want the jacket."],
+    ["Clerk","It is NT$800."],
+    ["Ben","I want the dress."],
+    ["Clerk","It is NT$1,000."],
+    ["Amy","Great. Let's buy them."]
+  ],
+
+  hints:[
+    "jacket",
+    "dress",
+    "NT$800",
+    "NT$1,000",
+    "Amy",
+    "Ben"
+  ],
+
+  questions:[
+    {
+      stem:"What does Amy want to buy?",
+      options:[
+        "A jacket",
+        "A shirt",
+        "A dress",
+        "Shoes"
+      ],
+      answer:0
+    },
+
+    {
+      stem:"What does Ben want to buy?",
+      options:[
+        "A T-shirt",
+        "A dress",
+        "Pants",
+        "Shoes"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"Who wants the jacket?",
+      options:[
+        "Amy",
+        "Ben",
+        "The clerk",
+        "We don't know"
+      ],
+      answer:0
+    },
+
+    {
+      stem:"How much is the dress?",
+      options:[
+        "NT$500",
+        "NT$700",
+        "NT$800",
+        "NT$1,000"
+      ],
+      answer:3
+    },
+
+    {
+      stem:"How much are the jacket and the dress in total?",
+      options:[
+        "NT$1,500",
+        "NT$1,600",
+        "NT$1,800",
+        "NT$2,000"
+      ],
+      answer:2
+    }
+  ]
+},
+
+/* =========================================================
+   A2
+   只有一件折扣
+========================================================= */
+
+{
+  code:"A2",
+
+  menu:[
+    ["🧥","Jacket",800,"20% OFF"],
+    ["👚","Shirt",500,null],
+    ["👗","Dress",1000,null],
+    ["👖","Pants",700,null],
+    ["🧢","Cap",400,null],
+    ["👟","Shoes",1200,null]
+  ],
+
+  dialogue:[
+    ["Ben","Look! The jacket is 20% off."],
+    ["Amy","What is the original price?"],
+    ["Ben","It is NT$800."],
+    ["Amy","How much is it now?"],
+    ["Ben","It is NT$640."],
+    ["Amy","I like the dress. I want that one."]
+  ],
+
+  hints:[
+    "20% off",
+    "NT$800",
+    "NT$640",
+    "dress",
+    "Ben",
+    "Amy"
+  ],
+
+  questions:[
+    {
+      stem:"Which item is 20% off?",
+      options:[
+        "The jacket",
+        "The shirt",
+        "The dress",
+        "The pants"
+      ],
+      answer:0
+    },
+
+    {
+      stem:"What is the original price of the jacket?",
+      options:[
+        "NT$500",
+        "NT$640",
+        "NT$800",
+        "NT$1,000"
+      ],
+      answer:2
+    },
+
+    {
+      stem:"How much is the jacket now?",
+      options:[
+        "NT$600",
+        "NT$640",
+        "NT$700",
+        "NT$800"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"What does Amy want to buy?",
+      options:[
+        "The jacket",
+        "The dress",
+        "The cap",
+        "The shoes"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"Who tells Amy the sale price?",
+      options:[
+        "Ben",
+        "The clerk",
+        "Her mom",
+        "Her teacher"
+      ],
+      answer:0
+    }
+  ]
+},
+
+/* =========================================================
+   A3
+   只放一個 Buy 1 Get 1 Free
+========================================================= */
+
+{
+  code:"A3",
+
+  menu:[
+    ["👕","T-shirt",400,"BOGO"],
+    ["👗","Dress",1000,null],
+    ["👖","Pants",700,null],
+    ["👟","Shoes",1200,null]
+  ],
+
+  dialogue:[
+    ["Amy","The T-shirts are Buy 1 Get 1 Free."],
+    ["Ben","Great! I want two T-shirts."],
+    ["Amy","You only pay NT$400 for the two."],
+    ["Ben","Nice! I also like the pants."],
+    ["Amy","The pants are not on sale."]
+  ],
+
+  hints:[
+    "Buy 1 Get 1 Free",
+    "two T-shirts",
+    "NT$400",
+    "pants",
+    "not on sale"
+  ],
+
+  questions:[
+    {
+      stem:"What is special about the T-shirts?",
+      options:[
+        "They are 20% off",
+        "They are Buy 1 Get 1 Free",
+        "They are free",
+        "They are NT$200"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"What does Ben buy?",
+      options:[
+        "Two T-shirts",
+        "Two pants",
+        "A dress",
+        "Shoes"
+      ],
+      answer:0
+    },
+
+    {
+      stem:"How much does Ben pay for two T-shirts?",
+      options:[
+        "NT$200",
+        "NT$400",
+        "NT$600",
+        "NT$800"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"What other item does Ben like?",
+      options:[
+        "The dress",
+        "The pants",
+        "The shoes",
+        "The cap"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"Are the pants on sale?",
+      options:[
+        "Yes, they are",
+        "No, they aren't",
+        "Only on Sunday",
+        "We don't know"
+      ],
+      answer:1
+    }
+  ]
+},
+
+/* =========================================================
+   A4
+   一個折扣 + 一個買一送一
+========================================================= */
+
+{
+  code:"A4",
+
+  menu:[
+    ["👗","Dress",1000,"20% OFF"],
+    ["👕","T-shirt",400,"BOGO"],
+    ["🧢","Cap",300,null],
+    ["👖","Pants",700,null]
+  ],
+
+  dialogue:[
+    ["Clerk","Welcome to our weekend sale!"],
+    ["Mia","I want the dress."],
+    ["Clerk","It is 20% off. The sale price is NT$800."],
+    ["Ken","I want two T-shirts."],
+    ["Clerk","They are Buy 1 Get 1 Free. You pay NT$400 for two."],
+    ["Mia","Great! Let's buy them."]
+  ],
+
+  hints:[
+    "weekend sale",
+    "dress",
+    "20% off",
+    "NT$800",
+    "two T-shirts",
+    "Buy 1 Get 1 Free",
+    "NT$400"
+  ],
+
+  questions:[
+    {
+      stem:"When is the sale?",
+      options:[
+        "Today only",
+        "This weekend",
+        "Next month",
+        "Every day"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"What does Mia want to buy?",
+      options:[
+        "The dress",
+        "The cap",
+        "The pants",
+        "The T-shirt"
+      ],
+      answer:0
+    },
+
+    {
+      stem:"How much is Mia's dress now?",
+      options:[
+        "NT$700",
+        "NT$800",
+        "NT$900",
+        "NT$1,000"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"What special offer is on the T-shirts?",
+      options:[
+        "10% off",
+        "20% off",
+        "Buy 1 Get 1 Free",
+        "No sale"
+      ],
+      answer:2
+    },
+
+    {
+      stem:"How much do Mia and Ken pay in total?",
+      options:[
+        "NT$1,000",
+        "NT$1,100",
+        "NT$1,200",
+        "NT$1,400"
+      ],
+      answer:2
+    }
+  ]
+}
+
+];
+
+/* =========================================================
+   STATE
+========================================================= */
+
+const selections =
+  levels.map(level =>
+    Array(level.questions.length).fill(null)
+  );
+
+const hintStates =
+  levels.map(() => false);
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function getOptions(levelIndex, questionIndex){
+
+  return document.querySelectorAll(
+    `.option[data-level="${levelIndex}"][data-q="${questionIndex}"]`
+  );
+
+}
+
+function getAnswerSlot(levelIndex, questionIndex){
+
+  return document.getElementById(
+    `answer-${levelIndex}-${questionIndex}`
+  );
+
+}
+
+function getScore(levelIndex){
+
+  return document.getElementById(
+    `score-${levelIndex}`
+  );
+
+}
+
+function escapeRegExp(text){
+
+  return text.replace(
+    /[.*+?^${}()|[\]\\]/g,
+    "\\$&"
+  );
+
+}
+
+function highlightText(text, words){
+
+  let result =
+    String(text);
+
+  const sorted =
+    [...words].sort(
+      (a,b) =>
+        b.length-a.length
+    );
+
+  sorted.forEach(word => {
+
+    const regex =
+      new RegExp(
+        `(${escapeRegExp(word)})`,
+        "gi"
+      );
+
+    result =
+      result.replace(
+        regex,
+        `<span class="hint-word">$1</span>`
+      );
+
   });
+
   return result;
 }
 
-function promoHTML(promo){
-  if(!promo) return "";
-  if(promo.type === "bogo"){
+/* =========================================================
+   PROMO TAG
+========================================================= */
+
+function promoHTML(tag){
+
+  if(!tag) return "";
+
+  if(tag === "BOGO"){
     return `
       <div class="promo-tag bogo">
-        <span>Buy 1</span>
-        <span>Get 1 Free</span>
+        <span class="promo-line">Buy 1</span>
+        <span class="promo-line">Get 1 Free</span>
       </div>
     `;
   }
-  return `<div class="promo-tag sale">${promo.text}</div>`;
-}
 
-function renderItemCard(item){
   return `
-    <div class="item-card">
-      <div class="tag-area">${promoHTML(item.promo)}</div>
-      <div class="item-icon">${item.icon}</div>
-      <div class="item-name">${item.name}</div>
-      <div class="item-price">${item.price}</div>
+    <div class="promo-tag">
+      ${tag}
     </div>
   `;
 }
 
-function renderDialogue(ws){
-  const hintOn = state[ws.code].hintOn;
-  return `
-    <div class="dialogue-block ${hintOn ? 'hint-on':''}">
-      <div class="block-title">Dialogue</div>
-      <div class="dialogue-lines">
-        ${ws.dialogue.map(line => `
-          <div class="dialogue-line">
-            <span class="speaker">${line[0]}:</span>
-            <span class="speech">${markKeywords(line[1], ws.keywords, hintOn)}</span>
-          </div>
-        `).join('')}
+/* =========================================================
+   CREATE LEVEL
+========================================================= */
+
+function createLevel(data, levelIndex){
+
+  const menuClass =
+    `count-${data.menu.length}`;
+
+  const menuHTML =
+    data.menu.map(item => `
+
+      <div class="menu-item">
+
+        ${promoHTML(item[3])}
+
+        <div class="menu-icon">
+          ${item[0]}
+        </div>
+
+        <div class="menu-name">
+          ${item[1]}
+        </div>
+
+        <div class="menu-price">
+          NT$${item[2]}
+        </div>
+
       </div>
-    </div>
-  `;
-}
 
-function getScore(ws){
-  const selected = state[ws.code].selected;
-  let score = 0;
-  ws.questions.forEach((q, idx)=>{
-    if(selected[idx] === q.answer) score++;
-  });
-  return score;
-}
+    `).join("");
 
-function renderQuestion(ws, q, idx){
-  const secState = state[ws.code];
-  const selected = secState.selected[idx];
-  const showAnswers = secState.showAnswers;
-  const graded = secState.grading !== null;
-  const hintOn = secState.hintOn;
+  const dialogueHTML =
+    data.dialogue.map(line => `
 
-  let slotText = "( )";
-  let slotClass = "";
+      <div class="dialogue-line">
 
-  if(showAnswers){
-    slotText = `(${q.answer})`;
-    slotClass = "answer";
-  }else if(selected){
-    slotText = `(${selected})`;
-    slotClass = "selected";
-  }
+        <div class="speaker">
+          ${line[0]}:
+        </div>
 
-  const letters = ["A","B","C","D"];
+        <div class="speech">
 
-  return `
-    <div class="question ${hintOn ? 'hint-on':''}">
-      <div class="q-stem">
-        <span class="q-slot ${slotClass}">${slotText}</span>
-        <span class="stem-text">${idx+1}. ${markKeywords(q.stem, ws.keywords, hintOn)}</span>
-      </div>
-      <div class="choices">
-        ${letters.map(letter => {
-          const text = q.options[letter];
-          let cls = "choice";
-          if(!showAnswers && selected === letter) cls += " selected";
-          if(showAnswers && q.answer === letter) cls += " reveal";
-          if(graded){
-            if(letter === q.answer) cls += " correct";
-            if(selected === letter && selected !== q.answer) cls += " wrong";
+          ${
+            highlightText(
+              line[1],
+              data.hints
+            )
           }
-          return `
-            <button type="button" class="${cls}" onclick="selectChoice('${ws.code}', ${idx}, '${letter}')">
-              <span class="choice-text">(${letter}) ${markKeywords(text, ws.keywords, hintOn)}</span>
-            </button>
-          `;
-        }).join('')}
-      </div>
-    </div>
-  `;
-}
 
-function renderQuestions(ws){
-  const secState = state[ws.code];
-  const scoreHTML = secState.grading !== null
-    ? `<span class="score-text">${secState.grading} / ${ws.questions.length}</span>`
-    : "";
+        </div>
 
-  return `
-    <div class="questions-panel">
-      <div class="q-head">
-        <div class="q-head-left">
-          <span class="q-head-title">Questions</span>
-          ${scoreHTML}
-        </div>
-        <div class="q-controls">
-          <button type="button" class="mini-btn ${secState.hintOn ? 'hint-active' : ''}" onclick="toggleHint('${ws.code}')">提示</button>
-          <button type="button" class="mini-btn" onclick="gradeSection('${ws.code}')">批改</button>
-          <button type="button" class="mini-btn" onclick="clearSection('${ws.code}')">清除</button>
-          <button type="button" class="mini-btn" onclick="showAnswers('${ws.code}')">解答</button>
-        </div>
-      </div>
-      ${ws.questions.map((q, idx)=>renderQuestion(ws, q, idx)).join('')}
-    </div>
-  `;
-}
-
-function renderSection(ws){
-  return `
-    <section class="half-sheet">
-      <div class="section-header">
-        <div>
-          <span class="section-title">生活英文｜服飾店閱讀測驗 ${ws.code}</span>
-          <span class="title-sub">${ws.subtitle}</span>
-        </div>
-        <div class="student-line">
-          <span>班級：</span><span class="line-slot"></span>
-          <span>姓名：</span><span class="line-slot"></span>
-        </div>
       </div>
 
-      <div class="content-grid">
-        <div>
-          <div class="menu-box">
-            <div class="menu-title">CLOTHES SHOP</div>
-            <div class="menu-grid cols-${ws.menuCols}">
-              ${ws.items.map(renderItemCard).join('')}
-            </div>
+    `).join("");
+
+  const questionsHTML =
+    data.questions.map(
+      (q,qIndex) => `
+
+      <div class="question">
+
+        <div class="q-row">
+
+          <div class="answer-slot">
+
+            （<span
+              class="answer-letter"
+              id="answer-${levelIndex}-${qIndex}"
+            ></span>）
+
           </div>
-          ${renderDialogue(ws)}
+
+          <div class="q-text">
+
+            ${qIndex+1}.
+
+            ${
+              highlightText(
+                q.stem,
+                data.hints
+              )
+            }
+
+          </div>
+
         </div>
 
-        <div>
-          ${renderQuestions(ws)}
+        <div class="options">
+
+          ${
+            q.options.map(
+              (option,optIndex) => `
+
+              <div
+                class="option"
+
+                data-level="${levelIndex}"
+                data-q="${qIndex}"
+                data-opt="${optIndex}"
+
+                onclick="
+                  chooseAnswer(
+                    ${levelIndex},
+                    ${qIndex},
+                    ${optIndex},
+                    this
+                  )
+                "
+              >
+
+                <span class="option-inner">
+
+                  (${String.fromCharCode(65+optIndex)})
+                  ${
+                    highlightText(
+                      option,
+                      data.hints
+                    )
+                  }
+
+                </span>
+
+              </div>
+
+            `).join("")
+          }
+
         </div>
+
       </div>
+
+    `).join("");
+
+  return `
+
+    <section
+      class="level-block"
+      id="level-${levelIndex}"
+    >
+
+      <div class="level-header">
+
+        <h1 class="level-title">
+          生活英文｜服飾店閱讀測驗 ${data.code}
+        </h1>
+
+        <div class="student-info">
+
+          <span>
+            班級：
+          </span>
+
+          <span class="info-line"></span>
+
+          <span>
+            姓名：
+          </span>
+
+          <span class="info-line name-line"></span>
+
+        </div>
+
+      </div>
+
+      <div class="level-content">
+
+        <div class="left-side">
+
+          <section class="menu-box">
+
+            <div class="menu-title">
+              CLOTHES SHOP
+            </div>
+
+            <div
+              class="
+                menu-grid
+                ${menuClass}
+              "
+            >
+              ${menuHTML}
+            </div>
+
+          </section>
+
+          <section class="dialogue-section">
+
+            <div class="dialogue-title">
+              Dialogue
+            </div>
+
+            <div
+              class="
+                dialogue-content
+                ${
+                  data.dialogue.length >= 7
+                  ? "long-dialogue"
+                  : ""
+                }
+              "
+            >
+              ${dialogueHTML}
+            </div>
+
+          </section>
+
+        </div>
+
+        <section class="right-side">
+
+          <div class="question-head">
+
+            <div class="question-title-wrap">
+
+              <h2 class="question-title">
+                Questions
+              </h2>
+
+              <div
+                class="score"
+                id="score-${levelIndex}"
+              ></div>
+
+            </div>
+
+            <div class="tools">
+
+              <button
+                onclick="
+                  toggleHint(
+                    ${levelIndex},
+                    this
+                  )
+                "
+              >
+                提示
+              </button>
+
+              <button
+                onclick="
+                  gradeLevel(
+                    ${levelIndex}
+                  )
+                "
+              >
+                批改
+              </button>
+
+              <button
+                onclick="
+                  clearLevel(
+                    ${levelIndex}
+                  )
+                "
+              >
+                清除
+              </button>
+
+              <button
+                onclick="
+                  showAnswers(
+                    ${levelIndex}
+                  )
+                "
+              >
+                解答
+              </button>
+
+            </div>
+
+          </div>
+
+          <div class="questions">
+            ${questionsHTML}
+          </div>
+
+        </section>
+
+      </div>
+
     </section>
+
   `;
 }
 
-function renderAll(){
-  const pagesEl = document.getElementById("pages");
-  let html = "";
+/* =========================================================
+   RENDER
+========================================================= */
 
-  for(let i=0; i<worksheets.length; i+=2){
-    html += `<div class="a4-page">`;
-    html += renderSection(worksheets[i]);
-    if(worksheets[i+1]) html += renderSection(worksheets[i+1]);
-    html += `</div>`;
-  }
+const pageRoot =
+  document.getElementById("pages");
 
-  pagesEl.innerHTML = html;
+for(
+  let i=0;
+  i<levels.length;
+  i+=2
+){
+
+  const first =
+    createLevel(
+      levels[i],
+      i
+    );
+
+  const second =
+    createLevel(
+      levels[i+1],
+      i+1
+    );
+
+  pageRoot.insertAdjacentHTML(
+    "beforeend",
+
+    `
+
+      <section class="sheet">
+
+        ${first}
+
+        ${second}
+
+      </section>
+
+    `
+  );
+
 }
 
-function selectChoice(code, qIndex, letter){
-  state[code].selected[qIndex] = letter;
-  state[code].grading = null;
-  state[code].showAnswers = false;
-  renderAll();
+/* =========================================================
+   CHOOSE
+========================================================= */
+
+function chooseAnswer(
+  levelIndex,
+  questionIndex,
+  optionIndex,
+  element
+){
+
+  const options =
+    getOptions(
+      levelIndex,
+      questionIndex
+    );
+
+  options.forEach(el => {
+
+    el.classList.remove(
+      "selected",
+      "correct"
+    );
+
+  });
+
+  selections[levelIndex][questionIndex] =
+    optionIndex;
+
+  element.classList.add(
+    "selected"
+  );
+
+  const slot =
+    getAnswerSlot(
+      levelIndex,
+      questionIndex
+    );
+
+  slot.textContent =
+    String.fromCharCode(
+      65+optionIndex
+    );
+
+  slot.className =
+    "answer-letter";
+
+  getScore(levelIndex).textContent =
+    "";
 }
 
-function gradeSection(code){
-  const ws = worksheets.find(w => w.code === code);
-  state[code].showAnswers = false;
-  state[code].grading = getScore(ws);
-  renderAll();
+/* =========================================================
+   GRADE
+========================================================= */
+
+function gradeLevel(levelIndex){
+
+  let correctCount = 0;
+
+  levels[levelIndex]
+    .questions
+    .forEach(
+      (question,qIndex) => {
+
+        const chosen =
+          selections[levelIndex][qIndex];
+
+        const options =
+          getOptions(
+            levelIndex,
+            qIndex
+          );
+
+        const slot =
+          getAnswerSlot(
+            levelIndex,
+            qIndex
+          );
+
+        options.forEach(el => {
+
+          el.classList.remove(
+            "correct"
+          );
+
+        });
+
+        if(chosen === null){
+          return;
+        }
+
+        if(
+          chosen === question.answer
+        ){
+
+          correctCount++;
+
+          options[chosen]
+            .classList
+            .remove("selected");
+
+          options[chosen]
+            .classList
+            .add("correct");
+
+          slot.textContent =
+            String.fromCharCode(
+              65+chosen
+            );
+
+          slot.className =
+            "answer-letter correct";
+
+        }
+
+        else{
+
+          options[chosen]
+            .classList
+            .remove(
+              "selected",
+              "correct"
+            );
+
+          selections[levelIndex][qIndex] =
+            null;
+
+          slot.textContent =
+            "";
+
+          slot.className =
+            "answer-letter";
+
+        }
+
+      }
+    );
+
+  getScore(levelIndex).textContent =
+    `${correctCount} / 5`;
 }
 
-function clearSection(code){
-  state[code].selected = {};
-  state[code].grading = null;
-  state[code].showAnswers = false;
-  renderAll();
+/* =========================================================
+   CLEAR
+========================================================= */
+
+function clearLevel(levelIndex){
+
+  selections[levelIndex].fill(null);
+
+  levels[levelIndex]
+    .questions
+    .forEach(
+      (_,qIndex) => {
+
+        const options =
+          getOptions(
+            levelIndex,
+            qIndex
+          );
+
+        options.forEach(el => {
+
+          el.classList.remove(
+            "selected",
+            "correct"
+          );
+
+        });
+
+        const slot =
+          getAnswerSlot(
+            levelIndex,
+            qIndex
+          );
+
+        slot.textContent =
+          "";
+
+        slot.className =
+          "answer-letter";
+
+      }
+    );
+
+  getScore(levelIndex).textContent =
+    "";
 }
 
-function showAnswers(code){
-  state[code].showAnswers = true;
-  state[code].grading = null;
-  renderAll();
+/* =========================================================
+   ANSWERS
+========================================================= */
+
+function showAnswers(levelIndex){
+
+  levels[levelIndex]
+    .questions
+    .forEach(
+      (question,qIndex) => {
+
+        const options =
+          getOptions(
+            levelIndex,
+            qIndex
+          );
+
+        options.forEach(el => {
+
+          el.classList.remove(
+            "selected",
+            "correct"
+          );
+
+        });
+
+        const slot =
+          getAnswerSlot(
+            levelIndex,
+            qIndex
+          );
+
+        slot.textContent =
+          String.fromCharCode(
+            65+question.answer
+          );
+
+        slot.className =
+          "answer-letter solution";
+
+      }
+    );
+
+  getScore(levelIndex).textContent =
+    "";
 }
 
-function toggleHint(code){
-  state[code].hintOn = !state[code].hintOn;
-  renderAll();
+/* =========================================================
+   HINT
+========================================================= */
+
+function toggleHint(
+  levelIndex,
+  button
+){
+
+  hintStates[levelIndex] =
+    !hintStates[levelIndex];
+
+  const block =
+    document.getElementById(
+      `level-${levelIndex}`
+    );
+
+  block.classList.toggle(
+    "hint-on",
+    hintStates[levelIndex]
+  );
+
+  button.classList.toggle(
+    "active",
+    hintStates[levelIndex]
+  );
 }
 
-renderAll();
 </script>
+
 </body>
 </html>
