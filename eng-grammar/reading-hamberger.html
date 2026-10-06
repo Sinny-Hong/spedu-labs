@@ -3,62 +3,78 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>生活英文｜速食店點餐 Level 1</title>
+<title>生活英文｜速食店點餐</title>
 
 <style>
 :root{
   --navy:#0B3768;
+  --navy2:#184F82;
   --orange:#F59E0B;
-  --light-blue:#F3F7FB;
+  --blue-soft:#EDF5FC;
   --line:#D7E2EC;
-  --text:#18324A;
+  --green:#198754;
+  --green-soft:#E8F6EE;
+  --pink:#FFE4EA;
+  --red:#C62828;
+  --text:#16334F;
 }
 
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 html,body{
   margin:0;
   padding:0;
-  background:#edf3f8;
+  background:#EAF1F7;
   color:var(--text);
   font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
 }
 
 body{
-  display:flex;
-  justify-content:center;
-  padding:16px;
+  padding:18px 0 40px;
 }
 
-.page{
-  width:210mm;
-  height:297mm;
+/* ========================
+   五張 A4 橫式
+======================== */
+
+.sheet{
+  width:297mm;
+  height:210mm;
+  margin:0 auto 20px;
+  padding:8mm 9mm 8mm;
   background:#fff;
-  padding:10mm 11mm 9mm;
   overflow:hidden;
-  box-shadow:0 4px 20px rgba(0,0,0,.12);
+  box-shadow:0 6px 20px rgba(0,0,0,.12);
+  page-break-after:always;
 }
 
-/* ---------- 標題 ---------- */
+.sheet:last-child{
+  page-break-after:auto;
+}
 
-.header{
+/* ========================
+   每頁標題
+======================== */
+
+.page-header{
+  height:18mm;
   display:flex;
-  justify-content:space-between;
   align-items:flex-end;
-  margin-bottom:4mm;
+  justify-content:space-between;
+  gap:10mm;
+  border-bottom:2px solid var(--navy);
+  padding-bottom:3mm;
+  margin-bottom:5mm;
 }
 
-.title-group h1{
+.heading h1{
   margin:0;
   color:var(--navy);
-  font-size:21pt;
-  line-height:1.05;
-  font-weight:900;
+  font-size:22pt;
+  line-height:1;
 }
 
-.title-group .sub{
+.heading .sub{
   margin-top:2mm;
   color:var(--orange);
   font-size:11pt;
@@ -66,11 +82,30 @@ body{
 }
 
 .student-info{
-  font-size:10.5pt;
   white-space:nowrap;
+  font-size:10.5pt;
 }
 
-/* ---------- 菜單 ---------- */
+/* ========================
+   左右兩欄
+======================== */
+
+.page-body{
+  display:grid;
+  grid-template-columns:55% 45%;
+  gap:6mm;
+  height:calc(100% - 23mm);
+}
+
+.source-panel,
+.question-panel{
+  min-width:0;
+  height:100%;
+}
+
+/* ========================
+   MENU
+======================== */
 
 .menu-box{
   border:2px solid var(--navy);
@@ -80,43 +115,41 @@ body{
 }
 
 .menu-title{
-  padding:2.5mm 4mm;
   background:var(--navy);
   color:#fff;
+  text-align:center;
   font-size:13pt;
   font-weight:900;
-  text-align:center;
+  padding:2.3mm;
 }
 
 .menu-grid{
   display:grid;
-  grid-template-columns:repeat(5,1fr);
   background:#fff;
 }
 
+.cols-5{grid-template-columns:repeat(5,1fr)}
+.cols-4{grid-template-columns:repeat(4,1fr)}
+.cols-3{grid-template-columns:repeat(3,1fr)}
+
 .menu-item{
-  min-height:33mm;
-  padding:2.2mm 1.5mm;
+  min-height:29mm;
+  padding:2mm 1mm;
+  text-align:center;
   border-right:1px solid var(--line);
   border-bottom:1px solid var(--line);
-  text-align:center;
 }
 
 .menu-item:nth-child(5n){
   border-right:0;
 }
 
-.menu-item:nth-child(n+6){
-  border-bottom:0;
-}
-
 .icon{
-  height:14mm;
+  height:11mm;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:26pt;
-  line-height:1;
+  font-size:23pt;
 }
 
 .food-name{
@@ -125,117 +158,259 @@ body{
   font-family:"Comic Sans MS","Comic Sans",cursive;
   font-size:10.5pt;
   font-weight:700;
-  line-height:1.1;
+  line-height:1.05;
 }
 
 .price{
-  margin-top:.7mm;
+  margin-top:1mm;
   color:#111;
-  font-size:13pt;
+  font-size:12pt;
   font-weight:900;
 }
 
-/* ---------- 對話＋題目 ---------- */
-
-.content{
-  display:grid;
-  grid-template-columns:42% 58%;
-  gap:5mm;
-  align-items:start;
+/* Level 高時菜單再壓縮 */
+.compact .menu-item{
+  min-height:25mm;
 }
 
-.section-title{
-  margin:0 0 2mm;
+.compact .icon{
+  height:9mm;
+  font-size:20pt;
+}
+
+.compact .food-name{
+  font-size:9.5pt;
+}
+
+.compact .price{
+  font-size:11pt;
+}
+
+/* ========================
+   Dialogue
+======================== */
+
+.dialogue-title,
+.question-title{
   color:var(--navy);
   font-size:14pt;
   font-weight:900;
 }
 
+.dialogue-title{
+  margin:1mm 0 2mm;
+}
+
 .dialogue-box{
   border:1.5px solid var(--line);
+  background:#FBFDFF;
   border-radius:4mm;
-  padding:4mm;
-  background:#fbfdff;
+  padding:4mm 4mm 3mm;
 }
 
-.dialogue{
+/* 人名固定一欄，正文一欄
+   換行自然跟正文對齊 */
+.dialogue-line{
+  display:grid;
+  grid-template-columns:max-content 1fr;
+  column-gap:2mm;
+  align-items:start;
+  margin-bottom:2.1mm;
   font-family:"Comic Sans MS","Comic Sans",cursive;
-  font-size:12.5pt;
-  line-height:1.55;
+  font-size:11.5pt;
+  line-height:1.45;
 }
 
-.dialogue p{
-  margin:0 0 2.4mm;
-}
-
-.dialogue p:last-child{
+.dialogue-line:last-child{
   margin-bottom:0;
 }
+
+.speaker{
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.speech{
+  min-width:0;
+}
+
+/* Level 4/5 長文稍縮 */
+.dialogue-long .dialogue-line{
+  font-size:10.4pt;
+  line-height:1.35;
+  margin-bottom:1.5mm;
+}
+
+/* ========================
+   Questions 標題列
+======================== */
+
+.question-head{
+  min-height:12mm;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:4mm;
+  padding:0 0 2mm;
+  margin-bottom:2mm;
+  border-bottom:2px solid var(--navy);
+}
+
+.question-title{
+  margin:0;
+}
+
+.tools{
+  display:flex;
+  gap:2mm;
+}
+
+.tools button{
+  border:1.5px solid #BCD0E2;
+  border-radius:8px;
+  background:#fff;
+  color:var(--navy);
+  padding:1.5mm 3mm;
+  font-size:9pt;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.tools button:hover{
+  border-color:var(--orange);
+}
+
+/* ========================
+   Questions
+======================== */
 
 .questions{
+  height:calc(100% - 14mm);
+  overflow:hidden;
   font-family:"Comic Sans MS","Comic Sans",cursive;
 }
 
-.q{
+.question{
   margin-bottom:3mm;
-  page-break-inside:avoid;
 }
 
-.q:last-child{
-  margin-bottom:0;
+.q-stem{
+  display:flex;
+  gap:2mm;
+  font-size:11pt;
+  line-height:1.3;
+  font-weight:800;
 }
 
-.q-text{
-  font-size:11.5pt;
-  line-height:1.35;
-  font-weight:700;
+.q-num{
+  flex:0 0 auto;
 }
 
 .options{
-  margin-top:1.2mm;
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:.7mm 3mm;
-  padding-left:5mm;
-  font-size:10.5pt;
-  line-height:1.25;
+  gap:1.2mm 2.5mm;
+  margin-top:1.4mm;
+  padding-left:7mm;
 }
 
-/* ---------- 列印 ---------- */
+.option{
+  border:1.3px solid transparent;
+  border-radius:7px;
+  padding:1.2mm 2mm;
+  font-size:10.1pt;
+  line-height:1.25;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.option:hover{
+  background:var(--blue-soft);
+}
+
+/* 點選 */
+.option.selected{
+  background:#E6F1FC;
+  border-color:#3A82C4;
+  color:var(--navy);
+  font-weight:800;
+}
+
+/* 批改正確 */
+.option.correct{
+  background:var(--green-soft);
+  border-color:var(--green);
+  color:var(--green);
+  font-weight:900;
+}
+
+/* 顯示答案 */
+.option.answer-show{
+  background:var(--pink);
+  border-color:#F4A1B2;
+  color:var(--red);
+  font-weight:900;
+}
+
+/* ========================
+   較長題目
+======================== */
+
+.dense .question{
+  margin-bottom:2.1mm;
+}
+
+.dense .q-stem{
+  font-size:10.3pt;
+}
+
+.dense .option{
+  font-size:9.4pt;
+  padding:1mm 1.6mm;
+}
+
+/* ========================
+   Print
+======================== */
 
 @page{
-  size:A4 portrait;
+  size:A4 landscape;
   margin:0;
 }
 
 @media print{
+
   html,body{
-    width:210mm;
-    height:297mm;
-    background:#fff;
-    padding:0;
+    width:297mm;
     margin:0;
+    padding:0;
+    background:#fff;
   }
 
-  .page{
-    box-shadow:none;
+  body{
+    padding:0;
+  }
+
+  .sheet{
+    width:297mm;
+    height:210mm;
     margin:0;
-    width:210mm;
-    height:297mm;
-    page-break-after:avoid;
-    page-break-inside:avoid;
+    box-shadow:none;
+  }
+
+  .tools{
+    display:none !important;
   }
 }
 
-/* 手機只做縮放預覽 */
-@media screen and (max-width:800px){
+/* 手機只做預覽，不特別重排 */
+@media screen and (max-width:900px){
   body{
-    padding:0;
     overflow-x:auto;
   }
 
-  .page{
-    transform-origin:top left;
+  .sheet{
+    margin-left:0;
   }
 }
 </style>
@@ -243,180 +418,573 @@ body{
 
 <body>
 
-<div class="page">
+<div id="pages"></div>
 
-  <!-- 標題 -->
-  <div class="header">
-    <div class="title-group">
-      <h1>生活英文｜速食店點餐</h1>
-      <div class="sub">Fast Food Menu · Level 1</div>
+<script>
+
+/* =====================================================
+   五頁固定資料
+   第一版先完全不亂數
+===================================================== */
+
+const levels = [
+
+/* ================= LEVEL 1 ================= */
+
+{
+  level:1,
+  menu:[
+    ["🥩","Steak",25],
+    ["🥗","Salad",6],
+    ["🍟","French Fries",5],
+    ["🥣","Bean Soup",5],
+    ["☕","Coffee",4],
+    ["🍗","Fried Chicken",12],
+    ["🍕","Pizza",18],
+    ["🍔","Hamburger",8],
+    ["🥣","Vegetable Soup",5],
+    ["🍵","Tea",4]
+  ],
+
+  dialogue:[
+    ["Tom","I am hungry. I want a plate of Steak."],
+    ["Lily","I want a bowl of Salad."],
+    ["Tom","Do you want a drink?"],
+    ["Lily","Yes, I want a cup of Tea."],
+    ["Tom","OK! Let's order."]
+  ],
+
+  questions:[
+    {
+      stem:"What does Tom want to eat?",
+      options:[
+        "A bowl of Salad",
+        "A plate of Steak",
+        "A Hamburger",
+        "A Ham Sandwich"
+      ],
+      answer:1
+    },
+    {
+      stem:"How much is Lily's Salad?",
+      options:["$4","$5","$6","$7"],
+      answer:2
+    },
+    {
+      stem:"What does Lily want to drink?",
+      options:[
+        "A cup of Tea",
+        "A cup of Coffee",
+        "A bowl of Soup",
+        "A glass of water"
+      ],
+      answer:0
+    },
+    {
+      stem:"How much is Lily's total order (Salad + Tea)?",
+      options:["$9","$10","$11","$12"],
+      answer:1
+    }
+  ]
+},
+
+/* ================= LEVEL 2 ================= */
+
+{
+  level:2,
+  menu:[
+    ["🍔","Hamburger",8],
+    ["🌭","Hot Dog",5],
+    ["🥪","Ham Sandwich",6],
+    ["🍕","Pizza",18],
+    ["🍟","French Fries",5],
+    ["🥗","Salad",6],
+    ["☕","Coffee",4],
+    ["🍵","Tea",4]
+  ],
+
+  dialogue:[
+    ["Sam","What do you want for lunch?"],
+    ["Amy","I want a Hamburger."],
+    ["Sam","I want a Ham Sandwich."],
+    ["Amy","I am thirsty. I want a cup of Tea."],
+    ["Sam","OK. One Hamburger, one Ham Sandwich, and one Tea."]
+  ],
+
+  questions:[
+    {
+      stem:"What does Sam order?",
+      options:[
+        "A Hamburger",
+        "A Ham Sandwich",
+        "A Hot Dog",
+        "A Pizza"
+      ],
+      answer:1
+    },
+    {
+      stem:"Who wants to drink Tea?",
+      options:["Sam","Amy","Tom","Lily"],
+      answer:1
+    },
+    {
+      stem:"How much is Amy's Hamburger?",
+      options:["$5","$6","$8","$10"],
+      answer:2
+    },
+    {
+      stem:"How much is Sam's Ham Sandwich?",
+      options:["$4","$5","$6","$8"],
+      answer:2
+    }
+  ]
+},
+
+/* ================= LEVEL 3 ================= */
+
+{
+  level:3,
+  menu:[
+    ["🍗","Fried Chicken",12],
+    ["🍔","Hamburger",8],
+    ["🥣","Bean Soup",5],
+    ["🍟","French Fries",5],
+    ["☕","Coffee",4],
+    ["🍵","Tea",4],
+    ["🍪","Cookies",3],
+    ["🍨","Ice Cream",4]
+  ],
+
+  dialogue:[
+    ["Ben","I want Fried Chicken and Bean Soup."],
+    ["Kevin","I want a Hamburger."],
+    ["Amy","I am not hungry. I only want a cup of Coffee."],
+    ["Ben","Kevin, do you want a drink?"],
+    ["Kevin","Yes, I want a cup of Tea."],
+    ["Amy","Let's also have some Cookies."],
+    ["Ben","Good idea!"]
+  ],
+
+  questions:[
+    {
+      stem:"What does Ben want to eat?",
+      options:[
+        "Hamburger and Tea",
+        "Fried Chicken and Bean Soup",
+        "Cookies and Coffee",
+        "French Fries and Soup"
+      ],
+      answer:1
+    },
+    {
+      stem:"How many people order a drink?",
+      options:["One","Two","Three","Four"],
+      answer:1
+    },
+    {
+      stem:"What snack do they share?",
+      options:["Cookies","Ice Cream","Salad","French Fries"],
+      answer:0
+    },
+    {
+      stem:"How much is Ben's order (Fried Chicken + Bean Soup)?",
+      options:["$15","$16","$17","$18"],
+      answer:2
+    }
+  ]
+},
+
+/* ================= LEVEL 4 ================= */
+
+{
+  level:4,
+  menu:[
+    ["🍔","Hamburger",8],
+    ["🍕","Pizza",18],
+    ["🍟","French Fries",5],
+    ["🥣","Vegetable Soup",5],
+    ["🍵","Tea",4],
+    ["☕","Coffee",4]
+  ],
+
+  dialogue:[
+    ["Dad","It is your birthday. I will pay today!"],
+    ["Son","Wow! I want a Hamburger and a cup of Tea."],
+    ["Daughter","I want a Pizza and French Fries."],
+    ["Dad","I only want a bowl of Vegetable Soup."],
+    ["Son","Thank you, Dad!"],
+    ["Dad","You are welcome."]
+  ],
+
+  questions:[
+    {
+      stem:"Who pays for the food today?",
+      options:["Dad","Son","Daughter","The clerk"],
+      answer:0
+    },
+    {
+      stem:"How much is the Hamburger?",
+      options:["$4","$5","$8","$18"],
+      answer:2
+    },
+    {
+      stem:"What does the Daughter want to eat?",
+      options:[
+        "Pizza and French Fries",
+        "Hamburger and Tea",
+        "Soup and Coffee",
+        "Pizza and Soup"
+      ],
+      answer:0
+    },
+    {
+      stem:"How much does Dad need to pay for everyone?",
+      options:["$35","$40","$45","$50"],
+      answer:1
+    }
+  ]
+},
+
+/* ================= LEVEL 5 ================= */
+
+{
+  level:5,
+
+  /* 文本長，只留一排 5 項 */
+  menu:[
+    ["🍵","Tea",6],
+    ["🍔","Hamburger",8],
+    ["🍕","Pizza",18],
+    ["🥣","Bean Soup",5],
+    ["🥪","Ham Sandwich",6]
+  ],
+
+  dialogue:[
+    ["Tom","Look! The Tea is Buy 1 Get 1 Free."],
+    ["Amy","Great! I want a cup of Tea."],
+    ["Ben","I want a cup of Tea, too."],
+    ["Tom","OK, so we only pay $6 for two cups of Tea."],
+    ["Amy","I also want a Hamburger."],
+    ["Ben","I want a Pizza and Bean Soup."],
+    ["Tom","I want a Ham Sandwich."],
+    ["Amy","Are we finished?"],
+    ["Ben","Yes, let's go."]
+  ],
+
+  questions:[
+    {
+      stem:"How much is one Tea if they buy two today?",
+      options:["$2","$3","$4","$6"],
+      answer:1
+    },
+    {
+      stem:"What does Ben order?",
+      options:[
+        "Tea, Pizza, and Bean Soup",
+        "Tea and Hamburger",
+        "Tea and Ham Sandwich",
+        "Pizza and Coffee"
+      ],
+      answer:0
+    },
+    {
+      stem:"How much is Amy's Hamburger?",
+      options:["$5","$6","$8","$10"],
+      answer:2
+    },
+    {
+      stem:"What is the total price for all three people?",
+      options:["$37","$40","$43","$45"],
+      answer:2
+    }
+  ]
+}
+
+];
+
+
+/* =====================================================
+   Render
+===================================================== */
+
+const pageRoot = document.getElementById("pages");
+
+levels.forEach((data,pageIndex)=>{
+
+  const compactMenu = data.menu.length <= 6;
+
+  const menuCols =
+    data.menu.length <= 5 ? "cols-5" :
+    data.menu.length <= 8 ? "cols-4" :
+    "cols-5";
+
+  const menuHTML = data.menu.map(item=>`
+    <div class="menu-item">
+      <div class="icon">${item[0]}</div>
+      <div class="food-name">${item[1]}</div>
+      <div class="price">$${item[2]}</div>
+    </div>
+  `).join("");
+
+  const dialogueHTML = data.dialogue.map(line=>`
+    <div class="dialogue-line">
+      <div class="speaker">${line[0]}:</div>
+      <div class="speech">${line[1]}</div>
+    </div>
+  `).join("");
+
+  const questionsHTML = data.questions.map((q,qIndex)=>`
+
+    <div class="question">
+
+      <div class="q-stem">
+        <span class="q-num">（　）${qIndex+1}.</span>
+        <span>${q.stem}</span>
+      </div>
+
+      <div class="options">
+
+        ${q.options.map((opt,optIndex)=>`
+          <div
+            class="option"
+            data-page="${pageIndex}"
+            data-q="${qIndex}"
+            data-opt="${optIndex}"
+            onclick="chooseAnswer(${pageIndex},${qIndex},${optIndex},this)"
+          >
+            (${String.fromCharCode(65+optIndex)}) ${opt}
+          </div>
+        `).join("")}
+
+      </div>
+
     </div>
 
-    <div class="student-info">
-      班級 ______　姓名 __________
-    </div>
-  </div>
+  `).join("");
+
+  pageRoot.insertAdjacentHTML("beforeend",`
+
+    <section class="sheet">
+
+      <header class="page-header">
+
+        <div class="heading">
+          <h1>生活英文｜速食店點餐</h1>
+          <div class="sub">
+            Fast Food Menu ・ Level ${data.level}
+          </div>
+        </div>
+
+        <div class="student-info">
+          班級 ______　姓名 __________
+        </div>
+
+      </header>
 
 
-  <!-- 菜單 -->
-  <section class="menu-box">
+      <div class="page-body">
 
-    <div class="menu-title">
-      TODAY'S MENU
-    </div>
+        <!-- LEFT -->
+        <div class="source-panel">
 
-    <div class="menu-grid">
+          <div class="menu-box ${compactMenu ? "compact" : ""}">
 
-      <div class="menu-item">
-        <div class="icon">🥩</div>
-        <div class="food-name">Steak</div>
-        <div class="price">$25</div>
-      </div>
+            <div class="menu-title">
+              TODAY'S MENU
+            </div>
 
-      <div class="menu-item">
-        <div class="icon">🥗</div>
-        <div class="food-name">Salad</div>
-        <div class="price">$6</div>
-      </div>
+            <div class="menu-grid ${menuCols}">
+              ${menuHTML}
+            </div>
 
-      <div class="menu-item">
-        <div class="icon">🍟</div>
-        <div class="food-name">French Fries</div>
-        <div class="price">$5</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="icon">🥣</div>
-        <div class="food-name">Bean Soup</div>
-        <div class="price">$5</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="icon">☕</div>
-        <div class="food-name">Coffee</div>
-        <div class="price">$4</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="icon">🍗</div>
-        <div class="food-name">Fried Chicken</div>
-        <div class="price">$12</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="icon">🍕</div>
-        <div class="food-name">Pizza</div>
-        <div class="price">$18</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="icon">🍔</div>
-        <div class="food-name">Hamburger</div>
-        <div class="price">$8</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="icon">🥣</div>
-        <div class="food-name">Vegetable Soup</div>
-        <div class="price">$5</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="icon">🍵</div>
-        <div class="food-name">Tea</div>
-        <div class="price">$4</div>
-      </div>
-
-    </div>
-  </section>
+          </div>
 
 
-  <!-- 下半部 -->
-  <div class="content">
+          <div class="dialogue-title">
+            Dialogue
+          </div>
 
-    <!-- 對話 -->
-    <section>
-      <h2 class="section-title">Dialogue</h2>
-
-      <div class="dialogue-box">
-        <div class="dialogue">
-
-          <p><b>Tom:</b> I am hungry. I want a plate of Steak.</p>
-
-          <p><b>Lily:</b> I want a bowl of Salad.</p>
-
-          <p><b>Tom:</b> Do you want a drink?</p>
-
-          <p><b>Lily:</b> Yes, I want a cup of Tea.</p>
-
-          <p><b>Tom:</b> OK! Let's order.</p>
+          <div class="
+            dialogue-box
+            ${data.level >= 4 ? "dialogue-long" : ""}
+          ">
+            ${dialogueHTML}
+          </div>
 
         </div>
+
+
+        <!-- RIGHT -->
+        <div class="question-panel">
+
+          <div class="question-head">
+
+            <h2 class="question-title">
+              Questions
+            </h2>
+
+            <div class="tools">
+
+              <button
+                onclick="gradePage(${pageIndex})"
+              >
+                批改
+              </button>
+
+              <button
+                onclick="clearPage(${pageIndex})"
+              >
+                清除
+              </button>
+
+              <button
+                onclick="showAnswers(${pageIndex})"
+              >
+                解答
+              </button>
+
+            </div>
+
+          </div>
+
+          <div class="
+            questions
+            ${data.level >= 4 ? "dense" : ""}
+          ">
+            ${questionsHTML}
+          </div>
+
+        </div>
+
       </div>
+
     </section>
 
+  `);
 
-    <!-- 題目 -->
-    <section>
-      <h2 class="section-title">Questions</h2>
+});
 
-      <div class="questions">
 
-        <div class="q">
-          <div class="q-text">
-            （　）1. What does Tom want to eat?
-          </div>
-          <div class="options">
-            <div>(A) A bowl of Salad</div>
-            <div>(B) A plate of Steak</div>
-            <div>(C) A Hamburger</div>
-            <div>(D) A Ham Sandwich</div>
-          </div>
-        </div>
+/* =====================================================
+   Answer state
+===================================================== */
 
-        <div class="q">
-          <div class="q-text">
-            （　）2. How much is Lily's Salad?
-          </div>
-          <div class="options">
-            <div>(A) $4</div>
-            <div>(B) $5</div>
-            <div>(C) $6</div>
-            <div>(D) $7</div>
-          </div>
-        </div>
+const selections = levels.map(level =>
+  Array(level.questions.length).fill(null)
+);
 
-        <div class="q">
-          <div class="q-text">
-            （　）3. What does Lily want to drink?
-          </div>
-          <div class="options">
-            <div>(A) A cup of Tea</div>
-            <div>(B) A cup of Coffee</div>
-            <div>(C) A bowl of Soup</div>
-            <div>(D) A glass of water</div>
-          </div>
-        </div>
 
-        <div class="q">
-          <div class="q-text">
-            （　）4. How much is Lily's total order
-            (Salad + Tea)?
-          </div>
-          <div class="options">
-            <div>(A) $9</div>
-            <div>(B) $10</div>
-            <div>(C) $11</div>
-            <div>(D) $12</div>
-          </div>
-        </div>
+/* 點選：藍色 */
+function chooseAnswer(page,q,opt,el){
 
-      </div>
-    </section>
+  const pageOptions = document.querySelectorAll(
+    `.option[data-page="${page}"][data-q="${q}"]`
+  );
 
-  </div>
+  pageOptions.forEach(x=>{
+    x.classList.remove(
+      "selected",
+      "correct",
+      "answer-show"
+    );
+  });
 
-</div>
+  selections[page][q] = opt;
+
+  el.classList.add("selected");
+}
+
+
+/* =====================================================
+   批改
+   正確：綠色
+   錯誤：清除，讓學生重答
+===================================================== */
+
+function gradePage(page){
+
+  levels[page].questions.forEach((q,qIndex)=>{
+
+    const chosen = selections[page][qIndex];
+
+    const options = document.querySelectorAll(
+      `.option[data-page="${page}"][data-q="${qIndex}"]`
+    );
+
+    options.forEach(x=>{
+      x.classList.remove(
+        "correct",
+        "answer-show"
+      );
+    });
+
+    if(chosen === null) return;
+
+    if(chosen === q.answer){
+
+      options[chosen].classList.remove("selected");
+      options[chosen].classList.add("correct");
+
+    }else{
+
+      options[chosen].classList.remove("selected");
+      selections[page][qIndex] = null;
+
+    }
+
+  });
+
+}
+
+
+/* =====================================================
+   清除
+===================================================== */
+
+function clearPage(page){
+
+  selections[page].fill(null);
+
+  document.querySelectorAll(
+    `.option[data-page="${page}"]`
+  ).forEach(el=>{
+    el.classList.remove(
+      "selected",
+      "correct",
+      "answer-show"
+    );
+  });
+
+}
+
+
+/* =====================================================
+   解答：粉底紅字
+===================================================== */
+
+function showAnswers(page){
+
+  levels[page].questions.forEach((q,qIndex)=>{
+
+    const options = document.querySelectorAll(
+      `.option[data-page="${page}"][data-q="${qIndex}"]`
+    );
+
+    options.forEach(el=>{
+      el.classList.remove(
+        "selected",
+        "correct",
+        "answer-show"
+      );
+    });
+
+    options[q.answer].classList.add("answer-show");
+
+  });
+
+}
+
+</script>
 
 </body>
 </html>
