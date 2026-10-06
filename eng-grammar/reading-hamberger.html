@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>生活英文｜速食店點餐 A卷</title>
+<title>生活英文｜速食店閱讀測驗</title>
 
 <style>
 :root{
@@ -13,7 +13,7 @@
 
   --page-bg:#EAF1F7;
   --soft:#F3F7FB;
-  --line:#D5E2EC;
+  --line:#D6E2EC;
   --text:#173552;
 
   --blue:#2879BA;
@@ -27,6 +27,10 @@
   --hint:#FFF0A6;
   --hint-line:#F1C44A;
 }
+
+/* =========================================================
+   BASIC
+========================================================= */
 
 *{
   box-sizing:border-box;
@@ -56,22 +60,59 @@ button{
 }
 
 /* =========================================================
-   A4 LANDSCAPE
+   GLOBAL PRINT BUTTON
+========================================================= */
+
+.global-tools{
+  position:fixed;
+
+  right:16px;
+  top:16px;
+
+  z-index:1000;
+}
+
+.global-tools button{
+  padding:10px 16px;
+
+  border:1px solid #C8D5E0;
+  border-radius:12px;
+
+  background:white;
+  color:var(--navy);
+
+  font-weight:900;
+
+  box-shadow:
+    0 3px 12px rgba(0,0,0,.14);
+
+  cursor:pointer;
+}
+
+/* =========================================================
+   A4 PORTRAIT
 ========================================================= */
 
 .sheet{
-  width:297mm;
-  height:210mm;
+  width:210mm;
+  height:297mm;
 
   margin:0 auto 18px;
-  padding:7mm 8mm;
 
-  overflow:hidden;
+  padding:7mm 8mm;
 
   background:#fff;
 
   box-shadow:
     0 5px 18px rgba(0,0,0,.12);
+
+  overflow:hidden;
+
+  display:grid;
+
+  grid-template-rows:1fr 1fr;
+
+  gap:5mm;
 
   page-break-after:always;
 }
@@ -81,47 +122,47 @@ button{
 }
 
 /* =========================================================
+   HALF PAGE / ONE LEVEL
+========================================================= */
+
+.level-block{
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+
+  overflow:hidden;
+}
+
+.level-block:first-child{
+  padding-bottom:2.5mm;
+
+  border-bottom:
+    1.5px dashed #D5E0E9;
+}
+
+/* =========================================================
    HEADER
 ========================================================= */
 
-.page-header{
-  height:14mm;
+.level-header{
+  min-height:12mm;
 
   display:flex;
   align-items:center;
   justify-content:space-between;
 
-  gap:8mm;
-
-  margin-bottom:4mm;
-}
-
-.title-line{
-  display:flex;
-  align-items:baseline;
-
   gap:5mm;
 
-  min-width:0;
+  margin-bottom:2.5mm;
 }
 
-.title-line h1{
+.level-title{
   margin:0;
 
   color:var(--navy);
 
-  font-size:20pt;
-  line-height:1;
-
-  font-weight:900;
-
-  white-space:nowrap;
-}
-
-.subtitle{
-  color:var(--orange);
-
-  font-size:11pt;
+  font-size:16.5pt;
   line-height:1;
 
   font-weight:900;
@@ -130,43 +171,65 @@ button{
 }
 
 .student-info{
-  color:#33485C;
+  display:flex;
+  align-items:center;
 
-  font-size:10pt;
+  gap:3mm;
+
+  color:#273E52;
+
+  font-size:14pt;
+  font-weight:700;
 
   white-space:nowrap;
 }
 
+.info-line{
+  display:inline-block;
+
+  min-width:25mm;
+
+  height:5mm;
+
+  border-bottom:1.4px solid #647789;
+}
+
+.name-line{
+  min-width:36mm;
+}
+
 /* =========================================================
-   MAIN
+   LEVEL CONTENT
 ========================================================= */
 
-.page-body{
-  height:calc(100% - 18mm);
+.level-content{
+  flex:1;
+
+  min-height:0;
 
   display:grid;
 
-  grid-template-columns:55% 45%;
+  grid-template-columns:52% 48%;
 
-  gap:5mm;
+  gap:4mm;
 }
 
-.left-panel,
-.right-panel{
+.left-side,
+.right-side{
   min-width:0;
   min-height:0;
 }
 
 /* =========================================================
-   LEFT
+   LEFT SIDE
 ========================================================= */
 
-.left-panel{
+.left-side{
   display:grid;
 
-  grid-template-rows:86mm 1fr;
+  grid-template-rows:49mm 1fr;
 
-  gap:4mm;
+  gap:2.5mm;
 }
 
 /* =========================================================
@@ -174,18 +237,18 @@ button{
 ========================================================= */
 
 .menu-box{
-  height:86mm;
+  min-height:0;
 
   overflow:hidden;
 
-  border:1.8px solid var(--navy);
-  border-radius:4mm;
+  border:1.5px solid var(--navy);
+  border-radius:3mm;
 
-  background:#fff;
+  background:white;
 }
 
 .menu-title{
-  height:10mm;
+  height:7mm;
 
   display:flex;
   align-items:center;
@@ -193,14 +256,14 @@ button{
 
   background:var(--navy);
 
-  color:#fff;
+  color:white;
 
-  font-size:13pt;
+  font-size:10.5pt;
   font-weight:900;
 }
 
 .menu-grid{
-  height:calc(100% - 10mm);
+  height:calc(100% - 7mm);
 
   display:grid;
 }
@@ -235,7 +298,7 @@ button{
   align-items:center;
   justify-content:center;
 
-  padding:1.5mm 1mm;
+  padding:.7mm .5mm;
 
   text-align:center;
 
@@ -244,18 +307,18 @@ button{
 }
 
 .menu-icon{
-  height:14mm;
+  height:8mm;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  font-size:27pt;
+  font-size:18pt;
   line-height:1;
 }
 
 .menu-name{
-  margin-top:1mm;
+  margin-top:.5mm;
 
   color:var(--navy);
 
@@ -265,46 +328,24 @@ button{
     "Comic Neue",
     cursive;
 
-  font-size:12.5pt;
-  line-height:1.08;
+  font-size:10.5pt;
+  line-height:1.03;
 
   font-weight:700;
 
   letter-spacing:0;
   word-spacing:0;
-  font-kerning:normal;
 }
 
 .menu-price{
-  margin-top:1.2mm;
+  margin-top:.4mm;
 
   color:#111;
 
-  font-size:14pt;
+  font-size:11.5pt;
   line-height:1;
 
   font-weight:900;
-}
-
-.promo-item{
-  background:#FFF9EC;
-}
-
-.promo-item .menu-icon{
-  font-size:24pt;
-}
-
-.promo-item .menu-name{
-  color:#975D00;
-
-  font-size:11.5pt;
-  font-weight:900;
-}
-
-.promo-item .menu-price{
-  color:var(--orange);
-
-  font-size:12pt;
 }
 
 /* =========================================================
@@ -319,18 +360,18 @@ button{
 }
 
 .dialogue-title{
-  margin:0 0 2.5mm;
+  margin:0 0 1.5mm;
 
-  padding:2.2mm 3mm;
+  padding:1.4mm 2.2mm;
 
   color:var(--navy);
 
   background:var(--soft);
 
   border:1px solid var(--line);
-  border-radius:3mm;
+  border-radius:2.5mm;
 
-  font-size:14.5pt;
+  font-size:12pt;
   line-height:1;
 
   font-weight:900;
@@ -340,9 +381,10 @@ button{
   flex:1;
 
   min-height:0;
+
   overflow:hidden;
 
-  padding:1mm 3mm 0;
+  padding:.6mm 1.5mm 0;
 }
 
 .dialogue-line{
@@ -350,9 +392,9 @@ button{
 
   grid-template-columns:max-content 1fr;
 
-  column-gap:2.5mm;
+  column-gap:2mm;
 
-  margin-bottom:2.3mm;
+  margin-bottom:1.35mm;
 
   font-family:
     "Comic Sans MS",
@@ -360,8 +402,8 @@ button{
     "Comic Neue",
     cursive;
 
-  font-size:13.5pt;
-  line-height:1.4;
+  font-size:12.5pt;
+  line-height:1.28;
 
   letter-spacing:0;
   word-spacing:0;
@@ -373,6 +415,7 @@ button{
 
 .speaker{
   font-weight:900;
+
   white-space:nowrap;
 }
 
@@ -381,19 +424,17 @@ button{
 }
 
 .long-dialogue .dialogue-line{
-  margin-bottom:1.5mm;
+  font-size:11.5pt;
+  line-height:1.22;
 
-  font-size:12.5pt;
-  line-height:1.32;
+  margin-bottom:1mm;
 }
 
 /* =========================================================
    QUESTIONS
 ========================================================= */
 
-.right-panel{
-  height:100%;
-
+.right-side{
   display:flex;
   flex-direction:column;
 
@@ -401,29 +442,29 @@ button{
 }
 
 .question-head{
-  min-height:13mm;
+  min-height:9mm;
 
   display:flex;
   align-items:center;
   justify-content:space-between;
 
-  gap:3mm;
+  gap:2mm;
 
-  padding:1.5mm 2.5mm;
+  padding:1.2mm 2mm;
 
-  margin-bottom:2.5mm;
+  margin-bottom:1.5mm;
 
   background:var(--soft);
 
   border:1px solid var(--line);
-  border-radius:3mm;
+  border-radius:2.5mm;
 }
 
 .question-title-wrap{
   display:flex;
   align-items:center;
 
-  gap:3mm;
+  gap:2mm;
 }
 
 .question-title{
@@ -431,51 +472,48 @@ button{
 
   color:var(--navy);
 
-  font-size:14.5pt;
+  font-size:12pt;
 
   font-weight:900;
 }
 
 .score{
-  min-width:14mm;
+  min-width:11mm;
 
   color:var(--green);
 
-  font-size:12pt;
+  font-size:10.5pt;
+
   font-weight:900;
 
   text-align:center;
 }
 
 /* =========================================================
-   BUTTONS
+   QUESTION BUTTONS
 ========================================================= */
 
 .tools{
   display:flex;
   align-items:center;
 
-  gap:1.5mm;
+  gap:.8mm;
 }
 
 .tools button{
-  padding:1.5mm 2.7mm;
+  padding:1mm 1.6mm;
 
   border:1px solid #BFCFDE;
-  border-radius:8px;
+  border-radius:6px;
 
-  background:#fff;
+  background:white;
 
   color:var(--navy);
 
-  font-size:9pt;
+  font-size:8pt;
   font-weight:900;
 
   cursor:pointer;
-}
-
-.tools button:hover{
-  border-color:var(--orange);
 }
 
 .tools button.active{
@@ -497,7 +535,7 @@ button{
 
   overflow:hidden;
 
-  padding:0 1mm;
+  padding:0 .5mm;
 
   font-family:
     "Comic Sans MS",
@@ -507,7 +545,7 @@ button{
 }
 
 .question{
-  margin-bottom:3mm;
+  margin-bottom:1.7mm;
 }
 
 .question:last-child{
@@ -517,29 +555,28 @@ button{
 .q-row{
   display:grid;
 
-  grid-template-columns:13mm 1fr;
+  grid-template-columns:11mm 1fr;
 
-  column-gap:1.5mm;
+  column-gap:1mm;
 
   align-items:start;
 
-  font-size:12.5pt;
-  line-height:1.3;
+  font-size:11.5pt;
+  line-height:1.22;
 
   font-weight:800;
 }
 
-/* （A） */
-
 .answer-slot{
   white-space:nowrap;
+
   text-align:right;
 }
 
 .answer-letter{
   display:inline-block;
 
-  min-width:4mm;
+  min-width:3.5mm;
 
   color:var(--blue);
 
@@ -567,20 +604,20 @@ button{
 
   grid-template-columns:1fr 1fr;
 
-  gap:1mm 3.5mm;
+  gap:.6mm 2mm;
 
-  margin-top:1.2mm;
-  margin-left:17mm;
+  margin-top:.6mm;
+  margin-left:13mm;
 }
 
 .option{
-  padding:1mm 1.5mm;
+  padding:.5mm 1mm;
 
   border:1px solid transparent;
-  border-radius:6px;
+  border-radius:5px;
 
-  font-size:11.5pt;
-  line-height:1.23;
+  font-size:9.8pt;
+  line-height:1.18;
 
   cursor:pointer;
 }
@@ -612,20 +649,16 @@ button{
 ========================================================= */
 
 .hint-word{
-  padding:0 .5mm;
+  padding:0 .4mm;
 
-  border-radius:4px;
-
-  transition:
-    background .15s,
-    box-shadow .15s;
+  border-radius:3px;
 }
 
-.sheet.hint-on .hint-word{
+.level-block.hint-on .hint-word{
   background:var(--hint);
 
   box-shadow:
-    inset 0 -1.2px 0 var(--hint-line);
+    inset 0 -1px 0 var(--hint-line);
 }
 
 /* =========================================================
@@ -633,7 +666,7 @@ button{
 ========================================================= */
 
 @page{
-  size:A4 landscape;
+  size:A4 portrait;
   margin:0;
 }
 
@@ -641,21 +674,25 @@ button{
 
   html,
   body{
-    width:297mm;
+    width:210mm;
 
     margin:0;
     padding:0;
 
-    background:#fff;
+    background:white;
   }
 
   body{
     padding:0;
   }
 
+  .global-tools{
+    display:none !important;
+  }
+
   .sheet{
-    width:297mm;
-    height:210mm;
+    width:210mm;
+    height:297mm;
 
     margin:0;
 
@@ -688,19 +725,25 @@ button{
 
 <body>
 
+<div class="global-tools">
+  <button onclick="window.print()">
+    列印
+  </button>
+</div>
+
 <div id="pages"></div>
 
 <script>
 
 /* =========================================================
    DATA
+   只保留 A1～A4
 ========================================================= */
 
 const levels = [
 
 {
   code:"A1",
-  level:1,
 
   menu:[
     ["🥩","Steak",25],
@@ -733,6 +776,7 @@ const levels = [
   ],
 
   questions:[
+
     {
       stem:"What does Tom want to eat?",
       options:[
@@ -746,7 +790,12 @@ const levels = [
 
     {
       stem:"How much is Lily's Salad?",
-      options:["$4","$5","$6","$7"],
+      options:[
+        "$4",
+        "$5",
+        "$6",
+        "$7"
+      ],
       answer:2
     },
 
@@ -763,7 +812,12 @@ const levels = [
 
     {
       stem:"How much is Lily's total order (Salad + Tea)?",
-      options:["$9","$10","$11","$12"],
+      options:[
+        "$9",
+        "$10",
+        "$11",
+        "$12"
+      ],
       answer:1
     },
 
@@ -777,12 +831,12 @@ const levels = [
       ],
       answer:0
     }
+
   ]
 },
 
 {
   code:"A2",
-  level:2,
 
   menu:[
     ["🍔","Hamburger",8],
@@ -813,6 +867,7 @@ const levels = [
   ],
 
   questions:[
+
     {
       stem:"What does Sam order?",
       options:[
@@ -826,33 +881,53 @@ const levels = [
 
     {
       stem:"Who wants to drink Tea?",
-      options:["Sam","Amy","Tom","Lily"],
+      options:[
+        "Sam",
+        "Amy",
+        "Tom",
+        "Lily"
+      ],
       answer:1
     },
 
     {
       stem:"How much is Amy's Hamburger?",
-      options:["$5","$6","$8","$10"],
+      options:[
+        "$5",
+        "$6",
+        "$8",
+        "$10"
+      ],
       answer:2
     },
 
     {
       stem:"How much is Sam's Ham Sandwich?",
-      options:["$4","$5","$6","$8"],
+      options:[
+        "$4",
+        "$5",
+        "$6",
+        "$8"
+      ],
       answer:2
     },
 
     {
       stem:"How much is Amy's total order (Hamburger + Tea)?",
-      options:["$10","$11","$12","$14"],
+      options:[
+        "$10",
+        "$11",
+        "$12",
+        "$14"
+      ],
       answer:2
     }
+
   ]
 },
 
 {
   code:"A3",
-  level:3,
 
   menu:[
     ["🍗","Fried Chicken",12],
@@ -888,6 +963,7 @@ const levels = [
   ],
 
   questions:[
+
     {
       stem:"What does Ben want to eat?",
       options:[
@@ -901,7 +977,12 @@ const levels = [
 
     {
       stem:"How many people order a drink?",
-      options:["One","Two","Three","Four"],
+      options:[
+        "One",
+        "Two",
+        "Three",
+        "Four"
+      ],
       answer:1
     },
 
@@ -918,21 +999,31 @@ const levels = [
 
     {
       stem:"How much is Ben's order (Fried Chicken + Bean Soup)?",
-      options:["$15","$16","$17","$18"],
+      options:[
+        "$15",
+        "$16",
+        "$17",
+        "$18"
+      ],
       answer:2
     },
 
     {
       stem:"How much is Amy's Coffee?",
-      options:["$3","$4","$5","$6"],
+      options:[
+        "$3",
+        "$4",
+        "$5",
+        "$6"
+      ],
       answer:1
     }
+
   ]
 },
 
 {
   code:"A4",
-  level:4,
 
   menu:[
     ["🍔","Hamburger",8],
@@ -965,6 +1056,7 @@ const levels = [
   ],
 
   questions:[
+
     {
       stem:"Who pays for the food today?",
       options:[
@@ -978,7 +1070,12 @@ const levels = [
 
     {
       stem:"How much is the Hamburger?",
-      options:["$4","$5","$8","$18"],
+      options:[
+        "$4",
+        "$5",
+        "$8",
+        "$18"
+      ],
       answer:2
     },
 
@@ -995,107 +1092,30 @@ const levels = [
 
     {
       stem:"How much does Dad need to pay for everyone?",
-      options:["$35","$40","$45","$50"],
+      options:[
+        "$35",
+        "$40",
+        "$45",
+        "$50"
+      ],
       answer:1
     },
 
     {
       stem:"How much is the Son's order (Hamburger + Tea)?",
-      options:["$10","$11","$12","$14"],
+      options:[
+        "$10",
+        "$11",
+        "$12",
+        "$14"
+      ],
       answer:2
     }
-  ]
-},
 
-{
-  code:"A5",
-  level:5,
-
-  menu:[
-    ["🍵","Tea",6],
-    ["🍔","Hamburger",8],
-    ["🍕","Pizza",18],
-
-    ["🥣","Bean Soup",5],
-    ["🥪","Ham Sandwich",6],
-
-    [
-      "⭐",
-      "Buy 1 Get 1 Free",
-      "Tea",
-      "promo"
-    ]
-  ],
-
-  dialogue:[
-    ["Tom","Look! The Tea is Buy 1 Get 1 Free."],
-    ["Amy","Great! I want a cup of Tea."],
-    ["Ben","I want a cup of Tea, too."],
-    ["Tom","OK, so we only pay $6 for two cups of Tea."],
-    ["Amy","I also want a Hamburger."],
-    ["Ben","I want a Pizza and Bean Soup."],
-    ["Tom","I want a Ham Sandwich."],
-    ["Amy","Are we finished?"],
-    ["Ben","Yes, let's go."]
-  ],
-
-  hints:[
-    "Tea",
-    "Buy 1 Get 1 Free",
-    "$6",
-    "Hamburger",
-    "Pizza",
-    "Bean Soup",
-    "Ham Sandwich",
-    "how much",
-    "total"
-  ],
-
-  questions:[
-    {
-      stem:"How much is one Tea if they buy two today?",
-      options:["$2","$3","$4","$6"],
-      answer:1
-    },
-
-    {
-      stem:"What does Ben order?",
-      options:[
-        "Tea, Pizza, and Bean Soup",
-        "Tea and Hamburger",
-        "Tea and Ham Sandwich",
-        "Pizza and Coffee"
-      ],
-      answer:0
-    },
-
-    {
-      stem:"How much is Amy's Hamburger?",
-      options:["$5","$6","$8","$10"],
-      answer:2
-    },
-
-    {
-      stem:"What is the total price for all three people?",
-      options:["$37","$40","$43","$45"],
-      answer:2
-    },
-
-    {
-      stem:"Which item is Buy 1 Get 1 Free today?",
-      options:[
-        "Tea",
-        "Hamburger",
-        "Pizza",
-        "Bean Soup"
-      ],
-      answer:0
-    }
   ]
 }
 
 ];
-
 
 /* =========================================================
    STATE
@@ -1109,37 +1129,33 @@ const selections =
 const hintStates =
   levels.map(() => false);
 
-
 /* =========================================================
    HELPERS
 ========================================================= */
 
-function getOptions(page, question){
+function getOptions(levelIndex, questionIndex){
 
   return document.querySelectorAll(
-    `.option[data-page="${page}"][data-q="${question}"]`
+    `.option[data-level="${levelIndex}"][data-q="${questionIndex}"]`
   );
 
 }
 
-
-function getAnswerSlot(page, question){
+function getAnswerSlot(levelIndex, questionIndex){
 
   return document.getElementById(
-    `answer-${page}-${question}`
+    `answer-${levelIndex}-${questionIndex}`
   );
 
 }
 
-
-function getScore(page){
+function getScore(levelIndex){
 
   return document.getElementById(
-    `score-${page}`
+    `score-${levelIndex}`
   );
 
 }
-
 
 function escapeRegExp(text){
 
@@ -1150,7 +1166,6 @@ function escapeRegExp(text){
 
 }
 
-
 function highlightText(text, words){
 
   let result =
@@ -1159,7 +1174,7 @@ function highlightText(text, words){
   const sorted =
     [...words].sort(
       (a,b) =>
-        b.length - a.length
+        b.length-a.length
     );
 
   sorted.forEach(word => {
@@ -1181,67 +1196,42 @@ function highlightText(text, words){
   return result;
 }
 
-
 /* =========================================================
-   RENDER
+   CREATE ONE LEVEL
 ========================================================= */
 
-const pages =
-  document.getElementById("pages");
-
-
-levels.forEach((data, pageIndex) => {
-
+function createLevel(data, levelIndex){
 
   const menuClass =
     `count-${data.menu.length}`;
 
-
   const menuHTML =
-    data.menu.map(item => {
+    data.menu.map(item => `
 
-      const isPromo =
-        item[3] === "promo";
+      <div class="menu-item">
 
-      return `
+        <div class="menu-icon">
+          ${item[0]}
+        </div>
 
-        <div class="
-          menu-item
-          ${isPromo ? "promo-item" : ""}
-        ">
+        <div class="menu-name">
 
-          <div class="menu-icon">
-            ${item[0]}
-          </div>
-
-          <div class="menu-name">
-            ${
-              highlightText(
-                item[1],
-                data.hints
-              )
-            }
-          </div>
-
-          <div class="menu-price">
-
-            ${
-              typeof item[2] === "number"
-              ? "$" + item[2]
-              : highlightText(
-                  item[2],
-                  data.hints
-                )
-            }
-
-          </div>
+          ${
+            highlightText(
+              item[1],
+              data.hints
+            )
+          }
 
         </div>
 
-      `;
+        <div class="menu-price">
+          $${item[2]}
+        </div>
 
-    }).join("");
+      </div>
 
+    `).join("");
 
   const dialogueHTML =
     data.dialogue.map(line => `
@@ -1267,10 +1257,9 @@ levels.forEach((data, pageIndex) => {
 
     `).join("");
 
-
   const questionsHTML =
     data.questions.map(
-      (q, qIndex) => `
+      (q,qIndex) => `
 
       <div class="question">
 
@@ -1280,15 +1269,14 @@ levels.forEach((data, pageIndex) => {
 
             （<span
               class="answer-letter"
-              id="answer-${pageIndex}-${qIndex}"
+              id="answer-${levelIndex}-${qIndex}"
             ></span>）
 
           </div>
 
-
           <div class="q-text">
 
-            ${qIndex + 1}.
+            ${qIndex+1}.
 
             ${
               highlightText(
@@ -1301,23 +1289,22 @@ levels.forEach((data, pageIndex) => {
 
         </div>
 
-
         <div class="options">
 
           ${
             q.options.map(
-              (option, optIndex) => `
+              (option,optIndex) => `
 
               <div
                 class="option"
 
-                data-page="${pageIndex}"
+                data-level="${levelIndex}"
                 data-q="${qIndex}"
                 data-opt="${optIndex}"
 
                 onclick="
                   chooseAnswer(
-                    ${pageIndex},
+                    ${levelIndex},
                     ${qIndex},
                     ${optIndex},
                     this
@@ -1325,7 +1312,7 @@ levels.forEach((data, pageIndex) => {
                 "
               >
 
-                (${String.fromCharCode(65 + optIndex)})
+                (${String.fromCharCode(65+optIndex)})
 
                 ${
                   highlightText(
@@ -1345,52 +1332,40 @@ levels.forEach((data, pageIndex) => {
 
     `).join("");
 
-
-  pages.insertAdjacentHTML(
-    "beforeend",
-
-    `
+  return `
 
     <section
-      class="sheet"
-      id="sheet-${pageIndex}"
+      class="level-block"
+      id="level-${levelIndex}"
     >
 
-      <header class="page-header">
+      <div class="level-header">
 
-        <div class="title-line">
-
-          <h1>
-            生活英文｜速食店點餐
-          </h1>
-
-          <span class="subtitle">
-
-            Fast Food Menu
-            ・
-            ${data.code}
-            ・
-            Level ${data.level}
-
-          </span>
-
-        </div>
-
+        <h1 class="level-title">
+          生活英文｜速食店閱讀測驗 ${data.code}
+        </h1>
 
         <div class="student-info">
 
-          班級 ______
-          　
-          姓名 __________
+          <span>
+            班級：
+          </span>
+
+          <span class="info-line"></span>
+
+          <span>
+            姓名：
+          </span>
+
+          <span class="info-line name-line"></span>
 
         </div>
 
-      </header>
+      </div>
 
+      <div class="level-content">
 
-      <div class="page-body">
-
-        <div class="left-panel">
+        <div class="left-side">
 
           <section class="menu-box">
 
@@ -1409,7 +1384,6 @@ levels.forEach((data, pageIndex) => {
 
           </section>
 
-
           <section class="dialogue-section">
 
             <div class="dialogue-title">
@@ -1420,7 +1394,7 @@ levels.forEach((data, pageIndex) => {
               class="
                 dialogue-content
                 ${
-                  data.dialogue.length >= 8
+                  data.dialogue.length >= 7
                   ? "long-dialogue"
                   : ""
                 }
@@ -1433,8 +1407,7 @@ levels.forEach((data, pageIndex) => {
 
         </div>
 
-
-        <section class="right-panel">
+        <section class="right-side">
 
           <div class="question-head">
 
@@ -1446,18 +1419,17 @@ levels.forEach((data, pageIndex) => {
 
               <div
                 class="score"
-                id="score-${pageIndex}"
+                id="score-${levelIndex}"
               ></div>
 
             </div>
-
 
             <div class="tools">
 
               <button
                 onclick="
                   toggleHint(
-                    ${pageIndex},
+                    ${levelIndex},
                     this
                   )
                 "
@@ -1467,8 +1439,8 @@ levels.forEach((data, pageIndex) => {
 
               <button
                 onclick="
-                  gradePage(
-                    ${pageIndex}
+                  gradeLevel(
+                    ${levelIndex}
                   )
                 "
               >
@@ -1477,8 +1449,8 @@ levels.forEach((data, pageIndex) => {
 
               <button
                 onclick="
-                  clearPage(
-                    ${pageIndex}
+                  clearLevel(
+                    ${levelIndex}
                   )
                 "
               >
@@ -1488,23 +1460,16 @@ levels.forEach((data, pageIndex) => {
               <button
                 onclick="
                   showAnswers(
-                    ${pageIndex}
+                    ${levelIndex}
                   )
                 "
               >
                 解答
               </button>
 
-              <button
-                onclick="window.print()"
-              >
-                列印
-              </button>
-
             </div>
 
           </div>
-
 
           <div class="questions">
             ${questionsHTML}
@@ -1516,29 +1481,68 @@ levels.forEach((data, pageIndex) => {
 
     </section>
 
+  `;
+}
+
+/* =========================================================
+   RENDER 2 LEVELS PER PAGE
+========================================================= */
+
+const pageRoot =
+  document.getElementById("pages");
+
+for(
+  let i=0;
+  i<levels.length;
+  i+=2
+){
+
+  const first =
+    createLevel(
+      levels[i],
+      i
+    );
+
+  const second =
+    createLevel(
+      levels[i+1],
+      i+1
+    );
+
+  pageRoot.insertAdjacentHTML(
+    "beforeend",
+
+    `
+
+      <section class="sheet">
+
+        ${first}
+
+        ${second}
+
+      </section>
+
     `
   );
 
-});
-
+}
 
 /* =========================================================
    CHOOSE ANSWER
 ========================================================= */
 
 function chooseAnswer(
-  page,
-  question,
-  option,
+  levelIndex,
+  questionIndex,
+  optionIndex,
   element
 ){
 
   const options =
     getOptions(
-      page,
-      question
+      levelIndex,
+      questionIndex
     );
-
 
   options.forEach(el => {
 
@@ -1549,304 +1553,242 @@ function chooseAnswer(
 
   });
 
-
-  selections[page][question] =
-    option;
-
+  selections[levelIndex][questionIndex] =
+    optionIndex;
 
   element.classList.add(
     "selected"
   );
 
-
-  const letter =
-    String.fromCharCode(
-      65 + option
-    );
-
-
   const slot =
     getAnswerSlot(
-      page,
-      question
+      levelIndex,
+      questionIndex
     );
 
-
   slot.textContent =
-    letter;
-
+    String.fromCharCode(
+      65+optionIndex
+    );
 
   slot.className =
     "answer-letter";
 
-
-  getScore(page).textContent =
+  getScore(levelIndex).textContent =
     "";
-
 }
-
 
 /* =========================================================
    GRADE
 ========================================================= */
 
-function gradePage(page){
+function gradeLevel(levelIndex){
 
   let correctCount = 0;
 
+  levels[levelIndex]
+    .questions
+    .forEach(
+      (question,qIndex) => {
 
-  levels[page].questions.forEach(
-    (question, qIndex) => {
+        const chosen =
+          selections[levelIndex][qIndex];
 
-
-      const chosen =
-        selections[page][qIndex];
-
-
-      const options =
-        getOptions(
-          page,
-          qIndex
-        );
-
-
-      const slot =
-        getAnswerSlot(
-          page,
-          qIndex
-        );
-
-
-      options.forEach(el => {
-
-        el.classList.remove(
-          "correct"
-        );
-
-      });
-
-
-      if(chosen === null){
-
-        slot.className =
-          "answer-letter";
-
-        return;
-
-      }
-
-
-      /* 正確 */
-
-      if(
-        chosen === question.answer
-      ){
-
-        correctCount++;
-
-
-        options[chosen]
-          .classList
-          .remove("selected");
-
-
-        options[chosen]
-          .classList
-          .add("correct");
-
-
-        slot.textContent =
-          String.fromCharCode(
-            65 + chosen
+        const options =
+          getOptions(
+            levelIndex,
+            qIndex
           );
 
+        const slot =
+          getAnswerSlot(
+            levelIndex,
+            qIndex
+          );
 
-        slot.className =
-          "answer-letter correct";
+        options.forEach(el => {
 
-      }
-
-
-      /* 錯誤 */
-
-      else{
-
-        options[chosen]
-          .classList
-          .remove(
-            "selected",
+          el.classList.remove(
             "correct"
           );
 
+        });
 
-        selections[page][qIndex] =
-          null;
+        if(chosen === null){
+          return;
+        }
 
+        if(
+          chosen === question.answer
+        ){
 
-        slot.textContent =
-          "";
+          correctCount++;
 
+          options[chosen]
+            .classList
+            .remove("selected");
 
-        slot.className =
-          "answer-letter";
+          options[chosen]
+            .classList
+            .add("correct");
+
+          slot.textContent =
+            String.fromCharCode(
+              65+chosen
+            );
+
+          slot.className =
+            "answer-letter correct";
+
+        }
+
+        else{
+
+          options[chosen]
+            .classList
+            .remove(
+              "selected",
+              "correct"
+            );
+
+          selections[levelIndex][qIndex] =
+            null;
+
+          slot.textContent =
+            "";
+
+          slot.className =
+            "answer-letter";
+
+        }
 
       }
+    );
 
-    }
-  );
-
-
-  getScore(page).textContent =
-    `${correctCount} / ${levels[page].questions.length}`;
-
+  getScore(levelIndex).textContent =
+    `${correctCount} / 5`;
 }
-
 
 /* =========================================================
    CLEAR
 ========================================================= */
 
-function clearPage(page){
+function clearLevel(levelIndex){
 
-  selections[page].fill(null);
+  selections[levelIndex].fill(null);
 
+  levels[levelIndex]
+    .questions
+    .forEach(
+      (_,qIndex) => {
 
-  levels[page].questions.forEach(
-    (_, qIndex) => {
+        const options =
+          getOptions(
+            levelIndex,
+            qIndex
+          );
 
+        options.forEach(el => {
 
-      const options =
-        getOptions(
-          page,
-          qIndex
-        );
+          el.classList.remove(
+            "selected",
+            "correct"
+          );
 
+        });
 
-      options.forEach(el => {
+        const slot =
+          getAnswerSlot(
+            levelIndex,
+            qIndex
+          );
 
-        el.classList.remove(
-          "selected",
-          "correct"
-        );
+        slot.textContent =
+          "";
 
-      });
+        slot.className =
+          "answer-letter";
 
+      }
+    );
 
-      const slot =
-        getAnswerSlot(
-          page,
-          qIndex
-        );
-
-
-      slot.textContent =
-        "";
-
-
-      slot.className =
-        "answer-letter";
-
-    }
-  );
-
-
-  /* 分數一定清除 */
-
-  getScore(page).textContent =
+  getScore(levelIndex).textContent =
     "";
-
 }
-
 
 /* =========================================================
-   SHOW ANSWERS
+   ANSWERS
 ========================================================= */
 
-function showAnswers(page){
+function showAnswers(levelIndex){
 
-  levels[page].questions.forEach(
-    (question, qIndex) => {
+  levels[levelIndex]
+    .questions
+    .forEach(
+      (question,qIndex) => {
 
+        const options =
+          getOptions(
+            levelIndex,
+            qIndex
+          );
 
-      const options =
-        getOptions(
-          page,
-          qIndex
-        );
+        options.forEach(el => {
 
+          el.classList.remove(
+            "selected",
+            "correct"
+          );
 
-      options.forEach(el => {
+        });
 
-        el.classList.remove(
-          "selected",
-          "correct"
-        );
+        const slot =
+          getAnswerSlot(
+            levelIndex,
+            qIndex
+          );
 
-      });
+        slot.textContent =
+          String.fromCharCode(
+            65+question.answer
+          );
 
+        slot.className =
+          "answer-letter solution";
 
-      const slot =
-        getAnswerSlot(
-          page,
-          qIndex
-        );
+      }
+    );
 
-
-      const answerLetter =
-        String.fromCharCode(
-          65 + question.answer
-        );
-
-
-      slot.textContent =
-        answerLetter;
-
-
-      slot.className =
-        "answer-letter solution";
-
-    }
-  );
-
-
-  /* 解答模式不顯示作答分數 */
-
-  getScore(page).textContent =
+  getScore(levelIndex).textContent =
     "";
-
 }
-
 
 /* =========================================================
    HINT
 ========================================================= */
 
 function toggleHint(
-  page,
+  levelIndex,
   button
 ){
 
-  hintStates[page] =
-    !hintStates[page];
+  hintStates[levelIndex] =
+    !hintStates[levelIndex];
 
-
-  const sheet =
+  const block =
     document.getElementById(
-      `sheet-${page}`
+      `level-${levelIndex}`
     );
 
-
-  sheet.classList.toggle(
+  block.classList.toggle(
     "hint-on",
-    hintStates[page]
+    hintStates[levelIndex]
   );
-
 
   button.classList.toggle(
     "active",
-    hintStates[page]
+    hintStates[levelIndex]
   );
-
 }
 
 </script>
