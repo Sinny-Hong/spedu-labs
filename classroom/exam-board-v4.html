@@ -18,22 +18,23 @@
   --placed:#edf3f8;
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;overflow:hidden}
+html,body{margin:0;min-height:100%}
+html{overflow-x:hidden}body{overflow-x:hidden;overflow-y:auto}
 body{font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;color:var(--navy);background:var(--bg)}
 button{font:inherit}
-.app{height:100vh;display:grid;grid-template-columns:25% 75%;gap:14px;padding:14px}
+.app{height:100vh;height:100dvh;display:grid;grid-template-columns:25% 75%;gap:14px;padding:14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 8px 24px rgba(23,62,101,.06)}
 
 /* 左側考程：一體式表格 */
 .schedule{padding:18px 18px 16px;display:grid;grid-template-rows:auto 1fr;min-height:0}
 .exam-title{font-size:clamp(18px,1.45vw,28px);font-weight:950;white-space:nowrap;margin:0 0 14px;letter-spacing:.01em}
-.schedule-table{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto repeat(7,1fr);min-height:0;border:1.5px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
-.tcell{display:flex;align-items:center;justify-content:center;text-align:center;min-width:0;padding:5px 4px;font-size:clamp(15px,1.15vw,22px);font-weight:850;line-height:1.05;border-left:1px solid var(--line);border-top:1px solid var(--line)}
+.schedule-table{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:48px repeat(7,82px);min-height:0;border:1.5px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+.tcell{display:flex;align-items:center;justify-content:center;text-align:center;min-width:0;padding:5px 4px;font-size:clamp(17px,1.28vw,24px);font-weight:850;line-height:1.05;border-left:1px solid var(--line);border-top:1px solid var(--line)}
 .tcell:nth-child(3n+1){border-left:none}
 .tcell:nth-child(-n+3){border-top:none}
-.tcell.head{font-size:clamp(14px,1vw,19px);font-weight:950;background:#f8fbfd;line-height:1.18}
-.tcell.head small{font-size:.72em;color:var(--muted);font-weight:800;margin-left:3px}
-.tcell.period{background:var(--soft);font-size:clamp(14px,1vw,19px);font-weight:950}
+.tcell.head{font-size:clamp(16px,1.12vw,21px);font-weight:950;background:#f8fbfd;line-height:1.05;flex-direction:column;gap:3px}
+.tcell.head small{display:block;font-size:.86em;color:var(--muted);font-weight:850;margin:0}
+.tcell.period{background:var(--soft);font-size:clamp(16px,1.12vw,21px);font-weight:950}
 .tcell.subject{cursor:pointer;transition:.12s;background:#fff}
 .tcell.subject:hover{background:#fff9ee}
 .tcell.subject.selected{background:var(--orange-soft);color:#6e4300;box-shadow:inset 0 0 0 2px var(--orange)}
@@ -41,11 +42,12 @@ button{font:inherit}
 .subject-two-line{line-height:1.0}
 
 /* 右側主區 */
-.main{display:grid;grid-template-rows:20% 80%;gap:14px;min-width:0;min-height:0}
+.main{display:grid;grid-template-rows:clamp(140px,20%,205px) minmax(0,1fr);gap:14px;min-width:0;min-height:0}
 .topbar{padding:16px 22px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:18px;min-width:0}
 .focus{min-width:0;align-self:center}
 .focus-line1{font-size:clamp(28px,2.5vw,48px);font-weight:950;line-height:1.05;white-space:nowrap;letter-spacing:.01em}
-.focus-line2{font-size:clamp(36px,3.15vw,60px);font-weight:950;line-height:1.02;white-space:nowrap;margin-top:8px}
+.focus-line2{font-size:clamp(38px,3.3vw,62px);font-weight:950;line-height:1.02;white-space:nowrap;margin-top:8px}
+.focus-line2 .exam-time{color:var(--orange)}
 .focus-line2 .subject-name{color:var(--navy)}
 .rooms{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:nowrap;max-width:100%}
 .room-btn{border:1.5px solid #bfd0df;background:#fff;color:var(--navy);border-radius:12px;padding:8px 12px;font-size:clamp(14px,1vw,18px);font-weight:900;cursor:pointer;white-space:nowrap}
@@ -56,7 +58,7 @@ button{font:inherit}
 .room-title{font-size:clamp(23px,1.7vw,32px);font-weight:950;color:var(--navy);margin:0 0 4px;white-space:nowrap}
 .room-teacher{font-size:clamp(17px,1.15vw,22px);font-weight:700;color:var(--navy2);margin:0 0 14px;white-space:nowrap}
 .student-list{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;align-content:start;min-height:0;overflow:hidden}
-.student{border:1.5px solid transparent;border-radius:10px;padding:8px 8px;font-size:clamp(20px,1.35vw,26px);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#fff;cursor:pointer;transition:.12s}
+.student{border:1.5px solid transparent;border-radius:10px;padding:8px 8px;font-size:clamp(17px,1.12vw,22px);font-weight:900;white-space:nowrap;overflow:visible;background:#fff;cursor:pointer;transition:.12s}
 .student:hover{border-color:#c7d7e5;background:#f9fbfd}
 .student.selected{background:var(--orange-soft);border-color:var(--orange);color:#6e4300}
 .student.placed{background:var(--placed);color:#8a9aab;font-weight:800}
@@ -77,17 +79,17 @@ button{font:inherit}
 /* 座位 */
 .seatmap{position:relative;width:100%;height:100%}
 .small-seat,.big-desk-seat{position:absolute;cursor:pointer;user-select:none}
-.small-seat{width:10%;height:13%;border:2px solid #7d91a6;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;color:var(--navy);font-size:clamp(18px,1.25vw,24px);font-weight:950;line-height:1.0}
+.small-seat{width:10%;height:13%;border:2px solid #7d91a6;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;color:var(--navy);font-size:clamp(22px,1.65vw,32px);font-weight:950;line-height:1.0}
 .small-seat:hover,.big-desk-seat:hover{outline:2px solid #f7c45d;outline-offset:2px}
 .small-seat.available::after,.big-desk-seat.available::after{content:"";position:absolute;inset:3px;border:2px dashed #f6bd4b;border-radius:4px;pointer-events:none}
 .small-seat.occupied{background:#f8fbfd}
-.teacher-desk{position:absolute;left:31%;top:5%;width:12%;height:13%;border:2px solid #7d91a6;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:clamp(18px,1.25vw,24px);font-weight:950}
+.teacher-desk{position:absolute;left:31%;top:5%;width:12%;height:13%;border:2px solid #7d91a6;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:clamp(22px,1.65vw,32px);font-weight:950}
 .s1{left:4%;top:5%}.s2{left:4%;top:25%}.s3{left:25%;top:25%}.s4{left:46%;top:25%}.s5{left:69%;top:25%}
 .s6{left:4%;top:45%}.s7{left:25%;top:45%}.s8{left:46%;top:45%}.s9{left:69%;top:45%}
 
 .big-desk{position:absolute;width:24%;height:13%;border:2.5px solid #72879d;border-radius:5px;background:#fff}
 .big1{left:4%;top:76%}.big2{left:52%;top:76%}
-.big-desk-seat{width:44%;height:34%;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--navy);font-size:clamp(18px,1.25vw,24px);font-weight:950;line-height:1.0;border-radius:5px;background:transparent}
+.big-desk-seat{width:44%;height:34%;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--navy);font-size:clamp(22px,1.65vw,32px);font-weight:950;line-height:1.0;border-radius:5px;background:transparent}
 .big-desk-seat.top-left{left:3%;top:-33%}.big-desk-seat.top-right{right:3%;top:-33%}
 .big-desk-seat.bottom-left{left:3%;bottom:-33%}.big-desk-seat.bottom-right{right:3%;bottom:-33%}
 .big-desk-seat.occupied{background:#f8fbfd}
@@ -97,6 +99,26 @@ button{font:inherit}
   .main{gap:10px}.workspace{gap:10px;grid-template-columns:31% 69%}
   .topbar{padding:12px 16px}.students,.panel{padding:12px}
   .student{padding:6px 6px}.room-btn{padding:7px 9px}
+}
+@media (max-height:820px){
+  .app{gap:10px;padding:10px}
+  .schedule{padding:12px}
+  .exam-title{margin-bottom:8px}
+  .schedule-table{grid-template-rows:42px repeat(7,68px)}
+  .main{grid-template-rows:126px minmax(0,1fr);gap:10px}
+  .topbar{padding:10px 16px}
+  .students,.panel{padding:10px 12px}
+  .room-teacher{margin-bottom:8px}
+  .student-list{gap:6px 12px}
+  .student{padding:5px 6px}
+  .tabs{margin-bottom:7px}
+}
+@media (max-height:680px){
+  .schedule-table{grid-template-rows:38px repeat(7,60px)}
+  .main{grid-template-rows:112px minmax(0,1fr)}
+  .focus-line1{font-size:clamp(24px,2.25vw,42px)}
+  .focus-line2{font-size:clamp(32px,2.9vw,54px);margin-top:5px}
+  .room-btn{padding:6px 8px}
 }
 </style>
 </head>
@@ -111,7 +133,7 @@ button{font:inherit}
     <section class="topbar card">
       <div class="focus">
         <div class="focus-line1" id="focusLine1">10/13 星期二｜第3節</div>
-        <div class="focus-line2" id="focusLine2">10:10–10:55｜<span class="subject-name">國文</span></div>
+        <div class="focus-line2" id="focusLine2"><span class="exam-time">10:10–10:55</span>｜<span class="subject-name">國文</span></div>
       </div>
       <div class="rooms" id="roomButtons"></div>
     </section>
@@ -218,7 +240,7 @@ function cell(text, cls=''){
 }
 
 scheduleTable.appendChild(cell('節次','head'));
-EXAM_DATA.dates.forEach(day=>scheduleTable.appendChild(cell(`${day.date}<small>${day.weekday}</small>`,'head')));
+EXAM_DATA.dates.forEach(day=>scheduleTable.appendChild(cell(`<span>${day.date}</span><small>${day.weekday}</small>`,'head')));
 for(let p=1;p<=7;p++){
   scheduleTable.appendChild(cell(`第${p}節`,'period'));
   EXAM_DATA.dates.forEach((day,di)=>{
@@ -246,7 +268,7 @@ function selectSubject(subject,period,dayIndex,el){
 function renderHeader(){
   const day=EXAM_DATA.dates[selectedDay];
   focusLine1.textContent=`${day.date} ${day.weekday}｜第${selectedPeriod}節`;
-  focusLine2.innerHTML=`${EXAM_DATA.periodTimes[selectedPeriod]}｜<span class="subject-name">${selectedDisplaySubject}</span>`;
+  focusLine2.innerHTML=`<span class="exam-time">${EXAM_DATA.periodTimes[selectedPeriod]}</span>｜<span class="subject-name">${selectedDisplaySubject}</span>`;
 }
 function renderRooms(){
   roomButtons.innerHTML=''; studentList.innerHTML=''; selectedStudent='';
@@ -344,4 +366,3 @@ renderHeader(); renderRooms();
 </script>
 </body>
 </html>
-
