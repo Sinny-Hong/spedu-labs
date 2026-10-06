@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>生活英文與文法｜Sinny Spedu Labs</title>
-  <link rel="stylesheet" href="../shared/css/workspace.css?v=2.1">
+  <link rel="stylesheet" href="../shared/css/workspace.css?v=3.0">
   <style>
     /* 文法索引專用：舒適型單欄目錄，不影響其他工作區。 */
     .grammar-page .main > * { max-width: 1120px; margin-left: auto; margin-right: auto; }
@@ -132,23 +132,6 @@
       </section>`;
     }).join("");
   </script>
-  <script src="../shared/js/workspace.js?v=2.1"></script>
-  <script>
-    document.querySelectorAll(".resource-card[data-href]").forEach(card => {
-      const openResource = () => { window.location.href = card.dataset.href; };
-      card.addEventListener("click", event => {
-        if (!event.target.closest(".favorite")) openResource();
-      });
-      card.addEventListener("keydown", event => {
-        if (!event.target.closest(".favorite") && (event.key === "Enter" || event.key === " ")) {
-          event.preventDefault();
-          openResource();
-        }
-      });
-    });
-    document.querySelectorAll(".favorite").forEach(button => {
-      button.addEventListener("click", event => event.stopPropagation());
-    });
-  </script>
+  <script src="../shared/js/workspace.js?v=3.0"></script>
 </body>
 </html>

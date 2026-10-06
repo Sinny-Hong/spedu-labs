@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sinny Spedu Labs｜異想教室控制台</title>
+  <link rel="icon" type="image/png" href="assets/logo-round.png" />
   <link rel="stylesheet" href="portal.css" />
 </head>
 <body>
@@ -23,7 +24,6 @@
         <a href="./life/index.html"><span><i data-lucide="heart-handshake"></i></span><b>生活教育</b></a>
         <a href="./info/index.html"><span><i data-lucide="graduation-cap"></i></span><b>升學輔導</b></a>
         <a id="classroomLink" href="./classroom/index.html"><span><i data-lucide="calendar-days"></i></span><b>班務管理</b></a>
-        <a class="teacher-console" href="https://docs.google.com/spreadsheets/d/1DWvNNRUklFwKL72E_2XPXLfJfEnm6dyT3We98b6NHnU/edit?usp=sharing" target="_blank" rel="noopener"><span><i data-lucide="clipboard-pen-line"></i></span><b>公告後台</b></a>
       </nav>
 
       <div class="sidebar-footer">
@@ -37,28 +37,21 @@
         <div class="welcome-block">
           <div class="welcome-line">
             <h1>歡迎來到異想教室</h1>
-            <div class="school-date">
-              <strong id="headerDate">7 月 17 日　星期五</strong>
-              <span id="schoolWeek" hidden></span>
-            </div>
           </div>
-          <p>今天也一起完成任務，讓學習更有方向。</p>
         </div>
         <div class="status-group">
           <span class="online-dot" id="onlineDot"></span>
           <span id="connectionText">連線正常</span>
           <a class="ghost-btn" href="https://docs.google.com/spreadsheets/d/1DWvNNRUklFwKL72E_2XPXLfJfEnm6dyT3We98b6NHnU/edit?usp=sharing" target="_blank" rel="noopener">編輯公告</a>
-          <button id="fullscreenBtn" class="ghost-btn">全螢幕</button>
         </div>
       </header>
 
       <section class="workspace">
         <div class="content-panel">
           <div class="tabs" role="tablist">
-            <button class="tab" data-tab="task">今天任務<span class="tab-sync loading" data-sync="task" title="資料更新中"></span></button>
             <button class="tab active" data-tab="contact">聯絡簿<span class="tab-sync loading" data-sync="contact" title="資料更新中"></span></button>
-            <button class="tab" data-tab="missing">作業缺交<span class="tab-sync loading" data-sync="missing" title="資料更新中"></span></button>
-            <button class="tab" data-tab="other">其他<span class="tab-sync loading" data-sync="other" title="資料更新中"></span></button>
+            <button class="tab" data-tab="task">今日代辦<span class="tab-sync loading" data-sync="task" title="資料更新中"></span></button>
+            <button class="tab" data-tab="missing">未繳作業<span class="tab-sync loading" data-sync="missing" title="資料更新中"></span></button>
           </div>
 
           <div class="tab-stage">
@@ -68,7 +61,7 @@
                 <div class="task-list" id="taskList">
                   <article class="task-item pinned">
                     <div class="task-number"><span>📌</span>1.</div>
-                    <div><h2>請拿出「八上單字配對 Lesson 2」</h2><p>完成後放在老師桌上。</p></div>
+                    <div><h2>請抄寫聯絡簿</h2><p>完成後準備今天的上課講義</p><p class="fallback-note">資料尚未同步更新</p></div>
                   </article>
                 </div>
               </div>
@@ -78,21 +71,21 @@
               <div class="contact-grid">
                 <article class="info-card blue">
                   <h3 class="card-title"><span>今日上課內容</span><small id="contactDate" class="card-title-meta date-badge"></small></h3>
-                  <div id="classContent"><p>課本 Unit 2：My Family</p><p>單字配對與句型練習</p></div>
+                  <div id="classContent"><p>課文及單字講義</p><p class="fallback-note">資料尚未同步更新</p></div>
                 </article>
 
                 <article class="info-card green">
                   <h3>回家作業</h3>
-                  <div id="homeworkContent"><p>完成單字拼寫練習第 21 頁</p><p>請家長簽名</p></div>
+                  <div id="homeworkContent"><p>1200 單字一頁</p><p>訂正講義</p><p class="fallback-note">資料尚未同步更新</p></div>
                 </article>
 
                 <article class="info-card orange">
                   <h3>老師的話</h3>
-                  <div id="teacherMessage"><p>今天大家都很認真，記得每天練習單字和句型。</p></div>
+                  <div id="teacherMessage"><p>請抄寫聯絡簿並將作業交到老師桌上</p><p class="fallback-note">資料尚未同步更新</p></div>
                 </article>
 
                 <article class="info-card purple" id="weeklyWordsCard" hidden>
-                  <h3 class="word-title"><span class="card-title"><span>本週五個單字</span><small id="contactWeek" class="card-title-meta week-badge"></small></span><button class="play-all-words" id="playAllWords" type="button"><i data-lucide="circle-play"></i><span>播放全部</span></button></h3>
+                  <h3 class="word-title"><span class="card-title"><span>本週單字</span><small id="contactWeek" class="card-title-meta week-badge"></small></span><span class="word-controls"><button class="word-control" id="prevWordWeek" type="button" aria-label="上一週" title="上一週"><i data-lucide="chevron-left"></i></button><button class="word-control play-all-words" id="playAllWords" type="button" aria-label="播放目前單字" title="播放目前單字"><i data-lucide="volume-2"></i></button><button class="word-control" id="nextWordWeek" type="button" aria-label="下一週" title="下一週"><i data-lucide="chevron-right"></i></button></span></h3>
                   <ul class="word-list" id="wordList">
                     <li><span class="word">usually</span><span>通常</span></li>
                     <li><span class="word">before</span><span>在……之前</span></li>
@@ -118,12 +111,6 @@
               </div>
             </section>
 
-            <section class="tab-page" id="other">
-              <div class="simple-page" id="otherContent">
-                <h2>其他公告</h2>
-                <p>段考時間、重要日期、臨時提醒與 QR Code 都可以放在這裡。</p>
-              </div>
-            </section>
           </div>
         </div>
 
@@ -169,6 +156,16 @@
       <div class="qr-image" id="qrImage" aria-label="任務連結 QR Code"></div>
       <p>使用手機相機掃描，或直接開啟下方連結。</p>
       <a id="qrDirectLink" href="#" target="_blank" rel="noopener">直接開啟連結</a>
+    </div>
+  </div>
+
+  <div class="image-modal" id="imageModal" hidden role="dialog" aria-modal="true" aria-labelledby="imageModalTitle">
+    <div class="image-dialog">
+      <button class="image-close" id="imageClose" type="button" aria-label="關閉圖片">×</button>
+      <h2 id="imageModalTitle">任務圖片</h2>
+      <div class="task-image-frame"><img id="taskImage" alt="任務圖片" /></div>
+      <p id="imageError" hidden>圖片無法直接載入，請改用下方連結開啟。</p>
+      <a id="imageDirectLink" href="#" target="_blank" rel="noopener">直接開啟圖片</a>
     </div>
   </div>
 

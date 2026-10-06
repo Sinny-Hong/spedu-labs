@@ -47,12 +47,41 @@
     const key = `spedu-favorite:${location.pathname}:${button.dataset.id}`;
     button.classList.toggle('active', localStorage.getItem(key) === '1');
     button.setAttribute('aria-pressed', button.classList.contains('active'));
-    button.addEventListener('click', () => {
+    button.addEventListener('click', (event) => {
+      event.stopPropagation();
       const active = button.classList.toggle('active');
       button.setAttribute('aria-pressed', active);
       localStorage.setItem(key, active ? '1' : '0');
       updateFavoriteCount();
       if (category === 'favorites') filterCards();
+    });
+  });
+
+  cards.forEach((card) => {
+    const link = card.querySelector('.card-link[href]');
+    if (link && !card.dataset.href) {
+      card.dataset.href = link.getAttribute('href');
+      if (link.target === '_blank') card.dataset.target = '_blank';
+      link.remove();
+    }
+    if (!card.dataset.href || card.classList.contains('is-placeholder')) return;
+
+    const title = card.querySelector('h2')?.textContent.trim() || '教材';
+    card.tabIndex = 0;
+    card.setAttribute('role', 'link');
+    card.setAttribute('aria-label', `開啟${title}`);
+
+    const openResource = () => {
+      if (card.dataset.target === '_blank') window.open(card.dataset.href, '_blank', 'noopener');
+      else window.location.href = card.dataset.href;
+    };
+    card.addEventListener('click', (event) => {
+      if (!event.target.closest('button, a, input, select, textarea')) openResource();
+    });
+    card.addEventListener('keydown', (event) => {
+      if (event.target !== card || (event.key !== 'Enter' && event.key !== ' ')) return;
+      event.preventDefault();
+      openResource();
     });
   });
 

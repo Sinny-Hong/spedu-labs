@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>課表與班務工作區｜Sinny Spedu Labs</title>
-  <link rel="stylesheet" href="../shared/css/workspace.css?v=2.3">
+  <link rel="stylesheet" href="../shared/css/workspace.css?v=3.0">
   <style>
     .classroom-sections { display: grid; gap: 30px; }
     .classroom-section[hidden] { display: none; }
@@ -68,10 +68,10 @@
     );
 
     const renderCard = item => {
-      const action = item.available === false
-        ? '<span class="card-link">功能準備中</span>'
-        : `<a class="card-link" href="${escapeHtml(item.filename)}"${item.external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${escapeHtml(item.linkLabel || (item.external ? '開啟試算表 ↗' : '開啟功能 →'))}</a>`;
-      return `<article class="resource-card${item.available === false ? ' is-placeholder' : ''}" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}">
+      const unavailable = item.available === false;
+      const action = unavailable ? '<span class="card-link">功能準備中</span>' : '';
+      const href = unavailable ? '' : ` data-href="${escapeHtml(item.filename)}"${item.external ? ' data-target="_blank"' : ''}`;
+      return `<article class="resource-card${unavailable ? ' is-placeholder' : ''}" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}"${href}>
         <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
         <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>${action}
       </article>`;
@@ -85,7 +85,7 @@
       </section>`;
     }).join("");
   </script>
-  <script src="../shared/js/workspace.js?v=2.4"></script>
+  <script src="../shared/js/workspace.js?v=3.0"></script>
   <script>
     const updateVisibleSections = () => {
       document.querySelectorAll("[data-category-section]").forEach(section => {
