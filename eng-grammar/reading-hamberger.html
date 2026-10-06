@@ -28,10 +28,6 @@
   --hint-line:#F1C44A;
 }
 
-/* =========================================================
-   BASIC
-========================================================= */
-
 *{
   box-sizing:border-box;
 }
@@ -60,15 +56,13 @@ button{
 }
 
 /* =========================================================
-   GLOBAL PRINT BUTTON
+   PRINT
 ========================================================= */
 
 .global-tools{
   position:fixed;
-
   right:16px;
   top:16px;
-
   z-index:1000;
 }
 
@@ -98,7 +92,6 @@ button{
   height:297mm;
 
   margin:0 auto 18px;
-
   padding:7mm 8mm;
 
   background:#fff;
@@ -109,9 +102,7 @@ button{
   overflow:hidden;
 
   display:grid;
-
   grid-template-rows:1fr 1fr;
-
   gap:5mm;
 
   page-break-after:always;
@@ -122,7 +113,7 @@ button{
 }
 
 /* =========================================================
-   HALF PAGE / ONE LEVEL
+   HALF PAGE
 ========================================================= */
 
 .level-block{
@@ -188,7 +179,6 @@ button{
   display:inline-block;
 
   min-width:25mm;
-
   height:5mm;
 
   border-bottom:1.4px solid #647789;
@@ -199,7 +189,7 @@ button{
 }
 
 /* =========================================================
-   LEVEL CONTENT
+   CONTENT：50 / 50
 ========================================================= */
 
 .level-content{
@@ -209,7 +199,9 @@ button{
 
   display:grid;
 
-  grid-template-columns:52% 48%;
+  grid-template-columns:
+    minmax(0,1fr)
+    minmax(0,1fr);
 
   gap:4mm;
 }
@@ -221,13 +213,13 @@ button{
 }
 
 /* =========================================================
-   LEFT SIDE
+   LEFT
 ========================================================= */
 
 .left-side{
   display:grid;
 
-  grid-template-rows:49mm 1fr;
+  grid-template-rows:52mm 1fr;
 
   gap:2.5mm;
 }
@@ -255,7 +247,6 @@ button{
   justify-content:center;
 
   background:var(--navy);
-
   color:white;
 
   font-size:10.5pt;
@@ -284,8 +275,8 @@ button{
 }
 
 .menu-grid.count-4{
-  grid-template-columns:repeat(4,1fr);
-  grid-template-rows:1fr;
+  grid-template-columns:repeat(2,1fr);
+  grid-template-rows:repeat(2,1fr);
 }
 
 .menu-item{
@@ -298,7 +289,7 @@ button{
   align-items:center;
   justify-content:center;
 
-  padding:.7mm .5mm;
+  padding:1.5mm .5mm .8mm;
 
   text-align:center;
 
@@ -306,14 +297,21 @@ button{
   border-bottom:1px solid var(--line);
 }
 
+.menu-grid.count-10 .menu-item:nth-child(5n),
+.menu-grid.count-8 .menu-item:nth-child(4n),
+.menu-grid.count-6 .menu-item:nth-child(3n),
+.menu-grid.count-4 .menu-item:nth-child(2n){
+  border-right:none;
+}
+
 .menu-icon{
-  height:8mm;
+  height:8.5mm;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  font-size:18pt;
+  font-size:19pt;
   line-height:1;
 }
 
@@ -328,10 +326,10 @@ button{
     "Comic Neue",
     cursive;
 
-  font-size:10.5pt;
+  font-size:11pt;
   line-height:1.03;
 
-  font-weight:700;
+  font-weight:800;
 
   letter-spacing:0;
   word-spacing:0;
@@ -381,7 +379,6 @@ button{
   flex:1;
 
   min-height:0;
-
   overflow:hidden;
 
   padding:.6mm 1.5mm 0;
@@ -390,7 +387,7 @@ button{
 .dialogue-line{
   display:grid;
 
-  grid-template-columns:max-content 1fr;
+  grid-template-columns:max-content minmax(0,1fr);
 
   column-gap:2mm;
 
@@ -404,9 +401,6 @@ button{
 
   font-size:12.5pt;
   line-height:1.28;
-
-  letter-spacing:0;
-  word-spacing:0;
 }
 
 .dialogue-line:last-child{
@@ -415,12 +409,12 @@ button{
 
 .speaker{
   font-weight:900;
-
   white-space:nowrap;
 }
 
 .speech{
   min-width:0;
+  overflow-wrap:anywhere;
 }
 
 .long-dialogue .dialogue-line{
@@ -438,7 +432,10 @@ button{
   display:flex;
   flex-direction:column;
 
+  min-width:0;
   min-height:0;
+
+  overflow:hidden;
 }
 
 .question-head{
@@ -451,13 +448,17 @@ button{
   gap:2mm;
 
   padding:1.2mm 2mm;
-
   margin-bottom:1.5mm;
 
   background:var(--soft);
 
   border:1px solid var(--line);
   border-radius:2.5mm;
+
+  width:100%;
+  max-width:100%;
+
+  min-width:0;
 }
 
 .question-title-wrap{
@@ -465,6 +466,8 @@ button{
   align-items:center;
 
   gap:2mm;
+
+  min-width:0;
 }
 
 .question-title{
@@ -473,7 +476,6 @@ button{
   color:var(--navy);
 
   font-size:12pt;
-
   font-weight:900;
 }
 
@@ -483,21 +485,18 @@ button{
   color:var(--green);
 
   font-size:10.5pt;
-
   font-weight:900;
 
   text-align:center;
 }
-
-/* =========================================================
-   QUESTION BUTTONS
-========================================================= */
 
 .tools{
   display:flex;
   align-items:center;
 
   gap:.8mm;
+
+  flex-shrink:0;
 }
 
 .tools button{
@@ -524,13 +523,10 @@ button{
   border-color:var(--orange);
 }
 
-/* =========================================================
-   QUESTIONS BODY
-========================================================= */
-
 .questions{
   flex:1;
 
+  min-width:0;
   min-height:0;
 
   overflow:hidden;
@@ -545,6 +541,8 @@ button{
 }
 
 .question{
+  min-width:0;
+
   margin-bottom:1.7mm;
 }
 
@@ -555,11 +553,13 @@ button{
 .q-row{
   display:grid;
 
-  grid-template-columns:11mm 1fr;
+  grid-template-columns:11mm minmax(0,1fr);
 
   column-gap:1mm;
 
   align-items:start;
+
+  min-width:0;
 
   font-size:11.5pt;
   line-height:1.22;
@@ -569,7 +569,6 @@ button{
 
 .answer-slot{
   white-space:nowrap;
-
   text-align:right;
 }
 
@@ -593,24 +592,33 @@ button{
 
 .q-text{
   min-width:0;
+
+  overflow-wrap:anywhere;
+  word-break:normal;
 }
 
 /* =========================================================
-   OPTIONS
+   OPTIONS：懸掛縮排
 ========================================================= */
 
 .options{
   display:grid;
 
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:
+    minmax(0,1fr)
+    minmax(0,1fr);
 
   gap:.6mm 2mm;
+
+  min-width:0;
 
   margin-top:.6mm;
   margin-left:13mm;
 }
 
 .option{
+  min-width:0;
+
   padding:.5mm 1mm;
 
   border:1px solid transparent;
@@ -620,6 +628,17 @@ button{
   line-height:1.18;
 
   cursor:pointer;
+
+  overflow-wrap:anywhere;
+}
+
+.option-inner{
+  display:block;
+
+  min-width:0;
+
+  padding-left:5.5mm;
+  text-indent:-5.5mm;
 }
 
 .option:hover{
@@ -706,7 +725,7 @@ button{
 }
 
 /* =========================================================
-   MOBILE PREVIEW
+   MOBILE
 ========================================================= */
 
 @media screen and (max-width:900px){
@@ -736,11 +755,14 @@ button{
 <script>
 
 /* =========================================================
-   DATA
-   只保留 A1～A4
+   A1～A4
 ========================================================= */
 
 const levels = [
+
+/* =========================================================
+   A1
+========================================================= */
 
 {
   code:"A1",
@@ -776,7 +798,6 @@ const levels = [
   ],
 
   questions:[
-
     {
       stem:"What does Tom want to eat?",
       options:[
@@ -831,9 +852,12 @@ const levels = [
       ],
       answer:0
     }
-
   ]
 },
+
+/* =========================================================
+   A2
+========================================================= */
 
 {
   code:"A2",
@@ -867,7 +891,6 @@ const levels = [
   ],
 
   questions:[
-
     {
       stem:"What does Sam order?",
       options:[
@@ -922,9 +945,12 @@ const levels = [
       ],
       answer:2
     }
-
   ]
 },
+
+/* =========================================================
+   A3
+========================================================= */
 
 {
   code:"A3",
@@ -963,7 +989,6 @@ const levels = [
   ],
 
   questions:[
-
     {
       stem:"What does Ben want to eat?",
       options:[
@@ -1018,9 +1043,12 @@ const levels = [
       ],
       answer:1
     }
-
   ]
 },
+
+/* =========================================================
+   A4
+========================================================= */
 
 {
   code:"A4",
@@ -1056,7 +1084,6 @@ const levels = [
   ],
 
   questions:[
-
     {
       stem:"Who pays for the food today?",
       options:[
@@ -1111,7 +1138,6 @@ const levels = [
       ],
       answer:2
     }
-
   ]
 }
 
@@ -1197,7 +1223,7 @@ function highlightText(text, words){
 }
 
 /* =========================================================
-   CREATE ONE LEVEL
+   CREATE LEVEL
 ========================================================= */
 
 function createLevel(data, levelIndex){
@@ -1215,14 +1241,7 @@ function createLevel(data, levelIndex){
         </div>
 
         <div class="menu-name">
-
-          ${
-            highlightText(
-              item[1],
-              data.hints
-            )
-          }
-
+          ${item[1]}
         </div>
 
         <div class="menu-price">
@@ -1312,14 +1331,17 @@ function createLevel(data, levelIndex){
                 "
               >
 
-                (${String.fromCharCode(65+optIndex)})
+                <span class="option-inner">
 
-                ${
-                  highlightText(
-                    option,
-                    data.hints
-                  )
-                }
+                  (${String.fromCharCode(65+optIndex)})
+                  ${
+                    highlightText(
+                      option,
+                      data.hints
+                    )
+                  }
+
+                </span>
 
               </div>
 
@@ -1485,7 +1507,7 @@ function createLevel(data, levelIndex){
 }
 
 /* =========================================================
-   RENDER 2 LEVELS PER PAGE
+   RENDER
 ========================================================= */
 
 const pageRoot =
@@ -1513,22 +1535,17 @@ for(
     "beforeend",
 
     `
-
       <section class="sheet">
-
         ${first}
-
         ${second}
-
       </section>
-
     `
   );
 
 }
 
 /* =========================================================
-   CHOOSE ANSWER
+   CHOOSE
 ========================================================= */
 
 function chooseAnswer(
@@ -1607,20 +1624,14 @@ function gradeLevel(levelIndex){
           );
 
         options.forEach(el => {
-
-          el.classList.remove(
-            "correct"
-          );
-
+          el.classList.remove("correct");
         });
 
         if(chosen === null){
           return;
         }
 
-        if(
-          chosen === question.answer
-        ){
+        if(chosen === question.answer){
 
           correctCount++;
 
@@ -1640,9 +1651,7 @@ function gradeLevel(levelIndex){
           slot.className =
             "answer-letter correct";
 
-        }
-
-        else{
+        }else{
 
           options[chosen]
             .classList
