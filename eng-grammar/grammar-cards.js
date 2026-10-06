@@ -25,8 +25,6 @@ window.GRAMMAR_DATA = [
       // ==== 時態表達 ====
       { id: "past-simple", category: "時態表達", title: "過去簡單式｜八頁互動講義", desc: "從 was / were、動詞過去式到 did＋原形，含進階練習與找過去式任務", filename: "prototype-past-simple.html", themeColor: "#F59E0B" },
       { id: "present-simple", category: "時態表達", title: "現在簡單式｜互動講義", desc: "從使用時機、主詞判斷、第三人稱單數到 do／does，含造句與會考綜合練習", filename: "present-simple.html", themeColor: "#F59E0B" },
-      { id: "20", category: "時態表達", title: "現在簡單式的判讀(do, does)", desc: "現在簡單式問句與否定的靈魂助動詞用法", filename: "grammar_do_does.html", themeColor: "#F59E0B" },
-      { id: "21", category: "時態表達", title: "第三人稱單數動詞變化", desc: "當主詞為第三人稱單數時，一般動詞加 s/es (goes, plays)", filename: "grammar_goes_plays.html", themeColor: "#F59E0B" },
       { id: "22", category: "時態表達", title: "頻率副詞 (always)", desc: "習慣與動作發生頻率的表達與句中位置", filename: "grammar_always.html", themeColor: "#F59E0B" },
       { id: "27", category: "時態表達", title: "現在進行式：動詞變化", desc: "現在進行式的使用時機與動詞加 -ing 的變化規則", filename: "grammar_Ving.html", themeColor: "#F59E0B" },
       { id: "50", category: "時態表達", title: "現在進行式：句型結構", desc: "am/is/are + V-ing 的肯定句、否定句與問句結構", filename: "grammar_are_Ving.html", themeColor: "#F59E0B" },

@@ -6,10 +6,9 @@
   <title>生活英文與文法｜Sinny Spedu Labs</title>
   <link rel="stylesheet" href="../shared/css/workspace.css?v=3.0">
   <style>
-    /* 文法索引專用：舒適型單欄目錄，不影響其他工作區。 */
-    .grammar-page .main > * { max-width: 1120px; margin-left: auto; margin-right: auto; }
+    /* 文法索引沿用課本講義的短卡片網格。 */
     .grammar-page .card-grid { display: block; }
-    .grammar-page .category-section { margin: 0 0 34px; }
+    .grammar-page .category-section { margin: 0 0 26px; }
     .grammar-page .category-section:not(:has(.resource-card:not([hidden]))) { display: none; }
     .grammar-page .category-heading {
       display: flex; align-items: center; gap: 15px; margin: 0 0 12px;
@@ -18,43 +17,33 @@
     .grammar-page .category-heading::after {
       content: ""; flex: 1; height: 1px; background: #d9e2ec;
     }
-    .grammar-page .category-items { display: grid; gap: 10px; }
+    .grammar-page .category-items { display: grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap: 11px; }
     .grammar-page .resource-card {
-      min-height: 0; padding: 17px 20px 17px 17px;
-      border: 1px solid var(--line); border-left: 5px solid var(--navy); border-radius: 13px;
-      box-shadow: 0 4px 14px rgba(18, 63, 119, .055);
-      display: grid; grid-template-columns: 32px minmax(210px, .72fr) minmax(260px, 1.28fr);
-      align-items: center; column-gap: 15px; cursor: pointer;
+      min-height: 132px; padding: 13px 15px;
+      border: 1px solid var(--line); border-top: 4px solid var(--navy); border-radius: 12px;
+      box-shadow: 0 7px 20px rgba(18, 63, 119, .075);
+      display: flex; flex-direction: column; cursor: pointer;
     }
-    .grammar-page .resource-card:hover { transform: translateY(-1px); background: #fbfdff; }
+    .grammar-page .resource-card:hover { transform: translateY(-2px); background: #fbfdff; }
     .grammar-page .resource-card:focus-visible {
       outline: 3px solid rgba(245, 158, 11, .28); outline-offset: 2px;
     }
     .grammar-page .favorite {
-      grid-column: 1; align-self: center; width: 32px; height: 32px; padding: 0;
+      width: 32px; height: 32px; padding: 0;
       display: grid; place-items: center; border-radius: 50%; font-size: 22px;
     }
     .grammar-page .favorite:hover { background: #fff4dc; }
     .grammar-page .resource-card .resource-title {
-      grid-column: 2; margin: 0; color: var(--navy); font-size: 19px;
+      margin: 8px 0 4px; color: var(--navy); font-size: 17px;
       line-height: 1.4; font-weight: 900;
     }
     .grammar-page .resource-card .resource-description {
-      grid-column: 3; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55;
+      margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45;
     }
-    .grammar-page .resource-status { color: #9a6200; font-weight: 800; white-space: nowrap; }
-    .grammar-page .resource-card.is-placeholder { cursor: default; opacity: .76; }
 
-    @media (max-width: 820px) {
-      .grammar-page .resource-card {
-        grid-template-columns: 32px minmax(0, 1fr); row-gap: 3px;
-        padding: 15px 16px 15px 13px;
-      }
-      .grammar-page .favorite { grid-row: 1 / span 2; }
-      .grammar-page .resource-card .resource-title { grid-column: 2; }
-      .grammar-page .resource-card .resource-description { grid-column: 2; }
-    }
+    @media (max-width: 1000px) { .grammar-page .category-items { grid-template-columns:repeat(2,minmax(0,1fr)); } }
     @media (max-width: 720px) {
+      .grammar-page .category-items { grid-template-columns:1fr; }
       .grammar-page .category-section { margin-bottom: 28px; }
       .grammar-page .category-heading { margin-bottom: 10px; font-size: 19px; }
       .grammar-page .category-items { gap: 9px; }
@@ -93,11 +82,15 @@
     </main>
   </div>
 
-  <script src="grammar-cards.js?v=2.3"></script>
+  <script src="grammar-cards.js?v=2.4"></script>
   <script>
     const unavailableFiles = new Set([
       "grammar_first.html",
       "grammar_July_third.html",
+      "test2.html",
+      "test3.html",
+      "test4.html",
+      "test5.html",
       "exam-lifeenglish-v2.html",
       "exam-lifeenglish-v3.html",
       "exam-lifemath-v1.html",
@@ -108,22 +101,22 @@
       .replaceAll(">", "&gt;").replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
 
-    document.querySelector("[data-total-count]").textContent = window.GRAMMAR_DATA.length;
+    const isUnavailable = item => item.status === "preparing" || unavailableFiles.has(item.filename);
+    const availableGrammarData = window.GRAMMAR_DATA.filter(item => !isUnavailable(item));
+
+    document.querySelector("[data-total-count]").textContent = availableGrammarData.length;
     document.getElementById("categoryList").insertAdjacentHTML("beforeend",
       window.GRAMMAR_CATEGORIES.map(category =>
-        `<button class="category-btn" data-filter="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${window.GRAMMAR_DATA.filter(item => item.category === category).length}</span></button>`
+        `<button class="category-btn" data-filter="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${availableGrammarData.filter(item => item.category === category).length}</span></button>`
       ).join("")
     );
 
     document.getElementById("grammarCards").innerHTML = window.GRAMMAR_CATEGORIES.map(category => {
-      const cards = window.GRAMMAR_DATA.filter(item => item.category === category).map(item => {
-        const unavailable = item.status === "preparing" || unavailableFiles.has(item.filename);
-        const href = unavailable ? "" : ` data-href="${escapeHtml(item.filename)}" tabindex="0" role="link"`;
-        const status = unavailable ? ` <span class="resource-status">（教材準備中）</span>` : "";
-        return `<article class="resource-card${unavailable ? " is-placeholder" : ""}" data-category="${escapeHtml(item.category)}" style="border-left-color:${escapeHtml(item.themeColor)}"${href}>
-          <button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button>
+      const cards = availableGrammarData.filter(item => item.category === category).map(item => {
+        return `<article class="resource-card" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}" data-href="${escapeHtml(item.filename)}" tabindex="0" role="link">
+          <div class="card-top"><span class="tag">${escapeHtml(item.category)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
           <h2 class="resource-title">${escapeHtml(item.title)}</h2>
-          <p class="resource-description">${escapeHtml(item.desc)}${status}</p>
+          <p class="resource-description">${escapeHtml(item.desc)}</p>
         </article>`;
       }).join("");
       return `<section class="category-section" data-category-section="${escapeHtml(category)}">
