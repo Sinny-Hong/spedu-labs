@@ -3,48 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>生活英文｜速食店點餐</title>
+<title>生活英文｜速食店點餐 A卷</title>
 
 <style>
 :root{
   --navy:#0B3768;
-  --navy2:#184F82;
+  --navy2:#164D83;
   --orange:#F59E0B;
-  --blue-soft:#EDF5FC;
-  --line:#D7E2EC;
-  --green:#198754;
+  --bg:#EAF1F7;
+  --panel:#FFFFFF;
+  --soft:#F3F7FB;
+  --line:#D6E2EC;
+
+  --blue-soft:#E9F3FC;
+  --blue:#2879BA;
+
+  --green:#218653;
   --green-soft:#E8F6EE;
-  --pink:#FFE4EA;
+
+  --pink:#FFE5EA;
   --red:#C62828;
-  --text:#16334F;
+
+  --hint:#FFF1A8;
+  --hint-line:#F5C84C;
+
+  --text:#173552;
 }
 
-*{box-sizing:border-box}
+/* =========================
+   BASE
+========================= */
 
-html,body{
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
   margin:0;
   padding:0;
-  background:#EAF1F7;
-  color:var(--text);
-  font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
 }
 
 body{
-  padding:18px 0 40px;
+  background:var(--bg);
+  color:var(--text);
+  font-family:
+    "Noto Sans TC",
+    "Microsoft JhengHei",
+    sans-serif;
+  padding:18px 0 42px;
 }
 
-/* ========================
-   五張 A4 橫式
-======================== */
+button{
+  font:inherit;
+}
+
+/* =========================
+   A4 LANDSCAPE
+========================= */
 
 .sheet{
   width:297mm;
   height:210mm;
-  margin:0 auto 20px;
-  padding:8mm 9mm 8mm;
-  background:#fff;
+
+  margin:0 auto 18px;
+  padding:7mm 8mm;
+
   overflow:hidden;
-  box-shadow:0 6px 20px rgba(0,0,0,.12);
+
+  background:#fff;
+  box-shadow:0 5px 18px rgba(0,0,0,.12);
+
   page-break-after:always;
 }
 
@@ -52,173 +81,269 @@ body{
   page-break-after:auto;
 }
 
-/* ========================
-   每頁標題
-======================== */
+/* =========================
+   HEADER
+========================= */
 
 .page-header{
-  height:18mm;
+  height:15mm;
+
   display:flex;
-  align-items:flex-end;
+  align-items:center;
   justify-content:space-between;
-  gap:10mm;
-  border-bottom:2px solid var(--navy);
-  padding-bottom:3mm;
-  margin-bottom:5mm;
-}
+  gap:8mm;
 
-.heading h1{
-  margin:0;
-  color:var(--navy);
-  font-size:22pt;
-  line-height:1;
-}
-
-.heading .sub{
-  margin-top:2mm;
-  color:var(--orange);
-  font-size:11pt;
-  font-weight:800;
-}
-
-.student-info{
-  white-space:nowrap;
-  font-size:10.5pt;
-}
-
-/* ========================
-   左右兩欄
-======================== */
-
-.page-body{
-  display:grid;
-  grid-template-columns:55% 45%;
-  gap:6mm;
-  height:calc(100% - 23mm);
-}
-
-.source-panel,
-.question-panel{
-  min-width:0;
-  height:100%;
-}
-
-/* ========================
-   MENU
-======================== */
-
-.menu-box{
-  border:2px solid var(--navy);
-  border-radius:5mm;
-  overflow:hidden;
   margin-bottom:4mm;
 }
 
-.menu-title{
-  background:var(--navy);
-  color:#fff;
-  text-align:center;
-  font-size:13pt;
-  font-weight:900;
-  padding:2.3mm;
+.title-line{
+  display:flex;
+  align-items:baseline;
+  gap:5mm;
+
+  min-width:0;
 }
 
-.menu-grid{
+.title-line h1{
+  margin:0;
+
+  color:var(--navy);
+
+  font-size:20pt;
+  line-height:1;
+
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.subtitle{
+  color:var(--orange);
+
+  font-size:10.5pt;
+  line-height:1;
+
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.student-info{
+  font-size:9.5pt;
+  white-space:nowrap;
+}
+
+/* =========================
+   BODY
+========================= */
+
+.page-body{
+  height:calc(100% - 19mm);
+
   display:grid;
+  grid-template-columns:55% 45%;
+  gap:5mm;
+}
+
+.left-panel,
+.right-panel{
+  min-width:0;
+  min-height:0;
+}
+
+/* 左側固定分成：
+   Menu + Dialogue
+*/
+.left-panel{
+  display:grid;
+  grid-template-rows:86mm 1fr;
+  gap:4mm;
+}
+
+/* =========================
+   MENU 固定框
+========================= */
+
+.menu-box{
+  height:86mm;
+
+  overflow:hidden;
+
+  border:1.8px solid var(--navy);
+  border-radius:4mm;
+
   background:#fff;
 }
 
-.cols-5{grid-template-columns:repeat(5,1fr)}
-.cols-4{grid-template-columns:repeat(4,1fr)}
-.cols-3{grid-template-columns:repeat(3,1fr)}
+.menu-title{
+  height:10mm;
 
-.menu-item{
-  min-height:29mm;
-  padding:2mm 1mm;
-  text-align:center;
-  border-right:1px solid var(--line);
-  border-bottom:1px solid var(--line);
-}
-
-.menu-item:nth-child(5n){
-  border-right:0;
-}
-
-.icon{
-  height:11mm;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:23pt;
-}
 
-.food-name{
-  margin-top:1mm;
-  color:var(--navy);
-  font-family:"Comic Sans MS","Comic Sans",cursive;
-  font-size:10.5pt;
-  font-weight:700;
-  line-height:1.05;
-}
+  background:var(--navy);
+  color:#fff;
 
-.price{
-  margin-top:1mm;
-  color:#111;
   font-size:12pt;
   font-weight:900;
 }
 
-/* Level 高時菜單再壓縮 */
-.compact .menu-item{
-  min-height:25mm;
+.menu-grid{
+  height:calc(100% - 10mm);
+
+  display:grid;
+  background:#fff;
 }
 
-.compact .icon{
-  height:9mm;
-  font-size:20pt;
+/* 依數量換格數，
+   但外框本身永遠不變
+*/
+.menu-grid.count-10{
+  grid-template-columns:repeat(5,1fr);
+  grid-template-rows:repeat(2,1fr);
 }
 
-.compact .food-name{
-  font-size:9.5pt;
+.menu-grid.count-8{
+  grid-template-columns:repeat(4,1fr);
+  grid-template-rows:repeat(2,1fr);
 }
 
-.compact .price{
-  font-size:11pt;
+.menu-grid.count-6{
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(2,1fr);
 }
 
-/* ========================
-   Dialogue
-======================== */
+.menu-grid.count-5{
+  grid-template-columns:repeat(5,1fr);
+  grid-template-rows:1fr;
+}
 
-.dialogue-title,
-.question-title{
+/* 每格平均填滿 */
+.menu-item{
+  min-width:0;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  padding:1.5mm 1mm;
+
+  text-align:center;
+
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+
+/* 最後一列／欄多一點沒關係，
+   外框會蓋住 */
+.menu-icon{
+  height:13mm;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:25pt;
+  line-height:1;
+}
+
+.menu-name{
+  margin-top:1mm;
+
   color:var(--navy);
-  font-size:14pt;
+
+  font-family:
+    "Comic Sans MS",
+    "Comic Sans",
+    "Comic Neue",
+    cursive;
+
+  font-size:10pt;
+  line-height:1.05;
+
+  font-weight:700;
+}
+
+.menu-price{
+  margin-top:1mm;
+
+  color:#111;
+
+  font-size:12pt;
   font-weight:900;
 }
 
-.dialogue-title{
-  margin:1mm 0 2mm;
+/* 品項少時稍微放大 */
+.count-5 .menu-icon{
+  font-size:29pt;
+  height:17mm;
+}
+
+.count-5 .menu-name{
+  font-size:11pt;
+}
+
+.count-5 .menu-price{
+  font-size:13pt;
+}
+
+/* =========================
+   DIALOGUE 固定框
+========================= */
+
+.dialogue-section{
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+}
+
+.section-label{
+  margin:0 0 1.5mm;
+
+  color:var(--navy);
+
+  font-size:13pt;
+  font-weight:900;
 }
 
 .dialogue-box{
-  border:1.5px solid var(--line);
+  flex:1;
+  min-height:0;
+
+  overflow:hidden;
+
+  padding:3.4mm 4mm;
+
+  border:1.3px solid var(--line);
+  border-radius:3.5mm;
+
   background:#FBFDFF;
-  border-radius:4mm;
-  padding:4mm 4mm 3mm;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
 }
 
-/* 人名固定一欄，正文一欄
-   換行自然跟正文對齊 */
+/* 人名凸排：
+   名字一欄，正文一欄
+*/
 .dialogue-line{
   display:grid;
   grid-template-columns:max-content 1fr;
   column-gap:2mm;
-  align-items:start;
-  margin-bottom:2.1mm;
-  font-family:"Comic Sans MS","Comic Sans",cursive;
-  font-size:11.5pt;
-  line-height:1.45;
+
+  margin-bottom:1.8mm;
+
+  font-family:
+    "Comic Sans MS",
+    "Comic Sans",
+    "Comic Neue",
+    cursive;
+
+  font-size:10.8pt;
+  line-height:1.4;
 }
 
 .dialogue-line:last-child{
@@ -234,45 +359,91 @@ body{
   min-width:0;
 }
 
-/* Level 4/5 長文稍縮 */
-.dialogue-long .dialogue-line{
-  font-size:10.4pt;
-  line-height:1.35;
-  margin-bottom:1.5mm;
+/* 長文本自動稍微縮小 */
+.long-dialogue .dialogue-line{
+  margin-bottom:1.25mm;
+  font-size:9.9pt;
+  line-height:1.3;
 }
 
-/* ========================
-   Questions 標題列
-======================== */
+/* =========================
+   QUESTIONS
+========================= */
 
+.right-panel{
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  min-height:0;
+}
+
+/* 原本深橫線拿掉
+   改成淡色標題框
+*/
 .question-head{
-  min-height:12mm;
+  min-height:13mm;
+
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:4mm;
-  padding:0 0 2mm;
-  margin-bottom:2mm;
-  border-bottom:2px solid var(--navy);
+  gap:3mm;
+
+  padding:1.5mm 2.5mm;
+
+  margin-bottom:2.5mm;
+
+  background:var(--soft);
+
+  border:1px solid var(--line);
+  border-radius:3mm;
+}
+
+.question-title-wrap{
+  display:flex;
+  align-items:center;
+  gap:3mm;
 }
 
 .question-title{
   margin:0;
+
+  color:var(--navy);
+
+  font-size:13.5pt;
+  font-weight:900;
+}
+
+.score{
+  min-width:12mm;
+
+  color:var(--green);
+
+  font-size:10.5pt;
+  font-weight:900;
+
+  text-align:center;
 }
 
 .tools{
   display:flex;
-  gap:2mm;
+  align-items:center;
+  gap:1.5mm;
 }
 
 .tools button{
-  border:1.5px solid #BCD0E2;
+  padding:1.4mm 2.6mm;
+
+  border:1px solid #BFD0DF;
   border-radius:8px;
+
   background:#fff;
   color:var(--navy);
-  padding:1.5mm 3mm;
-  font-size:9pt;
-  font-weight:800;
+
+  font-size:8.5pt;
+  font-weight:900;
+
   cursor:pointer;
 }
 
@@ -280,48 +451,102 @@ body{
   border-color:var(--orange);
 }
 
-/* ========================
-   Questions
-======================== */
+.tools button.active{
+  color:#8A5400;
+  background:#FFF3D8;
+  border-color:var(--orange);
+}
+
+/* =========================
+   QUESTIONS CONTENT
+========================= */
 
 .questions{
-  height:calc(100% - 14mm);
+  flex:1;
+  min-height:0;
+
   overflow:hidden;
-  font-family:"Comic Sans MS","Comic Sans",cursive;
+
+  padding:0 1mm 0 .5mm;
+
+  font-family:
+    "Comic Sans MS",
+    "Comic Sans",
+    "Comic Neue",
+    cursive;
 }
 
 .question{
-  margin-bottom:3mm;
+  margin-bottom:2.5mm;
 }
 
-.q-stem{
-  display:flex;
-  gap:2mm;
-  font-size:11pt;
-  line-height:1.3;
+.question:last-child{
+  margin-bottom:0;
+}
+
+/* 題幹 */
+.q-row{
+  display:grid;
+  grid-template-columns:12mm 1fr;
+  column-gap:1mm;
+
+  align-items:start;
+
+  font-size:10.2pt;
+  line-height:1.28;
+
   font-weight:800;
 }
 
-.q-num{
-  flex:0 0 auto;
+/* （ A ） */
+.answer-slot{
+  white-space:nowrap;
+  text-align:right;
 }
 
+.answer-letter{
+  display:inline-block;
+  min-width:4mm;
+
+  color:var(--blue);
+  font-weight:900;
+}
+
+.answer-letter.correct{
+  color:var(--green);
+}
+
+.answer-letter.solution{
+  color:var(--red);
+}
+
+/* 題目 */
+.q-text{
+  min-width:0;
+}
+
+/* 選項往右多縮排，
+   避免靠題號括號太近 */
 .options{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:1.2mm 2.5mm;
-  margin-top:1.4mm;
-  padding-left:7mm;
+
+  gap:.8mm 3mm;
+
+  margin-top:1mm;
+  margin-left:15mm;
 }
 
 .option{
-  border:1.3px solid transparent;
-  border-radius:7px;
-  padding:1.2mm 2mm;
-  font-size:10.1pt;
-  line-height:1.25;
+  padding:.8mm 1.4mm;
+
+  border:1px solid transparent;
+  border-radius:6px;
+
+  font-size:9.4pt;
+  line-height:1.2;
+
   cursor:pointer;
-  transition:.15s;
 }
 
 .option:hover{
@@ -330,48 +555,53 @@ body{
 
 /* 點選 */
 .option.selected{
-  background:#E6F1FC;
-  border-color:#3A82C4;
   color:var(--navy);
-  font-weight:800;
+  background:var(--blue-soft);
+  border-color:#6EA6D4;
 }
 
-/* 批改正確 */
+/* 批改答對 */
 .option.correct{
-  background:var(--green-soft);
-  border-color:var(--green);
   color:var(--green);
+  background:var(--green-soft);
+  border-color:#8CC6A5;
   font-weight:900;
 }
 
-/* 顯示答案 */
-.option.answer-show{
-  background:var(--pink);
-  border-color:#F4A1B2;
-  color:var(--red);
-  font-weight:900;
+/* 解答模式不需要把答案框染紅，
+   主要答案放題號括號
+*/
+.option.solution{
+  color:inherit;
+  background:transparent;
+  border-color:transparent;
 }
 
-/* ========================
-   較長題目
-======================== */
+/* =========================
+   HINT 提示
+========================= */
 
-.dense .question{
-  margin-bottom:2.1mm;
+/* 平常 span 不顯色 */
+.hint-word{
+  border-radius:4px;
+  padding:0 .6mm;
+
+  transition:
+    background .16s,
+    box-shadow .16s;
 }
 
-.dense .q-stem{
-  font-size:10.3pt;
+/* 開啟提示才亮 */
+.sheet.hint-on .hint-word{
+  background:var(--hint);
+
+  box-shadow:
+    inset 0 -1.2px 0 var(--hint-line);
 }
 
-.dense .option{
-  font-size:9.4pt;
-  padding:1mm 1.6mm;
-}
-
-/* ========================
-   Print
-======================== */
+/* =========================
+   PRINT
+========================= */
 
 @page{
   size:A4 landscape;
@@ -380,31 +610,37 @@ body{
 
 @media print{
 
-  html,body{
+  html,
+  body{
     width:297mm;
+
     margin:0;
     padding:0;
-    background:#fff;
-  }
 
-  body{
-    padding:0;
+    background:#fff;
   }
 
   .sheet{
     width:297mm;
     height:210mm;
+
     margin:0;
+
     box-shadow:none;
   }
 
   .tools{
     display:none !important;
   }
+
+  .score{
+    display:none !important;
+  }
 }
 
-/* 手機只做預覽，不特別重排 */
+/* 手機只當預覽 */
 @media screen and (max-width:900px){
+
   body{
     overflow-x:auto;
   }
@@ -422,23 +658,28 @@ body{
 
 <script>
 
-/* =====================================================
-   五頁固定資料
-   第一版先完全不亂數
-===================================================== */
+/* =========================================================
+   A1～A5
+   第一版先固定資料
+========================================================= */
 
 const levels = [
 
-/* ================= LEVEL 1 ================= */
+/* =========================================================
+   A1
+========================================================= */
 
 {
+  code:"A1",
   level:1,
+
   menu:[
     ["🥩","Steak",25],
     ["🥗","Salad",6],
     ["🍟","French Fries",5],
     ["🥣","Bean Soup",5],
     ["☕","Coffee",4],
+
     ["🍗","Fried Chicken",12],
     ["🍕","Pizza",18],
     ["🍔","Hamburger",8],
@@ -454,6 +695,14 @@ const levels = [
     ["Tom","OK! Let's order."]
   ],
 
+  hintWords:[
+    "Steak",
+    "Salad",
+    "Tea",
+    "how much",
+    "total"
+  ],
+
   questions:[
     {
       stem:"What does Tom want to eat?",
@@ -465,11 +714,18 @@ const levels = [
       ],
       answer:1
     },
+
     {
       stem:"How much is Lily's Salad?",
-      options:["$4","$5","$6","$7"],
+      options:[
+        "$4",
+        "$5",
+        "$6",
+        "$7"
+      ],
       answer:2
     },
+
     {
       stem:"What does Lily want to drink?",
       options:[
@@ -480,23 +736,46 @@ const levels = [
       ],
       answer:0
     },
+
     {
       stem:"How much is Lily's total order (Salad + Tea)?",
-      options:["$9","$10","$11","$12"],
+      options:[
+        "$9",
+        "$10",
+        "$11",
+        "$12"
+      ],
       answer:1
+    },
+
+    {
+      stem:"Which item is $25?",
+      options:[
+        "Steak",
+        "Pizza",
+        "Hamburger",
+        "Fried Chicken"
+      ],
+      answer:0
     }
   ]
 },
 
-/* ================= LEVEL 2 ================= */
+
+/* =========================================================
+   A2
+========================================================= */
 
 {
+  code:"A2",
   level:2,
+
   menu:[
     ["🍔","Hamburger",8],
     ["🌭","Hot Dog",5],
     ["🥪","Ham Sandwich",6],
     ["🍕","Pizza",18],
+
     ["🍟","French Fries",5],
     ["🥗","Salad",6],
     ["☕","Coffee",4],
@@ -511,6 +790,14 @@ const levels = [
     ["Sam","OK. One Hamburger, one Ham Sandwich, and one Tea."]
   ],
 
+  hintWords:[
+    "Hamburger",
+    "Ham Sandwich",
+    "Tea",
+    "how much",
+    "who"
+  ],
+
   questions:[
     {
       stem:"What does Sam order?",
@@ -522,33 +809,68 @@ const levels = [
       ],
       answer:1
     },
+
     {
       stem:"Who wants to drink Tea?",
-      options:["Sam","Amy","Tom","Lily"],
+      options:[
+        "Sam",
+        "Amy",
+        "Tom",
+        "Lily"
+      ],
       answer:1
     },
+
     {
       stem:"How much is Amy's Hamburger?",
-      options:["$5","$6","$8","$10"],
+      options:[
+        "$5",
+        "$6",
+        "$8",
+        "$10"
+      ],
       answer:2
     },
+
     {
       stem:"How much is Sam's Ham Sandwich?",
-      options:["$4","$5","$6","$8"],
+      options:[
+        "$4",
+        "$5",
+        "$6",
+        "$8"
+      ],
+      answer:2
+    },
+
+    {
+      stem:"How much is Amy's total order (Hamburger + Tea)?",
+      options:[
+        "$10",
+        "$11",
+        "$12",
+        "$14"
+      ],
       answer:2
     }
   ]
 },
 
-/* ================= LEVEL 3 ================= */
+
+/* =========================================================
+   A3
+========================================================= */
 
 {
+  code:"A3",
   level:3,
+
   menu:[
     ["🍗","Fried Chicken",12],
     ["🍔","Hamburger",8],
     ["🥣","Bean Soup",5],
     ["🍟","French Fries",5],
+
     ["☕","Coffee",4],
     ["🍵","Tea",4],
     ["🍪","Cookies",3],
@@ -565,6 +887,16 @@ const levels = [
     ["Ben","Good idea!"]
   ],
 
+  hintWords:[
+    "Fried Chicken",
+    "Bean Soup",
+    "Coffee",
+    "Tea",
+    "Cookies",
+    "how much",
+    "how many"
+  ],
+
   questions:[
     {
       stem:"What does Ben want to eat?",
@@ -576,28 +908,62 @@ const levels = [
       ],
       answer:1
     },
+
     {
       stem:"How many people order a drink?",
-      options:["One","Two","Three","Four"],
+      options:[
+        "One",
+        "Two",
+        "Three",
+        "Four"
+      ],
       answer:1
     },
+
     {
       stem:"What snack do they share?",
-      options:["Cookies","Ice Cream","Salad","French Fries"],
+      options:[
+        "Cookies",
+        "Ice Cream",
+        "Salad",
+        "French Fries"
+      ],
       answer:0
     },
+
     {
       stem:"How much is Ben's order (Fried Chicken + Bean Soup)?",
-      options:["$15","$16","$17","$18"],
+      options:[
+        "$15",
+        "$16",
+        "$17",
+        "$18"
+      ],
       answer:2
+    },
+
+    {
+      stem:"How much is Amy's Coffee?",
+      options:[
+        "$3",
+        "$4",
+        "$5",
+        "$6"
+      ],
+      answer:1
     }
   ]
 },
 
-/* ================= LEVEL 4 ================= */
+
+/* =========================================================
+   A4
+========================================================= */
 
 {
+  code:"A4",
   level:4,
+
   menu:[
     ["🍔","Hamburger",8],
     ["🍕","Pizza",18],
@@ -616,17 +982,40 @@ const levels = [
     ["Dad","You are welcome."]
   ],
 
+  hintWords:[
+    "pay",
+    "Hamburger",
+    "Tea",
+    "Pizza",
+    "French Fries",
+    "Vegetable Soup",
+    "how much",
+    "total"
+  ],
+
   questions:[
     {
       stem:"Who pays for the food today?",
-      options:["Dad","Son","Daughter","The clerk"],
+      options:[
+        "Dad",
+        "Son",
+        "Daughter",
+        "The clerk"
+      ],
       answer:0
     },
+
     {
       stem:"How much is the Hamburger?",
-      options:["$4","$5","$8","$18"],
+      options:[
+        "$4",
+        "$5",
+        "$8",
+        "$18"
+      ],
       answer:2
     },
+
     {
       stem:"What does the Daughter want to eat?",
       options:[
@@ -637,20 +1026,40 @@ const levels = [
       ],
       answer:0
     },
+
     {
       stem:"How much does Dad need to pay for everyone?",
-      options:["$35","$40","$45","$50"],
+      options:[
+        "$35",
+        "$40",
+        "$45",
+        "$50"
+      ],
       answer:1
+    },
+
+    {
+      stem:"How much is the Son's order (Hamburger + Tea)?",
+      options:[
+        "$10",
+        "$11",
+        "$12",
+        "$14"
+      ],
+      answer:2
     }
   ]
 },
 
-/* ================= LEVEL 5 ================= */
+
+/* =========================================================
+   A5
+========================================================= */
 
 {
+  code:"A5",
   level:5,
 
-  /* 文本長，只留一排 5 項 */
   menu:[
     ["🍵","Tea",6],
     ["🍔","Hamburger",8],
@@ -671,12 +1080,30 @@ const levels = [
     ["Ben","Yes, let's go."]
   ],
 
+  hintWords:[
+    "Tea",
+    "Buy 1 Get 1 Free",
+    "$6",
+    "Hamburger",
+    "Pizza",
+    "Bean Soup",
+    "Ham Sandwich",
+    "how much",
+    "total"
+  ],
+
   questions:[
     {
       stem:"How much is one Tea if they buy two today?",
-      options:["$2","$3","$4","$6"],
+      options:[
+        "$2",
+        "$3",
+        "$4",
+        "$6"
+      ],
       answer:1
     },
+
     {
       stem:"What does Ben order?",
       options:[
@@ -687,15 +1114,38 @@ const levels = [
       ],
       answer:0
     },
+
     {
       stem:"How much is Amy's Hamburger?",
-      options:["$5","$6","$8","$10"],
+      options:[
+        "$5",
+        "$6",
+        "$8",
+        "$10"
+      ],
       answer:2
     },
+
     {
       stem:"What is the total price for all three people?",
-      options:["$37","$40","$43","$45"],
+      options:[
+        "$37",
+        "$40",
+        "$43",
+        "$45"
+      ],
       answer:2
+    },
+
+    {
+      stem:"Which item is Buy 1 Get 1 Free today?",
+      options:[
+        "Tea",
+        "Hamburger",
+        "Pizza",
+        "Bean Soup"
+      ],
+      answer:0
     }
   ]
 }
@@ -703,80 +1153,210 @@ const levels = [
 ];
 
 
-/* =====================================================
-   Render
-===================================================== */
+/* =========================================================
+   STATE
+========================================================= */
 
-const pageRoot = document.getElementById("pages");
+const selections =
+  levels.map(level =>
+    Array(level.questions.length).fill(null)
+  );
+
+const hintStates =
+  levels.map(() => false);
+
+
+/* =========================================================
+   ESCAPE / HIGHLIGHT
+========================================================= */
+
+function escapeRegExp(str){
+  return str.replace(
+    /[.*+?^${}()|[\]\\]/g,
+    "\\$&"
+  );
+}
+
+
+function highlightText(text,words){
+
+  let result = text;
+
+  const sorted =
+    [...words].sort(
+      (a,b)=>b.length-a.length
+    );
+
+  sorted.forEach(word=>{
+
+    const regex =
+      new RegExp(
+        `(${escapeRegExp(word)})`,
+        "gi"
+      );
+
+    result =
+      result.replace(
+        regex,
+        `<span class="hint-word">$1</span>`
+      );
+
+  });
+
+  return result;
+}
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+const pageRoot =
+  document.getElementById("pages");
+
 
 levels.forEach((data,pageIndex)=>{
 
-  const compactMenu = data.menu.length <= 6;
+  const countClass =
+    `count-${data.menu.length}`;
 
-  const menuCols =
-    data.menu.length <= 5 ? "cols-5" :
-    data.menu.length <= 8 ? "cols-4" :
-    "cols-5";
+  const menuHTML =
+    data.menu.map(item=>`
 
-  const menuHTML = data.menu.map(item=>`
-    <div class="menu-item">
-      <div class="icon">${item[0]}</div>
-      <div class="food-name">${item[1]}</div>
-      <div class="price">$${item[2]}</div>
-    </div>
-  `).join("");
+      <div class="menu-item">
 
-  const dialogueHTML = data.dialogue.map(line=>`
-    <div class="dialogue-line">
-      <div class="speaker">${line[0]}:</div>
-      <div class="speech">${line[1]}</div>
-    </div>
-  `).join("");
+        <div class="menu-icon">
+          ${item[0]}
+        </div>
 
-  const questionsHTML = data.questions.map((q,qIndex)=>`
+        <div class="menu-name">
+          ${highlightText(
+            item[1],
+            data.hintWords
+          )}
+        </div>
 
-    <div class="question">
+        <div class="menu-price">
+          $${item[2]}
+        </div>
 
-      <div class="q-stem">
-        <span class="q-num">（　）${qIndex+1}.</span>
-        <span>${q.stem}</span>
       </div>
 
-      <div class="options">
+    `).join("");
 
-        ${q.options.map((opt,optIndex)=>`
-          <div
-            class="option"
-            data-page="${pageIndex}"
-            data-q="${qIndex}"
-            data-opt="${optIndex}"
-            onclick="chooseAnswer(${pageIndex},${qIndex},${optIndex},this)"
-          >
-            (${String.fromCharCode(65+optIndex)}) ${opt}
+
+  const dialogueHTML =
+    data.dialogue.map(line=>`
+
+      <div class="dialogue-line">
+
+        <div class="speaker">
+          ${line[0]}:
+        </div>
+
+        <div class="speech">
+          ${highlightText(
+            line[1],
+            data.hintWords
+          )}
+        </div>
+
+      </div>
+
+    `).join("");
+
+
+  const questionsHTML =
+    data.questions.map(
+      (q,qIndex)=>`
+
+      <div class="question">
+
+        <div class="q-row">
+
+          <div class="answer-slot">
+            （<span
+              class="answer-letter"
+              id="answer-${pageIndex}-${qIndex}"
+            ></span>）
           </div>
-        `).join("")}
+
+          <div class="q-text">
+            ${qIndex+1}.
+            ${highlightText(
+              q.stem,
+              data.hintWords
+            )}
+          </div>
+
+        </div>
+
+
+        <div class="options">
+
+          ${q.options.map(
+            (opt,optIndex)=>`
+
+            <div
+              class="option"
+              data-page="${pageIndex}"
+              data-q="${qIndex}"
+              data-opt="${optIndex}"
+              onclick="
+                chooseAnswer(
+                  ${pageIndex},
+                  ${qIndex},
+                  ${optIndex},
+                  this
+                )
+              "
+            >
+              (${String.fromCharCode(65+optIndex)})
+              ${highlightText(
+                opt,
+                data.hintWords
+              )}
+            </div>
+
+          `).join("")}
+
+        </div>
 
       </div>
 
-    </div>
+    `).join("");
 
-  `).join("");
 
-  pageRoot.insertAdjacentHTML("beforeend",`
+  pageRoot.insertAdjacentHTML(
+    "beforeend",
+    `
 
-    <section class="sheet">
+    <section
+      class="sheet"
+      id="sheet-${pageIndex}"
+    >
+
+      <!-- HEADER -->
 
       <header class="page-header">
 
-        <div class="heading">
-          <h1>生活英文｜速食店點餐</h1>
-          <div class="sub">
-            Fast Food Menu ・ Level ${data.level}
+        <div class="title-line">
+
+          <h1>
+            生活英文｜速食店點餐
+          </h1>
+
+          <div class="subtitle">
+            Fast Food Menu ・
+            ${data.code} ・
+            Level ${data.level}
           </div>
+
         </div>
 
         <div class="student-info">
-          班級 ______　姓名 __________
+          班級 ______　
+          姓名 __________
         </div>
 
       </header>
@@ -785,60 +1365,102 @@ levels.forEach((data,pageIndex)=>{
       <div class="page-body">
 
         <!-- LEFT -->
-        <div class="source-panel">
 
-          <div class="menu-box ${compactMenu ? "compact" : ""}">
+        <div class="left-panel">
+
+          <!-- MENU -->
+
+          <section class="menu-box">
 
             <div class="menu-title">
               TODAY'S MENU
             </div>
 
-            <div class="menu-grid ${menuCols}">
+            <div
+              class="menu-grid ${countClass}"
+            >
               ${menuHTML}
             </div>
 
-          </div>
+          </section>
 
 
-          <div class="dialogue-title">
-            Dialogue
-          </div>
+          <!-- DIALOGUE -->
 
-          <div class="
-            dialogue-box
-            ${data.level >= 4 ? "dialogue-long" : ""}
-          ">
-            ${dialogueHTML}
-          </div>
+          <section class="dialogue-section">
+
+            <h2 class="section-label">
+              Dialogue
+            </h2>
+
+            <div
+              class="
+                dialogue-box
+                ${
+                  data.dialogue.length >= 8
+                  ? "long-dialogue"
+                  : ""
+                }
+              "
+            >
+              ${dialogueHTML}
+            </div>
+
+          </section>
 
         </div>
 
 
         <!-- RIGHT -->
-        <div class="question-panel">
+
+        <section class="right-panel">
 
           <div class="question-head">
 
-            <h2 class="question-title">
-              Questions
-            </h2>
+            <div class="question-title-wrap">
+
+              <h2 class="question-title">
+                Questions
+              </h2>
+
+              <div
+                class="score"
+                id="score-${pageIndex}"
+              ></div>
+
+            </div>
+
 
             <div class="tools">
 
               <button
-                onclick="gradePage(${pageIndex})"
+                onclick="
+                  toggleHint(${pageIndex},this)
+                "
+              >
+                提示
+              </button>
+
+              <button
+                onclick="
+                  gradePage(${pageIndex})
+                "
               >
                 批改
               </button>
 
               <button
-                onclick="clearPage(${pageIndex})"
+                onclick="
+                  clearPage(${pageIndex})
+                "
               >
                 清除
               </button>
 
               <button
-                onclick="showAnswers(${pageIndex})"
+                onclick="
+                  showAnswers(${pageIndex})
+                "
               >
                 解答
               </button>
@@ -847,140 +1469,310 @@ levels.forEach((data,pageIndex)=>{
 
           </div>
 
-          <div class="
-            questions
-            ${data.level >= 4 ? "dense" : ""}
-          ">
+
+          <div class="questions">
             ${questionsHTML}
           </div>
 
-        </div>
+        </section>
 
       </div>
 
     </section>
 
-  `);
+    `
+  );
 
 });
 
 
-/* =====================================================
-   Answer state
-===================================================== */
+/* =========================================================
+   CHOOSE
+========================================================= */
 
-const selections = levels.map(level =>
-  Array(level.questions.length).fill(null)
-);
+function chooseAnswer(
+  page,
+  q,
+  opt,
+  element
+){
+
+  const options =
+    document.querySelectorAll(
+      `.option[
+        data-page="${page}"
+      ][
+        data-q="${q}"
+      ]`
+    );
 
 
-/* 點選：藍色 */
-function chooseAnswer(page,q,opt,el){
+  options.forEach(el=>{
 
-  const pageOptions = document.querySelectorAll(
-    `.option[data-page="${page}"][data-q="${q}"]`
-  );
-
-  pageOptions.forEach(x=>{
-    x.classList.remove(
+    el.classList.remove(
       "selected",
       "correct",
-      "answer-show"
+      "solution"
     );
+
   });
+
 
   selections[page][q] = opt;
 
-  el.classList.add("selected");
+
+  element.classList.add(
+    "selected"
+  );
+
+
+  const letter =
+    String.fromCharCode(
+      65 + opt
+    );
+
+
+  const slot =
+    document.getElementById(
+      `answer-${page}-${q}`
+    );
+
+
+  slot.textContent =
+    letter;
+
+  slot.className =
+    "answer-letter";
+
+
+  document.getElementById(
+    `score-${page}`
+  ).textContent = "";
+
 }
 
 
-/* =====================================================
-   批改
-   正確：綠色
-   錯誤：清除，讓學生重答
-===================================================== */
+/* =========================================================
+   GRADE
+========================================================= */
 
 function gradePage(page){
 
-  levels[page].questions.forEach((q,qIndex)=>{
+  let correctCount = 0;
 
-    const chosen = selections[page][qIndex];
 
-    const options = document.querySelectorAll(
-      `.option[data-page="${page}"][data-q="${qIndex}"]`
-    );
+  levels[page].questions.forEach(
+    (q,qIndex)=>{
 
-    options.forEach(x=>{
-      x.classList.remove(
-        "correct",
-        "answer-show"
-      );
-    });
+      const chosen =
+        selections[page][qIndex];
 
-    if(chosen === null) return;
 
-    if(chosen === q.answer){
+      const options =
+        document.querySelectorAll(
+          `.option[
+            data-page="${page}"
+          ][
+            data-q="${qIndex}"
+          ]`
+        );
 
-      options[chosen].classList.remove("selected");
-      options[chosen].classList.add("correct");
 
-    }else{
+      const slot =
+        document.getElementById(
+          `answer-${page}-${qIndex}`
+        );
 
-      options[chosen].classList.remove("selected");
-      selections[page][qIndex] = null;
+
+      options.forEach(el=>{
+        el.classList.remove(
+          "correct",
+          "solution"
+        );
+      });
+
+
+      if(chosen === null){
+        return;
+      }
+
+
+      if(chosen === q.answer){
+
+        correctCount++;
+
+        options[chosen]
+          .classList
+          .remove("selected");
+
+        options[chosen]
+          .classList
+          .add("correct");
+
+        slot.className =
+          "answer-letter correct";
+
+      }else{
+
+        /* 錯誤清掉，
+           讓學生重新作答 */
+
+        options[chosen]
+          .classList
+          .remove("selected");
+
+        selections[page][qIndex]
+          = null;
+
+        slot.textContent = "";
+
+        slot.className =
+          "answer-letter";
+      }
 
     }
+  );
 
-  });
+
+  document.getElementById(
+    `score-${page}`
+  ).textContent =
+    `${correctCount} / ${levels[page].questions.length}`;
 
 }
 
 
-/* =====================================================
-   清除
-===================================================== */
+/* =========================================================
+   CLEAR
+========================================================= */
 
 function clearPage(page){
 
   selections[page].fill(null);
 
-  document.querySelectorAll(
-    `.option[data-page="${page}"]`
-  ).forEach(el=>{
-    el.classList.remove(
-      "selected",
-      "correct",
-      "answer-show"
-    );
-  });
+
+  document
+    .querySelectorAll(
+      `.option[data-page="${page}"]`
+    )
+    .forEach(el=>{
+
+      el.classList.remove(
+        "selected",
+        "correct",
+        "solution"
+      );
+
+    });
+
+
+  levels[page].questions.forEach(
+    (_,qIndex)=>{
+
+      const slot =
+        document.getElementById(
+          `answer-${page}-${qIndex}`
+        );
+
+      slot.textContent = "";
+
+      slot.className =
+        "answer-letter";
+
+    }
+  );
+
+
+  document.getElementById(
+    `score-${page}`
+  ).textContent = "";
 
 }
 
 
-/* =====================================================
-   解答：粉底紅字
-===================================================== */
+/* =========================================================
+   SHOW ANSWERS
+========================================================= */
 
 function showAnswers(page){
 
-  levels[page].questions.forEach((q,qIndex)=>{
+  levels[page].questions.forEach(
+    (q,qIndex)=>{
 
-    const options = document.querySelectorAll(
-      `.option[data-page="${page}"][data-q="${qIndex}"]`
+      const options =
+        document.querySelectorAll(
+          `.option[
+            data-page="${page}"
+          ][
+            data-q="${qIndex}"
+          ]`
+        );
+
+
+      options.forEach(el=>{
+        el.classList.remove(
+          "selected",
+          "correct",
+          "solution"
+        );
+      });
+
+
+      const letter =
+        String.fromCharCode(
+          65 + q.answer
+        );
+
+
+      const slot =
+        document.getElementById(
+          `answer-${page}-${qIndex}`
+        );
+
+
+      slot.textContent =
+        letter;
+
+      slot.className =
+        "answer-letter solution";
+
+    }
+  );
+
+
+  document.getElementById(
+    `score-${page}`
+  ).textContent = "";
+
+}
+
+
+/* =========================================================
+   HINT
+========================================================= */
+
+function toggleHint(page,button){
+
+  hintStates[page] =
+    !hintStates[page];
+
+
+  const sheet =
+    document.getElementById(
+      `sheet-${page}`
     );
 
-    options.forEach(el=>{
-      el.classList.remove(
-        "selected",
-        "correct",
-        "answer-show"
-      );
-    });
 
-    options[q.answer].classList.add("answer-show");
+  sheet.classList.toggle(
+    "hint-on",
+    hintStates[page]
+  );
 
-  });
+
+  button.classList.toggle(
+    "active",
+    hintStates[page]
+  );
 
 }
 
