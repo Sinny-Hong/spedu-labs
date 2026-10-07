@@ -1,15 +1,87 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Test 5｜測試檔案</title>
-  <style>
-    body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:"Noto Sans TC",system-ui,sans-serif;background:#f5f7fb;color:#17365d}
-    main{text-align:center;padding:32px}
-    h1{margin:0 0 12px;font-size:clamp(2rem,6vw,4rem)}
-    p{margin:0;color:#64748b;font-size:clamp(1.1rem,3vw,1.5rem)}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG 日系插畫人物</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #E8ECEF;
+        }
+        .svg-container {
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #FDF7F3;
+        }
+    </style>
 </head>
-<body><main><h1>Test 5</h1><p>測試檔案</p></main></body>
+<body>
+
+<div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+      <defs>
+        <filter id="noiseFilter" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" />
+          <feColorMatrix type="matrix" values="1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 0.12 0" />
+        </filter>
+        <filter id="blushBlur" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="4" />
+        </filter>
+        <style>
+          .skin { fill: #FCE3D2; }
+          .skin-shadow { fill: #EFCFBC; stroke: #EFCFBC; stroke-width: 4; stroke-linecap: round; }
+          .hair { fill: #2B2F36; stroke: #2B2F36; stroke-width: 4; stroke-linejoin: round; }
+          .eye { fill: #332C28; }
+          .mouth { fill: #DF6C6C; stroke: #DF6C6C; stroke-width: 3; stroke-linejoin: round; }
+          .blush { fill: #FF9B9B; opacity: 0.5; filter: url(#blushBlur); }
+          .clothes { fill: #97AFC9; }
+        </style>
+      </defs>
+
+      <rect width="400" height="400" fill="#FDF7F3" />
+
+      <g transform="translate(0, 15)">
+        <path d="M175,270 L175,320 L225,320 L225,270 Z" class="skin-shadow" />
+        <path d="M175,280 C175,280 200,300 225,280 L250,340 L150,340 Z" class="clothes" stroke="#879EBA" stroke-width="4" stroke-linejoin="round"/>
+        
+        <circle cx="200" cy="180" r="85" class="hair" />
+
+        <path d="M130,195 C110,195 110,225 130,225 Z" class="skin" />
+        <path d="M270,195 C290,195 290,225 270,225 Z" class="skin" />
+        <path d="M123,205 Q117,210 123,215" fill="none" class="skin-shadow" />
+        <path d="M277,205 Q283,210 277,215" fill="none" class="skin-shadow" />
+
+        <path d="M125,185 C125,260 155,285 200,285 C245,285 275,260 275,185 C275,130 125,130 125,185 Z" class="skin" />
+
+        <path d="M115,185 C110,140 135,100 170,85 C185,78 190,85 200,95 C210,75 250,80 275,105 C295,125 295,160 285,185 C295,200 270,210 260,185 C255,205 230,205 225,185 C220,200 195,200 190,180 C185,200 160,200 155,180 C150,205 125,205 115,185 Z" class="hair" />
+        
+        <path d="M145,115 Q155,110 165,120" fill="none" stroke="#565F6B" stroke-width="6" stroke-linecap="round" />
+        <path d="M135,135 Q145,130 150,140" fill="none" stroke="#565F6B" stroke-width="6" stroke-linecap="round" />
+
+        <ellipse cx="155" cy="225" rx="16" ry="10" class="blush" />
+        <ellipse cx="245" cy="225" rx="16" ry="10" class="blush" />
+
+        <circle cx="165" cy="205" r="6" class="eye" />
+        <circle cx="235" cy="205" r="6" class="eye" />
+
+        <path d="M152,185 Q165,180 175,188" fill="none" stroke="#332C28" stroke-width="5" stroke-linecap="round" />
+        <path d="M225,188 Q235,180 248,185" fill="none" stroke="#332C28" stroke-width="5" stroke-linecap="round" />
+
+        <path d="M190,232 Q200,232 210,232 Q210,250 200,250 Q190,250 190,232 Z" class="mouth" />
+      </g>
+
+      <rect width="100%" height="100%" filter="url(#noiseFilter)" pointer-events="none" />
+    </svg>
+</div>
+
+</body>
 </html>
