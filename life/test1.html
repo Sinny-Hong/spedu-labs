@@ -56,7 +56,7 @@
       
       <!-- 關卡切換按鈕 -->
       <button onclick="toggleLevelMenu()" class="bg-amber-500 hover:bg-amber-400 active:scale-95 px-3.5 py-1.5 rounded-lg border border-amber-400 text-sm lg:text-base font-bold transition flex items-center gap-2 text-slate-900 shadow-sm">
-        <span id="current-level-btn">關卡 1 / 5</span>
+        <span id="current-level-btn">情境 1 / 5</span>
         <span class="text-xs">▼</span>
       </button>
 
@@ -76,10 +76,10 @@
       <!-- 聊天室頂部 -->
       <div class="bg-orange-500 text-white px-4 py-3 flex items-center justify-between shrink-0 rounded-t-2xl">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-amber-300 flex items-center justify-center text-xl shadow-inner border-2 border-white">🧑‍💻</div>
+          <div id="chat-avatar" class="w-10 h-10 rounded-full bg-amber-200 flex items-center justify-center text-2xl shadow-inner border-2 border-white text-slate-800">✈️</div>
           <div>
             <div class="flex items-center gap-2">
-              <span id="chat-tag" class="bg-amber-300 text-orange-900 text-xs font-black px-2 py-0.5 rounded">01 感情詐騙</span>
+              <span id="chat-tag" class="bg-amber-300 text-orange-900 text-xs font-black px-2 py-0.5 rounded">01 跨國網友</span>
               <h2 id="chat-name" class="font-bold text-base lg:text-lg">網友宇哲</h2>
             </div>
             <p id="chat-status" class="text-xs text-orange-100 mt-0.5">認識半年，從未視訊的跨國網友</p>
@@ -105,7 +105,7 @@
       <div class="bg-white rounded-2xl shadow-sm border border-orange-200 p-4 lg:p-6 flex flex-col gap-4 shrink-0 h-fit">
         <div class="flex items-center justify-between border-b border-orange-100 pb-2.5">
           <h3 class="text-lg lg:text-xl font-black text-orange-900 flex items-center gap-2">
-            <span>🤔</span>
+            <span class="text-2xl">🐰💬</span>
             <span id="question-title">你要傳送哪句話回覆對方？</span>
           </h3>
           <span id="phase-indicator" class="text-xs lg:text-sm font-bold text-orange-700 bg-orange-100 border border-orange-200 px-2.5 py-1 rounded-md">
@@ -215,7 +215,7 @@
 
   <!-- ==================== 互動腳本 ==================== -->
   <script>
-    // 內建合成音效產生器 (Web Audio API)，免載入外部音檔
+    // 內建合成音效產生器 (柔和的波聲)
     function playDing() {
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -225,24 +225,26 @@
         const gainNode = ctx.createGain();
         osc.connect(gainNode);
         gainNode.connect(ctx.destination);
+        
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1500, ctx.currentTime + 0.1);
-        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.frequency.setValueAtTime(500, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
         osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.3);
-      } catch(e) {} // 忽略瀏覽器阻擋自動播放的錯誤
+        osc.stop(ctx.currentTime + 0.15);
+      } catch(e) {}
     }
 
-    // 關卡總資料
+    // 關卡總資料 (標題不再破哏)
     const levelsData = [
       {
-        id: "01",
-        tag: "感情詐騙",
+        id: "情境 01",
+        tag: "跨國網友",
         name: "網友宇哲",
         status: "認識半年，從未視訊的跨國網友",
-        systemPrompt: "【系統提示】你與網友宇哲已經認識半年了。",
+        avatar: "✈️",
+        systemPrompt: "【情境提示】你與網友宇哲已經認識半年了。",
         phases: [
           {
             scammerMsg: "寶貝，下個月我就能飛去台灣找你了！我偷偷挑了一條很貴的名牌項鍊要先寄給你當情人節禮物，想給你一個大驚喜！🎁",
@@ -282,11 +284,12 @@
         ]
       },
       {
-        id: "02",
-        tag: "深夜邀約",
+        id: "情境 02",
+        tag: "遊戲戰友",
         name: "遊戲會長 星辰",
         status: "常帶你練等、聲音好聽的遊戲戰友",
-        systemPrompt: "【系統提示】你與星辰經常在深夜一起連線打遊戲。",
+        avatar: "🎮",
+        systemPrompt: "【情境提示】你與星辰經常在深夜一起連線打遊戲。",
         phases: [
           {
             scammerMsg: "今天打王辛苦了！每次跟你一起玩都覺得好有默契，你對我也有一樣的感覺嗎？",
@@ -326,11 +329,12 @@
         ]
       },
       {
-        id: "03",
-        tag: "假試鏡真騙照",
+        id: "情境 03",
+        tag: "IG 攝影師",
         name: "攝影師 Kevin",
-        status: "IG 上主動搭訕，自稱在找模特兒",
-        systemPrompt: "【系統提示】IG 收到陌生私訊，對方頭貼看起來是專業攝影師。",
+        status: "IG 上主動搭訕，自稱在找模特兒的陌生人",
+        avatar: "📸",
+        systemPrompt: "【情境提示】IG 收到陌生私訊，對方頭貼看起來是專業攝影師。",
         phases: [
           {
             scammerMsg: "你的外型真的很亮眼，我最近在籌備一個青春主題的攝影展，覺得你非常適合當我的女主角！",
@@ -370,11 +374,12 @@
         ]
       },
       {
-        id: "04",
-        tag: "情緒勒索",
+        id: "情境 04",
+        tag: "網戀對象",
         name: "網戀對象 小婷",
-        status: "剛交往一個月，極度黏人",
-        systemPrompt: "【系統提示】你正在跟同學分組討論報告，稍微晚了回覆訊息。",
+        status: "剛交往一個月，極度黏人的對象",
+        avatar: "📱",
+        systemPrompt: "【情境提示】你正在跟同學分組討論報告，稍微晚了回覆訊息。",
         phases: [
           {
             scammerMsg: "寶貝，你怎麼十分鐘都沒回我訊息？你在跟誰聊天？是不是背著我跟別人亂搞？",
@@ -414,11 +419,12 @@
         ]
       },
       {
-        id: "05",
-        tag: "威脅恐嚇",
+        id: "情境 05",
+        tag: "前網戀對象",
         name: "前網戀對象 阿豹",
         status: "提分手後死纏爛打的恐怖網友",
-        systemPrompt: "【系統提示】你堅持要結束這段網路關係，阿豹突然情緒失控。",
+        avatar: "💢",
+        systemPrompt: "【情境提示】你堅持要結束這段網路關係，阿豹突然情緒失控。",
         phases: [
           {
             scammerMsg: "你說分就分？你把我當什麼？我這幾個月花在你身上的時間和買遊戲點數給你的錢怎麼算？",
@@ -459,7 +465,6 @@
       }
     ];
 
-    // 紙飛機 SVG Icon
     const planeIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>`;
 
     let currentLevelIndex = 0;
@@ -469,13 +474,12 @@
     const chatContainer = document.getElementById("chat-container");
     const levelMenu = document.getElementById("level-menu");
 
-    // 初始化選單
     function initMenu() {
       levelMenu.innerHTML = "";
       levelsData.forEach((lvl, idx) => {
         const btn = document.createElement("button");
-        btn.className = "text-left px-4 py-3 hover:bg-orange-50 border-b border-orange-100 last:border-0 font-bold text-slate-700 w-full";
-        btn.innerHTML = `<span class="text-orange-600 mr-1">${lvl.id}</span> ${lvl.tag}`;
+        btn.className = "text-left px-4 py-3 hover:bg-orange-50 border-b border-orange-100 last:border-0 font-bold text-slate-700 w-full flex items-center gap-2";
+        btn.innerHTML = `<span class="text-orange-600">${lvl.id.replace('情境 ', '0')}</span> <span>${lvl.tag}</span>`;
         btn.onclick = () => {
           levelMenu.classList.add("hidden");
           loadLevel(idx);
@@ -488,7 +492,6 @@
       levelMenu.classList.toggle("hidden");
     }
 
-    // 載入指定關卡
     function loadLevel(index) {
       currentLevelIndex = index;
       currentPhase = 0;
@@ -496,9 +499,11 @@
       
       const lvl = levelsData[currentLevelIndex];
       
-      document.getElementById("current-level-btn").textContent = `關卡 ${index + 1} / 5`;
+      document.getElementById("current-level-btn").textContent = `${lvl.id} / 5`;
       document.getElementById("error-indicator").textContent = errorCount;
-      document.getElementById("chat-tag").textContent = `${lvl.id} ${lvl.tag}`;
+      
+      document.getElementById("chat-avatar").textContent = lvl.avatar;
+      document.getElementById("chat-tag").textContent = `${lvl.id.replace('情境 ', '0')} ${lvl.tag}`;
       document.getElementById("chat-name").textContent = lvl.name;
       document.getElementById("chat-status").textContent = lvl.status;
       
@@ -510,7 +515,6 @@
       renderPhase();
     }
 
-    // 渲染階段
     function renderPhase() {
       const lvl = levelsData[currentLevelIndex];
       const phase = lvl.phases[currentPhase];
@@ -520,13 +524,12 @@
       document.getElementById("next-btn").classList.add("hidden");
       
       showTypingIndicator(() => {
-        playDing(); // 對方傳訊音效
-        appendScammerMessage(phase.scammerMsg);
+        playDing();
+        appendScammerMessage(phase.scammerMsg, lvl.avatar);
         renderOptions(phase.options);
       });
     }
 
-    // 渲染選項按鈕
     function renderOptions(options) {
       const container = document.getElementById("options-container");
       container.innerHTML = "";
@@ -545,15 +548,15 @@
       });
     }
 
-    // 處理點擊
     function handleOptionClick(opt, btnElement) {
       const btns = document.querySelectorAll("#options-container button");
       btns.forEach(b => b.disabled = true);
 
       const userMsgId = appendUserMessage(opt.text);
+      const lvl = levelsData[currentLevelIndex];
 
       if (opt.correct) {
-        showFeedback(true, "✅ 漂亮的反擊！", opt.feedback);
+        showFeedback(true, "✅ 漂亮的防守！", opt.feedback);
         document.getElementById("next-btn").classList.remove("hidden");
         document.getElementById("next-btn-text").textContent = currentPhase === 4 ? "查看過關結局" : "繼續下一階段";
       } else {
@@ -563,7 +566,7 @@
 
         showTypingIndicator(() => {
           playDing();
-          const scammerBadMsgId = appendScammerMessage(opt.wrongReply);
+          const scammerBadMsgId = appendScammerMessage(opt.wrongReply, lvl.avatar);
           
           setTimeout(() => {
             showFeedback(false, "❌ 糟糕！上當了！", opt.feedback + " (系統已自動收回錯誤訊息，請重新選擇)");
@@ -582,7 +585,6 @@
       }
     }
 
-    // 進入下一階段
     function nextPhase() {
       const lvl = levelsData[currentLevelIndex];
       if (currentPhase < lvl.phases.length - 1) {
@@ -593,12 +595,11 @@
       }
     }
 
-    // --- 聊天室 UI 工具 ---
-    function appendScammerMessage(text) {
+    function appendScammerMessage(text, avatarIcon) {
       const id = 'msg-' + Date.now();
       const html = `
         <div id="${id}" class="flex items-start gap-2.5 mt-2 animate-fade-in">
-          <div class="w-8 h-8 rounded-full bg-amber-400 flex items-center justify-center text-sm shrink-0 text-white border border-white">🧑‍💻</div>
+          <div class="w-8 h-8 rounded-full bg-amber-200 flex items-center justify-center text-sm shrink-0 text-slate-800 border border-white">${avatarIcon}</div>
           <div class="bg-white border border-orange-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm max-w-[85%] whitespace-pre-line">
             <p class="text-slate-800 text-sm lg:text-base leading-relaxed font-bold">${text}</p>
           </div>
@@ -615,12 +616,16 @@
       const bubbleStyle = isSystemAction ? 
         "bg-slate-700 text-white border-slate-800" : 
         "bg-amber-100 border-amber-300 text-amber-900";
+        
+      // 加入兔兔頭像或系統盾牌
+      const userIcon = isSystemAction ? "🛡️" : "🐰";
 
       const html = `
-        <div id="${id}" class="flex justify-end mt-2 animate-fade-in">
+        <div id="${id}" class="flex justify-end items-start mt-2 animate-fade-in">
           <div class="${bubbleStyle} border rounded-2xl rounded-tr-none px-4 py-2.5 shadow-sm max-w-[85%]">
             <p class="text-sm lg:text-base leading-relaxed font-bold">${text}</p>
           </div>
+          <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-sm shrink-0 border border-orange-200 ml-2.5 shadow-sm">${userIcon}</div>
         </div>
       `;
       chatContainer.insertAdjacentHTML('beforeend', html);
@@ -647,9 +652,10 @@
 
     function showTypingIndicator(callback) {
       const id = 'typing-' + Date.now();
+      const lvl = levelsData[currentLevelIndex];
       const html = `
         <div id="${id}" class="flex items-start gap-2.5 mt-2">
-          <div class="w-8 h-8 rounded-full bg-amber-300 flex items-center justify-center text-sm shrink-0 text-white border border-white">🧑‍💻</div>
+          <div class="w-8 h-8 rounded-full bg-amber-200 flex items-center justify-center text-sm shrink-0 text-slate-800 border border-white">${lvl.avatar}</div>
           <div class="bg-white border border-orange-200 rounded-2xl rounded-tl-none px-4 py-4 shadow-sm">
             <div class="dot-flashing ml-3"></div>
           </div>
@@ -661,14 +667,13 @@
       setTimeout(() => {
         removeMessage(id);
         callback();
-      }, 1200);
+      }, 1000);
     }
 
     function scrollToBottom() {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    // --- 回饋與結局 UI ---
     function showFeedback(isCorrect, title, desc) {
       const box = document.getElementById("feedback-box");
       const icon = document.getElementById("feedback-icon");
@@ -721,7 +726,6 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 啟動
     initMenu();
     loadLevel(0);
   </script>
