@@ -57,7 +57,6 @@ body{
 
 /* =========================================================
    HEADER
-   大標＋小標同一行
 ========================================================= */
 
 .page-header{
@@ -107,8 +106,6 @@ body{
 
   gap:22px;
 
-  /* 關鍵：
-     右側變高時不再把左側一起撐高 */
   align-items:start;
 }
 
@@ -121,8 +118,7 @@ body{
 }
 
 /* =========================================================
-   ENGLISH CARD
-   維持目前成功的扁長比例
+   CARD
 ========================================================= */
 
 .english-card{
@@ -130,10 +126,11 @@ body{
 
   height:620px;
 
-  display:flex;
-  align-items:center;
-
-  padding:28px 58px 28px 110px;
+  padding:
+    64px
+    58px
+    42px
+    110px;
 
   background:rgba(255,255,255,.95);
 
@@ -261,6 +258,7 @@ body{
 .cloud::before,
 .cloud::after{
   content:"";
+
   position:absolute;
 
   border-radius:50%;
@@ -286,14 +284,17 @@ body{
 
 /* =========================================================
    CARD FIELDS
-   不再另外顯示中文標題
+   關鍵：撐滿可用高度
 ========================================================= */
 
 .card-fields{
   width:100%;
+  height:100%;
 
   display:grid;
-  grid-template-rows:repeat(4,1fr);
+
+  grid-template-rows:
+    repeat(4,minmax(0,1fr));
 }
 
 .card-field{
@@ -311,7 +312,6 @@ body{
 
 /* =========================================================
    SELECT
-   第一個 option 就是中文提示
 ========================================================= */
 
 .select-wrap{
@@ -323,7 +323,11 @@ body{
 .card-select{
   width:100%;
 
-  padding:8px 42px 8px 0;
+  padding:
+    10px
+    46px
+    10px
+    0;
 
   border:none;
   outline:none;
@@ -349,7 +353,6 @@ body{
   cursor:pointer;
 }
 
-/* 未選時只顯示一行中文 */
 .card-select.placeholder{
   color:var(--navy);
 
@@ -399,14 +402,12 @@ body{
 }
 
 /* =========================================================
-   RIGHT HINT PANEL
-   固定較矮
+   RIGHT HINT
 ========================================================= */
 
 .hint-panel{
   min-width:0;
 
-  /* 不再和左卡同高 */
   height:500px;
   max-height:500px;
 
@@ -425,10 +426,6 @@ body{
 
   overflow:hidden;
 }
-
-/* =========================================================
-   HINT HEADER
-========================================================= */
 
 .hint-header{
   flex:0 0 auto;
@@ -465,7 +462,6 @@ body{
 
 /* =========================================================
    ACCORDION
-   展開只在右欄內捲
 ========================================================= */
 
 .accordion{
@@ -498,11 +494,6 @@ body{
   border-color:#F5B64F;
 }
 
-/* =========================================================
-   HINT BUTTON
-   再扁
-========================================================= */
-
 .hint-button{
   width:100%;
 
@@ -510,7 +501,10 @@ body{
 
   display:grid;
 
-  grid-template-columns:42px 1fr 25px;
+  grid-template-columns:
+    42px
+    1fr
+    25px;
 
   align-items:center;
 
@@ -578,8 +572,10 @@ body{
   display:none;
 
   padding:
-    8px 18px
-    14px 61px;
+    8px
+    18px
+    14px
+    61px;
 
   color:#294863;
 
@@ -640,7 +636,6 @@ body{
 
   .page-header{
     min-height:45px;
-
     margin-bottom:5px;
   }
 
@@ -654,6 +649,9 @@ body{
 
   .english-card{
     height:545px;
+
+    padding-top:52px;
+    padding-bottom:34px;
   }
 
   .hint-panel{
@@ -756,7 +754,7 @@ body{
   <main class="workspace">
 
     <!-- ===================================================
-         LEFT CARD
+         LEFT
     ==================================================== -->
 
     <section class="card-panel">
@@ -829,7 +827,7 @@ body{
 
           </div>
 
-          <!-- 節慶 -->
+          <!-- 節慶祝賀 -->
 
           <div class="card-field">
 
@@ -942,20 +940,20 @@ body{
                   寄件人
                 </option>
 
-                <option>
-                  Your student,
+                <option value="Your student,">
+                  Your student, __________
                 </option>
 
-                <option>
-                  Your friend,
+                <option value="Your friend,">
+                  Your friend, __________
                 </option>
 
-                <option>
-                  Love,
+                <option value="Love,">
+                  Love, __________
                 </option>
 
-                <option>
-                  From,
+                <option value="From,">
+                  From, __________
                 </option>
 
               </select>
@@ -979,7 +977,7 @@ body{
     </section>
 
     <!-- ===================================================
-         RIGHT HINT
+         RIGHT
     ==================================================== -->
 
     <aside class="hint-panel">
@@ -997,8 +995,6 @@ body{
       </div>
 
       <div class="accordion">
-
-        <!-- 1 -->
 
         <section class="hint-item">
 
@@ -1036,8 +1032,6 @@ body{
 
         </section>
 
-        <!-- 2 -->
-
         <section class="hint-item">
 
           <button
@@ -1066,8 +1060,6 @@ body{
           </div>
 
         </section>
-
-        <!-- 3 -->
 
         <section class="hint-item">
 
@@ -1102,8 +1094,6 @@ body{
 
         </section>
 
-        <!-- 4 -->
-
         <section class="hint-item">
 
           <button
@@ -1124,13 +1114,13 @@ body{
             </p>
 
             <div class="example-box">
-              Your student,<br>
-              Your friend,<br>
-              Love,
+              Your student, ________<br>
+              Your friend, ________<br>
+              Love, ________
             </div>
 
             <p>
-              結尾後面通常也會使用逗號。
+              橫線的位置就是寫自己的名字。
             </p>
 
           </div>
