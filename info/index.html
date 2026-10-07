@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>升學輔導工作區｜Sinny Spedu Labs</title>
-  <link rel="stylesheet" href="../shared/css/workspace.css?v=3.0">
+  <link rel="stylesheet" href="../shared/css/workspace.css?v=3.1">
+  <style>.resource-section{margin-bottom:26px}.resource-section:not(:has(.resource-card:not([hidden]))){display:none}</style>
 </head>
 <body class="grammar-page info-page">
   <button class="mobile-toggle" id="mobileToggle" aria-label="開啟選單">☰</button>
@@ -28,13 +29,12 @@
         <input class="search-box" id="resourceSearch" type="search" placeholder="搜尋升學、就業或綜合職能科資源…" aria-label="搜尋升學輔導資源">
         <div class="count-badge" id="resultCount"></div>
       </div>
-      <h2 class="section-heading">升學與生涯資源</h2>
-      <section class="card-grid" id="infoCards"></section>
+      <div id="infoSections"></div>
       <div class="empty-state" id="emptyState">目前沒有符合條件的資源。</div>
     </main>
   </div>
 
-  <script src="info-cards.js?v=2.7"></script>
+  <script src="info-cards.js?v=2.8"></script>
   <script>
     const escapeHtml = value => String(value ?? "")
       .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
@@ -48,11 +48,14 @@
       ).join("")
     );
 
-    document.getElementById("infoCards").innerHTML = window.INFO_DATA.map(item =>
+    const renderCard = item =>
       `<article class="resource-card" data-category="${escapeHtml(item.category)}" data-href="${escapeHtml(item.filename)}" style="border-top-color:${escapeHtml(item.themeColor)}">
         <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
         <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>
-      </article>`
+      </article>`;
+
+    document.getElementById("infoSections").innerHTML = window.INFO_CATEGORIES.map(category =>
+      `<section class="resource-section"><h2 class="section-heading">${escapeHtml(category)}</h2><div class="card-grid">${window.INFO_DATA.filter(item => item.category === category).map(renderCard).join("")}</div></section>`
     ).join("");
   </script>
   <script src="../shared/js/workspace.js?v=3.0"></script>

@@ -63,6 +63,7 @@ window.GRAMMAR_DATA = [
       { id: "r3", category: "圖表閱讀測驗", title: "閱讀｜飲料選單", desc: "生活實境：讀懂手搖飲冷熱、糖度、冰量與價格計算", filename: "reading-drink.html", themeColor: "#EC4899" },
       { id: "r4", category: "圖表閱讀測驗", title: "閱讀｜漢堡店菜單", desc: "生活實境：速食店菜單、套餐選配與口語點餐對答", filename: "reading-hamberger.html", themeColor: "#EC4899" },
       { id: "r5", category: "圖表閱讀測驗", title: "閱讀｜學校課表", desc: "生活實境：看懂校園作息課表、星期與學科課堂名稱", filename: "reading-suject.html", themeColor: "#EC4899" },
+      { id: "r6", category: "圖表閱讀測驗", title: "閱讀｜服飾店", desc: "生活實境：閱讀服飾店商品、尺寸、價格與購物情境", filename: "reading-clothing-store.html", themeColor: "#EC4899" },
 
       // ==== 互動遊戲區 ====
       { id: "g1", category: "互動遊戲區", title: "🎮 遊戲｜地心探險數字挑戰", desc: "挑戰大考驗！熟悉英文數字 1 ~ 100000 聽力、大小與發音", filename: "game-corenum.html", themeColor: "#F43F5E" },
@@ -73,12 +74,12 @@ window.GRAMMAR_DATA = [
       { id: "g6", category: "互動遊戲區", title: "🧩 配對板｜時間與日期", desc: "星期、月份、日期與時間的三排對照語音配對", filename: "match-time-date.html", themeColor: "#F43F5E" },
       { id: "g7", category: "互動遊戲區", title: "🧩 配對板｜人稱代名詞", desc: "限時配對、亂序、干擾卡與課堂訂正挑戰", filename: "match-pronouns.html", themeColor: "#F43F5E" },
 
-      // ==== 教師測試區：五張卡共用 test.html，只替換對應資料檔 ====
-      { id: "test-1", category: "教師測試區", title: "Test 1", desc: "固定測試槽 1", filename: "test1.html", themeColor: "#64748B" },
-      { id: "test-2", category: "教師測試區", title: "Test 2", desc: "固定測試槽 2", filename: "test2.html", themeColor: "#64748B" },
-      { id: "test-3", category: "教師測試區", title: "Test 3", desc: "固定測試槽 3", filename: "test3.html", themeColor: "#64748B" },
-      { id: "test-4", category: "教師測試區", title: "Test 4", desc: "固定測試槽 4", filename: "test4.html", themeColor: "#64748B" },
-      { id: "test-5", category: "教師測試區", title: "Test 5", desc: "固定測試槽 5", filename: "test5.html", themeColor: "#64748B" },
+      // ==== 測試網頁：五份彼此獨立的 HTML ====
+      { id: "test-1", category: "測試網頁", title: "Test 1", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test1.html", themeColor: "#64748B" },
+      { id: "test-2", category: "測試網頁", title: "Test 2", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test2.html", themeColor: "#64748B" },
+      { id: "test-3", category: "測試網頁", title: "Test 3", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test3.html", themeColor: "#64748B" },
+      { id: "test-4", category: "測試網頁", title: "Test 4", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test4.html", themeColor: "#64748B" },
+      { id: "test-5", category: "測試網頁", title: "Test 5", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test5.html", themeColor: "#64748B" },
 
       // ==== 能力挑戰評估 ====
       { id: "e1", category: "能力挑戰評估", title: "📝 評估｜生活英文 (V1)", desc: "高中職特教班及資源班生活英語聽說讀寫綜合評量 (第一版)", filename: "exam-lifeenglish-v1.html", themeColor: "#14B8A6" },
@@ -90,5 +91,5 @@ window.GRAMMAR_DATA = [
 
 ];
 
-window.GRAMMAR_CATEGORIES = ["代名詞", "日常句型及片語", "時態表達", "名詞與數量", "形容詞、副詞、其他", "數字與時間", "圖表閱讀測驗", "互動遊戲區", "能力挑戰評估", "教師測試區"];
+window.GRAMMAR_CATEGORIES = ["代名詞", "日常句型及片語", "時態表達", "名詞與數量", "形容詞、副詞、其他", "數字與時間", "圖表閱讀測驗", "互動遊戲區", "能力挑戰評估", "測試網頁"];
 

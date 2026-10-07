@@ -1,4 +1,4 @@
-window.INFO_CATEGORIES = ["升學與就業"];
+window.INFO_CATEGORIES = ["升學與就業", "測試網頁"];
 
 window.INFO_DATA = [
   {
@@ -54,5 +54,23 @@ window.INFO_DATA = [
     desc: "認識評估內容與操作能力，從日常生活累積孩子的實際能力。",
     filename: "ability-assessment-guide.html",
     themeColor: "#0f8f83"
+  },
+  {
+    id: "test-1",
+    category: "測試網頁",
+    tag: "Test 1",
+    title: "測試網頁 Test 1",
+    desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗。",
+    filename: "test1.html",
+    themeColor: "#64748b"
+  },
+  {
+    id: "test-2",
+    category: "測試網頁",
+    tag: "Test 2",
+    title: "測試網頁 Test 2",
+    desc: "另一份獨立測試 HTML，可與 Test 1 分開使用。",
+    filename: "test2.html",
+    themeColor: "#64748b"
   }
 ];

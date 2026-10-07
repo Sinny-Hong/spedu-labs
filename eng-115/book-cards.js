@@ -1,7 +1,7 @@
-window.BOOK_CATEGORIES = ["單字", "課文", "電子書"];
+window.BOOK_CATEGORIES = ["單字", "課文", "電子書", "測試網頁"];
 
 window.BOOK_DATA = [
-  { id: "text_match", category: "課文", tag: "中英配對", title: "課文翻譯配對｜七至九年級", desc: "七上、八上、九上 L1～L6 中英文配對講義，支援提示、批改、解答與 A4 列印", filename: "text_match_test.html", themeColor: "#0f766e" },
+  { id: "text_match", category: "課文", tag: "中英配對", title: "課文翻譯配對｜七至九年級", desc: "七上、八上、九上 L1～L6 中英文配對講義，支援提示、批改、解答與 A4 列印", filename: "text-translation-match.html", themeColor: "#0f766e" },
 
   { id: "vocab_all", category: "單字", tag: "新版整合", title: "115-1 單字學習講義", desc: "同一入口切換七、八、九年級的單字聽力、配對與聽寫，並支援學生版及教師版列印", filename: "vocab.html", themeColor: "#0f766e" },
   { id: "voc_1200", category: "單字", tag: "朗讀", title: "1200 單字選擇題朗讀", desc: "依題本頁面練習單字發音，支援語速、停頓與題號朗讀設定", filename: "1200voc.html", themeColor: "#336c5a" },
@@ -18,5 +18,8 @@ window.BOOK_DATA = [
   { id: "match_numbers", category: "單字", tag: "課堂配對板", title: "英文數字配對板", desc: "英文數字三排對照，支援語音與課堂互動配對", filename: "../eng-grammar/match-numbers.html", themeColor: "#2563eb" },
   { id: "match_family", category: "單字", tag: "課堂配對板", title: "家人稱謂配對板", desc: "家人稱謂與親友關係三排對照，支援發音", filename: "../eng-grammar/match-family.html", themeColor: "#db2777" },
   { id: "match_pronouns", category: "單字", tag: "課堂配對板", title: "人稱代名詞配對板", desc: "主格、受格、所有格、Be 動詞與反身代名詞互動提示", filename: "../eng-grammar/match-pronouns.html", themeColor: "#7c3aed" },
-  { id: "match_time_date", category: "單字", tag: "課堂配對板", title: "時間與日期配對板", desc: "星期、月份、日期與時間的三排對照，支援語音", filename: "../eng-grammar/match-time-date.html", themeColor: "#ea580c" }
+  { id: "match_time_date", category: "單字", tag: "課堂配對板", title: "時間與日期配對板", desc: "星期、月份、日期與時間的三排對照，支援語音", filename: "../eng-grammar/match-time-date.html", themeColor: "#ea580c" },
+
+  { id: "test-1", category: "測試網頁", tag: "Test 1", title: "測試網頁 Test 1", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗。", filename: "test1.html", themeColor: "#64748b" },
+  { id: "test-2", category: "測試網頁", tag: "Test 2", title: "測試網頁 Test 2", desc: "另一份獨立測試 HTML，可與 Test 1 分開使用。", filename: "test2.html", themeColor: "#64748b" }
 ];

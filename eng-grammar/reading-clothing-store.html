@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>生活英文｜服飾店閱讀測驗</title>
+
+<style>
+:root{
+  --navy:#0B3768;
+  --orange:#F59E0B;
+
+  --page-bg:#EAF1F7;
+  --soft:#F3F7FB;
+  --line:#D6E2EC;
+  --text:#173552;
+
+  --blue:#2879BA;
+  --blue-soft:#EAF4FC;
+
+  --green:#218653;
+  --green-soft:#E7F5ED;
+
+  --red:#C62828;
+
+  --hint:#FFF0A6;
+  --hint-line:#F1C44A;
+
+  --sale:#E95345;
+}
+
+/* =========================================================
+   BASIC
+========================================================= */
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  margin:0;
+  padding:0;
+}
+
+body{
+  background:var(--page-bg);
+  color:var(--text);
+
+  font-family:
+    "Noto Sans TC",
+    "Microsoft JhengHei",
+    Arial,
+    sans-serif;
+
+  padding:18px 0 40px;
+}
+
+button{
+  font:inherit;
+}
+
+/* =========================================================
+   GLOBAL PRINT
+========================================================= */
+
+.global-tools{
+  position:fixed;
+  right:16px;
+  top:16px;
+  z-index:1000;
+}
+
+.global-tools button{
+  padding:10px 16px;
+
+  border:1px solid #C8D5E0;
+  border-radius:12px;
+
+  background:white;
+  color:var(--navy);
+
+  font-weight:900;
+
+  box-shadow:
+    0 3px 12px rgba(0,0,0,.14);
+
+  cursor:pointer;
+}
+
+/* =========================================================
+   A4 PORTRAIT
+========================================================= */
+
+.sheet{
+  width:210mm;
+  height:297mm;
+
+  margin:0 auto 18px;
+  padding:7mm 8mm;
+
+  background:#fff;
+
+  box-shadow:
+    0 5px 18px rgba(0,0,0,.12);
+
+  overflow:hidden;
+
+  display:grid;
+  grid-template-rows:1fr 1fr;
+  gap:5mm;
+
+  page-break-after:always;
+}
+
+.sheet:last-child{
+  page-break-after:auto;
+}
+
+/* =========================================================
+   HALF PAGE
+========================================================= */
+
+.level-block{
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+
+  overflow:hidden;
+}
+
+.level-block:first-child{
+  padding-bottom:2.5mm;
+
+  border-bottom:
+    1.5px dashed #D5E0E9;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.level-header{
+  min-height:12mm;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:5mm;
+
+  margin-bottom:2.5mm;
+}
+
+.level-title{
+  margin:0;
+
+  color:var(--navy);
+
+  font-size:16.5pt;
+  line-height:1;
+
+  font-weight:900;
+
+  white-space:nowrap;
+}
+
+.student-info{
+  display:flex;
+  align-items:center;
+
+  gap:3mm;
+
+  color:#273E52;
+
+  font-size:14pt;
+  font-weight:700;
+
+  white-space:nowrap;
+}
+
+.info-line{
+  display:inline-block;
+
+  min-width:25mm;
+  height:5mm;
+
+  border-bottom:1.4px solid #647789;
+}
+
+.name-line{
+  min-width:36mm;
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.level-content{
+  flex:1;
+
+  min-height:0;
+
+  display:grid;
+
+  /* 改成真正 50：50 */
+  grid-template-columns:
+    minmax(0,1fr)
+    minmax(0,1fr);
+
+  gap:4mm;
+}
+
+.left-side,
+.right-side{
+  min-width:0;
+  min-height:0;
+}
+
+/* =========================================================
+   LEFT SIDE
+========================================================= */
+
+.left-side{
+  display:grid;
+
+  /* Menu 多 3mm，避免列印切掉價格 */
+  grid-template-rows:52mm 1fr;
+
+  gap:2.5mm;
+}
+
+/* =========================================================
+   CLOTHES SHOP
+========================================================= */
+
+.menu-box{
+  min-height:0;
+
+  overflow:hidden;
+
+  border:1.5px solid var(--navy);
+  border-radius:3mm;
+
+  background:white;
+}
+
+.menu-title{
+  height:7mm;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:var(--navy);
+  color:white;
+
+  font-size:10.5pt;
+  font-weight:900;
+}
+
+.menu-grid{
+  height:calc(100% - 7mm);
+
+  display:grid;
+}
+
+.menu-grid.count-6{
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(2,1fr);
+}
+
+.menu-grid.count-4{
+  grid-template-columns:repeat(2,1fr);
+  grid-template-rows:repeat(2,1fr);
+}
+
+.menu-item{
+  position:relative;
+
+  min-width:0;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:2.5mm .8mm .8mm;
+
+  text-align:center;
+
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+
+.menu-grid.count-6 .menu-item:nth-child(3n){
+  border-right:none;
+}
+
+.menu-grid.count-4 .menu-item:nth-child(2n){
+  border-right:none;
+}
+
+/* 有促銷時，圖稍微往右避開角標 */
+.menu-item.has-promo .menu-icon{
+  transform:translateX(2mm);
+}
+
+.menu-icon{
+  height:9mm;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:19pt;
+  line-height:1;
+}
+
+.menu-name{
+  margin-top:.7mm;
+
+  color:var(--navy);
+
+  font-family:
+    "Comic Sans MS",
+    "Comic Sans",
+    "Comic Neue",
+    cursive;
+
+  font-size:12.5pt;
+  line-height:1.05;
+
+  font-weight:900;
+}
+
+.menu-price{
+  margin-top:.5mm;
+
+  color:#111;
+
+  font-size:10.5pt;
+  line-height:1;
+
+  font-weight:800;
+}
+
+/* =========================================================
+   PROMO TAG
+========================================================= */
+
+.promo-tag{
+  position:absolute;
+
+  top:-1px;
+  left:-1px;
+
+  z-index:2;
+
+  min-width:16mm;
+  max-width:25mm;
+
+  padding:1mm 1.5mm;
+
+  background:var(--sale);
+  color:#fff;
+
+  border:1.2px solid var(--sale);
+  border-radius:0 0 7px 0;
+
+  font-size:7.4pt;
+  line-height:1.05;
+
+  font-weight:900;
+  text-align:center;
+
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.12);
+
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+}
+
+.promo-tag.bogo{
+  min-width:21mm;
+}
+
+.promo-line{
+  display:block;
+}
+
+/* =========================================================
+   DIALOGUE
+========================================================= */
+
+.dialogue-section{
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+}
+
+.dialogue-title{
+  margin:0 0 1.5mm;
+
+  padding:1.4mm 2.2mm;
+
+  color:var(--navy);
+
+  background:var(--soft);
+
+  border:1px solid var(--line);
+  border-radius:2.5mm;
+
+  font-size:12pt;
+  line-height:1;
+
+  font-weight:900;
+}
+
+.dialogue-content{
+  flex:1;
+
+  min-height:0;
+  overflow:hidden;
+
+  padding:.6mm 1.5mm 0;
+}
+
+.dialogue-line{
+  display:grid;
+
+  grid-template-columns:max-content minmax(0,1fr);
+
+  column-gap:2mm;
+
+  margin-bottom:1.35mm;
+
+  font-family:
+    "Comic Sans MS",
+    "Comic Sans",
+    "Comic Neue",
+    cursive;
+
+  font-size:12.5pt;
+  line-height:1.28;
+}
+
+.dialogue-line:last-child{
+  margin-bottom:0;
+}
+
+.speaker{
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.speech{
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+.long-dialogue .dialogue-line{
+  font-size:11.5pt;
+  line-height:1.22;
+
+  margin-bottom:1mm;
+}
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+.right-side{
+  display:flex;
+  flex-direction:column;
+
+  min-width:0;
+  min-height:0;
+
+  overflow:hidden;
+}
+
+.question-head{
+  min-height:9mm;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:2mm;
+
+  padding:1.2mm 2mm;
+  margin-bottom:1.5mm;
+
+  background:var(--soft);
+
+  border:1px solid var(--line);
+  border-radius:2.5mm;
+
+  min-width:0;
+  width:100%;
+  max-width:100%;
+}
+
+.question-title-wrap{
+  display:flex;
+  align-items:center;
+
+  gap:2mm;
+
+  min-width:0;
+}
+
+.question-title{
+  margin:0;
+
+  color:var(--navy);
+
+  font-size:12pt;
+  font-weight:900;
+}
+
+.score{
+  min-width:11mm;
+
+  color:var(--green);
+
+  font-size:10.5pt;
+  font-weight:900;
+
+  text-align:center;
+}
+
+.tools{
+  display:flex;
+  align-items:center;
+
+  gap:.8mm;
+
+  flex-shrink:0;
+}
+
+.tools button{
+  padding:1mm 1.6mm;
+
+  border:1px solid #BFCFDE;
+  border-radius:6px;
+
+  background:white;
+
+  color:var(--navy);
+
+  font-size:8pt;
+  font-weight:900;
+
+  cursor:pointer;
+}
+
+.tools button.active{
+  color:#875100;
+
+  background:#FFF2D7;
+
+  border-color:var(--orange);
+}
+
+.questions{
+  flex:1;
+
+  min-width:0;
+  min-height:0;
+
+  overflow:hidden;
+
+  padding:0 .5mm;
+
+  font-family:
+    "Comic Sans MS",
+    "Comic Sans",
+    "Comic Neue",
+    cursive;
+}
+
+.question{
+  min-width:0;
+
+  margin-bottom:1.7mm;
+}
+
+.question:last-child{
+  margin-bottom:0;
+}
+
+.q-row{
+  display:grid;
+
+  grid-template-columns:11mm minmax(0,1fr);
+
+  column-gap:1mm;
+
+  align-items:start;
+
+  min-width:0;
+
+  font-size:11.5pt;
+  line-height:1.22;
+
+  font-weight:800;
+}
+
+.answer-slot{
+  white-space:nowrap;
+  text-align:right;
+}
+
+.answer-letter{
+  display:inline-block;
+
+  min-width:3.5mm;
+
+  color:var(--blue);
+
+  font-weight:900;
+}
+
+.answer-letter.correct{
+  color:var(--green);
+}
+
+.answer-letter.solution{
+  color:var(--red);
+}
+
+.q-text{
+  min-width:0;
+
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+
+/* =========================================================
+   OPTIONS
+========================================================= */
+
+.options{
+  display:grid;
+
+  grid-template-columns:
+    minmax(0,1fr)
+    minmax(0,1fr);
+
+  gap:.6mm 2mm;
+
+  min-width:0;
+
+  margin-top:.6mm;
+  margin-left:13mm;
+}
+
+.option{
+  min-width:0;
+
+  padding:.5mm 1mm;
+
+  border:1px solid transparent;
+  border-radius:5px;
+
+  font-size:9.8pt;
+  line-height:1.18;
+
+  cursor:pointer;
+
+  overflow-wrap:anywhere;
+}
+
+.option-inner{
+  display:block;
+
+  min-width:0;
+
+  padding-left:5.5mm;
+  text-indent:-5.5mm;
+}
+
+.option:hover{
+  background:var(--blue-soft);
+}
+
+.option.selected{
+  color:var(--navy);
+
+  background:var(--blue-soft);
+
+  border-color:#6CA6D3;
+}
+
+.option.correct{
+  color:var(--green);
+
+  background:var(--green-soft);
+
+  border-color:#8BC4A3;
+
+  font-weight:900;
+}
+
+/* =========================================================
+   HINT
+========================================================= */
+
+.hint-word{
+  padding:0 .4mm;
+
+  border-radius:3px;
+}
+
+.level-block.hint-on .hint-word{
+  background:var(--hint);
+
+  box-shadow:
+    inset 0 -1px 0 var(--hint-line);
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@page{
+  size:A4 portrait;
+  margin:0;
+}
+
+@media print{
+
+  html,
+  body{
+    width:210mm;
+
+    margin:0;
+    padding:0;
+
+    background:white;
+  }
+
+  body{
+    padding:0;
+  }
+
+  .global-tools{
+    display:none !important;
+  }
+
+  .sheet{
+    width:210mm;
+    height:297mm;
+
+    margin:0;
+
+    box-shadow:none;
+  }
+
+  .tools,
+  .score{
+    display:none !important;
+  }
+
+  .promo-tag{
+    background:#fff !important;
+    color:#111 !important;
+
+    border:1.5px solid #111 !important;
+
+    box-shadow:none !important;
+
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+}
+
+/* =========================================================
+   MOBILE PREVIEW
+========================================================= */
+
+@media screen and (max-width:900px){
+
+  body{
+    overflow-x:auto;
+  }
+
+  .sheet{
+    margin-left:0;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="global-tools">
+  <button onclick="window.print()">
+    列印
+  </button>
+</div>
+
+<div id="pages"></div>
+
+<script>
+
+/* =========================================================
+   DATA
+========================================================= */
+
+const levels = [
+
+{
+  code:"A1",
+
+  menu:[
+    ["👕","T-shirt",400,null],
+    ["👚","Shirt",500,null],
+    ["🧥","Jacket",800,null],
+    ["👗","Dress",1000,null],
+    ["👖","Pants",700,null],
+    ["👟","Shoes",1200,null]
+  ],
+
+  dialogue:[
+    ["Clerk","May I help you?"],
+    ["Amy","Yes. I want the jacket."],
+    ["Clerk","It is NT$800."],
+    ["Ben","I want the dress."],
+    ["Clerk","It is NT$1,000."],
+    ["Amy","Great. Let's buy them."]
+  ],
+
+  hints:[
+    "jacket",
+    "dress",
+    "NT$800",
+    "NT$1,000",
+    "Amy",
+    "Ben"
+  ],
+
+  questions:[
+    {
+      stem:"What does Amy want to buy?",
+      options:[
+        "A jacket",
+        "A shirt",
+        "A dress",
+        "Shoes"
+      ],
+      answer:0
+    },
+
+    {
+      stem:"What does Ben want to buy?",
+      options:[
+        "A T-shirt",
+        "A dress",
+        "Pants",
+        "Shoes"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"Who wants the jacket?",
+      options:[
+        "Amy",
+        "Ben",
+        "The clerk",
+        "We don't know"
+      ],
+      answer:0
+    },
+
+    {
+      stem:"How much is the dress?",
+      options:[
+        "NT$500",
+        "NT$700",
+        "NT$800",
+        "NT$1,000"
+      ],
+      answer:3
+    },
+
+    {
+      stem:"How much are the jacket and the dress in total?",
+      options:[
+        "NT$1,500",
+        "NT$1,600",
+        "NT$1,800",
+        "NT$2,000"
+      ],
+      answer:2
+    }
+  ]
+},
+
+{
+  code:"A2",
+
+  menu:[
+    ["🧥","Jacket",800,"20% OFF"],
+    ["👚","Shirt",500,null],
+    ["👗","Dress",1000,null],
+    ["👖","Pants",700,null],
+    ["🧢","Cap",400,null],
+    ["👟","Shoes",1200,null]
+  ],
+
+  dialogue:[
+    ["Ben","Look! The jacket is 20% off."],
+    ["Amy","What is the original price?"],
+    ["Ben","It is NT$800."],
+    ["Amy","How much is it now?"],
+    ["Ben","It is NT$640."],
+    ["Amy","I like the dress. I want that one."]
+  ],
+
+  hints:[
+    "20% off",
+    "NT$800",
+    "NT$640",
+    "dress",
+    "Ben",
+    "Amy"
+  ],
+
+  questions:[
+    {
+      stem:"Which item is 20% off?",
+      options:[
+        "The jacket",
+        "The shirt",
+        "The dress",
+        "The pants"
+      ],
+      answer:0
+    },
+
+    {
+      stem:"What is the original price of the jacket?",
+      options:[
+        "NT$500",
+        "NT$640",
+        "NT$800",
+        "NT$1,000"
+      ],
+      answer:2
+    },
+
+    {
+      stem:"How much is the jacket now?",
+      options:[
+        "NT$600",
+        "NT$640",
+        "NT$700",
+        "NT$800"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"What does Amy want to buy?",
+      options:[
+        "The jacket",
+        "The dress",
+        "The cap",
+        "The shoes"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"Who tells Amy the sale price?",
+      options:[
+        "Ben",
+        "The clerk",
+        "Her mom",
+        "Her teacher"
+      ],
+      answer:0
+    }
+  ]
+},
+
+{
+  code:"A3",
+
+  menu:[
+    ["👕","T-shirt",400,"BOGO"],
+    ["👗","Dress",1000,null],
+    ["👖","Pants",700,null],
+    ["👟","Shoes",1200,null]
+  ],
+
+  dialogue:[
+    ["Amy","The T-shirts are Buy 1 Get 1 Free."],
+    ["Ben","Great! I want two T-shirts."],
+    ["Amy","You only pay NT$400 for the two."],
+    ["Ben","Nice! I also like the pants."],
+    ["Amy","The pants are not on sale."]
+  ],
+
+  hints:[
+    "Buy 1 Get 1 Free",
+    "two T-shirts",
+    "NT$400",
+    "pants",
+    "not on sale"
+  ],
+
+  questions:[
+    {
+      stem:"What is special about the T-shirts?",
+      options:[
+        "They are 20% off",
+        "They are Buy 1 Get 1 Free",
+        "They are free",
+        "They are NT$200"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"What does Ben buy?",
+      options:[
+        "Two T-shirts",
+        "Two pants",
+        "A dress",
+        "Shoes"
+      ],
+      answer:0
+    },
+
+    {
+      stem:"How much does Ben pay for two T-shirts?",
+      options:[
+        "NT$200",
+        "NT$400",
+        "NT$600",
+        "NT$800"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"What other item does Ben like?",
+      options:[
+        "The dress",
+        "The pants",
+        "The shoes",
+        "The cap"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"Are the pants on sale?",
+      options:[
+        "Yes, they are",
+        "No, they aren't",
+        "Only on Sunday",
+        "We don't know"
+      ],
+      answer:1
+    }
+  ]
+},
+
+{
+  code:"A4",
+
+  menu:[
+    ["👗","Dress",1000,"20% OFF"],
+    ["👕","T-shirt",400,"BOGO"],
+    ["🧢","Cap",300,null],
+    ["👖","Pants",700,null]
+  ],
+
+  dialogue:[
+    ["Clerk","Welcome to our weekend sale!"],
+    ["Mia","I want the dress."],
+    ["Clerk","It is 20% off. The sale price is NT$800."],
+    ["Ken","I want two T-shirts."],
+    ["Clerk","They are Buy 1 Get 1 Free. You pay NT$400 for two."],
+    ["Mia","Great! Let's buy them."]
+  ],
+
+  hints:[
+    "weekend sale",
+    "dress",
+    "20% off",
+    "NT$800",
+    "two T-shirts",
+    "Buy 1 Get 1 Free",
+    "NT$400"
+  ],
+
+  questions:[
+    {
+      stem:"When is the sale?",
+      options:[
+        "Today only",
+        "This weekend",
+        "Next month",
+        "Every day"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"What does Mia want to buy?",
+      options:[
+        "The dress",
+        "The cap",
+        "The pants",
+        "The T-shirt"
+      ],
+      answer:0
+    },
+
+    {
+      stem:"How much is Mia's dress now?",
+      options:[
+        "NT$700",
+        "NT$800",
+        "NT$900",
+        "NT$1,000"
+      ],
+      answer:1
+    },
+
+    {
+      stem:"What special offer is on the T-shirts?",
+      options:[
+        "10% off",
+        "20% off",
+        "Buy 1 Get 1 Free",
+        "No sale"
+      ],
+      answer:2
+    },
+
+    {
+      stem:"How much do Mia and Ken pay in total?",
+      options:[
+        "NT$1,000",
+        "NT$1,100",
+        "NT$1,200",
+        "NT$1,400"
+      ],
+      answer:2
+    }
+  ]
+}
+
+];
+
+/* =========================================================
+   STATE
+========================================================= */
+
+const selections =
+  levels.map(level =>
+    Array(level.questions.length).fill(null)
+  );
+
+const hintStates =
+  levels.map(() => false);
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function getOptions(levelIndex, questionIndex){
+
+  return document.querySelectorAll(
+    `.option[data-level="${levelIndex}"][data-q="${questionIndex}"]`
+  );
+
+}
+
+function getAnswerSlot(levelIndex, questionIndex){
+
+  return document.getElementById(
+    `answer-${levelIndex}-${questionIndex}`
+  );
+
+}
+
+function getScore(levelIndex){
+
+  return document.getElementById(
+    `score-${levelIndex}`
+  );
+
+}
+
+function escapeRegExp(text){
+
+  return text.replace(
+    /[.*+?^${}()|[\]\\]/g,
+    "\\$&"
+  );
+
+}
+
+function highlightText(text, words){
+
+  let result =
+    String(text);
+
+  const sorted =
+    [...words].sort(
+      (a,b) =>
+        b.length-a.length
+    );
+
+  sorted.forEach(word => {
+
+    const regex =
+      new RegExp(
+        `(${escapeRegExp(word)})`,
+        "gi"
+      );
+
+    result =
+      result.replace(
+        regex,
+        `<span class="hint-word">$1</span>`
+      );
+
+  });
+
+  return result;
+}
+
+/* =========================================================
+   PROMO TAG
+========================================================= */
+
+function promoHTML(tag){
+
+  if(!tag) return "";
+
+  if(tag === "BOGO"){
+    return `
+      <div class="promo-tag bogo">
+        <span class="promo-line">Buy 1</span>
+        <span class="promo-line">Get 1 Free</span>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="promo-tag">
+      ${tag}
+    </div>
+  `;
+}
+
+/* =========================================================
+   CREATE LEVEL
+========================================================= */
+
+function createLevel(data, levelIndex){
+
+  const menuClass =
+    `count-${data.menu.length}`;
+
+  const menuHTML =
+    data.menu.map(item => `
+
+      <div class="
+        menu-item
+        ${item[3] ? "has-promo" : ""}
+      ">
+
+        ${promoHTML(item[3])}
+
+        <div class="menu-icon">
+          ${item[0]}
+        </div>
+
+        <div class="menu-name">
+          ${item[1]}
+        </div>
+
+        <div class="menu-price">
+          NT$${item[2]}
+        </div>
+
+      </div>
+
+    `).join("");
+
+  const dialogueHTML =
+    data.dialogue.map(line => `
+
+      <div class="dialogue-line">
+
+        <div class="speaker">
+          ${line[0]}:
+        </div>
+
+        <div class="speech">
+
+          ${
+            highlightText(
+              line[1],
+              data.hints
+            )
+          }
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+  const questionsHTML =
+    data.questions.map(
+      (q,qIndex) => `
+
+      <div class="question">
+
+        <div class="q-row">
+
+          <div class="answer-slot">
+
+            （<span
+              class="answer-letter"
+              id="answer-${levelIndex}-${qIndex}"
+            ></span>）
+
+          </div>
+
+          <div class="q-text">
+
+            ${qIndex+1}.
+
+            ${
+              highlightText(
+                q.stem,
+                data.hints
+              )
+            }
+
+          </div>
+
+        </div>
+
+        <div class="options">
+
+          ${
+            q.options.map(
+              (option,optIndex) => `
+
+              <div
+                class="option"
+
+                data-level="${levelIndex}"
+                data-q="${qIndex}"
+                data-opt="${optIndex}"
+
+                onclick="
+                  chooseAnswer(
+                    ${levelIndex},
+                    ${qIndex},
+                    ${optIndex},
+                    this
+                  )
+                "
+              >
+
+                <span class="option-inner">
+
+                  (${String.fromCharCode(65+optIndex)})
+                  ${
+                    highlightText(
+                      option,
+                      data.hints
+                    )
+                  }
+
+                </span>
+
+              </div>
+
+            `).join("")
+          }
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+  return `
+
+    <section
+      class="level-block"
+      id="level-${levelIndex}"
+    >
+
+      <div class="level-header">
+
+        <h1 class="level-title">
+          生活英文｜服飾店閱讀測驗 ${data.code}
+        </h1>
+
+        <div class="student-info">
+
+          <span>
+            班級：
+          </span>
+
+          <span class="info-line"></span>
+
+          <span>
+            姓名：
+          </span>
+
+          <span class="info-line name-line"></span>
+
+        </div>
+
+      </div>
+
+      <div class="level-content">
+
+        <div class="left-side">
+
+          <section class="menu-box">
+
+            <div class="menu-title">
+              CLOTHES SHOP
+            </div>
+
+            <div
+              class="
+                menu-grid
+                ${menuClass}
+              "
+            >
+              ${menuHTML}
+            </div>
+
+          </section>
+
+          <section class="dialogue-section">
+
+            <div class="dialogue-title">
+              Dialogue
+            </div>
+
+            <div
+              class="
+                dialogue-content
+                ${
+                  data.dialogue.length >= 7
+                  ? "long-dialogue"
+                  : ""
+                }
+              "
+            >
+              ${dialogueHTML}
+            </div>
+
+          </section>
+
+        </div>
+
+        <section class="right-side">
+
+          <div class="question-head">
+
+            <div class="question-title-wrap">
+
+              <h2 class="question-title">
+                Questions
+              </h2>
+
+              <div
+                class="score"
+                id="score-${levelIndex}"
+              ></div>
+
+            </div>
+
+            <div class="tools">
+
+              <button
+                onclick="
+                  toggleHint(
+                    ${levelIndex},
+                    this
+                  )
+                "
+              >
+                提示
+              </button>
+
+              <button
+                onclick="
+                  gradeLevel(
+                    ${levelIndex}
+                  )
+                "
+              >
+                批改
+              </button>
+
+              <button
+                onclick="
+                  clearLevel(
+                    ${levelIndex}
+                  )
+                "
+              >
+                清除
+              </button>
+
+              <button
+                onclick="
+                  showAnswers(
+                    ${levelIndex}
+                  )
+                "
+              >
+                解答
+              </button>
+
+            </div>
+
+          </div>
+
+          <div class="questions">
+            ${questionsHTML}
+          </div>
+
+        </section>
+
+      </div>
+
+    </section>
+
+  `;
+}
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+const pageRoot =
+  document.getElementById("pages");
+
+for(
+  let i=0;
+  i<levels.length;
+  i+=2
+){
+
+  const first =
+    createLevel(
+      levels[i],
+      i
+    );
+
+  const second =
+    createLevel(
+      levels[i+1],
+      i+1
+    );
+
+  pageRoot.insertAdjacentHTML(
+    "beforeend",
+
+    `
+
+      <section class="sheet">
+
+        ${first}
+
+        ${second}
+
+      </section>
+
+    `
+  );
+
+}
+
+/* =========================================================
+   CHOOSE
+========================================================= */
+
+function chooseAnswer(
+  levelIndex,
+  questionIndex,
+  optionIndex,
+  element
+){
+
+  const options =
+    getOptions(
+      levelIndex,
+      questionIndex
+    );
+
+  options.forEach(el => {
+
+    el.classList.remove(
+      "selected",
+      "correct"
+    );
+
+  });
+
+  selections[levelIndex][questionIndex] =
+    optionIndex;
+
+  element.classList.add(
+    "selected"
+  );
+
+  const slot =
+    getAnswerSlot(
+      levelIndex,
+      questionIndex
+    );
+
+  slot.textContent =
+    String.fromCharCode(
+      65+optionIndex
+    );
+
+  slot.className =
+    "answer-letter";
+
+  getScore(levelIndex).textContent =
+    "";
+}
+
+/* =========================================================
+   GRADE
+========================================================= */
+
+function gradeLevel(levelIndex){
+
+  let correctCount = 0;
+
+  levels[levelIndex]
+    .questions
+    .forEach(
+      (question,qIndex) => {
+
+        const chosen =
+          selections[levelIndex][qIndex];
+
+        const options =
+          getOptions(
+            levelIndex,
+            qIndex
+          );
+
+        const slot =
+          getAnswerSlot(
+            levelIndex,
+            qIndex
+          );
+
+        options.forEach(el => {
+
+          el.classList.remove(
+            "correct"
+          );
+
+        });
+
+        if(chosen === null){
+          return;
+        }
+
+        if(
+          chosen === question.answer
+        ){
+
+          correctCount++;
+
+          options[chosen]
+            .classList
+            .remove("selected");
+
+          options[chosen]
+            .classList
+            .add("correct");
+
+          slot.textContent =
+            String.fromCharCode(
+              65+chosen
+            );
+
+          slot.className =
+            "answer-letter correct";
+
+        }
+
+        else{
+
+          options[chosen]
+            .classList
+            .remove(
+              "selected",
+              "correct"
+            );
+
+          selections[levelIndex][qIndex] =
+            null;
+
+          slot.textContent =
+            "";
+
+          slot.className =
+            "answer-letter";
+
+        }
+
+      }
+    );
+
+  getScore(levelIndex).textContent =
+    `${correctCount} / 5`;
+}
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+function clearLevel(levelIndex){
+
+  selections[levelIndex].fill(null);
+
+  levels[levelIndex]
+    .questions
+    .forEach(
+      (_,qIndex) => {
+
+        const options =
+          getOptions(
+            levelIndex,
+            qIndex
+          );
+
+        options.forEach(el => {
+
+          el.classList.remove(
+            "selected",
+            "correct"
+          );
+
+        });
+
+        const slot =
+          getAnswerSlot(
+            levelIndex,
+            qIndex
+          );
+
+        slot.textContent =
+          "";
+
+        slot.className =
+          "answer-letter";
+
+      }
+    );
+
+  getScore(levelIndex).textContent =
+    "";
+}
+
+/* =========================================================
+   ANSWERS
+========================================================= */
+
+function showAnswers(levelIndex){
+
+  levels[levelIndex]
+    .questions
+    .forEach(
+      (question,qIndex) => {
+
+        const options =
+          getOptions(
+            levelIndex,
+            qIndex
+          );
+
+        options.forEach(el => {
+
+          el.classList.remove(
+            "selected",
+            "correct"
+          );
+
+        });
+
+        const slot =
+          getAnswerSlot(
+            levelIndex,
+            qIndex
+          );
+
+        slot.textContent =
+          String.fromCharCode(
+            65+question.answer
+          );
+
+        slot.className =
+          "answer-letter solution";
+
+      }
+    );
+
+  getScore(levelIndex).textContent =
+    "";
+}
+
+/* =========================================================
+   HINT
+========================================================= */
+
+function toggleHint(
+  levelIndex,
+  button
+){
+
+  hintStates[levelIndex] =
+    !hintStates[levelIndex];
+
+  const block =
+    document.getElementById(
+      `level-${levelIndex}`
+    );
+
+  block.classList.toggle(
+    "hint-on",
+    hintStates[levelIndex]
+  );
+
+  button.classList.toggle(
+    "active",
+    hintStates[levelIndex]
+  );
+}
+
+</script>
+
+</body>
+</html>

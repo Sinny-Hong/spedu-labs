@@ -79,6 +79,8 @@ a { color: inherit; }
 .resource-card[data-href]:focus-visible { outline: 3px solid rgba(245,158,11,.42); outline-offset: 3px; }
 .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .tag { display: inline-block; padding: 4px 8px; border-radius: 999px; color: #a75200; background: #fff2d9; font-size: 12px; font-weight: 900; }
+.resource-card[data-category="test"] .tag,
+.resource-card[data-category="測試網頁"] .tag { color: #475569; background: #e2e8f0; }
 .favorite { border: 0; background: transparent; color: #aab4c2; font-size: 21px; line-height: 1; cursor: pointer; }
 .favorite.active { color: var(--orange); }
 .resource-card h2 { margin: 13px 0 7px; color: var(--navy); font-size: 19px; line-height: 1.35; }

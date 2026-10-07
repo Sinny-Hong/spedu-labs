@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>數學教材｜Sinny Spedu Labs</title>
-  <link rel="stylesheet" href="../shared/css/workspace.css?v=3.0">
+  <link rel="stylesheet" href="../shared/css/workspace.css?v=3.1">
+  <style>.resource-section{margin-bottom:26px}.resource-section:not(:has(.resource-card:not([hidden]))){display:none}</style>
 </head>
 <body>
   <button class="mobile-toggle" id="mobileToggle" aria-label="開啟分類選單">☰</button>
@@ -16,18 +17,26 @@
         <button class="category-btn active" data-filter="all">全部教材</button>
         <button class="category-btn" data-filter="worksheet">數學講義</button>
         <button class="category-btn" data-filter="game">互動遊戲</button>
+        <button class="category-btn" data-filter="test">測試網頁</button>
       </nav>
       <p class="sidebar-note">點擊上方橫標即可回到異想教室首頁。</p>
     </aside>
     <main class="main">
       <header class="topbar"><div class="title-block"><p>SINNY SPEDU LABS</p><h1>數學教材工作區</h1></div><a class="home-link" href="../index.html">回到首頁</a></header>
       <div class="search-row"><input class="search-box" id="resourceSearch" type="search" placeholder="搜尋數學教材…" aria-label="搜尋數學教材"><div class="count-badge" id="resultCount"></div></div>
-      <h2 class="section-heading">教材與活動</h2>
-      <section class="card-grid">
-        <article class="resource-card" data-category="worksheet" data-href="實用數學講義-約會大作戰(教師版).pdf"><div class="card-top"><span class="tag">數學講義</span><button class="favorite" data-id="dating" aria-label="收藏約會大作戰">★</button></div><h2>實用數學講義｜約會大作戰</h2><p>從生活情境練習時間、金錢與規劃。</p></article>
-        <article class="resource-card" data-category="worksheet" data-href="實用數學講義-重機圓夢.pdf"><div class="card-top"><span class="tag">數學講義</span><button class="favorite" data-id="motorcycle" aria-label="收藏重機圓夢">★</button></div><h2>實用數學講義｜重機圓夢</h2><p>以購車與生活規劃為主題的實用數學教材。</p></article>
-        <article class="resource-card is-placeholder" data-category="game"><div class="card-top"><span class="tag">互動遊戲</span></div><h2>數學互動遊戲</h2><p>分類入口已預留，之後新增遊戲即可放入。</p><span class="card-link">教材準備中</span></article>
-      </section>
+      <div class="resource-sections">
+        <section class="resource-section"><h2 class="section-heading">數學講義</h2><div class="card-grid">
+          <article class="resource-card" data-category="worksheet" data-href="實用數學講義-約會大作戰(教師版).pdf"><div class="card-top"><span class="tag">數學講義</span><button class="favorite" data-id="dating" aria-label="收藏約會大作戰">★</button></div><h2>實用數學講義｜約會大作戰</h2><p>從生活情境練習時間、金錢與規劃。</p></article>
+          <article class="resource-card" data-category="worksheet" data-href="實用數學講義-重機圓夢.pdf"><div class="card-top"><span class="tag">數學講義</span><button class="favorite" data-id="motorcycle" aria-label="收藏重機圓夢">★</button></div><h2>實用數學講義｜重機圓夢</h2><p>以購車與生活規劃為主題的實用數學教材。</p></article>
+        </div></section>
+        <section class="resource-section"><h2 class="section-heading">互動遊戲</h2><div class="card-grid">
+          <article class="resource-card is-placeholder" data-category="game"><div class="card-top"><span class="tag">互動遊戲</span></div><h2>數學互動遊戲</h2><p>分類入口已預留，之後新增遊戲即可放入。</p><span class="card-link">教材準備中</span></article>
+        </div></section>
+        <section class="resource-section"><h2 class="section-heading">測試網頁</h2><div class="card-grid">
+          <article class="resource-card" data-category="test" data-href="test1.html" style="border-top-color:#64748b"><div class="card-top"><span class="tag">Test 1</span><button class="favorite" data-id="math-test-1" aria-label="收藏測試網頁 Test 1">★</button></div><h2>測試網頁 Test 1</h2><p>獨立測試 HTML，可直接覆蓋進行下一個實驗。</p></article>
+          <article class="resource-card" data-category="test" data-href="test2.html" style="border-top-color:#64748b"><div class="card-top"><span class="tag">Test 2</span><button class="favorite" data-id="math-test-2" aria-label="收藏測試網頁 Test 2">★</button></div><h2>測試網頁 Test 2</h2><p>另一份獨立測試 HTML，可與 Test 1 分開使用。</p></article>
+        </div></section>
+      </div>
       <div class="empty-state" id="emptyState">目前沒有符合條件的教材。</div>
     </main>
   </div>
