@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>網路安全防衛隊：五個危險訊息大考驗</title>
-  <!-- 引入 Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- 引入 Google Fonts: Noto Sans TC & Lexend -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -14,24 +12,12 @@
     body {
       font-family: 'Lexend', 'Noto Sans TC', sans-serif;
     }
-    /* 自訂捲軸美化（僅在極小螢幕或字體放大時備用） */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 9999px;
-    }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen lg:h-screen lg:overflow-hidden flex flex-col select-none">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col select-none">
 
-  <!-- ==================== 頂部極簡狀態列 (固定高度 h-16) ==================== -->
-  <header class="bg-indigo-900 text-white h-16 px-4 lg:px-8 flex items-center justify-between shrink-0 shadow-md z-20">
+  <!-- ==================== 頂部極簡狀態列 ==================== -->
+  <header class="bg-indigo-900 text-white h-16 px-4 lg:px-8 flex items-center justify-between shrink-0 shadow-md z-20 sticky top-0">
     <!-- 左側：標題 -->
     <div class="flex items-center gap-3">
       <span class="text-2xl lg:text-3xl">🛡️</span>
@@ -41,9 +27,8 @@
       </h1>
     </div>
 
-    <!-- 中間：關卡進度圓點 (大螢幕顯示) -->
+    <!-- 中間：關卡進度圓點 -->
     <div id="progress-dots" class="hidden md:flex items-center gap-2 bg-indigo-950/60 px-4 py-1.5 rounded-full border border-indigo-700">
-      <!-- 由 JS 動態產生 5 個關卡指示燈 -->
     </div>
 
     <!-- 右側：關卡數與得分 -->
@@ -58,18 +43,16 @@
     </div>
   </header>
 
-  <!-- ==================== 主內容區 (大螢幕左右雙欄、零捲動) ==================== -->
-  <main id="game-Screen" class="flex-1 max-w-[1600px] w-full mx-auto p-3 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 lg:h-[calc(100vh-4rem)] lg:overflow-hidden">
+  <!-- ==================== 主內容區 (自然延伸高度，必要時可捲動) ==================== -->
+  <main id="game-Screen" class="flex-1 max-w-[1600px] w-full mx-auto p-3 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
 
-    <!-- 【左側欄：模擬手機聊天室】(佔 5/12) -->
-    <section class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col lg:h-full overflow-hidden relative">
+    <!-- 【左側欄：模擬手機聊天室】 -->
+    <section class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col relative h-fit">
       
       <!-- 聊天室頂部聯絡人資訊 -->
-      <div class="bg-slate-800 text-white px-4 py-3 flex items-center justify-between shrink-0">
+      <div class="bg-slate-800 text-white px-4 py-3 flex items-center justify-between shrink-0 rounded-t-2xl">
         <div class="flex items-center gap-3">
-          <div id="avatar-box" class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-xl shadow-inner">
-            👤
-          </div>
+          <div id="avatar-box" class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-xl shadow-inner">👤</div>
           <div>
             <div class="flex items-center gap-2">
               <span id="scenario-badge" class="bg-amber-400 text-slate-900 text-xs font-black px-2 py-0.5 rounded">01 網友借錢</span>
@@ -86,14 +69,13 @@
       </div>
 
       <!-- 聊天訊息顯示區 -->
-      <div class="flex-1 bg-slate-100 p-4 lg:p-5 flex flex-col justify-center gap-3 overflow-y-auto relative">
+      <div class="flex-1 bg-slate-100 p-4 lg:p-5 flex flex-col justify-start gap-3 relative min-h-[400px]">
         
         <!-- 情境背景小字條 -->
         <div class="bg-slate-200/90 text-slate-700 text-xs lg:text-sm px-3 py-2 rounded-lg text-center font-medium mx-auto max-w-md shadow-sm">
           📢 <span id="context-text">週末晚上，突然收到網友連發好幾則訊息...</span>
         </div>
 
-        <!-- 對方傳來的訊息氣泡 1 -->
         <div class="flex items-start gap-2.5 mt-1">
           <div id="chat-avatar-1" class="w-8 h-8 rounded-full bg-slate-300 flex items-center justify-center text-sm shrink-0 mt-1">👤</div>
           <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm max-w-[88%]">
@@ -101,7 +83,6 @@
           </div>
         </div>
 
-        <!-- 對方傳來的訊息氣泡 2 (重點釣魚台詞) -->
         <div class="flex items-start gap-2.5">
           <div id="chat-avatar-2" class="w-8 h-8 rounded-full bg-slate-300 flex items-center justify-center text-sm shrink-0 mt-1">👤</div>
           <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm max-w-[90%]">
@@ -109,7 +90,7 @@
           </div>
         </div>
 
-        <!-- 浮動式「危險警訊提示卡」(點開時覆蓋在聊天室下方，不撐高版面) -->
+        <!-- 浮動式「危險警訊提示卡」 -->
         <div id="hint-drawer" class="hidden absolute inset-x-3 bottom-3 bg-rose-950/95 text-white p-4 rounded-xl shadow-xl border border-rose-400 z-10 transition-all">
           <div class="flex items-start justify-between gap-2">
             <div class="flex items-center gap-2 text-rose-300 font-black text-sm lg:text-base mb-1">
@@ -123,18 +104,17 @@
       </div>
 
       <!-- 模擬底部輸入框裝飾 -->
-      <div class="bg-white border-t border-slate-200 px-4 py-2.5 flex items-center gap-2 text-slate-400 text-xs lg:text-sm shrink-0">
+      <div class="bg-white border-t border-slate-200 px-4 py-2.5 flex items-center gap-2 text-slate-400 text-xs lg:text-sm shrink-0 rounded-b-2xl">
         <div class="flex-1 bg-slate-100 rounded-full px-4 py-1.5 truncate">請從右側選擇最安全的應對方式...</div>
         <span class="text-lg">➤</span>
       </div>
     </section>
 
-    <!-- 【右側欄：作答選項 ＋ 固定回饋區】(佔 7/12) -->
-    <section class="lg:col-span-7 flex flex-col justify-between gap-3 lg:gap-4 lg:h-full overflow-hidden">
+    <!-- 【右側欄：作答選項 ＋ 回饋區】 -->
+    <section class="lg:col-span-7 flex flex-col gap-4">
       
       <!-- 上半部：題目提示與 3 個選項按鈕 -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 lg:p-6 flex-1 flex flex-col justify-between overflow-hidden">
-        
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 lg:p-6 flex flex-col gap-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 shrink-0">
           <h3 class="text-lg lg:text-xl font-black text-indigo-950 flex items-center gap-2">
             <span>🤔</span>
@@ -145,58 +125,49 @@
           </span>
         </div>
 
-        <!-- 選項容器 (自動均分高度，保證不超出) -->
-        <div id="options-container" class="flex-1 flex flex-col justify-center gap-2.5 lg:gap-3.5 my-2">
+        <div id="options-container" class="flex flex-col gap-3 lg:gap-4">
           <!-- 由 JS 動態產生 3 個大按鈕 -->
         </div>
-
       </div>
 
-      <!-- 下半部：固定高度回饋與「下一關」操作區 (h-44，永遠固定在右下角，免捲動！) -->
-      <div id="feedback-box" class="bg-slate-200/70 border-2 border-dashed border-slate-300 rounded-2xl p-4 lg:p-5 h-auto lg:h-44 shrink-0 flex flex-col justify-center transition-all duration-200">
+      <!-- 下半部：回饋與「下一關」操作區 -->
+      <div id="feedback-box" class="bg-slate-200/70 border-2 border-dashed border-slate-300 rounded-2xl p-4 lg:p-5 flex flex-col justify-center transition-all duration-200">
         
-        <!-- 預設尚未作答時的提示畫面 -->
-        <div id="feedback-placeholder" class="text-center text-slate-500 flex flex-col items-center justify-center gap-1 py-2">
+        <div id="feedback-placeholder" class="text-center text-slate-500 flex flex-col items-center justify-center gap-1 py-4">
           <span class="text-2xl">👆</span>
           <p class="font-bold text-sm lg:text-base">請點擊上方 A、B、C 其中一個選項來作答！</p>
-          <p class="text-xs text-slate-400">作答後，這裡會直接顯示解析與「下一關」按鈕，不用往下滑喔！</p>
         </div>
 
-        <!-- 作答後的回饋內容 (預設隱藏) -->
-        <div id="feedback-content" class="hidden h-full flex flex-col justify-between gap-2">
+        <div id="feedback-content" class="hidden flex flex-col gap-3">
           <div class="flex items-start gap-3">
             <div id="feedback-icon" class="text-2xl lg:text-3xl shrink-0 mt-0.5">✅</div>
             <div class="flex-1">
               <h4 id="feedback-title" class="font-black text-base lg:text-lg">答對了！做得好！</h4>
-              <p id="feedback-desc" class="text-slate-700 text-sm lg:text-base leading-snug mt-0.5 font-medium"></p>
+              <p id="feedback-desc" class="text-slate-700 text-sm lg:text-base leading-snug mt-1 font-medium"></p>
             </div>
           </div>
 
-          <!-- 底部口訣與下一關按鈕同行排列 -->
-          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-black/10">
-            <div class="bg-white/90 px-3 py-1 rounded-lg border border-black/10 text-xs lg:text-sm font-black text-indigo-950 flex items-center gap-1.5">
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-black/10">
+            <div class="bg-white/90 px-3 py-1.5 rounded-lg border border-black/10 text-xs lg:text-sm font-black text-indigo-950 flex items-center gap-1.5">
               <span>📌 黃金口訣：</span>
               <span id="feedback-slogan" class="text-rose-600">不匯款、不買點數！</span>
             </div>
 
-            <button id="next-btn" onclick="nextLevel()" class="hidden bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-black text-sm lg:text-base px-5 py-2 rounded-xl shadow-md transition flex items-center gap-2 ml-auto">
+            <button id="next-btn" onclick="nextLevel()" class="hidden bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-black text-sm lg:text-base px-6 py-2.5 rounded-xl shadow-md transition flex items-center gap-2 ml-auto">
               <span id="next-btn-text">下一關</span>
               <span>➔</span>
             </button>
           </div>
         </div>
-
       </div>
-
     </section>
 
   </main>
 
-  <!-- ==================== 總結過關畫面 (大螢幕同樣雙欄零捲動) ==================== -->
-  <section id="summary-screen" class="hidden flex-1 max-w-[1500px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:h-[calc(100vh-4rem)] lg:overflow-hidden items-center">
+  <!-- ==================== 總結過關畫面 ==================== -->
+  <section id="summary-screen" class="hidden flex-1 max-w-[1500px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
     
-    <!-- 左欄：總分獎盃卡 (佔 4/12) -->
-    <div class="lg:col-span-4 bg-white rounded-3xl shadow-md border border-slate-200 p-6 lg:p-8 text-center flex flex-col items-center justify-center lg:h-full">
+    <div class="lg:col-span-4 bg-white rounded-3xl shadow-md border border-slate-200 p-6 lg:p-8 text-center flex flex-col items-center justify-center h-fit">
       <div class="text-6xl lg:text-7xl mb-3">🏆</div>
       <h2 class="text-2xl lg:text-3xl font-black text-indigo-950">闖關大成功！</h2>
       <p class="text-slate-500 text-sm lg:text-base mt-1">恭喜你完成五大網路危機考驗</p>
@@ -217,21 +188,19 @@
       </button>
     </div>
 
-    <!-- 右欄：五大黃金防身口訣總複習 (佔 8/12) -->
-    <div class="lg:col-span-8 bg-white rounded-3xl shadow-md border border-slate-200 p-5 lg:p-7 flex flex-col justify-between lg:h-full overflow-hidden">
+    <div class="lg:col-span-8 bg-white rounded-3xl shadow-md border border-slate-200 p-5 lg:p-7 flex flex-col gap-4 h-fit">
       <div class="border-b border-slate-100 pb-3 shrink-0 flex items-center justify-between">
         <h3 class="text-xl lg:text-2xl font-black text-indigo-950 flex items-center gap-2">
-          <span>🛡️️</span>
+          <span>🛡</span>
           <span>網路安全「三不與求助」黃金口訣總整理</span>
         </h3>
-        <span class="text-xs lg:text-sm bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full">全班一起大聲讀！</span>
+        <span class="text-xs lg:text-sm bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full hidden sm:block">全班一起大聲讀！</span>
       </div>
 
-      <div id="summary-list" class="flex-1 flex flex-col justify-around gap-2 my-2 overflow-y-auto">
+      <div id="summary-list" class="flex flex-col gap-3">
         <!-- 由 JS 動態填入 5 條口訣卡片 -->
       </div>
     </div>
-
   </section>
 
   <!-- ==================== 遊戲題庫與互動腳本 ==================== -->
@@ -399,7 +368,6 @@
     let firstTry = true;
     let levelSolved = false;
 
-    // 初始化進度圓點與第一關
     function initGame() {
       currentLevel = 0;
       score = 0;
@@ -433,13 +401,11 @@
       firstTry = true;
       levelSolved = false;
 
-      // 更新頂部關卡數字與圓點
       document.getElementById("level-indicator").textContent = currentLevel + 1;
       document.getElementById("score-rule-badge").textContent = "一次答對 +20 分";
       document.getElementById("score-rule-badge").className = "text-xs lg:text-sm font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md shrink-0";
       renderProgressDots();
 
-      // 更新左側聊天室
       document.getElementById("scenario-badge").textContent = data.id;
       document.getElementById("sender-name").textContent = data.sender;
       document.getElementById("sender-status").textContent = data.status;
@@ -452,31 +418,32 @@
       document.getElementById("hint-text").textContent = data.hint;
       document.getElementById("hint-drawer").classList.add("hidden");
 
-      // 產生右側選項按鈕
       const optContainer = document.getElementById("options-container");
       optContainer.innerHTML = "";
       data.options.forEach((opt, index) => {
         const btn = document.createElement("button");
         btn.id = `opt-btn-${index}`;
         btn.onclick = () => selectOption(index);
-        btn.className = "w-full text-left p-3.5 lg:p-4 rounded-xl border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/40 active:scale-[0.99] transition flex items-center gap-3.5 group bg-white shadow-sm";
+        btn.className = "w-full text-left p-3.5 lg:p-4 rounded-xl border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/40 active:scale-[0.99] transition flex items-start sm:items-center gap-3.5 group bg-white shadow-sm";
         btn.innerHTML = `
-          <span id="opt-badge-${index}" class="w-9 h-9 lg:w-10 lg:h-10 rounded-lg bg-slate-100 group-hover:bg-indigo-600 group-hover:text-white text-slate-700 font-black text-base lg:text-lg flex items-center justify-center shrink-0 transition">
+          <span id="opt-badge-${index}" class="w-9 h-9 lg:w-10 lg:h-10 rounded-lg bg-slate-100 group-hover:bg-indigo-600 group-hover:text-white text-slate-700 font-black text-base lg:text-lg flex items-center justify-center shrink-0 transition mt-1 sm:mt-0">
             ${opt.label}
           </span>
-          <span class="text-slate-800 font-bold text-sm lg:text-lg leading-snug flex-1">
+          <span class="text-slate-800 font-bold text-sm lg:text-base leading-snug flex-1">
             ${opt.text}
           </span>
         `;
         optContainer.appendChild(btn);
       });
 
-      // 重設右下角回饋區為等待作答狀態
       const fbBox = document.getElementById("feedback-box");
-      fbBox.className = "bg-slate-200/70 border-2 border-dashed border-slate-300 rounded-2xl p-4 lg:p-5 h-auto lg:h-44 shrink-0 flex flex-col justify-center transition-all duration-200";
+      fbBox.className = "bg-slate-200/70 border-2 border-dashed border-slate-300 rounded-2xl p-4 lg:p-5 flex flex-col justify-center transition-all duration-200";
       document.getElementById("feedback-placeholder").classList.remove("hidden");
       document.getElementById("feedback-content").classList.add("hidden");
       document.getElementById("next-btn").classList.add("hidden");
+      
+      // 切換題目時自動捲動到最上方
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function toggleHint() {
@@ -485,7 +452,7 @@
     }
 
     function selectOption(index) {
-      if (levelSolved) return; // 已經過關就鎖定不再重複扣分或加分
+      if (levelSolved) return;
 
       const data = levels[currentLevel];
       const chosen = data.options[index];
@@ -512,42 +479,41 @@
         score += pointsEarned;
         document.getElementById("score-indicator").textContent = score;
 
-        // 標示正確按鈕樣式
-        btn.className = "w-full text-left p-3.5 lg:p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 flex items-center gap-3.5 shadow-sm";
-        badge.className = "w-9 h-9 lg:w-10 lg:h-10 rounded-lg bg-emerald-600 text-white font-black text-base lg:text-lg flex items-center justify-center shrink-0";
+        btn.className = "w-full text-left p-3.5 lg:p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 flex items-start sm:items-center gap-3.5 shadow-sm";
+        badge.className = "w-9 h-9 lg:w-10 lg:h-10 rounded-lg bg-emerald-600 text-white font-black text-base lg:text-lg flex items-center justify-center shrink-0 mt-1 sm:mt-0";
         badge.textContent = "✓";
 
-        // 更新回饋框為綠色成功狀態
-        fbBox.className = "bg-emerald-50 border-2 border-emerald-400 rounded-2xl p-4 lg:p-5 h-auto lg:h-44 shrink-0 flex flex-col justify-between transition-all duration-200 shadow-sm";
+        fbBox.className = "bg-emerald-50 border-2 border-emerald-400 rounded-2xl p-4 lg:p-5 flex flex-col justify-between transition-all duration-200 shadow-sm";
         fbIcon.textContent = "🎉";
         fbTitle.textContent = `答對了！獲得 +${pointsEarned} 分！`;
         fbTitle.className = "font-black text-base lg:text-lg text-emerald-900";
         fbDesc.textContent = chosen.feedback;
 
-        // 顯示下一關按鈕
         nextBtn.classList.remove("hidden");
         nextBtnText.textContent = currentLevel < levels.length - 1 ? "下一關" : "看總成績與口訣";
+        
+        // 自動微幅往下捲動，確保下一關按鈕進入視線
+        setTimeout(() => { fbBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150);
       } else {
         firstTry = false;
         document.getElementById("score-rule-badge").textContent = "重新思考答對 +15 分";
         document.getElementById("score-rule-badge").className = "text-xs lg:text-sm font-bold text-amber-700 bg-amber-100 px-2.5 py-1 rounded-md shrink-0";
 
-        // 標示錯誤按鈕樣式並禁用該按鈕
         btn.disabled = true;
-        btn.className = "w-full text-left p-3.5 lg:p-4 rounded-xl border-2 border-rose-300 bg-rose-50/60 opacity-60 flex items-center gap-3.5 cursor-not-allowed";
-        badge.className = "w-9 h-9 lg:w-10 lg:h-10 rounded-lg bg-rose-500 text-white font-black text-base lg:text-lg flex items-center justify-center shrink-0";
+        btn.className = "w-full text-left p-3.5 lg:p-4 rounded-xl border-2 border-rose-300 bg-rose-50/60 opacity-60 flex items-start sm:items-center gap-3.5 cursor-not-allowed";
+        badge.className = "w-9 h-9 lg:w-10 lg:h-10 rounded-lg bg-rose-500 text-white font-black text-base lg:text-lg flex items-center justify-center shrink-0 mt-1 sm:mt-0";
         badge.textContent = "✕";
 
-        // 自動打開左側危險警訊提示幫助學生
         document.getElementById("hint-drawer").classList.remove("hidden");
 
-        // 更新回饋框為紅色提醒狀態
-        fbBox.className = "bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 lg:p-5 h-auto lg:h-44 shrink-0 flex flex-col justify-between transition-all duration-200 shadow-sm";
-        fbIcon.textContent = "⚠️️";
+        fbBox.className = "bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 lg:p-5 flex flex-col justify-between transition-all duration-200 shadow-sm";
+        fbIcon.textContent = "⚠";
         fbTitle.textContent = "喔喔！這樣做有危險喔，請再選一次！";
         fbTitle.className = "font-black text-base lg:text-lg text-rose-800";
         fbDesc.textContent = chosen.feedback;
         nextBtn.classList.add("hidden");
+        
+        setTimeout(() => { fbBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150);
       }
     }
 
@@ -579,28 +545,29 @@
       listContainer.innerHTML = "";
       levels.forEach((lvl) => {
         const item = document.createElement("div");
-        item.className = "bg-slate-50 border border-slate-200 rounded-xl p-3 lg:px-4 lg:py-2.5 flex items-center gap-3.5";
+        item.className = "bg-slate-50 border border-slate-200 rounded-xl p-3 lg:px-4 lg:py-3 flex items-center gap-3.5";
         item.innerHTML = `
-          <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-800 flex items-center justify-center text-xl shrink-0 font-bold">
+          <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-indigo-100 text-indigo-800 flex items-center justify-center text-xl lg:text-2xl shrink-0 font-bold">
             ${lvl.avatar}
           </div>
           <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-black bg-indigo-900 text-white px-2 py-0.5 rounded">${lvl.id}</span>
-              <span class="text-sm lg:text-base font-black text-rose-600 truncate">${lvl.slogan}</span>
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="text-xs font-black bg-indigo-900 text-white px-2 py-0.5 rounded shrink-0">${lvl.id}</span>
+              <span class="text-sm lg:text-base font-black text-rose-600 break-words">${lvl.slogan}</span>
             </div>
-            <p class="text-xs lg:text-sm text-slate-600 truncate mt-0.5">${lvl.hint}</p>
+            <p class="text-xs lg:text-sm text-slate-600 leading-snug">${lvl.hint}</p>
           </div>
         `;
         listContainer.appendChild(item);
       });
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function restartGame() {
       initGame();
     }
 
-    // 啟動遊戲
     initGame();
   </script>
 </body>
