@@ -25,7 +25,7 @@
     cards.forEach((card) => {
       const categoryMatch = category === 'all'
         || (category === 'favorites' && isFavorite(card))
-        || card.dataset.category === category;
+        || (card.dataset.category || '').split(/\s+/).includes(category);
       const textMatch = !query || card.textContent.toLocaleLowerCase('zh-Hant').includes(query);
       card.hidden = !(categoryMatch && textMatch);
       if (!card.hidden) visible += 1;
