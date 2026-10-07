@@ -10,21 +10,14 @@
 :root{
   --navy:#0B3768;
   --orange:#F59E0B;
-
   --bg:#F4F8FC;
   --paper:#FFFFFF;
   --soft:#EEF4F9;
   --line:#CDD9E5;
-
   --green:#B9D8C2;
   --green-dark:#9FC7AA;
-
   --text:#173552;
 }
-
-/* =========================================================
-   BASIC
-========================================================= */
 
 *{
   box-sizing:border-box;
@@ -59,23 +52,23 @@ body{
 
 .app{
   min-height:100vh;
-
-  display:flex;
-  flex-direction:column;
-
-  padding:16px 28px 18px;
+  padding:14px 28px 16px;
 }
 
 /* =========================================================
-   HEADER：壓扁
+   HEADER
+   大標＋小標同一行
 ========================================================= */
 
 .page-header{
-  flex:0 0 auto;
+  display:flex;
+  align-items:baseline;
+  gap:18px;
 
-  margin-bottom:12px;
+  min-height:58px;
 
-  padding-left:10px;
+  padding-left:8px;
+  margin-bottom:8px;
 }
 
 .page-title{
@@ -83,37 +76,29 @@ body{
 
   color:var(--navy);
 
-  font-size:clamp(34px,4.2vw,68px);
-  line-height:.98;
+  font-size:clamp(36px,4vw,64px);
+  line-height:1;
 
   font-weight:900;
-
   letter-spacing:-1.5px;
 }
 
 .page-subtitle{
-  margin-top:6px;
-
   color:var(--orange);
 
-  font-size:clamp(18px,1.8vw,28px);
+  font-size:clamp(17px,1.6vw,27px);
   line-height:1;
 
-  font-weight:800;
+  font-weight:900;
 
-  letter-spacing:.5px;
+  white-space:nowrap;
 }
 
 /* =========================================================
    WORKSPACE
-   左 65 / 右 35
 ========================================================= */
 
 .workspace{
-  flex:1;
-
-  min-height:0;
-
   display:grid;
 
   grid-template-columns:
@@ -121,6 +106,10 @@ body{
     minmax(330px,1fr);
 
   gap:22px;
+
+  /* 關鍵：
+     右側變高時不再把左側一起撐高 */
+  align-items:start;
 }
 
 /* =========================================================
@@ -129,32 +118,24 @@ body{
 
 .card-panel{
   min-width:0;
-  min-height:0;
-
-  display:flex;
-  flex-direction:column;
 }
 
 /* =========================================================
-   CARD
+   ENGLISH CARD
+   維持目前成功的扁長比例
 ========================================================= */
 
 .english-card{
   position:relative;
 
-  flex:1;
-
-  min-height:0;
-
-  max-height:650px;
+  height:620px;
 
   display:flex;
-  flex-direction:column;
-  justify-content:center;
+  align-items:center;
 
-  padding:28px 58px 24px 110px;
+  padding:28px 58px 28px 110px;
 
-  background:rgba(255,255,255,.94);
+  background:rgba(255,255,255,.95);
 
   border:2px solid #D3E0EB;
   border-radius:38px;
@@ -166,14 +147,14 @@ body{
 }
 
 /* =========================================================
-   DECORATION：縮小
+   DECORATION
 ========================================================= */
 
 .branch{
   position:absolute;
 
   left:14px;
-  top:18px;
+  top:24px;
 
   width:92px;
   height:178px;
@@ -215,35 +196,30 @@ body{
 .leaf.l1{
   left:6px;
   top:25px;
-
   transform:rotate(35deg);
 }
 
 .leaf.l2{
   left:47px;
   top:17px;
-
   transform:rotate(-30deg);
 }
 
 .leaf.l3{
   left:3px;
   top:68px;
-
   transform:rotate(28deg);
 }
 
 .leaf.l4{
   left:49px;
   top:61px;
-
   transform:rotate(-30deg);
 }
 
 .leaf.l5{
   left:7px;
   top:110px;
-
   transform:rotate(25deg);
 }
 
@@ -272,7 +248,7 @@ body{
   position:absolute;
 
   right:105px;
-  top:35px;
+  top:30px;
 
   width:82px;
   height:30px;
@@ -280,14 +256,11 @@ body{
   border-radius:40px;
 
   background:#F4F7FA;
-
-  opacity:.9;
 }
 
 .cloud::before,
 .cloud::after{
   content:"";
-
   position:absolute;
 
   border-radius:50%;
@@ -312,28 +285,22 @@ body{
 }
 
 /* =========================================================
-   CARD FIELDS：四列壓扁
+   CARD FIELDS
+   不再另外顯示中文標題
 ========================================================= */
 
 .card-fields{
   width:100%;
 
   display:grid;
-
-  grid-template-rows:
-    repeat(4,minmax(82px,1fr));
-
-  align-content:center;
+  grid-template-rows:repeat(4,1fr);
 }
 
 .card-field{
   min-height:0;
 
   display:flex;
-  flex-direction:column;
-  justify-content:center;
-
-  padding:8px 0 10px;
+  align-items:center;
 
   border-bottom:2px solid var(--line);
 }
@@ -342,45 +309,21 @@ body{
   border-bottom:none;
 }
 
-.field-label{
-  display:flex;
-
-  align-items:center;
-  justify-content:space-between;
-
-  margin-bottom:5px;
-
-  color:var(--navy);
-
-  font-size:clamp(23px,2.1vw,37px);
-  line-height:1;
-
-  font-weight:900;
-}
-
-.field-arrow{
-  flex:0 0 auto;
-
-  margin-left:18px;
-
-  color:var(--orange);
-
-  font-size:22px;
-  line-height:1;
-
-  transition:.15s;
-}
-
-.card-field.active .field-arrow{
-  transform:rotate(180deg);
-}
-
 /* =========================================================
    SELECT
+   第一個 option 就是中文提示
 ========================================================= */
+
+.select-wrap{
+  position:relative;
+
+  width:100%;
+}
 
 .card-select{
   width:100%;
+
+  padding:8px 42px 8px 0;
 
   border:none;
   outline:none;
@@ -395,8 +338,8 @@ body{
     "Comic Neue",
     cursive;
 
-  font-size:clamp(26px,2.7vw,46px);
-  line-height:1.05;
+  font-size:clamp(30px,2.8vw,48px);
+  line-height:1.08;
 
   font-weight:700;
 
@@ -406,47 +349,73 @@ body{
   cursor:pointer;
 }
 
+/* 未選時只顯示一行中文 */
 .card-select.placeholder{
-  color:#C0CAD3;
+  color:var(--navy);
+
+  font-family:
+    "Noto Sans TC",
+    "Microsoft JhengHei",
+    Arial,
+    sans-serif;
+
+  font-size:clamp(25px,2.2vw,38px);
+
+  font-weight:900;
+}
+
+.select-arrow{
+  position:absolute;
+
+  right:8px;
+  top:50%;
+
+  transform:translateY(-50%);
+
+  color:var(--orange);
+
+  font-size:23px;
+
+  pointer-events:none;
 }
 
 .card-select option{
-  font-size:18px;
   color:#222;
+  font-size:18px;
 }
 
 /* =========================================================
-   LEFT FOOTNOTE
+   NOTE
 ========================================================= */
 
 .card-note{
-  flex:0 0 auto;
-
   margin-top:6px;
   padding-left:8px;
 
   color:#64788B;
 
   font-size:13px;
-  line-height:1.3;
+  line-height:1.2;
 }
 
 /* =========================================================
-   RIGHT HINT PANEL：壓扁
+   RIGHT HINT PANEL
+   固定較矮
 ========================================================= */
 
 .hint-panel{
   min-width:0;
-  min-height:0;
 
-  max-height:650px;
+  /* 不再和左卡同高 */
+  height:500px;
+  max-height:500px;
 
   display:flex;
   flex-direction:column;
 
-  padding:22px;
+  padding:18px;
 
-  background:rgba(255,255,255,.94);
+  background:rgba(255,255,255,.95);
 
   border:2px solid #D3E0EB;
   border-radius:34px;
@@ -468,9 +437,9 @@ body{
   align-items:center;
   justify-content:space-between;
 
-  gap:12px;
+  gap:10px;
 
-  margin-bottom:14px;
+  margin-bottom:10px;
 }
 
 .hint-title{
@@ -478,7 +447,7 @@ body{
 
   color:var(--navy);
 
-  font-size:clamp(25px,2vw,38px);
+  font-size:clamp(24px,1.8vw,34px);
   line-height:1;
 
   font-weight:900;
@@ -487,7 +456,7 @@ body{
 .hint-tagline{
   color:var(--orange);
 
-  font-size:clamp(11px,1vw,17px);
+  font-size:clamp(10px,.95vw,16px);
 
   font-weight:900;
 
@@ -496,6 +465,7 @@ body{
 
 /* =========================================================
    ACCORDION
+   展開只在右欄內捲
 ========================================================= */
 
 .accordion{
@@ -506,18 +476,18 @@ body{
   display:flex;
   flex-direction:column;
 
-  gap:10px;
+  gap:8px;
 
-  overflow:auto;
+  overflow-y:auto;
 
-  padding-right:2px;
+  padding-right:3px;
 }
 
 .hint-item{
   flex:0 0 auto;
 
   border:1.5px solid #D3E0EB;
-  border-radius:20px;
+  border-radius:17px;
 
   background:#fff;
 
@@ -530,22 +500,23 @@ body{
 
 /* =========================================================
    HINT BUTTON
+   再扁
 ========================================================= */
 
 .hint-button{
   width:100%;
 
-  min-height:64px;
+  min-height:58px;
 
   display:grid;
 
-  grid-template-columns:48px 1fr 28px;
+  grid-template-columns:42px 1fr 25px;
 
   align-items:center;
 
-  gap:10px;
+  gap:8px;
 
-  padding:8px 18px;
+  padding:6px 14px;
 
   border:none;
 
@@ -563,8 +534,8 @@ body{
 }
 
 .hint-number{
-  width:38px;
-  height:38px;
+  width:34px;
+  height:34px;
 
   display:flex;
   align-items:center;
@@ -576,7 +547,7 @@ body{
 
   color:var(--navy);
 
-  font-size:18px;
+  font-size:17px;
   font-weight:900;
 }
 
@@ -586,19 +557,17 @@ body{
 }
 
 .hint-name{
-  font-size:20px;
+  font-size:19px;
   font-weight:900;
 }
 
 .hint-toggle{
   color:var(--orange);
 
-  font-size:28px;
+  font-size:26px;
   line-height:1;
 
   text-align:center;
-
-  font-weight:300;
 }
 
 /* =========================================================
@@ -609,13 +578,13 @@ body{
   display:none;
 
   padding:
-    10px 22px
-    18px 72px;
+    8px 18px
+    14px 61px;
 
   color:#294863;
 
-  font-size:16px;
-  line-height:1.55;
+  font-size:15px;
+  line-height:1.45;
 }
 
 .hint-item.open .hint-content{
@@ -623,7 +592,7 @@ body{
 }
 
 .hint-content p{
-  margin:0 0 10px;
+  margin:0 0 8px;
 }
 
 .hint-content p:last-child{
@@ -631,13 +600,13 @@ body{
 }
 
 .example-box{
-  margin:9px 0 12px;
+  margin:8px 0 10px;
 
-  padding:12px 16px;
+  padding:10px 14px;
 
   background:var(--soft);
 
-  border-radius:14px;
+  border-radius:12px;
 
   color:var(--navy);
 
@@ -647,8 +616,8 @@ body{
     "Comic Neue",
     cursive;
 
-  font-size:17px;
-  line-height:1.45;
+  font-size:16px;
+  line-height:1.4;
 
   font-weight:700;
 }
@@ -659,77 +628,62 @@ body{
 }
 
 /* =========================================================
-   TV：較低的螢幕時再壓一次
+   LOW TV
 ========================================================= */
 
-@media screen and (min-width:1000px) and (max-height:820px){
+@media screen and (min-width:1000px) and (max-height:850px){
 
   .app{
-    padding-top:10px;
-    padding-bottom:10px;
+    padding-top:8px;
+    padding-bottom:8px;
   }
 
   .page-header{
-    margin-bottom:8px;
+    min-height:45px;
+
+    margin-bottom:5px;
   }
 
   .page-title{
-    font-size:46px;
+    font-size:43px;
   }
 
   .page-subtitle{
-    margin-top:4px;
-    font-size:20px;
-  }
-
-  .english-card,
-  .hint-panel{
-    max-height:560px;
+    font-size:19px;
   }
 
   .english-card{
-    padding-top:18px;
-    padding-bottom:18px;
-  }
-
-  .card-fields{
-    grid-template-rows:
-      repeat(4,minmax(70px,1fr));
-  }
-
-  .field-label{
-    font-size:27px;
-  }
-
-  .card-select{
-    font-size:32px;
+    height:545px;
   }
 
   .hint-panel{
-    padding:16px;
+    height:445px;
+    max-height:445px;
   }
 
-  .hint-header{
-    margin-bottom:10px;
+  .card-select{
+    font-size:34px;
+  }
+
+  .card-select.placeholder{
+    font-size:28px;
   }
 
   .hint-button{
-    min-height:56px;
+    min-height:50px;
   }
 
   .hint-content{
-    font-size:14px;
-    line-height:1.45;
+    font-size:13.5px;
   }
 
   .example-box{
-    font-size:15px;
+    font-size:14px;
   }
 }
 
 /* =========================================================
-   SMALL SCREEN
-   不改核心比例，允許橫向捲動
+   MOBILE
 ========================================================= */
 
 @media screen and (max-width:900px){
@@ -762,24 +716,19 @@ body{
     padding:0;
   }
 
-  .page-header{
-    display:none;
+  .page-header,
+  .hint-panel,
+  .card-note{
+    display:none !important;
   }
 
   .workspace{
     display:block;
   }
 
-  .hint-panel,
-  .card-note{
-    display:none !important;
-  }
-
   .english-card{
     width:100%;
-    max-height:none;
-
-    min-height:170mm;
+    height:170mm;
 
     box-shadow:none;
   }
@@ -791,10 +740,6 @@ body{
 <body>
 
 <div class="app">
-
-  <!-- =====================================================
-       HEADER
-  ====================================================== -->
 
   <header class="page-header">
 
@@ -808,21 +753,15 @@ body{
 
   </header>
 
-  <!-- =====================================================
-       MAIN
-  ====================================================== -->
-
   <main class="workspace">
 
     <!-- ===================================================
-         LEFT
+         LEFT CARD
     ==================================================== -->
 
     <section class="card-panel">
 
       <div class="english-card">
-
-        <!-- decoration -->
 
         <div class="branch">
 
@@ -839,203 +778,193 @@ body{
 
         <div class="cloud"></div>
 
-        <!-- fields -->
-
         <div class="card-fields">
 
-          <!-- recipient -->
+          <!-- 收件人 -->
 
           <div class="card-field">
 
-            <div class="field-label">
+            <div class="select-wrap">
 
-              <span>收件人</span>
+              <select
+                class="card-select placeholder"
+                onchange="selectChanged(this)"
+              >
 
-              <span class="field-arrow">
+                <option value="">
+                  收件人
+                </option>
+
+                <option>
+                  Dear Teacher,
+                </option>
+
+                <option>
+                  Dear Ms. Hong,
+                </option>
+
+                <option>
+                  Dear Mr. Wang,
+                </option>
+
+                <option>
+                  Dear Mom,
+                </option>
+
+                <option>
+                  Dear Dad,
+                </option>
+
+                <option>
+                  Dear Friend,
+                </option>
+
+              </select>
+
+              <span class="select-arrow">
                 ▾
               </span>
 
             </div>
-
-            <select
-              class="card-select"
-              onchange="selectChanged(this)"
-            >
-
-              <option value="">
-                收件人
-              </option>
-
-              <option>
-                Dear Teacher,
-              </option>
-
-              <option>
-                Dear Ms. Hong,
-              </option>
-
-              <option>
-                Dear Mr. Wang,
-              </option>
-
-              <option>
-                Dear Mom,
-              </option>
-
-              <option>
-                Dear Dad,
-              </option>
-
-              <option>
-                Dear Friend,
-              </option>
-
-            </select>
 
           </div>
 
-          <!-- greeting -->
+          <!-- 節慶 -->
 
           <div class="card-field">
 
-            <div class="field-label">
+            <div class="select-wrap">
 
-              <span>節慶祝賀</span>
+              <select
+                class="card-select placeholder"
+                onchange="selectChanged(this)"
+              >
 
-              <span class="field-arrow">
+                <option value="">
+                  節慶祝賀
+                </option>
+
+                <option>
+                  Happy Teachers’ Day!
+                </option>
+
+                <option>
+                  Happy Birthday!
+                </option>
+
+                <option>
+                  Merry Christmas!
+                </option>
+
+                <option>
+                  Happy New Year!
+                </option>
+
+                <option>
+                  Happy Mother’s Day!
+                </option>
+
+                <option>
+                  Happy Father’s Day!
+                </option>
+
+              </select>
+
+              <span class="select-arrow">
                 ▾
               </span>
 
             </div>
-
-            <select
-              class="card-select"
-              onchange="selectChanged(this)"
-            >
-
-              <option value="">
-                節慶祝賀
-              </option>
-
-              <option>
-                Happy Teachers’ Day!
-              </option>
-
-              <option>
-                Happy Birthday!
-              </option>
-
-              <option>
-                Merry Christmas!
-              </option>
-
-              <option>
-                Happy New Year!
-              </option>
-
-              <option>
-                Happy Mother’s Day!
-              </option>
-
-              <option>
-                Happy Father’s Day!
-              </option>
-
-            </select>
 
           </div>
 
-          <!-- message -->
+          <!-- 想說的話 -->
 
           <div class="card-field">
 
-            <div class="field-label">
+            <div class="select-wrap">
 
-              <span>想說的話</span>
+              <select
+                class="card-select placeholder"
+                onchange="selectChanged(this)"
+              >
 
-              <span class="field-arrow">
+                <option value="">
+                  想說的話
+                </option>
+
+                <option>
+                  Thank you.
+                </option>
+
+                <option>
+                  Thank you for helping me.
+                </option>
+
+                <option>
+                  You are very kind.
+                </option>
+
+                <option>
+                  Have a great day!
+                </option>
+
+                <option>
+                  I love you.
+                </option>
+
+                <option>
+                  Best wishes to you.
+                </option>
+
+              </select>
+
+              <span class="select-arrow">
                 ▾
               </span>
 
             </div>
-
-            <select
-              class="card-select"
-              onchange="selectChanged(this)"
-            >
-
-              <option value="">
-                想說的話
-              </option>
-
-              <option>
-                Thank you.
-              </option>
-
-              <option>
-                Thank you for helping me.
-              </option>
-
-              <option>
-                You are very kind.
-              </option>
-
-              <option>
-                Have a great day!
-              </option>
-
-              <option>
-                I love you.
-              </option>
-
-              <option>
-                Best wishes to you.
-              </option>
-
-            </select>
 
           </div>
 
-          <!-- sender -->
+          <!-- 寄件人 -->
 
           <div class="card-field">
 
-            <div class="field-label">
+            <div class="select-wrap">
 
-              <span>寄件人</span>
+              <select
+                class="card-select placeholder"
+                onchange="selectChanged(this)"
+              >
 
-              <span class="field-arrow">
+                <option value="">
+                  寄件人
+                </option>
+
+                <option>
+                  Your student,
+                </option>
+
+                <option>
+                  Your friend,
+                </option>
+
+                <option>
+                  Love,
+                </option>
+
+                <option>
+                  From,
+                </option>
+
+              </select>
+
+              <span class="select-arrow">
                 ▾
               </span>
 
             </div>
-
-            <select
-              class="card-select"
-              onchange="selectChanged(this)"
-            >
-
-              <option value="">
-                寄件人
-              </option>
-
-              <option>
-                Your student,
-              </option>
-
-              <option>
-                Your friend,
-              </option>
-
-              <option>
-                Love,
-              </option>
-
-              <option>
-                From,
-              </option>
-
-            </select>
 
           </div>
 
@@ -1050,7 +979,7 @@ body{
     </section>
 
     <!-- ===================================================
-         RIGHT
+         RIGHT HINT
     ==================================================== -->
 
     <aside class="hint-panel">
@@ -1078,17 +1007,9 @@ body{
             onclick="toggleHint(this)"
           >
 
-            <span class="hint-number">
-              1
-            </span>
-
-            <span class="hint-name">
-              收件人
-            </span>
-
-            <span class="hint-toggle">
-              ＋
-            </span>
+            <span class="hint-number">1</span>
+            <span class="hint-name">收件人</span>
+            <span class="hint-toggle">＋</span>
 
           </button>
 
@@ -1124,17 +1045,9 @@ body{
             onclick="toggleHint(this)"
           >
 
-            <span class="hint-number">
-              2
-            </span>
-
-            <span class="hint-name">
-              節慶祝賀
-            </span>
-
-            <span class="hint-toggle">
-              ＋
-            </span>
+            <span class="hint-number">2</span>
+            <span class="hint-name">節慶祝賀</span>
+            <span class="hint-toggle">＋</span>
 
           </button>
 
@@ -1150,10 +1063,6 @@ body{
               Merry Christmas!
             </div>
 
-            <p>
-              祝賀語通常可以獨立成一句。
-            </p>
-
           </div>
 
         </section>
@@ -1167,17 +1076,9 @@ body{
             onclick="toggleHint(this)"
           >
 
-            <span class="hint-number">
-              3
-            </span>
-
-            <span class="hint-name">
-              想說的話
-            </span>
-
-            <span class="hint-toggle">
-              ＋
-            </span>
+            <span class="hint-number">3</span>
+            <span class="hint-name">想說的話</span>
+            <span class="hint-toggle">＋</span>
 
           </button>
 
@@ -1197,10 +1098,6 @@ body{
               Have a great day!
             </div>
 
-            <p>
-              展示時選一句即可；真正寫卡片時，也可以再加第二句。
-            </p>
-
           </div>
 
         </section>
@@ -1214,17 +1111,9 @@ body{
             onclick="toggleHint(this)"
           >
 
-            <span class="hint-number">
-              4
-            </span>
-
-            <span class="hint-name">
-              寄件人
-            </span>
-
-            <span class="hint-toggle">
-              ＋
-            </span>
+            <span class="hint-number">4</span>
+            <span class="hint-name">寄件人</span>
+            <span class="hint-toggle">＋</span>
 
           </button>
 
@@ -1282,7 +1171,6 @@ function selectChanged(select){
 
 /* =========================================================
    ACCORDION
-   一次只開一個
 ========================================================= */
 
 function toggleHint(button){
@@ -1290,7 +1178,7 @@ function toggleHint(button){
   const currentItem =
     button.closest(".hint-item");
 
-  const isOpen =
+  const wasOpen =
     currentItem.classList.contains(
       "open"
     );
@@ -1301,51 +1189,27 @@ function toggleHint(button){
 
       item.classList.remove("open");
 
-      const toggle =
-        item.querySelector(
-          ".hint-toggle"
-        );
-
-      toggle.textContent =
+      item
+        .querySelector(".hint-toggle")
+        .textContent =
         "＋";
 
     });
 
-  if(!isOpen){
+  if(!wasOpen){
 
     currentItem.classList.add(
       "open"
     );
 
     currentItem
-      .querySelector(
-        ".hint-toggle"
-      )
+      .querySelector(".hint-toggle")
       .textContent =
       "－";
-
-    currentItem.scrollIntoView({
-      behavior:"smooth",
-      block:"nearest"
-    });
 
   }
 
 }
-
-/* =========================================================
-   INITIAL
-========================================================= */
-
-document
-  .querySelectorAll(".card-select")
-  .forEach(select => {
-
-    select.classList.add(
-      "placeholder"
-    );
-
-  });
 
 </script>
 
