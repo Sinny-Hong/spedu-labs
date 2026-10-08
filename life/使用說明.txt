@@ -2,9 +2,9 @@
 
 使用方式：
 1. 保留完整資料夾結構。
-2. detective-game.html 與 cases.js 必須放在同一層。
+2. ecase_01_scam.html 與 cases.js 必須放在同一層。
 3. images 資料夾也必須位於同一層。
-4. 直接開啟 detective-game.html，或整包上傳 GitHub Pages。
+4. 直接開啟 ecase_01_scam.html，或整包上傳 GitHub Pages。
 
 功能：
 - 桌機 16:9 版面

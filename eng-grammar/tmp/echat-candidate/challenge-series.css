@@ -1,0 +1,140 @@
+/* Shared presentation rules for the four scenario challenge activities. */
+header h1 { font-size: 1.25rem !important; }
+header h1 > span { font-size: 1.125rem !important; margin-left: .75rem !important; }
+header > div:last-child > div:first-child { font-size: 1rem !important; }
+#error-indicator { font-size: 1.25rem !important; }
+#current-level-btn { font-size: 1rem !important; }
+#level-menu { font-size: 1.125rem !important; }
+#chat-tag { font-size: .875rem !important; }
+#chat-name { font-size: 1.125rem !important; }
+#chat-status { font-size: .875rem !important; }
+#question-title { font-size: 1.25rem !important; }
+#phase-indicator { font-size: .875rem !important; }
+#feedback-title { font-size: 1.25rem !important; }
+#feedback-desc { font-size: 1.125rem !important; font-weight: 700 !important; }
+#next-btn { font-size: 1.125rem !important; }
+#options-container button > span { font-size: 1rem !important; }
+#chat-container p { font-size: 1rem !important; }
+
+/* Keep the result and all five review rules visible in a short, wide summary. */
+#summary-screen {
+  max-width: 1800px !important;
+  padding: .75rem 1rem 1.25rem !important;
+  margin-top: .5rem !important;
+  gap: .85rem !important;
+}
+#summary-screen > div:first-child,
+#summary-screen > div:last-child {
+  padding: 1rem !important;
+  border-radius: 1.25rem !important;
+}
+#summary-screen #ending-icon { font-size: 3.25rem !important; margin-bottom: .25rem !important; }
+#summary-screen #ending-title { font-size: 1.75rem !important; line-height: 1.2 !important; }
+#summary-screen #ending-desc { font-size: 1rem !important; line-height: 1.45 !important; margin-top: .5rem !important; }
+#summary-screen > div:first-child > div:nth-of-type(2) {
+  margin: .75rem 0 !important;
+  padding: .65rem !important;
+  border-radius: 1rem !important;
+  max-width: none !important;
+}
+#summary-screen #final-errors { font-size: 2.25rem !important; }
+#summary-screen #final-errors + span { font-size: 1.125rem !important; }
+#summary-screen button { max-width: none !important; padding: .7rem 1rem !important; font-size: 1rem !important; }
+#summary-screen > div:last-child > div:first-child {
+  padding-bottom: .65rem !important;
+  margin-bottom: .65rem !important;
+}
+#summary-screen > div:last-child h3 { font-size: 1.5rem !important; gap: .5rem !important; }
+#summary-screen > div:last-child h3 + span { padding: .3rem .65rem !important; font-size: .8rem !important; }
+#summary-screen > div:last-child > div:last-child { gap: .6rem !important; }
+#summary-screen > div:last-child > div:last-child > div {
+  padding: .7rem !important;
+  gap: .65rem !important;
+  border-radius: .8rem !important;
+  min-width: 0;
+}
+#summary-screen > div:last-child > div:last-child > div > div:first-child {
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  border-radius: .55rem !important;
+  font-size: 1rem !important;
+}
+#summary-screen > div:last-child > div:last-child > div > div:last-child { min-width: 0; }
+#summary-screen > div:last-child > div:last-child > div > div:last-child > div:first-child {
+  margin-bottom: .15rem !important;
+  font-size: .75rem !important;
+  line-height: 1.25 !important;
+}
+#summary-screen > div:last-child > div:last-child > div > div:last-child > div:last-child {
+  font-size: 1rem !important;
+  line-height: 1.35 !important;
+}
+
+@media (min-width: 768px) {
+  #summary-screen > div:last-child > div:last-child {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  header h1 { font-size: 1.875rem !important; }
+  header h1 > span { font-size: 1.5rem !important; }
+  header > div:last-child > div:first-child { font-size: 1.25rem !important; }
+  #error-indicator { font-size: 1.5rem !important; }
+  #current-level-btn { font-size: 1.25rem !important; }
+  #chat-name { font-size: 1.5rem !important; }
+  #chat-status { font-size: 1rem !important; }
+  #question-title { font-size: 1.875rem !important; }
+  #phase-indicator { font-size: 1.125rem !important; }
+  #feedback-title { font-size: 1.5rem !important; }
+  #feedback-desc { font-size: 1.25rem !important; }
+  #next-btn { font-size: 1.25rem !important; }
+  #options-container button > span,
+  #chat-container p { font-size: 1.25rem !important; }
+
+  #summary-screen {
+    grid-template-columns: minmax(250px, 3fr) minmax(0, 9fr) !important;
+    align-items: stretch !important;
+  }
+  #summary-screen > div:first-child,
+  #summary-screen > div:last-child { grid-column: auto !important; }
+  #summary-screen > div:first-child { height: 100% !important; }
+  #summary-screen > div:last-child > div:last-child {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+
+/* Three-option risk flow: neutral before selection, revealed after selection. */
+#options-container { gap: .65rem !important; }
+#options-container button { min-height: 3.7rem; padding: .65rem .9rem !important; }
+#options-container button > span { line-height: 1.42 !important; min-width: 0; }
+#options-container .option-send-icon { background: #64748b; }
+#options-container button:hover .option-send-icon { filter: brightness(.92); }
+.risk-badge { display: block; width: fit-content; margin-top: .35rem; padding: .18rem .5rem; border-radius: 999px; font-size: .75rem !important; font-weight: 900; line-height: 1.3 !important; }
+.risk-choice--red { border-color: #fb7185 !important; background: #fff1f2 !important; }
+.risk-choice--yellow { border-color: #fbbf24 !important; background: #fffbeb !important; }
+.risk-choice--green { border-color: #34d399 !important; background: #ecfdf5 !important; }
+.risk-choice--red .risk-badge { color: #9f1239; background: #ffe4e6; }
+.risk-choice--yellow .risk-badge { color: #854d0e; background: #fef3c7; }
+.risk-choice--green .risk-badge { color: #065f46; background: #d1fae5; }
+#feedback-box.risk-feedback--red { border-color: #fda4af !important; background: #fff1f2 !important; }
+#feedback-box.risk-feedback--yellow { border-color: #fcd34d !important; background: #fffbeb !important; }
+#feedback-box.risk-feedback--green { border-color: #6ee7b7 !important; background: #ecfdf5 !important; }
+.risk-feedback--red .risk-feedback-title { color: #9f1239 !important; }
+.risk-feedback--yellow .risk-feedback-title { color: #854d0e !important; }
+.risk-feedback--green .risk-feedback-title { color: #065f46 !important; }
+@media (min-width: 1024px) { #options-container { gap: .75rem !important; } #options-container button { min-height: 4.15rem; } }
+
+@media (max-width: 640px) {
+  header { padding-left: .6rem !important; padding-right: .6rem !important; gap: .4rem; }
+  header > div:first-child { min-width: 0; gap: .35rem !important; }
+  header > div:first-child > span { display: none; }
+  header h1 { min-width: 0; font-size: .95rem !important; }
+  header > div:last-child { gap: .35rem !important; }
+  header > div:last-child > div:first-child { padding: .25rem .5rem !important; font-size: .8rem !important; }
+  header > div:last-child > div:first-child > span:first-child { display: none; }
+  header > div:last-child > button { padding: .35rem .55rem !important; gap: .3rem !important; }
+  #error-indicator, #current-level-btn { font-size: .85rem !important; }
+}
