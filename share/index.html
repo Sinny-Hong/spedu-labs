@@ -8,62 +8,134 @@
   <link rel="stylesheet" href="../shared/css/workspace.css?v=3.1">
   <style>
     .brand-home { cursor: default; }
+    .page-intro { max-width: 760px; margin: -8px 0 26px; color: var(--muted); font-size: 16px; font-weight: 700; line-height: 1.7; }
     .resource-panel[hidden] { display: none; }
-    .resource-placeholder {
-      min-height: 280px;
-      display: grid;
-      place-items: center;
-      padding: 38px;
-      text-align: center;
-      color: var(--muted);
-      background: var(--paper);
-      border: 1px dashed var(--line);
-      border-radius: 15px;
-      box-shadow: var(--shadow);
-    }
-    .resource-placeholder p { margin: 0; font-size: 18px; font-weight: 800; }
+    .series-section { position: relative; z-index: 1; margin-bottom: 34px; }
+    .series-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+    .series-heading h2 { margin: 0; color: var(--navy); font-size: 22px; }
+    .series-heading span { color: var(--muted); font-size: 13px; font-weight: 800; }
+    .showcase-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .game-card { min-width: 0; overflow: hidden; color: inherit; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); text-decoration: none; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+    .game-card:hover { transform: translateY(-3px); border-color: #b9c9dc; box-shadow: 0 16px 36px rgba(18,63,119,.14); }
+    .game-card:focus-visible { outline: 3px solid rgba(245,158,11,.42); outline-offset: 3px; }
+    .game-preview { aspect-ratio: 16 / 9; display: grid; place-items: center; padding: 18px; color: #718198; background: linear-gradient(135deg, rgba(18,63,119,.045), rgba(245,158,11,.08)), repeating-linear-gradient(135deg, transparent 0 12px, rgba(18,63,119,.025) 12px 24px); border-bottom: 1px solid var(--line); text-align: center; }
+    .preview-mark { display: grid; gap: 6px; justify-items: center; }
+    .preview-mark span { font-size: 32px; }
+    .preview-mark small { font-size: 12px; font-weight: 900; letter-spacing: .05em; }
+    .game-content { display: flex; flex-direction: column; min-height: 280px; padding: 17px; }
+    .game-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .game-tag { display: inline-flex; align-items: center; min-height: 25px; padding: 4px 8px; border-radius: 999px; color: #a75200; background: #fff2d9; font-size: 12px; font-weight: 900; }
+    .game-tag.guide { color: #7c2d12; background: #ffedd5; }
+    .game-card h3 { margin: 0 0 8px; color: var(--navy); font-size: 20px; line-height: 1.4; }
+    .student-copy { margin: 0 0 12px; color: var(--ink); font-size: 14px; font-weight: 800; line-height: 1.65; }
+    .teacher-copy { margin: 0 0 13px; padding-top: 11px; color: var(--muted); border-top: 1px dashed var(--line); font-size: 13px; line-height: 1.65; }
+    .teacher-copy strong { color: var(--navy); }
+    .privacy-note { margin: 0 0 13px; padding: 8px 10px; color: #895000; background: #fff8e8; border-radius: 9px; font-size: 12px; font-weight: 800; line-height: 1.5; }
+    .play-link { margin-top: auto; color: var(--navy); font-weight: 900; }
+    .game-card:hover .play-link { color: #b96000; }
+    .empty-panel { min-height: 250px; display: grid; place-items: center; padding: 34px; color: var(--muted); background: var(--paper); border: 1px dashed var(--line); border-radius: 15px; box-shadow: var(--shadow); text-align: center; }
+    .empty-panel p { margin: 0; font-size: 18px; font-weight: 900; }
+    .public-footer { position: relative; z-index: 1; margin-top: 12px; padding: 20px 4px 0; color: #7b889a; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.7; text-align: center; }
+    @media (max-width: 1100px) { .showcase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 720px) {
-      .resource-placeholder { min-height: 220px; padding: 28px 18px; }
+      .page-intro { margin-bottom: 22px; font-size: 15px; }
+      .series-section { margin-bottom: 28px; }
+      .series-heading { align-items: flex-start; flex-direction: column; gap: 3px; }
+      .series-heading h2 { font-size: 20px; }
+      .showcase-grid { grid-template-columns: 1fr; gap: 14px; }
+      .game-content { min-height: 0; }
     }
+    @media (prefers-reduced-motion: reduce) { .game-card { transition: none; } }
   </style>
 </head>
 <body>
   <button class="mobile-toggle" id="mobileToggle" type="button" aria-label="開啟選單" aria-expanded="false">☰</button>
   <div class="workspace-shell">
     <aside class="sidebar" id="sidebar">
-      <div class="brand-home" aria-label="Sinny Spedu Labs 品牌標誌">
-        <img src="../assets/logo-banner.png" alt="Sinny Spedu Labs">
-      </div>
-      <div class="workspace-name">
-        <small>PUBLIC RESOURCES</small>
-        <strong>教學資源</strong>
-      </div>
+      <div class="brand-home" aria-label="Sinny Spedu Labs 品牌標誌"><img src="../assets/logo-banner.png" alt="Sinny Spedu Labs"></div>
+      <div class="workspace-name"><small>PUBLIC RESOURCES</small><strong>教學資源</strong></div>
       <nav class="category-nav" aria-label="教學資源分類">
         <button class="category-btn active" type="button" data-category="english" aria-pressed="true">英文教學</button>
         <button class="category-btn" type="button" data-category="life" aria-pressed="false">生活教育</button>
         <button class="category-btn" type="button" data-category="other" aria-pressed="false">其他資源</button>
       </nav>
-      <p class="sidebar-note">公開教學資源將陸續整理上線。</p>
+      <p class="sidebar-note">公開分享的互動教材，可直接開啟使用。</p>
     </aside>
 
     <main class="main">
-      <header class="topbar">
-        <div class="title-block">
-          <p>SINNY SPEDU LABS</p>
-          <h1>教學資源</h1>
-        </div>
-      </header>
-      <p>互動遊戲與教學教材，歡迎師生自由使用。</p>
+      <header class="topbar"><div class="title-block"><p>SINNY SPEDU LABS</p><h1>教學資源</h1></div></header>
+      <p class="page-intro">互動遊戲與教學教材，歡迎師生自由使用。</p>
 
       <section class="resource-panel" data-panel="english">
-        <div class="resource-placeholder"><p>教學資源整理中</p></div>
+        <section class="series-section" aria-labelledby="matching-title">
+          <div class="series-heading"><h2 id="matching-title">英文配對遊戲</h2><span>4 款互動練習</span></div>
+          <div class="showcase-grid">
+            <a class="game-card" href="../eng-grammar/match-numbers.html">
+              <div class="game-preview"><div class="preview-mark"><span>🔢</span><small>遊戲畫面準備中</small></div></div>
+              <div class="game-content"><div class="game-meta"><span class="game-tag">英文詞彙</span><span class="game-tag">配對練習</span></div><h3>英文數字配對板</h3><p class="student-copy">把英文數字字卡放進正確位置，挑戰快速配對。</p><p class="teacher-copy"><strong>教學用途：</strong>練習數字字形、英文拼字與中英轉換，可搭配限時競賽或分組訂正。</p><span class="play-link">開始遊戲 →</span></div>
+            </a>
+            <a class="game-card" href="../eng-grammar/match-family.html">
+              <div class="game-preview"><div class="preview-mark"><span>👨‍👩‍👧‍👦</span><small>遊戲畫面準備中</small></div></div>
+              <div class="game-content"><div class="game-meta"><span class="game-tag">英文詞彙</span><span class="game-tag">配對練習</span></div><h3>家人稱謂與親友配對板</h3><p class="student-copy">配對家人、親戚和朋友的中英文稱呼。</p><p class="teacher-copy"><strong>教學用途：</strong>統整家庭與人際稱謂詞彙，可依程度選擇基礎、尊稱或進階親屬題組。</p><span class="play-link">開始遊戲 →</span></div>
+            </a>
+            <a class="game-card" href="../eng-grammar/match-pronouns.html">
+              <div class="game-preview"><div class="preview-mark"><span>🙋</span><small>遊戲畫面準備中</small></div></div>
+              <div class="game-content"><div class="game-meta"><span class="game-tag">英文詞彙</span><span class="game-tag">配對練習</span></div><h3>人稱代名詞配對板</h3><p class="student-copy">找出同一個人稱的主格、受格和其他變化。</p><p class="teacher-copy"><strong>教學用途：</strong>用多欄配對建立人稱代名詞系統，適合診斷主格、受格及所有格混淆。</p><span class="play-link">開始遊戲 →</span></div>
+            </a>
+            <a class="game-card" href="../eng-grammar/match-time-date.html">
+              <div class="game-preview"><div class="preview-mark"><span>📅</span><small>遊戲畫面準備中</small></div></div>
+              <div class="game-content"><div class="game-meta"><span class="game-tag">英文詞彙</span><span class="game-tag">配對練習</span></div><h3>時間與日期配對板</h3><p class="student-copy">配對月份、星期、日期和時間的英文說法。</p><p class="teacher-copy"><strong>教學用途：</strong>練習月份、星期、序數、時間單位及縮寫，可依教學進度切換題組。</p><span class="play-link">開始遊戲 →</span></div>
+            </a>
+          </div>
+        </section>
+
+        <section class="series-section" aria-labelledby="ecity-title">
+          <div class="series-heading"><h2 id="ecity-title">異想小鎮</h2><span>1 款地圖挑戰</span></div>
+          <div class="showcase-grid">
+            <a class="game-card" href="../eng-grammar/ecity_01_my_town.html">
+              <div class="game-preview"><div class="preview-mark"><span>🏙️</span><small>遊戲畫面準備中</small></div></div>
+              <div class="game-content"><div class="game-meta"><span class="game-tag">地點單字</span><span class="game-tag">位置句型</span></div><h3>E-City｜My Town 異想小鎮</h3><p class="student-copy">看著隨機小鎮地圖，找出建築物的正確位置。</p><p class="teacher-copy"><strong>教學用途：</strong>練習地點單字與八種位置句型，適合個別操作、口語問答或全班搶答。</p><span class="play-link">開始遊戲 →</span></div>
+            </a>
+          </div>
+        </section>
+
+        <section class="series-section" aria-labelledby="timefarm-title">
+          <div class="series-heading"><h2 id="timefarm-title">時光農場</h2><span>1 款闖關遊戲</span></div>
+          <div class="showcase-grid">
+            <a class="game-card" href="../eng-grammar/game-timefarm.html">
+              <div class="game-preview"><div class="preview-mark"><span>🐣</span><small>遊戲畫面準備中</small></div></div>
+              <div class="game-content"><div class="game-meta"><span class="game-tag">時間日期</span><span class="game-tag">闖關練習</span></div><h3>小啾的時空冒險</h3><p class="student-copy">完成時間任務、賺金幣，陪小啾成長和布置房間。</p><p class="teacher-copy"><strong>教學用途：</strong>以闖關與獎勵機制反覆練習數字、星期、月份、日期、鐘點與生活作息。</p><p class="privacy-note">建議使用暱稱，遊戲進度儲存於目前裝置。</p><span class="play-link">開始遊戲 →</span></div>
+            </a>
+          </div>
+        </section>
       </section>
+
       <section class="resource-panel" data-panel="life" hidden>
-        <div class="resource-placeholder"><p>教學資源整理中</p></div>
+        <section class="series-section" aria-labelledby="echat-title">
+          <div class="series-heading"><h2 id="echat-title">異想聊天室</h2><span>4 款生活情境挑戰</span></div>
+          <div class="showcase-grid">
+            <a class="game-card" href="../life/echat_01_boundaries.html">
+              <div class="game-preview"><div class="preview-mark"><span>🌱</span><small>遊戲畫面準備中</small></div></div>
+              <div class="game-content"><div class="game-meta"><span class="game-tag">生活教育</span><span class="game-tag">情境判斷</span><span class="game-tag guide">建議教師引導</span></div><h3>青春戀習題</h3><p class="student-copy">在校園感情對話中，練習保護界線與安全拒絕。</p><p class="teacher-copy"><strong>教學用途：</strong>透過分階段選擇討論身體自主、控制行為、私密影像與求助策略。</p><span class="play-link">開始遊戲 →</span></div>
+            </a>
+            <a class="game-card" href="../life/echat_02_safety.html">
+              <div class="game-preview"><div class="preview-mark"><span>🛡️</span><small>遊戲畫面準備中</small></div></div>
+              <div class="game-content"><div class="game-meta"><span class="game-tag">生活教育</span><span class="game-tag">情境判斷</span><span class="game-tag guide">建議教師引導</span></div><h3>網路安全防衛隊</h3><p class="student-copy">面對可疑網路訊息，選出比較安全的回應方式。</p><p class="teacher-copy"><strong>教學用途：</strong>用詐騙、帳密、連結與威脅情境練習停看查證、保留證據及尋求協助。</p><span class="play-link">開始遊戲 →</span></div>
+            </a>
+            <a class="game-card" href="../life/echat_03_dating.html">
+              <div class="game-preview"><div class="preview-mark"><span>💬</span><small>遊戲畫面準備中</small></div></div>
+              <div class="game-content"><div class="game-meta"><span class="game-tag">生活教育</span><span class="game-tag">情境判斷</span><span class="game-tag guide">建議教師引導</span></div><h3>網路交友防衛隊</h3><p class="student-copy">在網路交友情境中，辨認甜言蜜語背後的風險。</p><p class="teacher-copy"><strong>教學用途：</strong>討論金錢、見面、個資、私密影像及情緒勒索，建立具體保護策略。</p><span class="play-link">開始遊戲 →</span></div>
+            </a>
+            <a class="game-card" href="../life/echat_04_crisis.html">
+              <div class="game-preview"><div class="preview-mark"><span>🧩</span><small>遊戲畫面準備中</small></div></div>
+              <div class="game-content"><div class="game-meta"><span class="game-tag">生活教育</span><span class="game-tag">情境判斷</span><span class="game-tag guide">建議教師引導</span></div><h3>青春生存遊戲</h3><p class="student-copy">遇到霸凌、陌生邀約或危險要求時，選擇安全做法。</p><p class="teacher-copy"><strong>教學用途：</strong>以五種人際危機練習拒絕、蒐證、離開現場與向可信任成人求助。</p><span class="play-link">開始遊戲 →</span></div>
+            </a>
+          </div>
+        </section>
       </section>
-      <section class="resource-panel" data-panel="other" hidden>
-        <div class="resource-placeholder"><p>教學資源整理中</p></div>
-      </section>
+
+      <section class="resource-panel" data-panel="other" hidden><div class="empty-panel"><p>其他教學資源整理中</p></div></section>
+      <footer class="public-footer">© SINNY SPEDU LABS｜歡迎具名分享與教學使用。轉載請保留來源及原始連結。</footer>
     </main>
   </div>
 
@@ -73,25 +145,22 @@
     const mobileToggle = document.getElementById("mobileToggle");
     const categoryButtons = [...document.querySelectorAll(".category-btn")];
     const resourcePanels = [...document.querySelectorAll(".resource-panel")];
-
     function setSidebar(open) {
       sidebar.classList.toggle("open", open);
       mobileToggle.setAttribute("aria-expanded", String(open));
       mobileToggle.setAttribute("aria-label", open ? "關閉選單" : "開啟選單");
     }
-
-    mobileToggle.addEventListener("click", () => setSidebar(!sidebar.classList.contains("open")));
-
-    categoryButtons.forEach(button => button.addEventListener("click", () => {
-      const category = button.dataset.category;
+    function showCategory(category) {
       categoryButtons.forEach(item => {
-        const active = item === button;
+        const active = item.dataset.category === category;
         item.classList.toggle("active", active);
         item.setAttribute("aria-pressed", String(active));
       });
       resourcePanels.forEach(panel => { panel.hidden = panel.dataset.panel !== category; });
       if (window.innerWidth <= 720) setSidebar(false);
-    }));
+    }
+    mobileToggle.addEventListener("click", () => setSidebar(!sidebar.classList.contains("open")));
+    categoryButtons.forEach(button => button.addEventListener("click", () => showCategory(button.dataset.category)));
   </script>
 </body>
 </html>
