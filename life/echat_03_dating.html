@@ -94,8 +94,8 @@
       </div>
 
       <!-- 底部裝飾 -->
-      <div class="bg-white border-t border-orange-100 px-4 py-2.5 flex justify-center text-orange-400 text-xs shrink-0 rounded-b-2xl font-bold">
-        🔒 加密連線中，請從右側面板回覆對話
+      <div class="chat-status-bar bg-white border-t border-orange-100 px-4 py-2.5 flex items-center justify-between gap-3 text-orange-400 text-xs shrink-0 rounded-b-2xl font-bold">
+        <span class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">🔒 加密連線中，請從右側面板回覆對話</span>
       </div>
     </section>
 
@@ -1069,5 +1069,6 @@
     initMenu();
     loadLevel(0);
   </script>
+<script src="../shared/js/public-footer.js" data-footer-target=".chat-status-bar" data-footer-short="true"></script>
 </body>
 </html>

@@ -3,7 +3,6 @@
 window.GRAMMAR_DATA = [
       // ==== 代名詞 ====
       { id: "pronouns-basic", category: "代名詞", title: "人稱代名詞｜互動講義", desc: "主格、Be 動詞、所有格與家人稱謂，從配對、是非、圈選到排列造句與閱讀練習", filename: "pronouns.html", themeColor: "#3B82F6" },
-      { id: "52", category: "代名詞", title: "人稱代名詞配對板", desc: "主格、受格、所有格、Be 動詞、所有格代名詞與反身代名詞的互動配對複習", filename: "game-pronoun-match.html", themeColor: "#3B82F6" },
       { id: "4", category: "代名詞", title: "所有格與複數所有格", desc: "男孩們的...，名詞單複數所有格變化規則", filename: "grammar_boys_.html", themeColor: "#3B82F6" },
       { id: "5", category: "代名詞", title: "這個、那個、這些、那些", desc: "指示代名詞單複數與遠近距離辨析", filename: "grammar_this_that_these_those.html", themeColor: "#3B82F6" },
       { id: "7", category: "代名詞", title: "反身代名詞 (單數)", desc: "我自己、你自己、他自己 (myself, yourself, himself) 的用法", filename: "grammar_myself.html", themeColor: "#3B82F6" },

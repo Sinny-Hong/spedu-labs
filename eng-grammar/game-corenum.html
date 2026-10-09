@@ -191,7 +191,7 @@
             </div>
 
             <!-- 管理重置功能 -->
-            <div class="pt-3 border-t border-[#31170f] space-y-1.5 shrink-0">
+            <div class="sidebar-footer-actions pt-3 border-t border-[#31170f] space-y-1.5 shrink-0">
                 <button onclick="resetGame()" class="w-full py-2.5 bg-red-950/40 border border-red-900/40 text-red-400 rounded-lg hover:bg-red-950/80 transition-all text-xs font-bold text-center block">
                     🗑️ 重設紀錄重新開採
                 </button>
@@ -941,5 +941,6 @@
         function closeModal() { playSynthSound('click'); document.getElementById("custom-modal").classList.add("hidden"); }
         window.onload = function() { loadPlayerProgress(); }
     </script>
+<script src="../shared/js/public-footer.js" data-footer-target=".sidebar-footer-actions" data-footer-short="true"></script>
 </body>
 </html>

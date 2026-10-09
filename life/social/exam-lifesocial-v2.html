@@ -131,5 +131,6 @@
     function speak(text){speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(text);utterance.lang="zh-TW";utterance.rate=.9;speechSynthesis.speak(utterance)}
     document.querySelector("#voice").addEventListener("click",()=>{const q=current();speak(`${q.question}。${q.options.join("。")}`)});unitSelect.addEventListener("change",()=>{unit=Number(unitSelect.value);index=0;answers=Array(10).fill(null);render()});prevBtn.addEventListener("click",()=>{if(index>0){index--;render()}});nextBtn.addEventListener("click",()=>{if(index<9){index++;render()}});render();
   </script>
+  <script src="../../shared/js/public-footer.js"></script>
 </body>
 </html>

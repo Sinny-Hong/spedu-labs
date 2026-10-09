@@ -510,6 +510,7 @@
     .col-selector-group { display:flex; align-items:center; gap:6px; flex-wrap:nowrap; }
     .selector-title { flex:0 0 auto; margin:0; font-size:.82rem; white-space:nowrap; }
     .selector-help { flex:0 0 auto; color:#73859a; font-size:.72rem; font-weight:600; white-space:nowrap; }
+    .header-actions { display:flex; align-items:center; gap:8px; }
     .col-badges { min-width:0; }
     @media (max-width:1050px) {
       .col-selector-group { flex-wrap:wrap; }
@@ -524,7 +525,7 @@
     <div>
       <h2>英文數字配對板 <span class="subtitle">三排對照．支援語音</span></h2>
     </div>
-    <button class="btn btn-modal" onclick="toggleModal(true)">📋 查看總表提示卡</button>
+    <div class="header-actions"><button class="btn btn-modal" onclick="toggleModal(true)">📋 查看總表提示卡</button></div>
   </div>
 
   <!-- 組別多選與模式切換 -->
@@ -1374,5 +1375,6 @@ function initFloatingBank() {
 
 init();
 </script>
+<script src="../shared/js/public-footer.js" data-footer-target=".header-actions" data-footer-short="true"></script>
 </body>
 </html>

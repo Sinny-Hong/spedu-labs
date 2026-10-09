@@ -520,6 +520,7 @@
     .header-bar { min-height:0; padding:0 0 5px; margin-bottom:6px; border-bottom:1px solid #d8e5f0; }
     .header-bar h2 { color:#123f77; font-size:1.2rem; }
     .subtitle { color:#647b94; font-size:.8rem; font-weight:400; line-height:1.25; }
+    .header-actions { display:flex; align-items:center; gap:8px; }
     .group-selector-panel, .compact-control-bar, .col-selector-group {
       min-height:0; padding:4px 8px; margin-bottom:6px; background:#f5f8fc; border:1px solid #c8d8e8; border-radius:7px;
     }
@@ -544,8 +545,9 @@
     .status-bar:has(#instruction-msg:empty):has(#score-display:empty) { display:none; }
     .layout-wrapper { margin-top:0; }
     .layout-wrapper { grid-template-columns:minmax(0,1fr) minmax(260px,320px); gap:12px; }
-    table { overflow:hidden; border:1px solid #8ea4ba; border-radius:11px; border-collapse:separate; border-spacing:0; }
-    th, td { border:0; border-right:1px solid #a7b9cd; border-bottom:1px solid #a7b9cd; }
+    .main-table-container { overflow-x:visible; }
+    table { width:100%; min-width:0; table-layout:fixed; overflow:hidden; border:1px solid #8ea4ba; border-radius:11px; border-collapse:separate; border-spacing:0; }
+    th, td { min-width:0; max-width:none; border:0; border-right:1px solid #a7b9cd; border-bottom:1px solid #a7b9cd; }
     tr > :last-child { border-right:0; }
     tbody tr:last-child > td { border-bottom:0; }
     th, th.prompt-th, th.ans-th { color:#0b5f91; background:#eaf3fc; }
@@ -574,6 +576,11 @@
       .col-selector-group { flex-wrap:wrap; }
       .selector-help { width:100%; }
     }
+    @media (max-width:860px) {
+      .main-table-container { overflow-x:auto; }
+      table { width:max-content; min-width:100%; table-layout:auto; }
+      th, td { min-width:105px; max-width:180px; }
+    }
   </style>
 </head>
 <body>
@@ -583,7 +590,7 @@
     <div>
       <h2>人稱代名詞配對板 <span class="subtitle">主格、受格、所有格、Be 動詞、所有格代名詞、反身代名詞自由配對</span></h2>
     </div>
-    <button class="btn btn-modal" onclick="toggleModal(true)">📋 查看完整提示總表</button>
+    <div class="header-actions"><button class="btn btn-modal" onclick="toggleModal(true)">📋 查看完整提示總表</button></div>
   </div>
 
   <div class="col-selector-group">
@@ -1422,5 +1429,6 @@ function initFloatingBank() {
 
 init();
 </script>
+<script src="../shared/js/public-footer.js" data-footer-target=".header-actions" data-footer-short="true"></script>
 </body>
 </html>

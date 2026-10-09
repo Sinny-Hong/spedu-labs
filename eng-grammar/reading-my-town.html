@@ -97,4 +97,4 @@ document.getElementById('original').addEventListener('click',()=>{renderPages(PA
 document.getElementById('random').addEventListener('click',()=>{try{const next=[buildRandomPage(),buildRandomPage()];renderPages(next);activate('random')}catch(err){console.error(err);alert('隨機題目產生失敗，請重試：'+err.message)}});
 document.getElementById('print').addEventListener('click',()=>window.print());
 renderPages(PAGES);activate('original');
-</script></body></html>
+</script><script src="../shared/js/public-footer.js"></script></body></html>

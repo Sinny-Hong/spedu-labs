@@ -31,7 +31,10 @@
     .game-card h3 { margin: 0 0 7px; color: var(--navy); font-size: 19px; line-height: 1.4; }
     .game-description { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
     .empty-note { margin: 0; color: var(--muted); font-size: 14px; font-weight: 800; }
-    .public-footer { position: relative; z-index: 1; margin-top: 12px; padding: 20px 4px 0; color: #7b889a; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.7; text-align: center; }
+    .public-footer { position: relative; z-index: 1; margin-top: 12px; padding: 20px 4px 0; color: #8192a6; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.4; text-align: center; }
+    .public-footer a { color: inherit; text-decoration: none; }
+    .public-footer a:hover, .public-footer a:focus-visible { color: #0b3768; text-decoration: underline; }
+    @media print { .public-footer { display: none !important; } }
     @media (max-width: 1100px) { .showcase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 720px) {
       .page-intro { margin-bottom: 22px; font-size: 15px; }
@@ -121,7 +124,7 @@
         <div class="series-heading"><h2 id="other-title">其他資源</h2><span>持續整理中</span></div>
         <p class="empty-note">其他教學資源整理中。</p>
       </section>
-      <footer class="public-footer">© SINNY SPEDU LABS｜歡迎具名分享與教學使用。轉載請保留來源及原始連結。</footer>
+      <footer class="public-footer">© <a href="https://sinny-hong.github.io/spedu-labs/share/">Sinny’s Spedu Labs</a>｜歡迎教學分享，請保留出處與原始連結。</footer>
     </main>
   </div>
 
