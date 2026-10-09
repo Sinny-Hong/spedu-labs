@@ -16,9 +16,9 @@
 </head>
 <body>
 <header class="topbar"><h1>🌳 Meet My Family!</h1><nav class="toolbar" aria-label="遊戲功能">
-<label>家庭 <select id="familyChoice"><option value="small:0">兩代家庭 A</option><option value="small:1">兩代家庭 B</option><option value="three:0">三代家庭 A</option><option value="three:1">三代家庭 B</option><option value="large:0">大家庭 A</option><option value="large:1">大家庭 B</option></select></label>
-<span class="family-brand-slot"></span>
+<select id="familyChoice" aria-label="選擇家庭"><option value="small:0">兩代家庭 A</option><option value="small:1">兩代家庭 B</option><option value="three:0">三代家庭 A</option><option value="three:1">三代家庭 B</option><option value="large:0">大家庭 A</option><option value="large:1">大家庭 B</option></select>
 <button class="tool" id="next">↻ 換題</button><button class="tool" id="hint">💡 提示板</button><button class="tool" id="poster">📋 教學海報</button>
+<span class="family-brand-slot"></span>
 </nav></header>
 <main class="layout"><section class="panel"><div class="panel-head"><h2>🌳 Family Tree</h2></div><div class="tree-area"><svg id="tree" class="family-svg" viewBox="0 0 1000 900" preserveAspectRatio="xMidYMid meet" role="group" aria-label="Family tree"></svg></div></section>
 <section class="panel"><div class="panel-head"><h2>✏️ Family Quiz</h2><div class="quiztools"><span id="score" aria-live="polite">— / 5</span><button id="check" class="tool">批改</button><button id="clear" class="tool">清除</button><button id="reveal" class="tool">解答</button></div></div><div id="questions" class="questions"></div></section></main>
