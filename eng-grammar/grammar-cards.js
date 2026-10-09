@@ -68,7 +68,7 @@ window.GRAMMAR_DATA = [
 
       // ==== 互動遊戲區 ====
       { id: "g1", category: "互動遊戲區", title: "🎮 遊戲｜地心探險數字挑戰", desc: "挑戰大考驗！熟悉英文數字 1 ~ 100000 聽力、大小與發音", filename: "game-corenum.html", themeColor: "#F43F5E" },
-      { id: "g2", category: "互動遊戲區", title: "🎮 遊戲｜家庭樹", desc: "利用關聯圖釐清家庭成員、英文稱謂與輩分關係", filename: "game-family.html", themeColor: "#F43F5E" },
+      { id: "g2", category: "互動遊戲區", title: "🎮 遊戲｜異想家族", desc: "觀察家庭樹、點讀親屬英文並完成五題選擇題，可切換三種難度", filename: "game-family.html", themeColor: "#F43F5E" },
       { id: "g3", category: "互動遊戲區", title: "🎮 遊戲｜小啾的時光農場", desc: "解鎖時光任務！訓練年月日、星期、小時、分鐘及秒針判讀", filename: "game-timefarm.html", themeColor: "#F43F5E" },
       { id: "g4", category: "互動遊戲區", title: "🧩 配對板｜英文數字", desc: "英文數字三排對照，支援語音與課堂互動配對", filename: "match-numbers.html", themeColor: "#F43F5E" },
       { id: "g5", category: "互動遊戲區", title: "🧩 配對板｜家人稱謂", desc: "家人稱謂與親友關係三排對照，支援發音", filename: "match-family.html", themeColor: "#F43F5E" },
