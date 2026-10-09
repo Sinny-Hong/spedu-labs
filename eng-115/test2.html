@@ -37,19 +37,34 @@
       background: radial-gradient(circle at 50% 35%, #241142 0%, #0d1127 65%, #050711 100%);
     }
 
-    /* 卡背神秘微光呼吸動畫 */
+    /* 卡背水晶球神秘呼吸動畫（略微放大） */
     @keyframes sigil-pulse {
       0%, 100% {
         transform: scale(1);
-        filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.4));
+        filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.45));
       }
       50% {
-        transform: scale(1.05);
-        filter: drop-shadow(0 0 28px rgba(245, 158, 11, 0.75));
+        transform: scale(1.08);
+        filter: drop-shadow(0 0 32px rgba(245, 158, 11, 0.8));
       }
     }
     .animate-sigil {
       animation: sigil-pulse 3.5s infinite ease-in-out;
+    }
+
+    /* 2 秒神祕淡入＋輕柔上飄動畫 */
+    .calm-fade-in {
+      animation: calmFade 2.0s cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
+    }
+    @keyframes calmFade {
+      0% {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* 英文彩蛋流光細線 */
@@ -65,37 +80,34 @@
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 overflow-hidden select-none cursor-pointer">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-3 sm:p-4 overflow-hidden select-none cursor-pointer">
 
-  <!-- 頂部沉靜提示 -->
-  <header class="text-center mt-2 pointer-events-none">
-    <h1 class="text-2xl sm:text-3xl font-cinzel font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300">
-      ✨ 異想命運館 ✨
-    </h1>
-    <p id="calmNotice" class="text-xs sm:text-sm text-amber-200/80 mt-1.5 tracking-wide transition-opacity duration-500">
-      深呼吸兩秒，心靜下來再碰牌⋯⋯太浮躁命運會失準喔！🔮
-    </p>
-  </header>
-
-  <!-- 核心卡牌舞台（直式黃金比例） -->
-  <main class="w-full flex-1 flex items-center justify-center py-2 pointer-events-none">
-    <div class="perspective-1000 w-[310px] sm:w-[340px] h-[500px] sm:h-[530px] pointer-events-auto">
+  <!-- 核心卡牌舞台（尺寸縮小約 10%：寬 280-310px，高 455-485px） -->
+  <main class="w-full flex items-center justify-center pointer-events-none">
+    <div class="perspective-1000 w-[280px] sm:w-[310px] h-[455px] sm:h-[485px] pointer-events-auto">
       <div id="cardInner" class="relative w-full h-full transform-style-3d transition-transform duration-700 shadow-2xl rounded-2xl cursor-pointer">
         
         <!-- 卡背 (Card Back) -->
         <div class="absolute inset-0 w-full h-full rounded-2xl border-2 border-amber-500/40 p-3 bg-tarot-pattern backface-hidden flex flex-col items-center justify-center">
-          <div class="w-full h-full border border-amber-500/30 rounded-xl flex flex-col items-center justify-center relative p-6">
+          <div class="w-full h-full border border-amber-500/30 rounded-xl flex flex-col items-center justify-center relative p-4">
             
             <!-- 四角古典星芒 -->
-            <span class="absolute top-3 left-3 text-amber-400/40 text-xs">✦</span>
-            <span class="absolute top-3 right-3 text-amber-400/40 text-xs">✦</span>
-            <span class="absolute bottom-3 left-3 text-amber-400/40 text-xs">✦</span>
-            <span class="absolute bottom-3 right-3 text-amber-400/40 text-xs">✦</span>
+            <span class="absolute top-2.5 left-2.5 text-amber-400/40 text-xs">✦</span>
+            <span class="absolute top-2.5 right-2.5 text-amber-400/40 text-xs">✦</span>
+            <span class="absolute bottom-2.5 left-2.5 text-amber-400/40 text-xs">✦</span>
+            <span class="absolute bottom-2.5 right-2.5 text-amber-400/40 text-xs">✦</span>
 
-            <!-- 中央神秘圖騰與呼吸微光 -->
+            <!-- 中央神秘水晶球（略放大）與標題 -->
             <div class="flex flex-col items-center text-center animate-sigil select-none">
-              <div class="text-6xl sm:text-7xl mb-4">🔮</div>
-              <h2 class="text-xl font-cinzel tracking-widest text-amber-200 font-semibold">TODAY'S FORTUNE</h2>
+              <div class="text-7xl sm:text-8xl mb-3">🔮</div>
+              <h2 class="text-lg sm:text-xl font-cinzel tracking-widest text-amber-200 font-semibold">TODAY'S FORTUNE</h2>
+            </div>
+
+            <!-- 水晶球下方：2秒緩慢淡入之隨機冷靜提示 -->
+            <div class="mt-4 px-2 text-center h-8 flex items-center justify-center">
+              <p id="calmText" class="text-xs text-amber-200/90 tracking-wide font-medium opacity-0">
+                水晶球正在感應，請先深呼吸⋯⋯
+              </p>
             </div>
 
           </div>
@@ -103,32 +115,32 @@
 
         <!-- 卡面 (Card Front) -->
         <div class="absolute inset-0 w-full h-full rounded-2xl border-2 border-amber-400/60 p-3 bg-slate-900 backface-hidden rotate-y-180 flex flex-col justify-between shadow-2xl">
-          <div class="w-full h-full border border-amber-500/30 rounded-xl p-5 flex flex-col justify-between bg-gradient-to-b from-slate-900/95 via-slate-900/80 to-slate-950/95 relative">
+          <div class="w-full h-full border border-amber-500/30 rounded-xl p-4 flex flex-col justify-between bg-gradient-to-b from-slate-900/95 via-slate-900/80 to-slate-950/95 relative">
             
-            <!-- 上半部：大圖騰與卡名 -->
-            <div class="text-center pt-2">
-              <div id="cardIcon" class="text-6xl sm:text-7xl mb-2 select-none filter drop-shadow">🔥</div>
-              <h3 id="cardNameEN" class="font-cinzel text-xl sm:text-2xl text-amber-300 font-bold tracking-wider">THE DRAGON</h3>
-              <p id="cardNameZH" class="text-xs sm:text-sm text-slate-400 tracking-widest mt-0.5 font-medium">巨龍</p>
+            <!-- 上半部：主圖放大 30~40% (text-7xl sm:text-8xl) 與卡名 -->
+            <div class="text-center pt-1">
+              <div id="cardIcon" class="text-7xl sm:text-8xl mb-1 select-none filter drop-shadow">🔥</div>
+              <h3 id="cardNameEN" class="font-cinzel text-lg sm:text-xl text-amber-300 font-bold tracking-wider leading-tight">THE DRAGON</h3>
+              <p id="cardNameZH" class="text-xs text-slate-400 tracking-widest mt-0.5 font-medium leading-none">巨龍</p>
             </div>
 
-            <!-- 中間：英文金句（帶金色流光細線彩蛋） -->
-            <div id="quoteArea" class="py-2 text-center group cursor-pointer" title="點擊聆聽發音">
-              <h2 id="cardQuoteEN" class="text-lg sm:text-xl font-bold text-yellow-100 tracking-wide leading-snug">
+            <!-- 中間：英文金句（間距壓縮，附金色流光細線彩蛋） -->
+            <div id="quoteArea" class="py-1 text-center group cursor-pointer" title="點擊聆聽發音">
+              <h2 id="cardQuoteEN" class="text-base sm:text-lg font-bold text-yellow-100 tracking-wide leading-tight">
                 "Nothing can stop you."
               </h2>
-              <div class="shimmer-line w-3/4 mx-auto my-1.5 rounded-full opacity-80"></div>
-              <p id="cardQuoteZH" class="text-xs sm:text-sm text-slate-300 font-medium">
+              <div class="shimmer-line w-2/3 mx-auto my-1.5 rounded-full opacity-80"></div>
+              <p id="cardQuoteZH" class="text-xs text-slate-300 font-medium leading-none">
                 沒有人能阻止你。
               </p>
             </div>
 
-            <!-- 下半部：預言與幸運物單字 -->
-            <div class="space-y-3 pb-2 text-center">
-              <p id="cardFortuneZH" class="text-xs sm:text-sm text-slate-200 leading-relaxed px-1 font-normal">
+            <!-- 下半部：預言與幸運物單字（垂直高度微壓） -->
+            <div class="space-y-2 pb-1 text-center">
+              <p id="cardFortuneZH" class="text-xs text-slate-200 leading-snug px-1 font-normal">
                 🔮 今天的氣場兩米八，走到哪裡都自帶燃燒音效。
               </p>
-              <div class="inline-flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs sm:text-sm text-amber-200">
+              <div class="inline-flex items-center justify-center gap-1 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs text-amber-200">
                 <span>🍀 幸運物：</span>
                 <span id="cardLuckyWord" class="font-medium text-amber-100">Red Eraser (紅色橡皮擦)</span>
               </div>
@@ -141,15 +153,18 @@
     </div>
   </main>
 
-  <!-- 底部微提示 -->
-  <footer class="text-center mb-2 pointer-events-none">
-    <div id="statusHint" class="text-[11px] text-slate-500 tracking-wider">
-      點擊畫面任意處翻牌 · 再點一下換新牌
-    </div>
-  </footer>
-
   <script>
-    // 40 張卡牌資料庫（已將單字自然整合至 LuckyWord）
+    // 隨機冷靜提示文案庫（在卡背水晶球下方 2 秒淡入）
+    const calmQuotes = [
+      "水晶球正在思考，請勿催促！🔮",
+      "深呼吸兩秒⋯⋯太浮躁命運會失準喔！✨",
+      "靜下心來，讓命運的迷霧散開⋯⋯🌙",
+      "閉上雙眼一秒鐘，準備迎接啟示。🕯️",
+      "水晶球正在感應你的氣場，稍候片刻⋯⋯⭐",
+      "心浮氣躁的話，命運之神會裝睡喔！😴"
+    ];
+
+    // 40 張校訂完整卡牌資料庫
     const cardsData = [
       { id: 1, icon: "🌟", nameEN: "The Star", nameZH: "星星", quoteEN: "You did a great job.", quoteZH: "你今天做得非常棒。", fortuneZH: "🔮 所有的努力都不會白費，給自己一個大大的掌聲吧！", luckyWord: "Water Bottle (水壺)" },
       { id: 2, icon: "☕", nameEN: "The Cup", nameZH: "茶杯", quoteEN: "Take a deep breath.", quoteZH: "深深吸一口氣。", fortuneZH: "🔮 累了就閉上眼睛放空十秒鐘，沒人會催你的。", luckyWord: "Fresh Wind (微風)" },
@@ -193,11 +208,10 @@
       { id: 40, icon: "💤", nameEN: "The Pillow", nameZH: "枕頭", quoteEN: "Hold on until your bed.", quoteZH: "堅持住，床在等你回家！", fortuneZH: "🔮 眼皮如果快打架，想想放學後柔軟的枕頭正在呼喚你。", luckyWord: "School Bell (下課鐘聲)" }
     ];
 
-    // 洗牌與狀態控制
     let currentDeck = [];
     let isFlipped = false;
     let isAnimating = false;
-    let canClick = false; // 2秒強迫冷靜冷卻
+    let canClick = false;
     let activeCard = null;
 
     function shuffleDeck(array) {
@@ -227,12 +241,31 @@
       document.getElementById('cardLuckyWord').textContent = card.luckyWord;
     }
 
-    // Web Speech API 慢速朗讀彩蛋 (0.85x)
+    // 觸發 2 秒淡入淡出的冷靜文字，結束後才解鎖點擊
+    function triggerCalmNotice() {
+      canClick = false;
+      const calmText = document.getElementById('calmText');
+      // 隨機選一句
+      const randomIndex = Math.floor(Math.random() * calmQuotes.length);
+      calmText.textContent = calmQuotes[randomIndex];
+      
+      // 重啟 2 秒淡入動畫
+      calmText.classList.remove('calm-fade-in');
+      void calmText.offsetWidth; // 強制重繪
+      calmText.classList.add('calm-fade-in');
+
+      // 2 秒淡入結束，解鎖點擊
+      setTimeout(() => {
+        canClick = true;
+      }, 2000);
+    }
+
+    // 英文發音彩蛋 (0.85x)
     function speakText(text) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
-      const clean = text.replace(/["'“”]/g, '').trim();
-      const utterance = new SpeechSynthesisUtterance(clean);
+      const cleanText = text.replace(/["'“”]/g, '').trim();
+      const utterance = new SpeechSynthesisUtterance(cleanText);
       utterance.lang = 'en-US';
       utterance.rate = 0.85;
       window.speechSynthesis.speak(utterance);
@@ -240,22 +273,28 @@
 
     // 翻牌與蓋牌邏輯
     function toggleCard() {
-      if (!canClick || isAnimating) return;
-      isAnimating = true;
+      if (isAnimating) return;
+
       const cardInner = document.getElementById('cardInner');
 
       if (!isFlipped) {
-        // 翻開正面
+        // 如果處於冷卻中，不可翻牌
+        if (!canClick) return;
+
+        isAnimating = true;
         cardInner.classList.add('rotate-y-180');
         isFlipped = true;
         setTimeout(() => { isAnimating = false; }, 700);
       } else {
-        // 翻回背面（自動換下一張）
+        // 翻回背面（重置下一張，並觸發 2 秒冷靜淡入）
+        isAnimating = true;
         cardInner.classList.remove('rotate-y-180');
         isFlipped = false;
+
         setTimeout(() => {
           renderCard(getNextCard());
           isAnimating = false;
+          triggerCalmNotice(); // 蓋牌完成後，開始 2 秒淡入新提示並鎖定
         }, 700);
       }
     }
@@ -263,19 +302,13 @@
     window.addEventListener('DOMContentLoaded', () => {
       currentDeck = shuffleDeck(cardsData);
       renderCard(getNextCard());
+      triggerCalmNotice(); // 首次進場啟動 2 秒冷卻與淡入
 
       const quoteArea = document.getElementById('quoteArea');
-      const calmNotice = document.getElementById('calmNotice');
-
-      // 開局 2 秒強迫冷靜計時器
-      setTimeout(() => {
-        canClick = true;
-        calmNotice.classList.add('text-amber-300');
-      }, 2000);
 
       // 全螢幕點擊翻牌／蓋牌
       document.body.addEventListener('click', (e) => {
-        // 如果點擊的是英文句子發音區，只朗讀，不觸發翻牌
+        // 若在正面點擊英文發音區，只發音不蓋牌
         if (isFlipped && quoteArea.contains(e.target)) {
           speakText(activeCard.quoteEN);
           return;
