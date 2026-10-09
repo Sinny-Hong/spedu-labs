@@ -416,14 +416,6 @@
       font-size: 0.88rem;
       color: #334155;
     }
-    .tts-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 0.95rem;
-      padding: 0 4px;
-    }
-
     /* 成績卡 */
     .score-card {
       width: min(600px, 94vw);
@@ -464,6 +456,66 @@
       }
     }
   </style>
+  <style>
+    /* 第二輪：四款配對板共用的緊湊視覺基準 */
+    :root { --primary:#4f5fbd; --primary-light:#eaf3fc; --success:#16884a; --border-color:#9cafc4; --muted:#64748b; }
+    body { background:#f3f7fb; color:#18324f; }
+    .container { width:98vw; max-width:1820px; padding:8px 12px; border:1px solid #dce7f1; border-radius:10px; box-shadow:0 4px 18px rgba(18,63,119,.07); }
+    .header-bar { min-height:0; padding:0 0 5px; margin-bottom:6px; border-bottom:1px solid #d8e5f0; }
+    .header-bar h2 { color:#123f77; font-size:1.2rem; }
+    .subtitle { color:#647b94; font-size:.8rem; font-weight:400; line-height:1.25; }
+    .group-selector-panel, .compact-control-bar, .col-selector-group {
+      min-height:0; padding:4px 8px; margin-bottom:6px; background:#f5f8fc; border:1px solid #c8d8e8; border-radius:7px;
+    }
+    .group-selector-panel { flex-wrap:nowrap; }
+    .group-selector-panel .group-badges { min-width:0; flex:1 1 auto; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:thin; }
+    .group-actions { display:flex; flex:0 0 auto; align-items:center; gap:6px; }
+    .timer-and-toolbar { min-height:0; padding:5px 8px; margin-bottom:6px; background:#f5f8fc; border:1px solid #c8d8e8; border-radius:7px; }
+    .group-btn, .col-btn, .mode-swap-btn, .preset-btn, .t-btn, .btn {
+      min-height:28px; padding:4px 8px; border-width:1px; border-radius:7px; font-size:.82rem; line-height:1.1; box-shadow:none;
+    }
+    .group-btn, .col-btn, .t-btn { border-color:#9fb5cc; }
+    .group-btn.active, .col-btn.active-prompt, .t-btn.active { color:#fff; background:#087fb8; border-color:#087fb8; }
+    .col-btn.active-answer { color:#fff; background:#4560c5; border-color:#4560c5; }
+    .mode-swap-btn { color:#fff; background:#5968bd; border-color:#4d5bac; }
+    .mode-swap-btn:hover { background:#4e5cab; }
+    .preset-btn { color:#36516f; background:#fff; border:1px solid #b8cadc; cursor:pointer; }
+    .preset-btn:hover { color:#0b6597; background:#edf6fc; border-color:#79a9c7; }
+    .btn-modal { min-height:26px; padding:3px 9px; background:#425a76; font-size:.78rem; }
+    .btn-default { color:#29435f; background:#e7eef6; border-color:#d4e0eb; }
+    .btn-check { color:#fff; background:#16884a; border-color:#16884a; }
+    .btn-next { color:#fff; background:#4f5fbd; border-color:#4f5fbd; }
+    .ctrl-section, .timer-box, .actions-group { gap:5px; }
+    .checkbox-group { gap:8px; }
+    .timer-display { min-width:60px; padding:1px 6px; border-radius:5px; background:#e5edf6; font-size:1.35rem; line-height:1.1; }
+    .status-bar:has(#instruction-msg:empty):has(#score-display:empty) { display:none; }
+    .layout-wrapper { margin-top:0; }
+    table { overflow:hidden; border:1px solid #8ea4ba; border-radius:11px; border-collapse:separate; border-spacing:0; }
+    th, td { border:0; border-right:1px solid #a7b9cd; border-bottom:1px solid #a7b9cd; }
+    tr > :last-child { border-right:0; }
+    tbody tr:last-child > td { border-bottom:0; }
+    th, th.prompt-th, th.ans-th { color:#0b5f91; background:#eaf3fc; }
+    td.prompt-td, td.slot-td { background:#fff; }
+    td.slot-td:hover:not(.locked) { background:#f6f9fc; }
+    td.slot-selected, .card.selected-card { color:#8a4b00; background:#fff5dc; border-color:#f59e0b; box-shadow:0 0 0 2px rgba(245,158,11,.14); }
+    td.slot-td:not(:empty):not(.cell-correct):not(.cell-wrong):not(.cell-review-correct) { color:#123f77; font-size:inherit; font-weight:700; text-align:center; }
+    .bank-wrapper { border-color:#9fb5cc; border-radius:10px; }
+    .card { border-color:#7f97b2; border-radius:7px; }
+    .modal-content { border-radius:12px; }
+    .modal-tab-btn { border-radius:7px; }
+    .modal table td.reference-speak { color:#075f99; font-weight:700; cursor:pointer; transition:background-color .15s ease,color .15s ease; }
+    .modal table td.reference-speak:hover, .modal table td.reference-speak:focus-visible {
+      color:#8a4b00; background:#fff5dc; outline:2px solid #f59e0b; outline-offset:-2px;
+    }
+    .col-selector-group { display:flex; align-items:center; gap:6px; flex-wrap:nowrap; }
+    .selector-title { flex:0 0 auto; margin:0; font-size:.82rem; white-space:nowrap; }
+    .selector-help { flex:0 0 auto; color:#73859a; font-size:.72rem; font-weight:600; white-space:nowrap; }
+    .col-badges { min-width:0; }
+    @media (max-width:1050px) {
+      .col-selector-group { flex-wrap:wrap; }
+      .selector-help { width:100%; }
+    }
+  </style>
 </head>
 <body>
 
@@ -478,9 +530,9 @@
   <!-- 組別多選與模式切換 -->
   <div class="group-selector-panel">
     <div class="group-badges" id="group-badges"></div>
-    <div style="display:flex; align-items:center; gap:6px;">
-      <button class="btn-default" style="padding:2px 6px; font-size:0.75rem; border-radius:4px; cursor:pointer;" onclick="resetToTriadPreset()">三排對照預設</button>
-      <button class="mode-swap-btn" id="btn-mode-swap" onclick="toggleMode()">🔄 模式：看數字 ➔ 選英文</button>
+    <div class="group-actions">
+      <button class="preset-btn" onclick="resetToTriadPreset()">三排對照預設</button>
+      <button class="mode-swap-btn" id="btn-mode-swap" onclick="toggleMode()">模式：數字提示 → 英文作答</button>
     </div>
   </div>
 
@@ -491,9 +543,10 @@
       <button class="t-btn active" onclick="setTimerSeconds(null)">不倒數</button>
       <button class="t-btn" onclick="setTimerSeconds(15)">15秒</button>
       <button class="t-btn" onclick="setTimerSeconds(30)">30秒</button>
+      <button class="t-btn" onclick="setTimerSeconds(45)">45秒</button>
       <button class="t-btn" onclick="setTimerSeconds(60)">60秒</button>
       <button class="t-btn" onclick="setTimerSeconds(90)">90秒</button>
-      <button id="btn-add-time" class="t-btn t-btn-add" onclick="addTime(15)" disabled>＋15s</button>
+      <button id="btn-add-time" class="t-btn t-btn-add" onclick="addTime(15)" disabled>＋15秒</button>
       <div id="timer-display" class="timer-display">不限時</div>
     </div>
 
@@ -512,7 +565,7 @@
   </div>
 
   <div class="status-bar">
-    <span id="instruction-msg">💡 點選卡片與空格進行填入（點選英文可聽發音）。</span>
+    <span id="instruction-msg"></span>
     <span id="score-display" class="score-txt"></span>
   </div>
 
@@ -772,7 +825,7 @@ function resetToTriadPreset() {
 
 function toggleMode() {
   isNumToEnMode = !isNumToEnMode;
-  document.getElementById("btn-mode-swap").innerText = isNumToEnMode ? "🔄 模式：看數字 ➔ 選英文" : "🔄 模式：看英文 ➔ 選數字";
+  document.getElementById("btn-mode-swap").innerText = isNumToEnMode ? "模式：數字提示 → 英文作答" : "模式：英文提示 → 數字作答";
   resetGame();
 }
 
@@ -874,7 +927,7 @@ function resetGame() {
   finalScores = {};
 
   document.getElementById("score-display").innerText = "";
-  document.getElementById("instruction-msg").innerText = "💡 點選卡片與空格進行填入（點選英文可聽發音）。";
+  document.getElementById("instruction-msg").innerText = "";
   document.getElementById("btn-next").style.display = "none";
   document.getElementById("score-modal").style.display = "none";
   document.getElementById("bank-sticky-container").classList.remove("bank-disabled");
@@ -1259,10 +1312,7 @@ function switchModalTab(tabIndex) {
       html += `
         <tr>
           <td style="font-weight:bold;">${it.num}</td>
-          <td>
-            ${it.en}
-            <button class="tts-btn" onclick="speakText('${it.en}')" title="朗讀">🔊</button>
-          </td>
+          <td class="reference-speak" tabindex="0" role="button" title="點擊朗讀 ${it.en}" onclick="speakText('${it.en}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();speakText('${it.en}');}">${it.en}</td>
         </tr>
       `;
     });
