@@ -1,13 +1,348 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Test 2｜測試檔案</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>異想命運館｜Fortune Cards</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
   <style>
-    body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;background:#f5f7fb;color:#17365d}
-    main{text-align:center;padding:32px}h1{margin:0 0 12px;font-size:clamp(2rem,6vw,4rem)}p{margin:0;color:#64748b;font-size:clamp(1.1rem,3vw,1.5rem)}
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .font-cinzel {
+      font-family: 'Cinzel', serif;
+    }
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .transform-style-3d {
+      transform-style: preserve-3d;
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+    /* 卡背神秘星空漸層與星塵動畫 */
+    .bg-tarot-pattern {
+      background: radial-gradient(circle at 50% 30%, #2e1065 0%, #0f172a 70%, #020617 100%);
+    }
+    /* 發光微弱脈動 */
+    @keyframes card-glow {
+      0%, 100% { box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.35); }
+      50% { box-shadow: 0 0 35px 2px rgba(245, 158, 11, 0.6); }
+    }
+    .animate-glow {
+      animation: card-glow 3s infinite ease-in-out;
+    }
   </style>
 </head>
-<body><main><h1>Test 2</h1><p>測試檔案</p></main></body>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 overflow-x-hidden">
+
+  <!-- 頂部標題區 -->
+  <header class="text-center my-2 sm:my-4">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-950/80 border border-violet-800/50 text-violet-300 text-xs tracking-wider mb-2">
+      <span>✨ SPEDU LABS · SEL FORTUNE</span>
+      <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+      <span id="deckCounter">剩餘卡牌: 40 / 40</span>
+    </div>
+    <h1 class="text-2xl sm:text-3xl font-cinzel font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300">
+      異想命運館
+    </h1>
+    <p class="text-xs sm:text-sm text-slate-400 mt-1">
+      抽一張屬於你的今日命運 · 靜心感受這一刻
+    </p>
+  </header>
+
+  <!-- 核心卡牌舞台 -->
+  <main class="w-full flex-1 flex flex-col items-center justify-center py-2">
+    <div class="perspective-1000 w-full max-w-[340px] sm:max-w-[380px] h-[520px] sm:h-[550px]">
+      <div id="cardInner" class="relative w-full h-full transform-style-3d transition-transform duration-700 cursor-pointer shadow-2xl rounded-2xl">
+        
+        <!-- 卡背 (Card Back) -->
+        <div id="cardBack" class="absolute inset-0 w-full h-full rounded-2xl border-2 border-amber-500/40 p-4 bg-tarot-pattern backface-hidden flex flex-col items-center justify-between animate-glow">
+          <div class="w-full border border-amber-500/20 rounded-xl h-full flex flex-col items-center justify-between p-6 text-center">
+            
+            <div class="flex items-center gap-2 text-amber-300/60 text-xs tracking-widest">
+              <span>✦</span><span>DESTINY</span><span>✦</span>
+            </div>
+
+            <!-- 星芒神祕符號 -->
+            <div class="flex flex-col items-center">
+              <div class="w-24 h-24 rounded-full border border-amber-400/30 flex items-center justify-center bg-violet-900/30 relative mb-4">
+                <span class="text-5xl select-none">🔮</span>
+                <div class="absolute inset-0 rounded-full border border-dashed border-amber-300/40 animate-spin" style="animation-duration: 25s;"></div>
+              </div>
+              <h2 class="text-xl font-cinzel text-amber-200 tracking-wider font-semibold">Today's Fortune</h2>
+              <p class="text-xs text-slate-400 mt-2">輕觸卡片 · 揭曉今日命運</p>
+            </div>
+
+            <div class="text-amber-400/80 text-xs bg-amber-950/40 border border-amber-700/40 px-4 py-1.5 rounded-full">
+              點擊翻開卡牌 ➔
+            </div>
+          </div>
+        </div>
+
+        <!-- 卡面 (Card Front) -->
+        <div id="cardFront" class="absolute inset-0 w-full h-full rounded-2xl border-2 border-amber-400/60 p-4 bg-slate-900 backface-hidden rotate-y-180 flex flex-col justify-between shadow-2xl">
+          <div class="w-full h-full border border-amber-500/30 rounded-xl p-4 sm:p-5 flex flex-col justify-between bg-gradient-to-b from-slate-900/90 via-slate-900/60 to-slate-950/90 overflow-hidden">
+            
+            <!-- 卡片頂部分類與名稱 -->
+            <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
+              <div class="flex items-center gap-2">
+                <span id="cardIcon" class="text-2xl">🌟</span>
+                <div>
+                  <h3 id="cardNameEN" class="font-cinzel text-amber-300 font-bold text-sm tracking-wide leading-tight">THE STAR</h3>
+                  <p id="cardNameZH" class="text-xs text-slate-400 leading-tight">星星</p>
+                </div>
+              </div>
+              <span id="cardCategory" class="text-[11px] px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                暖心療癒系
+              </span>
+            </div>
+
+            <!-- 金句區（支援點擊朗讀） -->
+            <div id="quoteBox" class="my-auto py-3 px-3 rounded-xl bg-violet-950/40 border border-violet-800/40 text-center cursor-pointer hover:bg-violet-900/40 active:scale-98 transition group" title="點擊聆聽發音">
+              <div class="flex items-center justify-center gap-1.5 text-violet-400 text-[11px] mb-1.5">
+                <span>🔊 點擊金句聽發音</span>
+              </div>
+              <h2 id="cardQuoteEN" class="text-lg sm:text-xl font-bold text-yellow-200 tracking-wide leading-snug group-hover:text-yellow-100 transition">
+                "You did a great job."
+              </h2>
+              <p id="cardQuoteZH" class="text-xs sm:text-sm text-slate-300 mt-2 font-medium">
+                你今天做得非常棒。
+              </p>
+            </div>
+
+            <!-- 命運預言與幸運物 -->
+            <div class="space-y-2 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+              <div>
+                <span class="text-xs text-amber-400 font-semibold flex items-center gap-1">
+                  <span>🔮 今日預言：</span>
+                </span>
+                <p id="cardFortuneZH" class="text-xs sm:text-sm text-slate-200 mt-0.5 leading-relaxed">
+                  所有的努力都不會白費，給自己一個大大的掌聲吧！
+                </p>
+              </div>
+              <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-800/60 text-slate-400">
+                <span>🍀 幸運物：<strong id="cardLuckyItem" class="text-amber-200 font-normal">水壺</strong></span>
+              </div>
+            </div>
+
+            <!-- 單字小補給 -->
+            <div id="wordBox" class="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between cursor-pointer hover:bg-slate-800/30 px-2 py-1 rounded transition" title="點擊聽單字發音">
+              <div class="flex items-center gap-1 text-xs">
+                <span class="text-violet-400">📖 今日單字：</span>
+                <span id="cardKeyWordEN" class="font-bold text-amber-300 text-sm">great</span>
+                <span id="cardKeyWordZH" class="text-slate-400 text-xs">（很棒的）</span>
+              </div>
+              <span class="text-xs text-slate-400">🔊</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- 操作按鈕區 -->
+  <footer class="w-full max-w-sm flex flex-col items-center gap-2 mt-2 mb-2">
+    <button id="drawBtn" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 font-bold text-base shadow-lg hover:shadow-amber-500/20 active:scale-95 transition-all flex items-center justify-center gap-2">
+      <span class="text-lg">✨</span>
+      <span>再抽一張屬於你的卡</span>
+    </button>
+    <div class="text-[11px] text-slate-500 text-center flex items-center gap-2">
+      <span>每一輪 40 張不重複</span>
+      <span>·</span>
+      <span>抽完自動重新洗牌</span>
+    </div>
+  </footer>
+
+  <script>
+    // 40 張已校對之完整卡牌庫
+    const rawCardsData = [
+      { id: 1, category: "暖心療癒系", icon: "🌟", nameEN: "The Star", nameZH: "星星", quoteEN: "You did a great job.", quoteZH: "你今天做得非常棒。", fortuneZH: "所有的努力都不會白費，給自己一個大大的掌聲吧！", luckyItem: "水壺", keyWordEN: "great", keyWordZH: "很棒的" },
+      { id: 2, category: "暖心療癒系", icon: "☕", nameEN: "The Cup", nameZH: "茶杯", quoteEN: "Take a deep breath.", quoteZH: "深深吸一口氣。", fortuneZH: "累了就閉上眼睛放空十秒鐘，沒人會催你的。", luckyItem: "微風", keyWordEN: "breath", keyWordZH: "呼吸" },
+      { id: 3, category: "暖心療癒系", icon: "🌿", nameEN: "The Seed", nameZH: "種子", quoteEN: "It is okay to wait.", quoteZH: "慢慢等待沒關係。", fortuneZH: "種子發芽前都在泥土裡睡覺，你也有自己的節奏。", luckyItem: "綠色植物", keyWordEN: "wait", keyWordZH: "等待" },
+      { id: 4, category: "暖心療癒系", icon: "☁️", nameEN: "The Cloud", nameZH: "雲朵", quoteEN: "Rest is good for you.", quoteZH: "休息是件好事。", fortuneZH: "把煩惱交給天空，像白雲一樣軟爛半天也是一種超能力。", luckyItem: "白色毛巾", keyWordEN: "rest", keyWordZH: "休息" },
+      { id: 5, category: "暖心療癒系", icon: "🕯️", nameEN: "The Candle", nameZH: "蠟燭", quoteEN: "You bring warm light.", quoteZH: "你帶來溫暖的光芒。", fortuneZH: "你的笑容就像小蠟燭，身邊的人今天因為你而開心。", luckyItem: "黃色原子筆", keyWordEN: "warm", keyWordZH: "溫暖的" },
+      { id: 6, category: "暖心療癒系", icon: "🐾", nameEN: "The Cat", nameZH: "貓咪", quoteEN: "Take it easy today.", quoteZH: "今天放輕鬆過就好。", fortuneZH: "像貓咪一樣伸個懶腰，事情一步一步慢慢做就好。", luckyItem: "柔軟的靠墊", keyWordEN: "easy", keyWordZH: "放鬆的" },
+      { id: 7, category: "暖心療癒系", icon: "💧", nameEN: "The Dew", nameZH: "露水", quoteEN: "A fresh start begins.", quoteZH: "全新的開始正在發生。", fortuneZH: "昨天沒做好的事情已經過去，今天又是乾乾淨淨的一天。", luckyItem: "冷開水", keyWordEN: "fresh", keyWordZH: "嶄新的" },
+      { id: 8, category: "暖心療癒系", icon: "🧣", nameEN: "The Scarf", nameZH: "圍巾", quoteEN: "You deserve to feel safe.", quoteZH: "你值得擁有安心的感覺。", fortuneZH: "不用急著跟別人比較，在自己的小天地裡安心待著。", luckyItem: "薄荷糖", keyWordEN: "safe", keyWordZH: "安全的" },
+      { id: 9, category: "暖心療癒系", icon: "🧸", nameEN: "The Bear", nameZH: "小熊", quoteEN: "Big hugs for you.", quoteZH: "給你一個大大的擁抱。", fortuneZH: "如果覺得世界有點吵，安靜抱一下自己也可以。", luckyItem: "深呼吸三次", keyWordEN: "hug", keyWordZH: "擁抱" },
+      { id: 10, category: "暖心療癒系", icon: "🌈", nameEN: "The Rainbow", nameZH: "彩虹", quoteEN: "Good things take time.", quoteZH: "美好的事物需要時間。", fortuneZH: "下過雨之後才會有彩虹，好事情正在路上慢慢走來。", luckyItem: "彩色鉛筆", keyWordEN: "time", keyWordZH: "時間" },
+      { id: 11, category: "中二熱血系", icon: "⚡", nameEN: "The Lightning", nameZH: "閃電", quoteEN: "Your power is waking up!", quoteZH: "你的力量正在覺醒！", fortuneZH: "封印在身體裡的超能力，下午即將突破限制！", luckyItem: "手錶", keyWordEN: "power", keyWordZH: "力量" },
+      { id: 12, category: "中二熱血系", icon: "🗡️", nameEN: "The Knight", nameZH: "騎士", quoteEN: "Face it with a smile.", quoteZH: "用微笑面對挑戰！", fortuneZH: "迎面而來的魔王？用最帥氣的姿勢接招吧！", luckyItem: "直尺", keyWordEN: "face", keyWordZH: "面對" },
+      { id: 13, category: "中二熱血系", icon: "🔥", nameEN: "The Dragon", nameZH: "巨龍", quoteEN: "Nothing can stop you.", quoteZH: "沒有人能阻止你。", fortuneZH: "今天的氣場兩米八，走到哪裡都自帶燃燒音效。", luckyItem: "紅色橡皮擦", keyWordEN: "stop", keyWordZH: "阻止" },
+      { id: 14, category: "中二熱血系", icon: "🛡️", nameEN: "The Shield", nameZH: "盾牌", quoteEN: "Stand tall and be proud.", quoteZH: "挺起胸膛，感到驕傲吧。", fortuneZH: "就算遇到困難，你身上的無敵護盾也會彈開所有攻擊。", luckyItem: "雙肩背包", keyWordEN: "proud", keyWordZH: "驕傲的" },
+      { id: 15, category: "中二熱血系", icon: "🦅", nameEN: "The Hawk", nameZH: "獵鷹", quoteEN: "Keep your eyes open.", quoteZH: "睜大你的鷹眼！", fortuneZH: "今天走廊上會出現神秘的線索，準備好隨時發現它。", luckyItem: "窗外的樹", keyWordEN: "eyes", keyWordZH: "雙眼" },
+      { id: 16, category: "中二熱血系", icon: "🦁", nameEN: "The Lion", nameZH: "獅子", quoteEN: "You are very brave.", quoteZH: "你其實超級勇敢。", fortuneZH: "真正的勇者不是不害怕，而是帶著害怕往前踏出一步。", luckyItem: "藍色水瓶", keyWordEN: "brave", keyWordZH: "勇敢的" },
+      { id: 17, category: "中二熱血系", icon: "🌪️", nameEN: "The Storm", nameZH: "風暴", quoteEN: "Make your move now!", quoteZH: "就是現在，開始行動！", fortuneZH: "不要猶豫了！英雄登場的背景音樂已經為你響起！", luckyItem: "運動鞋", keyWordEN: "move", keyWordZH: "行動" },
+      { id: 18, category: "中二熱血系", icon: "🔮", nameEN: "The Orb", nameZH: "寶珠", quoteEN: "See your bright future.", quoteZH: "看見你光明的未來！", fortuneZH: "水晶球發出金色光芒，預告你今天會成功解開一道難題。", luckyItem: "乾淨的桌面", keyWordEN: "bright", keyWordZH: "光明的" },
+      { id: 19, category: "中二熱血系", icon: "🚀", nameEN: "The Rocket", nameZH: "火箭", quoteEN: "Reach for the sky.", quoteZH: "朝著天空衝刺吧！", fortuneZH: "把鉛筆握好，想像自己在太空中飛行，發動推進器！", luckyItem: "削鉛筆機", keyWordEN: "sky", keyWordZH: "天空" },
+      { id: 20, category: "中二熱血系", icon: "🐺", nameEN: "The Wolf", nameZH: "孤狼", quoteEN: "Trust your strong team.", quoteZH: "相信你可靠的隊友。", fortuneZH: "你不是一個人在戰鬥，身邊的朋友隨時願意掩護你。", luckyItem: "擊掌一次", keyWordEN: "team", keyWordZH: "團隊" },
+      { id: 21, category: "文青抒情系", icon: "🌙", nameEN: "The Moon", nameZH: "月亮", quoteEN: "It is okay to be slow.", quoteZH: "慢一點也沒有關係。", fortuneZH: "慢慢走，才能看清楚路邊剛開出的小花有多漂亮。", luckyItem: "圓形時鐘", keyWordEN: "slow", keyWordZH: "慢的" },
+      { id: 22, category: "文青抒情系", icon: "🌊", nameEN: "The River", nameZH: "河流", quoteEN: "Just go with the flow.", quoteZH: "順著水流飄就好。", fortuneZH: "不用用力對抗水流，漂流的過程總會遇見一座島。", luckyItem: "藍色墨水", keyWordEN: "flow", keyWordZH: "流動" },
+      { id: 23, category: "文青抒情系", icon: "🌸", nameEN: "The Blossom", nameZH: "花朵", quoteEN: "Every flower has its day.", quoteZH: "每朵花都有自己的花期。", fortuneZH: "不用羨慕別人的速度，你盛開的時間由你自己決定。", luckyItem: "陽光", keyWordEN: "flower", keyWordZH: "花朵" },
+      { id: 24, category: "文青抒情系", icon: "🍃", nameEN: "The Leaf", nameZH: "樹葉", quoteEN: "Dance with the wind.", quoteZH: "跟著微風一起跳舞。", fortuneZH: "隨著音樂輕輕點頭，生活可以像落葉一樣自在轉圈。", luckyItem: "窗邊的微風", keyWordEN: "dance", keyWordZH: "跳舞" },
+      { id: 25, category: "文青抒情系", icon: "🕊️", nameEN: "The Feather", nameZH: "羽毛", quoteEN: "Keep your heart light.", quoteZH: "讓心靈保持輕盈。", fortuneZH: "把重重的煩惱放進抽屜，今天只裝喜歡的心情。", luckyItem: "輕快的腳步", keyWordEN: "light", keyWordZH: "輕盈的" },
+      { id: 26, category: "文青抒情系", icon: "🍂", nameEN: "The Path", nameZH: "小徑", quoteEN: "One small step counts.", quoteZH: "小小的一步也算前進。", fortuneZH: "就算今天只寫對了一個單字，也是貨真價實的進步。", luckyItem: "筆記本", keyWordEN: "step", keyWordZH: "步伐" },
+      { id: 27, category: "文青抒情系", icon: "🐚", nameEN: "The Shell", nameZH: "貝殼", quoteEN: "Listen to your heart.", quoteZH: "靜靜傾聽自己的心聲。", fortuneZH: "把海螺放到耳邊，聽聽自己今天最想要什麼樣的節奏。", luckyItem: "閉上眼睛", keyWordEN: "listen", keyWordZH: "傾聽" },
+      { id: 28, category: "文青抒情系", icon: "🌲", nameEN: "The Pine", nameZH: "松樹", quoteEN: "Grow deep and stand tall.", quoteZH: "根扎得深，樹才站得穩。", fortuneZH: "默默累積的練習，正在你看不見的地方悄悄變強壯。", luckyItem: "木頭紋路", keyWordEN: "grow", keyWordZH: "成長" },
+      { id: 29, category: "文青抒情系", icon: "⛵", nameEN: "The Boat", nameZH: "小船", quoteEN: "Sail to a new place.", quoteZH: "航向全新的地方。", fortuneZH: "翻開新的一頁課本，就像小船划向了一片未知的蔚藍海洋。", luckyItem: "一張白紙", keyWordEN: "sail", keyWordZH: "航行" },
+      { id: 30, category: "文青抒情系", icon: "✨", nameEN: "The Spark", nameZH: "火花", quoteEN: "Catch that little idea.", quoteZH: "抓住那個小小的靈感。", fortuneZH: "腦海中一閃而過的好玩想法，趕快用筆把它記下來！", luckyItem: "便條紙", keyWordEN: "catch", keyWordZH: "抓住" },
+      { id: 31, category: "搞笑幸運系", icon: "📝", nameEN: "The Pen", nameZH: "鋼筆", quoteEN: "Your homework misses you!", quoteZH: "你的作業很想念你！", fortuneZH: "驚悚預言：作業正在聯絡簿裡面眼巴巴地看著你喔！", luckyItem: "黑筆", keyWordEN: "miss", keyWordZH: "想念" },
+      { id: 32, category: "搞笑幸運系", icon: "🥪", nameEN: "The Toast", nameZH: "吐司", quoteEN: "Food makes life better.", quoteZH: "食物讓生活變得更美好。", fortuneZH: "所有的煩惱，只要下課吃一口好吃的點心就能全部擺平！", luckyItem: "午餐便當", keyWordEN: "better", keyWordZH: "更好的" },
+      { id: 33, category: "搞笑幸運系", icon: "🧦", nameEN: "The Socks", nameZH: "襪子", quoteEN: "Check your shoes first.", quoteZH: "走路前先低頭看看鞋子。", fortuneZH: "幸運指南：今天走路請注意腳下，千萬別踩到走廊的小水窪！", luckyItem: "鞋帶", keyWordEN: "check", keyWordZH: "檢查" },
+      { id: 34, category: "搞笑幸運系", icon: "🪑", nameEN: "The Chair", nameZH: "椅子", quoteEN: "Sit back and relax.", quoteZH: "往後靠，舒服地坐好。", fortuneZH: "椅子今天表示：你坐得很正，值得頒發一張最乖坐姿獎狀！", luckyItem: "靠背椅", keyWordEN: "sit", keyWordZH: "坐下" },
+      { id: 35, category: "搞笑幸運系", icon: "🍌", nameEN: "The Banana", nameZH: "香蕉", quoteEN: "Do not slip today!", quoteZH: "今天走路千萬不要滑倒！", fortuneZH: "命運之神提醒：看到亮晶晶的地板，記得小心繞過濕滑的地方。", luckyItem: "黃色外套", keyWordEN: "slip", keyWordZH: "滑倒" },
+      { id: 36, category: "搞笑幸運系", icon: "⏰", nameEN: "The Clock", nameZH: "時鐘", quoteEN: "Time flies when you smile.", quoteZH: "微笑的時候時間過得超快。", fortuneZH: "只要對著隔壁同學笑一下，下課鐘聲好像馬上就響了！", luckyItem: "時針", keyWordEN: "smile", keyWordZH: "微笑" },
+      { id: 37, category: "搞笑幸運系", icon: "🧹", nameEN: "The Broom", nameZH: "掃把", quoteEN: "Sweep the worries away.", quoteZH: "把煩惱通通掃出門外！", fortuneZH: "像拿掃把掃地一樣，把腦袋裡亂七八糟的想法掃進垃圾桶！", luckyItem: "乾淨的抹布", keyWordEN: "sweep", keyWordZH: "打掃" },
+      { id: 38, category: "搞笑幸運系", icon: "🥛", nameEN: "The Milk", nameZH: "牛奶", quoteEN: "Don't cry over spilled milk.", quoteZH: "打翻了牛奶不用哭哭。", fortuneZH: "就算橡皮擦滾到桌子底下，彎腰撿起來拍拍就沒事啦！", luckyItem: "吸管", keyWordEN: "cry", keyWordZH: "哭泣" },
+      { id: 39, category: "搞笑幸運系", icon: "🐶", nameEN: "The Puppy", nameZH: "小狗", quoteEN: "Wag your tail today!", quoteZH: "今天像小狗一樣開心搖尾巴！", fortuneZH: "遇到喜歡的人就大力打個招呼，把快樂像尾巴一樣晃出來！", luckyItem: "雙手揮揮", keyWordEN: "tail", keyWordZH: "尾巴" },
+      { id: 40, category: "搞笑幸運系", icon: "💤", nameEN: "The Pillow", nameZH: "枕頭", quoteEN: "Hold on until your bed.", quoteZH: "堅持住，床在等你回家！", fortuneZH: "眼皮如果快要打架，想想放學後柔軟的枕頭正在呼喚你。", luckyItem: "下課鐘聲", keyWordEN: "hold", keyWordZH: "堅持" }
+    ];
+
+    // 洗牌與牌堆狀態管理
+    let currentDeck = [];
+    let isFlipped = false;
+    let isAnimating = false;
+    let activeCard = null;
+
+    // Fisher-Yates 洗牌算法
+    function shuffleDeck(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // 更新剩餘牌數顯示
+    function updateCounter() {
+      const counterEl = document.getElementById('deckCounter');
+      counterEl.textContent = `剩餘卡牌: ${currentDeck.length} / ${rawCardsData.length}`;
+    }
+
+    // 取得下一張牌（40張抽完無縫自動重新洗牌）
+    function getNextCard() {
+      if (currentDeck.length === 0) {
+        currentDeck = shuffleDeck(rawCardsData);
+      }
+      const card = currentDeck.pop();
+      updateCounter();
+      return card;
+    }
+
+    // 渲染卡面資料
+    function renderCard(card) {
+      activeCard = card;
+      document.getElementById('cardIcon').textContent = card.icon;
+      document.getElementById('cardNameEN').textContent = card.nameEN.toUpperCase();
+      document.getElementById('cardNameZH').textContent = card.nameZH;
+      document.getElementById('cardCategory').textContent = card.category;
+      document.getElementById('cardQuoteEN').textContent = `"${card.quoteEN}"`;
+      document.getElementById('cardQuoteZH').textContent = card.quoteZH;
+      document.getElementById('cardFortuneZH').textContent = card.fortuneZH;
+      document.getElementById('cardLuckyItem').textContent = card.luckyItem;
+      document.getElementById('cardKeyWordEN').textContent = card.keyWordEN;
+      document.getElementById('cardKeyWordZH').textContent = `（${card.keyWordZH}）`;
+    }
+
+    // 翻牌到正面
+    function flipToFront() {
+      if (isFlipped || isAnimating) return;
+      isAnimating = true;
+      const cardInner = document.getElementById('cardInner');
+      cardInner.classList.add('rotate-y-180');
+      isFlipped = true;
+      setTimeout(() => { isAnimating = false; }, 700);
+    }
+
+    // 抽下一張牌並翻轉重置
+    function handleDrawNext() {
+      if (isAnimating) return;
+      const cardInner = document.getElementById('cardInner');
+
+      if (!isFlipped) {
+        // 如果目前是背面，直接翻開
+        flipToFront();
+      } else {
+        // 如果目前已經是正面，先翻回背面，中途更換卡片資料
+        isAnimating = true;
+        cardInner.classList.remove('rotate-y-180');
+        isFlipped = false;
+
+        setTimeout(() => {
+          const nextCard = getNextCard();
+          renderCard(nextCard);
+          // 停留半秒增加儀式感，隨後自動翻開新牌
+          setTimeout(() => {
+            cardInner.classList.add('rotate-y-180');
+            isFlipped = true;
+            isAnimating = false;
+          }, 350);
+        }, 500);
+      }
+    }
+
+    // Web Speech API 朗讀功能（適合特教的 0.85 慢速發音）
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel(); // 停止先前的朗讀
+      const cleanText = text.replace(/["'“”]/g, '').trim();
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.85; // 稍慢、清晰
+      utterance.pitch = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // 初始化綁定
+    window.addEventListener('DOMContentLoaded', () => {
+      currentDeck = shuffleDeck(rawCardsData);
+      const initialCard = getNextCard();
+      renderCard(initialCard);
+
+      const cardInner = document.getElementById('cardInner');
+      const drawBtn = document.getElementById('drawBtn');
+      const quoteBox = document.getElementById('quoteBox');
+      const wordBox = document.getElementById('wordBox');
+
+      // 點擊卡背翻牌
+      cardInner.addEventListener('click', (e) => {
+        // 若點擊的是金句或單字區塊，僅觸發發音，不觸發翻轉干擾
+        if (quoteBox.contains(e.target) || wordBox.contains(e.target)) return;
+        if (!isFlipped) {
+          flipToFront();
+        }
+      });
+
+      // 抽卡按鈕
+      drawBtn.addEventListener('click', handleDrawNext);
+
+      // 點擊金句朗讀
+      quoteBox.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (activeCard) speakText(activeCard.quoteEN);
+      });
+
+      // 點擊單字朗讀
+      wordBox.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (activeCard) speakText(activeCard.keyWordEN);
+      });
+    });
+  </script>
+</body>
 </html>
