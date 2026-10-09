@@ -64,6 +64,7 @@ window.GRAMMAR_DATA = [
       { id: "r4", category: "圖表閱讀測驗", title: "閱讀｜漢堡店菜單", desc: "生活實境：速食店菜單、套餐選配與口語點餐對答", filename: "reading-hamberger.html", themeColor: "#EC4899" },
       { id: "r5", category: "圖表閱讀測驗", title: "閱讀｜學校課表", desc: "生活實境：看懂校園作息課表、星期與學科課堂名稱", filename: "reading-suject.html", themeColor: "#EC4899" },
       { id: "r6", category: "圖表閱讀測驗", title: "閱讀｜服飾店", desc: "生活實境：閱讀服飾店商品、尺寸、價格與購物情境", filename: "reading-clothing-store.html", themeColor: "#EC4899" },
+      { id: "r7", category: "圖表閱讀測驗", title: "閱讀｜My Town 異想小鎮", desc: "看城市地圖判讀位置關係，支援原始版、隨機出題、線上批改與雙面列印", filename: "reading-my-town.html", themeColor: "#EC4899" },
 
       // ==== 互動遊戲區 ====
       { id: "g1", category: "互動遊戲區", title: "🎮 遊戲｜地心探險數字挑戰", desc: "挑戰大考驗！熟悉英文數字 1 ~ 100000 聽力、大小與發音", filename: "game-corenum.html", themeColor: "#F43F5E" },
