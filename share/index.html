@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>教學資源｜Sinny Spedu Labs</title>
+  <link rel="icon" type="image/png" href="../assets/logo-round.png">
+  <link rel="stylesheet" href="../shared/css/workspace.css?v=3.1">
+  <style>
+    .brand-home { cursor: default; }
+    .resource-panel[hidden] { display: none; }
+    .resource-placeholder {
+      min-height: 280px;
+      display: grid;
+      place-items: center;
+      padding: 38px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--paper);
+      border: 1px dashed var(--line);
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+    }
+    .resource-placeholder p { margin: 0; font-size: 18px; font-weight: 800; }
+    @media (max-width: 720px) {
+      .resource-placeholder { min-height: 220px; padding: 28px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <button class="mobile-toggle" id="mobileToggle" type="button" aria-label="開啟選單" aria-expanded="false">☰</button>
+  <div class="workspace-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-home" aria-label="Sinny Spedu Labs 品牌標誌">
+        <img src="../assets/logo-banner.png" alt="Sinny Spedu Labs">
+      </div>
+      <div class="workspace-name">
+        <small>PUBLIC RESOURCES</small>
+        <strong>教學資源</strong>
+      </div>
+      <nav class="category-nav" aria-label="教學資源分類">
+        <button class="category-btn active" type="button" data-category="english" aria-pressed="true">英文教學</button>
+        <button class="category-btn" type="button" data-category="life" aria-pressed="false">生活教育</button>
+        <button class="category-btn" type="button" data-category="other" aria-pressed="false">其他資源</button>
+      </nav>
+      <p class="sidebar-note">公開教學資源將陸續整理上線。</p>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="title-block">
+          <p>SINNY SPEDU LABS</p>
+          <h1>教學資源</h1>
+        </div>
+      </header>
+      <p>互動遊戲與教學教材，歡迎師生自由使用。</p>
+
+      <section class="resource-panel" data-panel="english">
+        <div class="resource-placeholder"><p>教學資源整理中</p></div>
+      </section>
+      <section class="resource-panel" data-panel="life" hidden>
+        <div class="resource-placeholder"><p>教學資源整理中</p></div>
+      </section>
+      <section class="resource-panel" data-panel="other" hidden>
+        <div class="resource-placeholder"><p>教學資源整理中</p></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+    const sidebar = document.getElementById("sidebar");
+    const mobileToggle = document.getElementById("mobileToggle");
+    const categoryButtons = [...document.querySelectorAll(".category-btn")];
+    const resourcePanels = [...document.querySelectorAll(".resource-panel")];
+
+    function setSidebar(open) {
+      sidebar.classList.toggle("open", open);
+      mobileToggle.setAttribute("aria-expanded", String(open));
+      mobileToggle.setAttribute("aria-label", open ? "關閉選單" : "開啟選單");
+    }
+
+    mobileToggle.addEventListener("click", () => setSidebar(!sidebar.classList.contains("open")));
+
+    categoryButtons.forEach(button => button.addEventListener("click", () => {
+      const category = button.dataset.category;
+      categoryButtons.forEach(item => {
+        const active = item === button;
+        item.classList.toggle("active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
+      resourcePanels.forEach(panel => { panel.hidden = panel.dataset.panel !== category; });
+      if (window.innerWidth <= 720) setSidebar(false);
+    }));
+  </script>
+</body>
+</html>
