@@ -19,6 +19,8 @@
     .game-card:hover { transform: translateY(-3px); border-color: #b9c9dc; box-shadow: 0 16px 36px rgba(18,63,119,.14); }
     .game-card:focus-visible { outline: 3px solid rgba(245,158,11,.42); outline-offset: 3px; }
     .game-preview { aspect-ratio: 16 / 9; display: grid; place-items: center; padding: 12px; color: #718198; background: linear-gradient(135deg, rgba(18,63,119,.045), rgba(245,158,11,.08)), repeating-linear-gradient(135deg, transparent 0 12px, rgba(18,63,119,.025) 12px 24px); border-bottom: 1px solid var(--line); text-align: center; }
+    .game-preview:has(img) { padding: 0; background: #eef3f8; }
+    .game-preview img { display: block; width: 100%; height: 100%; object-fit: cover; }
     .preview-mark { display: grid; gap: 6px; justify-items: center; }
     .preview-mark span { font-size: 32px; }
     .preview-mark small { font-size: 12px; font-weight: 900; letter-spacing: .05em; }
@@ -63,27 +65,27 @@
         <div class="series-heading"><h2 id="english-title">英文教學</h2><span>6 款互動遊戲</span></div>
         <div class="showcase-grid">
           <a class="game-card" href="../eng-grammar/match-numbers.html">
-            <div class="game-preview"><div class="preview-mark"><span>🔢</span><small>遊戲畫面準備中</small></div></div>
+            <div class="game-preview"><img src="images/match-numbers-card.webp" alt="英文數字配對板的數字題目與英文字卡畫面"></div>
             <div class="game-content"><div class="game-meta"><span class="game-tag">英文詞彙</span><span class="game-tag">配對練習</span></div><h3>英文數字配對板</h3><p class="game-description">配對數字、英文拼字與中文意思，可切換題組、方向及限時模式，適合個別練習或分組競賽。</p></div>
           </a>
           <a class="game-card" href="../eng-grammar/match-family.html">
-            <div class="game-preview"><div class="preview-mark"><span>👨‍👩‍👧‍👦</span><small>遊戲畫面準備中</small></div></div>
+            <div class="game-preview"><img src="images/match-family-card.webp" alt="家人稱謂與親友配對板的中文題目與英文字卡畫面"></div>
             <div class="game-content"><div class="game-meta"><span class="game-tag">英文詞彙</span><span class="game-tag">配對練習</span></div><h3>家人稱謂與親友配對板</h3><p class="game-description">配對家人、親戚與人際稱謂的中英文，可依程度選擇基礎、尊稱或進階親屬題組。</p></div>
           </a>
           <a class="game-card" href="../eng-grammar/match-pronouns.html">
-            <div class="game-preview"><div class="preview-mark"><span>🙋</span><small>遊戲畫面準備中</small></div></div>
+            <div class="game-preview"><img src="images/match-pronouns-card.webp" alt="人稱代名詞配對板的中文提示與主格字卡畫面"></div>
             <div class="game-content"><div class="game-meta"><span class="game-tag">英文詞彙</span><span class="game-tag">配對練習</span></div><h3>人稱代名詞配對板</h3><p class="game-description">透過多欄配對整理主格、受格、所有格、Be 動詞及反身代名詞，練習辨認不同人稱變化。</p></div>
           </a>
           <a class="game-card" href="../eng-grammar/match-time-date.html">
-            <div class="game-preview"><div class="preview-mark"><span>📅</span><small>遊戲畫面準備中</small></div></div>
+            <div class="game-preview"><img src="images/match-time-date-card.webp" alt="時間與日期配對板的月份題目與英文字卡畫面"></div>
             <div class="game-content"><div class="game-meta"><span class="game-tag">英文詞彙</span><span class="game-tag">配對練習</span></div><h3>時間與日期配對板</h3><p class="game-description">配對月份、星期、日期序數、時間單位及英文縮寫，可依課程進度自由切換練習題組。</p></div>
           </a>
           <a class="game-card" href="../eng-grammar/ecity_01_my_town.html">
-            <div class="game-preview"><div class="preview-mark"><span>🏙️</span><small>遊戲畫面準備中</small></div></div>
+            <div class="game-preview"><img src="images/ecity-my-town-card.webp" alt="E-City 異想小鎮的城市地圖、建築英文與位置問題畫面"></div>
             <div class="game-content"><div class="game-meta"><span class="game-tag">地點單字</span><span class="game-tag">位置句型</span></div><h3>E-City｜My Town 異想小鎮</h3><p class="game-description">觀察隨機小鎮地圖，練習地點單字與八種位置句型，適合個別操作、口語問答或全班搶答。</p></div>
           </a>
           <a class="game-card" href="../eng-grammar/game-timefarm.html">
-            <div class="game-preview"><div class="preview-mark"><span>🐣</span><small>遊戲畫面準備中</small></div></div>
+            <div class="game-preview"><img src="images/timefarm-card.webp" alt="小啾的時空冒險關卡地圖與時間學習農場畫面"></div>
             <div class="game-content"><div class="game-meta"><span class="game-tag">時間日期</span><span class="game-tag">闖關練習</span></div><h3>小啾的時空冒險</h3><p class="game-description">用闖關與獎勵練習數字、星期、月份、日期、鐘點及生活作息；可使用代號記錄遊戲進度。</p></div>
           </a>
         </div>
@@ -93,19 +95,19 @@
         <div class="series-heading"><h2 id="life-title">生活教育</h2><span>4 款異想聊天室</span></div>
         <div class="showcase-grid">
           <a class="game-card" href="../life/echat_01_boundaries.html">
-            <div class="game-preview"><div class="preview-mark"><span>🌱</span><small>遊戲畫面準備中</small></div></div>
+            <div class="game-preview"><img src="images/echat-boundaries-card.webp" alt="青春戀習題的校園界線對話、三個回應選項與風險回饋畫面"></div>
             <div class="game-content"><div class="game-meta"><span class="game-tag">異想聊天室</span><span class="game-tag">情境判斷</span><span class="game-tag guide">課堂引導</span></div><h3>青春戀習題</h3><p class="game-description">透過校園感情對話練習身體自主、安全拒絕、辨識控制行為與私密影像相關求助策略。</p></div>
           </a>
           <a class="game-card" href="../life/echat_02_safety.html">
-            <div class="game-preview"><div class="preview-mark"><span>🛡️</span><small>遊戲畫面準備中</small></div></div>
+            <div class="game-preview"><img src="images/echat-safety-card.webp" alt="網路安全防衛隊的可疑帳密情境、三個回應選項與安全回饋畫面"></div>
             <div class="game-content"><div class="game-meta"><span class="game-tag">異想聊天室</span><span class="game-tag">情境判斷</span><span class="game-tag guide">課堂引導</span></div><h3>網路安全防衛隊</h3><p class="game-description">從詐騙、帳密、可疑連結與威脅訊息中選擇回應，練習查證、保留證據及尋求協助。</p></div>
           </a>
           <a class="game-card" href="../life/echat_03_dating.html">
-            <div class="game-preview"><div class="preview-mark"><span>💬</span><small>遊戲畫面準備中</small></div></div>
+            <div class="game-preview"><img src="images/echat-dating-card.webp" alt="網路交友防衛隊的跨國網友對話、三個回應選項與風險回饋畫面"></div>
             <div class="game-content"><div class="game-meta"><span class="game-tag">異想聊天室</span><span class="game-tag">情境判斷</span><span class="game-tag guide">課堂引導</span></div><h3>網路交友防衛隊</h3><p class="game-description">透過網路交友情境辨認金錢、見面、個資、私密影像及情緒勒索風險，建立保護策略。</p></div>
           </a>
           <a class="game-card" href="../life/echat_04_crisis.html">
-            <div class="game-preview"><div class="preview-mark"><span>🧩</span><small>遊戲畫面準備中</small></div></div>
+            <div class="game-preview"><img src="images/echat-crisis-card.webp" alt="青春生存遊戲的人際危機對話、三個回應選項與風險回饋畫面"></div>
             <div class="game-content"><div class="game-meta"><span class="game-tag">異想聊天室</span><span class="game-tag">情境判斷</span><span class="game-tag guide">課堂引導</span></div><h3>青春生存遊戲</h3><p class="game-description">面對霸凌、陌生邀約、交易及危險要求，練習拒絕、蒐證、離開現場與向成人求助。</p></div>
           </a>
         </div>
