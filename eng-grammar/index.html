@@ -84,19 +84,12 @@
 
   <script src="grammar-cards.js?v=3.0"></script>
   <script>
-    const unavailableFiles = new Set([
-      "grammar_first.html",
-      "grammar_July_third.html",
-      "exam-lifeenglish-v2.html",
-      "exam-lifeenglish-v3.html"
-    ]);
     const escapeHtml = value => String(value ?? "")
       .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;").replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
 
-    const isUnavailable = item => item.status === "preparing" || unavailableFiles.has(item.filename);
-    const availableGrammarData = window.GRAMMAR_DATA.filter(item => !isUnavailable(item));
+    const availableGrammarData = window.GRAMMAR_DATA;
 
     document.querySelector("[data-total-count]").textContent = availableGrammarData.length;
     document.getElementById("categoryList").insertAdjacentHTML("beforeend",
