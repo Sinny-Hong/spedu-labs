@@ -115,14 +115,14 @@ h2{margin:0;font-size:22px; color:var(--navy);}
 
 /* 選項退縮與無框線設計 */
 .options{
-  margin-left:5.5em; /* 向內退縮 */
-  display:flex;gap:16px;flex-wrap:wrap;font-size:clamp(16px, 2vh, 20px);margin-top:8px;
+  margin-left: 3.5em; /* 調整退縮，對齊題幹文字 */
+  display:flex; gap:16px; flex-wrap:wrap; font-size:clamp(16px, 2vh, 20px); margin-top:8px;
 }
 .choice{
   border:2px solid transparent; border-radius:8px; 
-  background:transparent; /* 移除預設背景 */
-  color:#606C71; /* 較淡的顏色 */
-  padding:4px 8px;font-weight:bold; transition: 0.1s;
+  background:transparent; 
+  color:#606C71; 
+  padding:4px 8px; font-weight:bold; transition: 0.1s;
 }
 .choice:hover:not(:disabled){
   background:var(--blue-soft); color:var(--navy);
@@ -170,7 +170,14 @@ h2{margin:0;font-size:22px; color:var(--navy);}
   .event-emoji { font-size: 16px; }
   .text-section, .text-content { overflow: visible; height: auto; }
   .questions { overflow: visible; height: auto; justify-content: flex-start; gap: 10px;}
-  .options { margin-left: 1em; font-size: 17px; gap: 8px; flex-direction: column; } /* 手機版選項垂直排列 */
+  
+  /* 修正手機版選項排版：橫向排列、退縮對齊 */
+  .options { 
+    margin-left: 2.8em; /* 調整手機版退縮，對齊題幹文字 */
+    flex-direction: row; /* 恢復橫向排列 */
+    font-size: 17px; 
+    gap: 8px; 
+  } 
   .question-line { font-size: 19px; }
 }
 </style>
