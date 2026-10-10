@@ -123,8 +123,9 @@ button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-
 .schedule-table{width:100%; height:100%; border-collapse:collapse; text-align:center; table-layout: fixed;}
 .schedule-table th, .schedule-table td {
   padding:4px 2px; font-size:11pt; font-weight:bold; vertical-align: middle;
-  word-break: break-word;
+  word-break:normal; overflow-wrap:normal; hyphens:none;
 }
+.schedule-table td{font-size:9.5pt;}
 .schedule-table th {background:var(--green); color:white; border-right: 1px solid #1E4030;}
 .schedule-table th:first-child { width: 15%; }
 .schedule-table th:not(:first-child) { width: 17%; }
@@ -194,11 +195,16 @@ button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-
    TEACHER ANSWER MODE
 ========================================================= */
 body.teacher-mode .answer-blank{
-  color: var(--red) !important;
+  color: transparent !important;
   font-weight: 900 !important;
+  position:relative;
 }
 body.teacher-mode .answer-blank::after{
   content: "（" attr(data-ans) "）";
+  color:var(--red);
+  position:absolute;
+  inset-inline-start:0;
+  white-space:nowrap;
 }
 
 /* =========================================================
@@ -463,6 +469,10 @@ function generateAll16Levels() {
       const actualCode = `${ver.prefix}${idx + 1}`;
       const seed = ver.seedOffset + idx * 50;
       const data = generateLevelData(t, seed);
+
+      if(actualCode === 'B4'){
+        data.questions[0].stem = `Leo missed PE. When is his <b>next</b> PE class?`;
+      }
 
       allLevels.push({
         code: actualCode,
