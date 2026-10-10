@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-City｜異想電影院</title>
+<style>
+:root{
+  /* 復古電影院配色 */
+  --cream: #FDFBF7; 
+  --gold: #D4AF37; 
+  --light-gold: #E8DAA6; 
+  --ink: #2C3E50; 
+  --blue: #2980B9;
+  --green: #27AE60; 
+  --red: #C0392B; 
+  --line: #D5D8DC; 
+  --navy: #1C2833; 
+  --orange: #E67E22; 
+  --soft: #F2F4F4; 
+  --blue-soft: #EBF5FB;
+  --green-soft: #EAFAF1; 
+  --hint: #FCF3CF; 
+  --hint-line: #F4D03F;
+  --gray-blue: #BDC3C7; 
+}
+*{box-sizing:border-box}
+
+/* 桌機版預設：鎖定高度，內部捲動 */
+html,body{margin:0;height:100%;overflow:hidden;}
+body{
+  background:var(--cream); color:var(--ink);
+  font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  display: flex; flex-direction: column;
+}
+button,select{font:inherit;cursor:pointer;user-select:none;}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* 頂部工具列 */
+.topbar{flex:none; min-height:55px;display:flex;justify-content:space-between;align-items:center;padding:5px 15px;}
+h1{margin:0;font-size:clamp(20px,2vw,30px); color: var(--navy);}
+.toolbar{display:flex;align-items:center;gap:6px;}
+.tool,select{background:#fff;color:var(--ink);border:1px solid var(--gray-blue);border-radius:9px;padding:6px 10px;font-weight:700;font-size:15px;}
+.tool:hover,select:hover{background:#FFF9E6;}
+.tool.active{background:var(--hint); border-color:var(--orange);}
+
+/* 桌機整體佈局 */
+.layout{flex:1; display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px;padding:0 10px 10px; min-height:0;}
+.panel{background:white;border:1px solid var(--light-gold);border-radius:18px;padding:10px;display:flex;flex-direction:column;min-height:0;}
+
+/* 左側：時刻表與對話 */
+.left-side{display:grid;grid-template-rows:auto 1fr;gap:14px; height:100%; min-height:0;}
+
+/* 時刻表表格設計 */
+.schedule-box{border:1px solid var(--gray-blue);border-radius:10px;background:white; display:flex; flex-direction:column; overflow:hidden; flex-shrink:0;}
+.schedule-title{height:30px;display:flex;align-items:center;justify-content:center;background:var(--navy);color:white;font-size:15px;font-weight:900;}
+.schedule-table-wrap{width:100%; overflow-x:auto;}
+.schedule-table{width:100%; border-collapse:collapse; text-align:left;}
+.schedule-table th, .schedule-table td {padding:8px 12px; border-bottom:1px solid var(--line); font-size:clamp(14px, 1.8vh, 18px); font-weight:bold;}
+.schedule-table th {background:var(--blue-soft); color:var(--navy); white-space:nowrap;}
+.schedule-table tr:last-child td {border-bottom:none;}
+.schedule-table tr:nth-child(even) {background:#F8F9F9;}
+.schedule-table tr:hover {background:var(--hint);}
+.m-icon {font-size:22px; margin-right:6px; vertical-align:middle;}
+.m-name {vertical-align:middle;}
+
+/* 左側：對話區 */
+.dialogue-section{display:flex;flex-direction:column;min-height:0;}
+.dialogue-title{margin:0 0 6px;padding:6px 10px;background:var(--soft);border:1px solid var(--line);border-radius:10px;font-size:16px;font-weight:900;color:var(--navy);flex-shrink:0;}
+.dialogue-content{flex:1;overflow-y:auto;padding:2px 8px;}
+.dialogue-line{display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:8px;margin-bottom:8px;font-size:clamp(18px, 2.2vh, 22px);line-height:1.3;cursor:pointer;border-radius:6px;padding:4px;}
+.dialogue-line:hover{background:var(--blue-soft);}
+.speaker{font-weight:900;white-space:nowrap;}
+.speech{overflow-wrap:anywhere;}
+
+/* 右側：測驗區 */
+.panel-head{display:flex;align-items:center;justify-content:space-between;min-height:40px;margin-bottom:6px;flex-shrink:0;}
+h2{margin:0;font-size:22px; color:var(--navy);}
+.quiztools{display:flex;align-items:center;gap:6px;}
+#score{font-size:17px;color:var(--green);font-weight:bold;margin-right:6px;}
+#check{background:var(--green);border-color:var(--green);color:white}
+#reveal{border-color:#efadb3;color:var(--red)}
+
+.questions{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-around;padding:0 5px;}
+.question{border-bottom:1px solid var(--line);padding:6px 0;}
+.question:last-child{border-bottom:none;}
+.question-line{display:flex;align-items:baseline;gap:5px;font-size:clamp(18px, 2.2vh, 24px);font-weight:bold;cursor:pointer;border-radius:6px;line-height:1.25;}
+.question-line:hover{background:var(--blue-soft);}
+.answer-blank{color:var(--blue);white-space:nowrap;min-width:3em;text-align:right;}
+.answer-blank.good{color:var(--green)}
+.answer-blank.reveal{color:var(--red)}
+
+.options{margin-left:4.5em;display:flex;gap:12px;flex-wrap:wrap;font-size:clamp(16px, 2vh, 20px);margin-top:3px;}
+.choice{border:2px solid transparent;border-radius:8px;background:transparent;color:#556b7d;padding:4px 8px;font-weight:bold;}
+.choice:hover:not(:disabled){background:var(--blue-soft);border-color:#BDC3C7;}
+.choice.selected{color:var(--navy);background:var(--blue-soft);border-color:#5DADE2;}
+.choice.correct{color:var(--green);background:var(--green-soft);border-color:#58D68D;}
+.choice.reveal{color:var(--red);background:#FDEDEC;}
+.choice:disabled{cursor:default}
+
+.hint-word{padding:0 2px;border-radius:4px;background:var(--hint);box-shadow:inset 0 -2px 0 var(--hint-line);}
+
+/* 彈出視窗 */
+.overlay{position:fixed;inset:0;z-index:100;background:#1C2833CC;display:flex;align-items:center;justify-content:center;padding:12px}
+.overlay[hidden]{display:none}
+.modal{background:#FDFBF7;border:1px solid var(--light-gold);border-radius:15px;width:min(900px,96vw);max-height:90dvh;display:flex;flex-direction:column;overflow:hidden;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--cream);border-bottom:1px solid var(--light-gold);flex-shrink:0;}
+.modal-head h2{font-size:22px;margin:0;color:var(--navy);}
+.modal-body{overflow:auto;padding:18px;}
+
+/* 海報內容排版 */
+.poster-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));gap:10px;}
+.poster-item{background:white;border:1px solid var(--gray-blue);border-radius:10px;padding:8px;text-align:center;cursor:pointer;}
+.poster-item:hover{background:var(--blue-soft);border-color:var(--blue);}
+.p-icon{font-size:32px;line-height:1.2;}
+.p-en{font-size:16px;font-weight:bold;color:var(--navy);margin:4px 0 2px;}
+.p-zh{font-size:14px;color:#7A6E7D;font-weight:bold;}
+
+.phrases-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(350px, 1fr));gap:12px;}
+.phrase-card{background:white;border:1px solid var(--gray-blue);border-radius:12px;padding:12px;}
+.phrase-en{font-size:20px;font-weight:bold;color:var(--navy);cursor:pointer;padding:4px;border-radius:6px;margin-bottom:4px;}
+.phrase-en:hover{background:var(--blue-soft);}
+.phrase-zh{font-size:16px;color:#7A6E7D;font-weight:bold;margin-left:4px;}
+
+/* ====== 手機直向響應式布局 ====== */
+@media (max-width: 768px) {
+  html, body { height: auto; overflow: auto; overflow-x: hidden; }
+  .topbar { flex-direction: column; align-items: stretch; padding: 12px; gap: 10px; }
+  .topbar h1 { text-align: center; font-size: 24px; }
+  .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+  .tool, select { width: 100%; text-align: center; padding: 8px; font-size: 16px; }
+  .layout { display: flex; flex-direction: column; height: auto; overflow: visible; padding: 10px; gap: 16px; }
+  .panel { overflow: visible; }
+  .left-side { display: flex; flex-direction: column; height: auto; gap: 12px; }
+  .schedule-box { min-height: auto; }
+  .dialogue-section, .dialogue-content { overflow: visible; height: auto; }
+  .questions { overflow: visible; height: auto; }
+  .options { margin-left: 1.5em; font-size: 17px; gap: 8px; }
+  .question-line { font-size: 19px; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>🍿 E-City｜異想電影院</h1>
+  <nav class="toolbar">
+    <select id="levelChoice">
+      <option value="L1">L1: Find the Time</option>
+      <option value="L2">L2: Buy a Ticket</option>
+      <option value="L3">L3: Too Early / Too Late</option>
+      <option value="L4">L4: Start & End</option>
+      <option value="L5">L5: What Time Is It Now?</option>
+    </select>
+    <button class="tool" id="next">↻ 換題</button>
+    <button class="tool" id="btn-phrases">💬 Cinema Words</button>
+    <button class="tool" id="btn-menu">⏱ Time Helper</button>
+  </nav>
+</header>
+
+<main class="layout">
+  <section class="panel">
+    <div class="left-side">
+      <section class="schedule-box">
+        <div class="schedule-title">NOW SHOWING (今日放映)</div>
+        <div class="schedule-table-wrap">
+          <table class="schedule-table" id="scheduleTable">
+            <!-- 內容由 JS 產生 -->
+          </table>
+        </div>
+      </section>
+      
+      <section class="dialogue-section">
+        <div class="dialogue-title">Dialogue</div>
+        <div id="dialogueContent" class="dialogue-content"></div>
+      </section>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>✏️ Questions</h2>
+      <div class="quiztools">
+        <span id="score">— / 5</span>
+        <button id="hint" class="tool">💡提示</button>
+        <button id="check" class="tool">批改</button>
+        <button id="clear" class="tool">清除</button>
+        <button id="reveal" class="tool">解答</button>
+      </div>
+    </div>
+    <div id="questions" class="questions"></div>
+  </section>
+</main>
+
+<div id="posterOverlay" class="overlay" hidden>
+  <section class="modal">
+    <div class="modal-head">
+      <h2 id="posterTitle">📋 海報</h2>
+      <button class="tool close-modal">✕ 關閉</button>
+    </div>
+    <div class="modal-body" id="posterBody"></div>
+  </section>
+</div>
+
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+
+// 電影庫
+const MOVIE_DB = [
+  {name:'Super Puppy', zh:'超級小狗', emoji:'🐶'},
+  {name:'Robot War', zh:'機器人大戰', emoji:'🤖'},
+  {name:'Magic School', zh:'魔法學校', emoji:'🪄'},
+  {name:'Space King', zh:'太空之王', emoji:'👽'},
+  {name:'Dino Movie', zh:'恐龍電影', emoji:'🦖'},
+  {name:'Scary Movie', zh:'恐怖電影', emoji:'👻'},
+  {name:'Funny Movie', zh:'搞笑電影', emoji:'😂'}
+];
+
+// 時間池 (確保抽出的4組時間完全不重複)
+const TIME_SETS = [
+  ["09:00 AM", "12:00 PM", "03:00 PM"],
+  ["09:30 AM", "12:30 PM", "03:30 PM"],
+  ["10:00 AM", "01:00 PM", "04:00 PM"],
+  ["10:30 AM", "01:30 PM", "04:30 PM"],
+  ["11:00 AM", "02:00 PM", "05:00 PM"],
+  ["11:30 AM", "02:30 PM", "05:30 PM"],
+  ["09:15 AM", "01:15 PM", "04:15 PM"],
+  ["10:45 AM", "01:45 PM", "04:45 PM"]
+];
+
+const NAMES = ["Tom", "Mary", "Kevin", "Lily", "Stan", "Ben", "Amy", "Leo"];
+
+const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// 時間轉換工具
+function timeToMins(tStr) {
+  let [time, period] = tStr.split(' ');
+  let [h, m] = time.split(':').map(Number);
+  if (h === 12) h = 0;
+  if (period === 'PM') h += 12;
+  return h * 60 + m;
+}
+
+function minsToTime(mins) {
+  let m = (mins % 1440 + 1440) % 1440; 
+  let h24 = Math.floor(m / 60);
+  let mm = m % 60;
+  let period = h24 >= 12 ? 'PM' : 'AM';
+  let h12 = h24 % 12;
+  if (h12 === 0) h12 = 12;
+  let pad = x => x < 10 ? '0'+x : x;
+  return `${pad(h12)}:${pad(mm)} ${period}`;
+}
+
+// 嚴格選項去重工具
+function fillOptions(ans, w1, w2, fallback) {
+  let opts = [...new Set([ans, w1, w2])];
+  let i = 0;
+  while(opts.length < 3) {
+    if(!opts.includes(fallback[i])) opts.push(fallback[i]);
+    i++;
+  }
+  return shuffle(opts);
+}
+
+// 取全表其他時間作干擾
+function getFakeTimes(schedule, correctTime) {
+  let allTimes = [];
+  schedule.forEach(s => allTimes.push(...s.times));
+  return shuffle(allTimes.filter(t => t !== correctTime));
+}
+
+let currentData = null;
+let answers = {};
+let mode = 'answer';
+let hintsActive = false;
+
+// L1: Find the Time
+function generateL1(schedule) {
+  const dialogue = [
+    ["Clerk", "Welcome to E-City Cinema."],
+    ["Clerk", "Here is today's movie schedule."]
+  ];
+  
+  const fakes = getFakeTimes(schedule, ""); // all times shuffled
+  const qData = [
+    { stem: `What is Time 1 for ${schedule[0].name}?`, ans: schedule[0].times[0], w1: schedule[1].times[1], w2: schedule[2].times[2] },
+    { stem: `What is Time 2 for ${schedule[3].name}?`, ans: schedule[3].times[1], w1: schedule[0].times[2], w2: schedule[2].times[0] },
+    { stem: `Which movie is at ${schedule[2].times[2]}?`, ans: schedule[2].name, w1: schedule[0].name, w2: schedule[1].name },
+    { stem: `Which movie is at ${schedule[1].times[0]}?`, ans: schedule[1].name, w1: schedule[3].name, w2: schedule[0].name },
+    { stem: `Does ${schedule[1].name} play at ${schedule[3].times[2]}?`, ans: "No, it doesn't.", w1: "Yes, it does.", w2: `It is at ${schedule[1].times[0]}.` }
+  ];
+  
+  const questions = qData.map(q => {
+    return { stem: q.stem, options: fillOptions(q.ans, q.w1, q.w2, fakes), answer: 0, locked: false }; // answer updated below
+  });
+  
+  questions.forEach(q => q.answer = q.options.indexOf(qData.find(d => d.stem === q.stem).ans));
+  return { dialogue, questions };
+}
+
+// L2: Buy a Ticket
+function generateL2(schedule, actors) {
+  const p1 = actors[0];
+  const m = schedule[0];
+  
+  const dialogue = [
+    ["Clerk", `We have three showtimes.`],
+    [p1, `One ticket for ${m.times[1]}, please.`],
+    ["Clerk", `Here is your ticket. Enjoy the movie!`]
+  ];
+  
+  const fakes = getFakeTimes(schedule, m.times[1]);
+  const qData = [
+    { stem: `What movie does ${p1} want to watch?`, ans: m.name, w1: schedule[1].name, w2: schedule[2].name },
+    { stem: `What is Time 1 for ${m.name}?`, ans: m.times[0], w1: fakes[0], w2: fakes[1] },
+    { stem: `What time does ${p1} choose?`, ans: m.times[1], w1: m.times[0], w2: fakes[2] },
+    { stem: `Does ${p1} choose the ${m.times[2]} ticket?`, ans: "No, he/she doesn't.", w1: "Yes, he/she does.", w2: "I don't know." },
+    { stem: `How many tickets does ${p1} buy?`, ans: "One", w1: "Two", w2: "Three" }
+  ];
+  
+  const questions = qData.map(q => {
+    return { stem: q.stem, options: fillOptions(q.ans, q.w1, q.w2, fakes), answer: 0, locked: false };
+  });
+  questions.forEach(q => q.answer = q.options.indexOf(qData.find(d => d.stem === q.stem).ans));
+  return { dialogue, questions };
+}
+
+// L3: Too Early / Too Late
+function generateL3(schedule, actors) {
+  const p1 = actors[0], p2 = actors[1];
+  const m = schedule[1];
+  const earlyLate = Math.random() > 0.5 ? "early" : "late";
+  const t_wrong = earlyLate === "early" ? m.times[0] : m.times[2];
+  const t_good = m.times[1];
+  
+  const dialogue = [
+    [p1, `Let's watch ${m.name} at ${t_wrong}.`],
+    [p2, `No, that is too ${earlyLate}.`],
+    [p1, `How about ${t_good}?`],
+    [p2, `Sounds good! Two tickets, please.`]
+  ];
+  
+  const fakes = getFakeTimes(schedule, t_good);
+  const qData = [
+    { stem: `What movie do they want to watch?`, ans: m.name, w1: schedule[0].name, w2: schedule[2].name },
+    { stem: `What is Time 3 for ${m.name}?`, ans: m.times[2], w1: fakes[0], w2: fakes[1] },
+    { stem: `What time is too ${earlyLate} for ${p2}?`, ans: t_wrong, w1: t_good, w2: fakes[2] },
+    { stem: `What time does the movie start?`, ans: t_good, w1: t_wrong, w2: fakes[3] },
+    { stem: `How many tickets do they buy?`, ans: "Two", w1: "One", w2: "Three" }
+  ];
+  
+  const questions = qData.map(q => {
+    return { stem: q.stem, options: fillOptions(q.ans, q.w1, q.w2, fakes), answer: 0, locked: false };
+  });
+  questions.forEach(q => q.answer = q.options.indexOf(qData.find(d => d.stem === q.stem).ans));
+  return { dialogue, questions };
+}
+
+// L4: Start & End
+function generateL4(schedule, actors) {
+  const p1 = actors[0];
+  const m = schedule[2];
+  const t_start = m.times[1];
+  const durHours = Math.random() > 0.5 ? 1 : 2;
+  const t_end = minsToTime(timeToMins(t_start) + durHours * 60);
+  
+  const dialogue = [
+    [p1, `What time is ${m.name}?`],
+    ["Clerk", `It starts at ${t_start}.`],
+    [p1, `How long is the movie?`],
+    ["Clerk", `It is ${durHours === 1 ? 'one hour' : 'two hours'} long.`],
+    [p1, `So it ends at ${t_end}. I will buy one ticket.`]
+  ];
+  
+  const fakes = getFakeTimes(schedule, t_start);
+  const fakeEnds = [minsToTime(timeToMins(t_start) + 60), minsToTime(timeToMins(t_start) + 120), minsToTime(timeToMins(t_start) + 180)].filter(t => t !== t_end);
+  
+  const qData = [
+    { stem: `What movie does ${p1} want to watch?`, ans: m.name, w1: schedule[1].name, w2: schedule[0].name },
+    { stem: `What is Time 1 for ${m.name}?`, ans: m.times[0], w1: fakes[0], w2: fakes[1] },
+    { stem: `How long is the movie?`, ans: durHours === 1 ? "One hour" : "Two hours", w1: durHours === 1 ? "Two hours" : "One hour", w2: "Three hours" },
+    { stem: `What time does the movie end?`, ans: t_end, w1: fakeEnds[0], w2: fakeEnds[1] },
+    { stem: `How many tickets does ${p1} buy?`, ans: "One", w1: "Two", w2: "Three" }
+  ];
+  
+  const questions = qData.map(q => {
+    return { stem: q.stem, options: fillOptions(q.ans, q.w1, q.w2, ["One hour", "Two hours", fakes[0], fakes[1]]), answer: 0, locked: false };
+  });
+  questions.forEach(q => q.answer = q.options.indexOf(qData.find(d => d.stem === q.stem).ans));
+  return { dialogue, questions };
+}
+
+// L5: What Time Is It Now?
+function generateL5(schedule, actors) {
+  const p1 = actors[0], p2 = actors[1];
+  const m = schedule[3];
+  const t_start = m.times[2];
+  const diffs = [15, 30, 45, 60];
+  const diff = diffs[Math.floor(Math.random() * diffs.length)];
+  const t_now = minsToTime(timeToMins(t_start) - diff);
+  
+  const dialogue = [
+    [p1, `It is ${t_now} now.`],
+    [p2, `Let's watch ${m.name}. It is at ${t_start}.`],
+    [p1, `Great. We still have ${diff} minutes.`],
+    [p2, `Let's buy some popcorn first.`],
+    [p1, `OK. Let's go!`]
+  ];
+  
+  const fakes = getFakeTimes(schedule, t_start);
+  const qData = [
+    { stem: `What time is it now?`, ans: t_now, w1: t_start, w2: minsToTime(timeToMins(t_start) - 10) },
+    { stem: `What time does the movie start?`, ans: t_start, w1: t_now, w2: minsToTime(timeToMins(t_start) + 60) },
+    { stem: `What is Time 1 for ${m.name}?`, ans: m.times[0], w1: fakes[0], w2: fakes[1] },
+    { stem: `How much time do they have?`, ans: `${diff} minutes`, w1: `${diff+15} minutes`, w2: `10 minutes` },
+    { stem: `What do they want to buy first?`, ans: "Popcorn", w1: "Tickets", w2: "Drinks" }
+  ];
+  
+  const questions = qData.map(q => {
+    return { stem: q.stem, options: fillOptions(q.ans, q.w1, q.w2, ["15 minutes", "30 minutes", fakes[0], fakes[1]]), answer: 0, locked: false };
+  });
+  questions.forEach(q => q.answer = q.options.indexOf(qData.find(d => d.stem === q.stem).ans));
+  return { dialogue, questions };
+}
+
+// 核心生成器
+function generateLevelData() {
+  const lvl = $('#levelChoice').value;
+  const selectedMovies = shuffle(MOVIE_DB).slice(0, 4);
+  const selectedTimes = shuffle(TIME_SETS).slice(0, 4);
+  
+  const schedule = selectedMovies.map((m, i) => ({
+    name: m.name, emoji: m.emoji, times: selectedTimes[i]
+  }));
+  
+  const actors = shuffle(NAMES).slice(0, 5);
+  let data;
+  
+  if (lvl === 'L1') data = generateL1(schedule);
+  else if (lvl === 'L2') data = generateL2(schedule, actors);
+  else if (lvl === 'L3') data = generateL3(schedule, actors);
+  else if (lvl === 'L4') data = generateL4(schedule, actors);
+  else if (lvl === 'L5') data = generateL5(schedule, actors);
+
+  let allTimes = [];
+  schedule.forEach(s => allTimes.push(...s.times));
+
+  return {
+    schedule,
+    dialogue: data.dialogue,
+    questions: shuffle(data.questions), 
+    hintWords: [...schedule.map(m => m.name), ...actors, ...allTimes, "Who", "Clerk", "early", "late", "start", "end", "minutes", "hours", "Popcorn"]
+  };
+}
+
+// 高亮與語音
+function highlightText(text, isOption = false) {
+  if (!hintsActive || isOption) return text;
+  let res = String(text);
+  const sorted = [...currentData.hintWords].sort((a,b) => b.length - a.length);
+  sorted.forEach(word => {
+    const regex = new RegExp(`\\b(${escapeRegExp(word)})\\b`, "gi");
+    res = res.replace(regex, `<span class="hint-word">$1</span>`);
+  });
+  return res;
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g, '').replace(/AM/g, 'A M').replace(/PM/g, 'P M'));
+  utterance.lang = "en-US";
+  utterance.rate = 0.85;
+  window.speechSynthesis.speak(utterance);
+}
+
+// 渲染 UI
+function renderUI() {
+  let tableHTML = `
+    <tr>
+      <th>Movie (電影)</th>
+      <th>Time 1</th>
+      <th>Time 2</th>
+      <th>Time 3</th>
+    </tr>
+  `;
+  currentData.schedule.forEach(item => {
+    tableHTML += `
+      <tr tabindex="0" onclick="speak('${item.name}')" style="cursor:pointer;">
+        <td><span class="m-icon">${item.emoji}</span><span class="m-name">${item.name}</span></td>
+        <td>${item.times[0]}</td>
+        <td>${item.times[1]}</td>
+        <td>${item.times[2]}</td>
+      </tr>
+    `;
+  });
+  $('#scheduleTable').innerHTML = tableHTML;
+
+  $('#dialogueContent').innerHTML = currentData.dialogue.map(line => `
+    <div class="dialogue-line" tabindex="0" onclick="speak('${line[1]}')">
+      <div class="speaker">${line[0]}:</div>
+      <div class="speech">${highlightText(line[1], false)}</div>
+    </div>
+  `).join('');
+
+  const quiz = $('#questions');
+  quiz.innerHTML = '';
+  currentData.questions.forEach((q, i) => {
+    const sec = document.createElement('div');
+    sec.className = 'question';
+    
+    const line = document.createElement('div');
+    line.className = 'question-line';
+    line.onclick = () => speak(q.stem);
+    
+    const blank = document.createElement('span');
+    blank.className = 'answer-blank';
+    let letter = ' ';
+    if(mode === 'reveal') { 
+      letter = String.fromCharCode(65 + q.answer); 
+      blank.classList.add('reveal'); 
+    }
+    else if(q.locked) { 
+      letter = String.fromCharCode(65 + answers[i]); 
+      blank.classList.add('good'); 
+    }
+    else if(answers[i] !== undefined) {
+      letter = String.fromCharCode(65 + answers[i]);
+    }
+    blank.innerHTML = `（ ${letter} ）`;
+    
+    const title = document.createElement('span');
+    title.innerHTML = `${i+1}. ${highlightText(q.stem, false)}`;
+    line.append(blank, title);
+    sec.append(line);
+    
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((choice, j) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice';
+      btn.innerHTML = `(${String.fromCharCode(65+j)}) ${highlightText(choice, true)}`;
+      
+      if(mode === 'answer' && !q.locked && answers[i] === j) btn.classList.add('selected');
+      if(q.locked && answers[i] === j) btn.classList.add('correct');
+      if(mode === 'reveal' && j === q.answer) btn.classList.add('reveal');
+      
+      btn.disabled = mode !== 'answer' || q.locked;
+      btn.onclick = () => { 
+        if(mode === 'answer' && !q.locked) { answers[i] = j; renderUI(); } 
+      };
+      opts.append(btn);
+    });
+    
+    sec.append(opts);
+    quiz.append(sec);
+  });
+}
+
+// 初始化與綁定
+function loadRandomLevel() {
+  currentData = generateLevelData();
+  answers = {};
+  mode = 'answer';
+  hintsActive = false;
+  $('#hint').classList.remove('active');
+  $('#score').textContent = '— / 5';
+  renderUI();
+}
+
+$('#next').onclick = loadRandomLevel;
+$('#levelChoice').onchange = loadRandomLevel;
+
+$('#hint').onclick = (e) => {
+  hintsActive = !hintsActive;
+  e.target.classList.toggle('active', hintsActive);
+  renderUI();
+};
+
+// 錯題重答批改邏輯
+$('#check').onclick = () => {
+  let correct = 0;
+  currentData.questions.forEach((q, i) => {
+    if(answers[i] === q.answer) {
+      correct++;
+      q.locked = true; 
+    } else {
+      delete answers[i]; 
+    }
+  });
+  
+  if(correct === 5) {
+     mode = 'checked'; 
+  }
+  
+  $('#score').textContent = `${correct} / 5`;
+  renderUI();
+};
+
+$('#clear').onclick = () => { 
+  answers = {}; 
+  mode = 'answer'; 
+  currentData.questions.forEach(q => q.locked = false); 
+  $('#score').textContent = '— / 5'; 
+  renderUI(); 
+};
+$('#reveal').onclick = () => { mode = 'reveal'; $('#score').textContent = '解答'; renderUI(); };
+
+// 海報邏輯
+const posterOverlay = $('#posterOverlay');
+const posterBody = $('#posterBody');
+
+function openPoster(type) {
+  if(type === 'phrases') {
+    $('#posterTitle').textContent = '💬 Cinema Words (電影院單字)';
+    const phrases = [
+      { en: "Movie", zh: "電影", emoji: "🎞️" },
+      { en: "Ticket", zh: "電影票", emoji: "🎫" },
+      { en: "Popcorn", zh: "爆米花", emoji: "🍿" },
+      { en: "Early", zh: "早到 / 太早", emoji: "🏃" },
+      { en: "Late", zh: "遲到 / 太晚", emoji: "🐌" },
+      { en: "Start", zh: "開始", emoji: "▶️" },
+      { en: "End", zh: "結束", emoji: "⏹️" }
+    ];
+    posterBody.innerHTML = `<div class="poster-grid">` + phrases.map(p => `
+      <div class="poster-item" onclick="speak('${p.en}')">
+        <div class="p-icon">${p.emoji}</div>
+        <div class="p-en">${p.en}</div>
+        <div class="p-zh">${p.zh}</div>
+      </div>
+    `).join('') + `</div>`;
+  } else {
+    $('#posterTitle').textContent = '⏱ Time Helper (時間助手)';
+    const vocab = [
+      { name: "AM", zh: "早上", emoji: "🌅" },
+      { name: "PM", zh: "下午 / 晚上", emoji: "🌃" },
+      { name: "09:00", zh: "整點", emoji: "🕛" },
+      { name: "09:30", zh: "半點", emoji: "🕧" },
+      { name: "+ 1 hour", zh: "加一小時 (60 mins)", emoji: "⏳" },
+      { name: "+ 30 mins", zh: "加半小時", emoji: "⏱️" }
+    ];
+    posterBody.innerHTML = `<div class="poster-grid">` + vocab.map(f => `
+      <div class="poster-item" onclick="speak('${f.name}')">
+        <div class="p-icon">${f.emoji}</div>
+        <div class="p-en">${f.name}</div>
+        <div class="p-zh">${f.zh}</div>
+      </div>
+    `).join('') + `</div>`;
+  }
+  posterOverlay.hidden = false;
+}
+
+$('#btn-phrases').onclick = () => openPoster('phrases');
+$('#btn-menu').onclick = () => openPoster('menu');
+posterOverlay.querySelector('.close-modal').onclick = () => posterOverlay.hidden = true;
+posterOverlay.onclick = e => { if(e.target === posterOverlay) posterOverlay.hidden = true; };
+
+// 啟動
+loadRandomLevel();
+</script>
+</body>
+</html>
