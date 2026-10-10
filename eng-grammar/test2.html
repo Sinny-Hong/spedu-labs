@@ -2,412 +2,549 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>英文數字拔河大對決</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;800&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;700;800&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --blue-main: #2b70c9;
-      --blue-bg: #eaf3ff;
-      --red-main: #d94343;
-      --red-bg: #ffebee;
-      --gray-border: #dcdfe6;
+      --blue-main: #1d61b8;
+      --blue-bg: #eef6ff;
+      --blue-border: #99c5f7;
+      --red-main: #c92a2a;
+      --red-bg: #fff0f0;
+      --red-border: #f8a5a5;
+      --gray-border: #cbd5e1;
+      --bg-color: #f1f5f9;
     }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       user-select: none;
-    }
-    body {
-      font-family: 'Lexend', 'Noto Sans TC', sans-serif;
-      background: #f4f6fa;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+      -webkit-user-select: none;
+      touch-action: manipulation;
     }
 
-    /* 上方拔河競技場 */
-    .arena-container {
+    body {
+      font-family: 'Lexend', 'Noto Sans TC', sans-serif;
+      background: var(--bg-color);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      color: #1e293b;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    /* 頂部設定列 */
+    .settings-bar {
       background: #ffffff;
-      padding: 12px 24px;
-      border-bottom: 2px solid #e2e8f0;
+      padding: 6px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .setting-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .setting-label {
+      font-weight: 700;
+      color: #475569;
+    }
+    select.setting-select {
+      font-family: inherit;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .btn-time-group {
+      display: flex;
+      gap: 4px;
+    }
+    .btn-time {
+      font-family: inherit;
+      padding: 4px 10px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: #475569;
+      transition: all 0.15s;
+    }
+    .btn-time.active {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+    }
+
+    /* 手機版：上下堆疊 */
+    .game-layout {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 6px 8px 10px;
+      gap: 6px;
+      max-width: 1300px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* 拔河中央競技區塊 */
+    .arena-panel {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 8px 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      flex-shrink: 0;
     }
-    .top-bar {
+    .arena-header {
       width: 100%;
-      max-width: 900px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 6px;
+      font-size: 1.15rem;
       font-weight: 800;
-      font-size: 1.4rem;
-      margin-bottom: 8px;
     }
     .score-blue { color: var(--blue-main); }
     .score-red { color: var(--red-main); }
     .timer-badge {
-      background: #1e293b;
-      color: #fff;
-      padding: 4px 16px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 3px 12px;
       border-radius: 20px;
-      font-size: 1.1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
     }
 
-    /* 拔河動畫軌道 */
     .rope-track {
       width: 100%;
-      max-width: 800px;
-      height: 70px;
-      position: relative;
+      height: 56px;
       background: #f8fafc;
-      border-radius: 12px;
       border: 2px dashed #cbd5e1;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
     }
-    .center-line {
+    .track-center-line {
       position: absolute;
-      width: 4px;
+      left: 50%;
+      width: 3px;
       height: 100%;
       background: #94a3b8;
-      left: 50%;
       transform: translateX(-50%);
     }
-    .rope-group {
+    .rope-rig {
       position: absolute;
       display: flex;
       align-items: center;
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      justify-content: center;
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: transform;
     }
-    .team-avatar {
-      font-size: 2.2rem;
+    .char-avatar {
+      font-size: 1.9rem;
       line-height: 1;
     }
-    .rope-visual {
-      width: 140px;
-      height: 8px;
+    .rope-bar {
+      width: 120px;
+      height: 7px;
       background: #78350f;
-      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .rope-knot {
-      width: 14px;
-      height: 18px;
-      background: #ef4444;
-      border-radius: 3px;
+    .rope-ribbon {
+      width: 12px;
+      height: 16px;
+      background: #dc2626;
+      border-radius: 2px;
     }
 
-    /* 下方答題操作區 */
-    .battle-field {
+    /* 下方計算機區域 */
+    .teams-container {
       flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      padding: 16px;
-      max-width: 1100px;
-      margin: 0 auto;
-      width: 100%;
+      gap: 6px;
     }
-    .team-panel {
-      border-radius: 20px;
-      padding: 16px 20px;
+    .team-card {
+      border-radius: 12px;
+      padding: 8px 6px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      border: 3px solid;
+      border: 2px solid;
     }
-    .panel-blue {
+    .team-blue {
       background: var(--blue-bg);
-      border-color: #bcd7ff;
+      border-color: var(--blue-border);
     }
-    .panel-red {
+    .team-red {
       background: var(--red-bg);
-      border-color: #ffd0d0;
+      border-color: var(--red-border);
     }
 
-    .team-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-    .panel-blue .team-title { color: var(--blue-main); }
-    .panel-red .team-title { color: var(--red-main); }
-
-    .question-word {
-      font-size: 2rem;
+    .team-header-label {
+      font-size: 0.95rem;
       font-weight: 800;
-      margin: 8px 0;
-      text-align: center;
-      min-height: 3rem;
+      margin-bottom: 2px;
+    }
+    .team-blue .team-header-label { color: var(--blue-main); }
+    .team-red .team-header-label { color: var(--red-main); }
+
+    .question-box {
+      font-size: 1.15rem;
+      font-weight: 800;
+      min-height: 2.8rem;
       display: flex;
       align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.15;
+      padding: 0 4px;
+      word-break: break-word;
     }
-    .panel-blue .question-word { color: var(--blue-main); }
-    .panel-red .question-word { color: var(--red-main); }
+    .team-blue .question-box { color: var(--blue-main); }
+    .team-red .question-box { color: var(--red-main); }
 
-    /* 答題輸入顯示格 */
-    .answer-display {
-      width: 80%;
-      height: 52px;
+    .display-screen {
+      width: 100%;
+      max-width: 170px;
+      height: 38px;
       background: #ffffff;
-      border-radius: 12px;
+      border-radius: 8px;
       border: 2px solid var(--gray-border);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
+      font-size: 1.4rem;
       font-weight: 800;
-      color: #1e293b;
-      margin-bottom: 12px;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+      color: #0f172a;
+      margin: 4px 0 8px;
+      box-shadow: inset 0 2px 3px rgba(0,0,0,0.06);
     }
-    .answer-display.correct {
+    .display-screen.correct {
       background: #dcfce7;
       border-color: #22c55e;
       color: #15803d;
     }
-    .answer-display.wrong {
+    .display-screen.wrong {
       background: #fee2e2;
       border-color: #ef4444;
       color: #b91c1c;
+      font-size: 1rem;
     }
 
-    /* 數字鍵盤 */
-    .keypad {
+    /* 3 欄 × 4 列 鍵盤 */
+    .numpad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      gap: 5px;
       width: 100%;
-      max-width: 280px;
+      max-width: 210px;
     }
-    .keypad-btn {
-      aspect-ratio: 1.25 / 1;
+    .num-btn {
+      font-family: inherit;
       background: #ffffff;
-      border: 1px solid var(--gray-border);
-      border-radius: 10px;
-      font-size: 1.5rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px 0;
+      font-size: 1.3rem;
       font-weight: 700;
       color: #334155;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 3px 0 #cbd5e1;
+      box-shadow: 0 2px 0 #94a3b8;
       cursor: pointer;
-      touch-action: manipulation;
     }
-    .keypad-btn:active {
-      transform: translateY(3px);
+    .num-btn:active {
+      transform: translateY(2px);
       box-shadow: none;
     }
-    .keypad-btn.action-btn {
+    .num-btn.btn-action {
+      font-size: 1.25rem;
       font-weight: 800;
-      color: #0f172a;
+      background: #f8fafc;
     }
+
+    /* 大電視與寬螢幕版 (左中右三欄佈局) */
+    @media (min-width: 900px) and (orientation: landscape) {
+      body {
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+      }
+      .settings-bar {
+        padding: 6px 16px;
+      }
+      .game-layout {
+        display: grid;
+        grid-template-columns: 32% 36% 32%;
+        gap: 12px;
+        padding: 10px 16px 14px;
+        height: calc(100vh - 46px);
+        height: calc(100dvh - 46px);
+      }
+      .teams-container {
+        display: contents;
+      }
+      .team-card.team-blue {
+        order: 1;
+        padding: 16px;
+        justify-content: space-between;
+      }
+      .arena-panel {
+        order: 2;
+        height: 100%;
+        justify-content: center;
+        padding: 20px 16px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.06);
+      }
+      .team-card.team-red {
+        order: 3;
+        padding: 16px;
+        justify-content: space-between;
+      }
+
+      .team-header-label { font-size: 1.4rem; }
+      .question-box {
+        font-size: 1.7rem;
+        min-height: 4rem;
+      }
+      .display-screen {
+        max-width: 260px;
+        height: 52px;
+        font-size: 2rem;
+        margin: 8px 0 14px;
+      }
+      .display-screen.wrong { font-size: 1.3rem; }
+
+      .numpad {
+        max-width: 320px;
+        gap: 8px;
+      }
+      .num-btn {
+        padding: 14px 0;
+        font-size: 1.8rem;
+        border-radius: 10px;
+        box-shadow: 0 3px 0 #94a3b8;
+      }
+
+      .arena-header {
+        font-size: 1.6rem;
+        margin-bottom: 24px;
+      }
+      .timer-badge {
+        font-size: 1.3rem;
+        padding: 6px 18px;
+      }
+      .rope-track {
+        height: 110px;
+      }
+      .char-avatar { font-size: 3.2rem; }
+      .rope-bar {
+        width: 180px;
+        height: 10px;
+      }
+      .rope-ribbon {
+        width: 18px;
+        height: 24px;
+      }
+    }
+
+    /* 手機橫向特殊適應 */
+    @media (max-width: 899px) and (orientation: landscape) {
+      .game-layout {
+        display: grid;
+        grid-template-columns: 34% 32% 34%;
+        gap: 6px;
+        padding: 4px 8px;
+      }
+      .teams-container { display: contents; }
+      .team-card.team-blue { order: 1; padding: 4px; }
+      .arena-panel { order: 2; height: 100%; justify-content: center; padding: 6px; }
+      .team-card.team-red { order: 3; padding: 4px; }
+      .rope-track { height: 46px; }
+      .char-avatar { font-size: 1.5rem; }
+      .rope-bar { width: 90px; }
+      .num-btn { padding: 4px 0; font-size: 1.1rem; }
+      .question-box { font-size: 1rem; min-height: 2.2rem; }
+      .display-screen { height: 32px; font-size: 1.2rem; margin: 2px 0 4px; }
+    }
+
+    /* 遊戲結算彈窗 */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 28px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+    .modal-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .modal-desc {
+      font-size: 1.1rem;
+      color: #475569;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .btn-modal {
+      font-family: inherit;
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-replay { background: #2563eb; color: #fff; }
+    .btn-change-bank { background: #e2e8f0; color: #334155; }
   </style>
 </head>
 <body>
 
-  <!-- 上方競技場 -->
-  <header class="arena-container">
-    <div class="top-bar">
-      <div class="score-blue">藍隊得分: <span id="score-1">0</span></div>
-      <div class="timer-badge" id="timer">02:00</div>
-      <div class="score-red">紅隊得分: <span id="score-2">0</span></div>
+  <!-- 設定工具列 -->
+  <header class="settings-bar">
+    <div class="setting-group">
+      <label class="setting-label" for="bankSelect">題庫：</label>
+      <select id="bankSelect" class="setting-select">
+        <option value="numbers">英文數字 (1～100)</option>
+        <option value="dates">英文日期 (月/日 MMDD)</option>
+        <option value="mix">數字＋日期混合</option>
+      </select>
     </div>
-    <div class="rope-track">
-      <div class="center-line"></div>
-      <div class="rope-group" id="rope-group">
-        <div class="team-avatar">🤼‍♂️</div>
-        <div class="rope-visual"><div class="rope-knot"></div></div>
-        <div class="team-avatar">🤼‍♀️</div>
+    <div class="setting-group">
+      <span class="setting-label">計時：</span>
+      <div class="btn-time-group">
+        <button type="button" class="btn-time" data-duration="60">1 分鐘</button>
+        <button type="button" class="btn-time active" data-duration="120">2 分鐘</button>
       </div>
     </div>
   </header>
 
-  <!-- 下方操作對決區 -->
-  <main class="battle-field">
-    <!-- 藍隊 -->
-    <section class="team-panel panel-blue" id="panel-1">
-      <div class="team-title">藍隊 Team 1</div>
-      <div class="question-word" id="word-1">---</div>
-      <div class="answer-display" id="display-1"></div>
-      <div class="keypad" data-team="1">
-        <button class="keypad-btn" data-key="1">1</button>
-        <button class="keypad-btn" data-key="2">2</button>
-        <button class="keypad-btn" data-key="3">3</button>
-        <button class="keypad-btn" data-key="4">4</button>
-        <button class="keypad-btn" data-key="5">5</button>
-        <button class="keypad-btn" data-key="6">6</button>
-        <button class="keypad-btn" data-key="7">7</button>
-        <button class="keypad-btn" data-key="8">8</button>
-        <button class="keypad-btn" data-key="9">9</button>
-        <button class="keypad-btn action-btn" data-key="del">⌫</button>
-        <button class="keypad-btn" data-key="0">0</button>
-        <button class="keypad-btn action-btn" data-key="enter">✓</button>
+  <!-- 主競技場版面 -->
+  <main class="game-layout">
+    <!-- 拔河戰況區 -->
+    <section class="arena-panel">
+      <div class="arena-header">
+        <div class="score-blue">藍隊: <span id="score-1">0</span></div>
+        <div class="timer-badge" id="timer">02:00</div>
+        <div class="score-red">紅隊: <span id="score-2">0</span></div>
+      </div>
+      <div class="rope-track" id="ropeTrack">
+        <div class="track-center-line"></div>
+        <div class="rope-rig" id="ropeRig">
+          <div class="char-avatar">🤼‍♂️</div>
+          <div class="rope-bar"><div class="rope-ribbon"></div></div>
+          <div class="char-avatar">🤼‍♀️</div>
+        </div>
       </div>
     </section>
 
-    <!-- 紅隊 -->
-    <section class="team-panel panel-red" id="panel-2">
-      <div class="team-title">紅隊 Team 2</div>
-      <div class="question-word" id="word-2">---</div>
-      <div class="answer-display" id="display-2"></div>
-      <div class="keypad" data-team="2">
-        <button class="keypad-btn" data-key="1">1</button>
-        <button class="keypad-btn" data-key="2">2</button>
-        <button class="keypad-btn" data-key="3">3</button>
-        <button class="keypad-btn" data-key="4">4</button>
-        <button class="keypad-btn" data-key="5">5</button>
-        <button class="keypad-btn" data-key="6">6</button>
-        <button class="keypad-btn" data-key="7">7</button>
-        <button class="keypad-btn" data-key="8">8</button>
-        <button class="keypad-btn" data-key="9">9</button>
-        <button class="keypad-btn action-btn" data-key="del">⌫</button>
-        <button class="keypad-btn" data-key="0">0</button>
-        <button class="keypad-btn action-btn" data-key="enter">✓</button>
-      </div>
-    </section>
+    <!-- 計算機雙隊對抗區 -->
+    <div class="teams-container">
+      <!-- 藍隊 (Team 1) -->
+      <section class="team-card team-blue" id="panel-1">
+        <div class="team-header-label">藍隊 Team 1</div>
+        <div class="question-box" id="q-1">---</div>
+        <div class="display-screen" id="disp-1"></div>
+        <div class="numpad" data-team="1">
+          <button type="button" class="num-btn" data-key="1">1</button>
+          <button type="button" class="num-btn" data-key="2">2</button>
+          <button type="button" class="num-btn" data-key="3">3</button>
+          <button type="button" class="num-btn" data-key="4">4</button>
+          <button type="button" class="num-btn" data-key="5">5</button>
+          <button type="button" class="num-btn" data-key="6">6</button>
+          <button type="button" class="num-btn" data-key="7">7</button>
+          <button type="button" class="num-btn" data-key="8">8</button>
+          <button type="button" class="num-btn" data-key="9">9</button>
+          <button type="button" class="num-btn btn-action" data-key="del">⌫</button>
+          <button type="button" class="num-btn" data-key="0">0</button>
+          <button type="button" class="num-btn btn-action" data-key="enter">✓</button>
+        </div>
+      </section>
+
+      <!-- 紅隊 (Team 2) -->
+      <section class="team-card team-red" id="panel-2">
+        <div class="team-header-label">紅隊 Team 2</div>
+        <div class="question-box" id="q-2">---</div>
+        <div class="display-screen" id="disp-2"></div>
+        <div class="numpad" data-team="2">
+          <button type="button" class="num-btn" data-key="1">1</button>
+          <button type="button" class="num-btn" data-key="2">2</button>
+          <button type="button" class="num-btn" data-key="3">3</button>
+          <button type="button" class="num-btn" data-key="4">4</button>
+          <button type="button" class="num-btn" data-key="5">5</button>
+          <button type="button" class="num-btn" data-key="6">6</button>
+          <button type="button" class="num-btn" data-key="7">7</button>
+          <button type="button" class="num-btn" data-key="8">8</button>
+          <button type="button" class="num-btn" data-key="9">9</button>
+          <button type="button" class="num-btn btn-action" data-key="del">⌫</button>
+          <button type="button" class="num-btn" data-key="0">0</button>
+          <button type="button" class="num-btn btn-action" data-key="enter">✓</button>
+        </div>
+      </section>
+    </div>
   </main>
 
+  <!-- 結算彈窗 -->
+  <div class="modal-overlay" id="resultModal">
+    <div class="modal-card">
+      <div class="modal-title" id="winnerTitle">🏆 獲勝判定</div>
+      <div class="modal-desc" id="winnerDesc">比賽結束</div>
+      <div class="modal-actions">
+        <button type="button" class="btn-modal btn-replay" id="btnReplay">再玩一次</button>
+        <button type="button" class="btn-modal btn-change-bank" id="btnChangeBank">更換題庫</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // 數字題庫清單 (可隨時擴充/換入不同單元)
-    const numberPool = [
-      { text: "seven", value: "7" },
-      { text: "nine", value: "9" },
-      { text: "twelve", value: "12" },
-      { text: "thirteen", value: "13" },
-      { text: "eighteen", value: "18" },
-      { text: "twenty", value: "20" },
-      { text: "thirty-four", value: "34" },
-      { text: "forty-five", value: "45" },
-      { text: "fifty", value: "50" },
-      { text: "seventy-six", value: "76" },
-      { text: "eighty-nine", value: "89" },
-      { text: "ninety-two", value: "92" }
-    ];
-
-    let ropeOffset = 0; // -10 ~ +10，往藍為負，往紅為正
-    const maxRopeOffset = 8;
-    const stepPx = 25;
-
-    const gameState = {
-      1: { score: 0, currentAnswer: "", currentInput: "", isLocked: false },
-      2: { score: 0, currentAnswer: "", currentInput: "", isLocked: false }
-    };
-
-    function getRandomItem() {
-      return numberPool[Math.floor(Math.random() * numberPool.length)];
-    }
-
-    function setupQuestion(team) {
-      const item = getRandomItem();
-      gameState[team].currentAnswer = item.value;
-      gameState[team].currentInput = "";
-      gameState[team].isLocked = false;
-      document.getElementById(`word-${team}`).textContent = item.text;
-      const display = document.getElementById(`display-${team}`);
-      display.textContent = "";
-      display.className = "answer-display";
-    }
-
-    function updateRopeUI() {
-      const rope = document.getElementById("rope-group");
-      rope.style.transform = `translateX(${ropeOffset * stepPx}px)`;
-    }
-
-    function handleInput(team, key) {
-      if (gameState[team].isLocked) return;
-      const display = document.getElementById(`display-${team}`);
-
-      if (key >= "0" && key <= "9") {
-        if (gameState[team].currentInput.length < 3) {
-          gameState[team].currentInput += key;
-          display.textContent = gameState[team].currentInput;
-        }
-      } else if (key === "del") {
-        gameState[team].currentInput = gameState[team].currentInput.slice(0, -1);
-        display.textContent = gameState[team].currentInput;
-      } else if (key === "enter") {
-        if (!gameState[team].currentInput) return;
-        verifyAnswer(team);
-      }
-    }
-
-    function verifyAnswer(team) {
-      const isCorrect = gameState[team].currentInput === gameState[team].currentAnswer;
-      const display = document.getElementById(`display-${team}`);
-      gameState[team].isLocked = true;
-
-      if (isCorrect) {
-        display.classList.add("correct");
-        gameState[team].score += 1;
-        document.getElementById(`score-${team}`).textContent = gameState[team].score;
-
-        // 藍隊答對往左 (-1)，紅隊答對往右 (+1)
-        if (team === 1) ropeOffset = Math.max(ropeOffset - 1, -maxRopeOffset);
-        if (team === 2) ropeOffset = Math.min(ropeOffset + 1, maxRopeOffset);
-        updateRopeUI();
-
-        setTimeout(() => {
-          setupQuestion(team);
-        }, 500);
-      } else {
-        // 答錯提示正確答案 1.2 秒再跳下一題
-        display.classList.add("wrong");
-        display.textContent = `正解: ${gameState[team].currentAnswer}`;
-
-        setTimeout(() => {
-          setupQuestion(team);
-        }, 1200);
-      }
-    }
-
-    // 綁定虛擬鍵盤觸控與點擊
-    document.querySelectorAll(".keypad").forEach(pad => {
-      const team = parseInt(pad.dataset.team, 10);
-      pad.addEventListener("pointerdown", (e) => {
-        const btn = e.target.closest(".keypad-btn");
-        if (!btn) return;
-        e.preventDefault();
-        const key = btn.dataset.key;
-        handleInput(team, key);
-      });
-    });
-
-    // 倒數計時器
-    let remainingSeconds = 120;
-    const timerEl = document.getElementById("timer");
-    const timerInterval = setInterval(() => {
-      remainingSeconds--;
-      const mins = String(Math.floor(remainingSeconds / 60)).padStart(2, "0");
-      const secs = String(remainingSeconds % 60).padStart(2, "0");
-      timerEl.textContent = `${mins}:${secs}`;
-
-      if (remainingSeconds <= 0) {
-        clearInterval(timerInterval);
-        gameState[1].isLocked = true;
-        gameState[2].isLocked = true;
-        let winner = "平手！";
-        if (ropeOffset < 0) winner = "🏆 藍隊獲勝！";
-        if (ropeOffset > 0) winner = "🏆 紅隊獲勝！";
-        alert(`時間到！${winner}`);
-      }
-    }, 1000);
-
-    // 初始化兩隊題目
-    setupQuestion(1);
-    setupQuestion(2);
-  </script>
-</body>
-</html>
+    /* ================= 題庫產生器 (支援字串保留開頭 0) ================= */
