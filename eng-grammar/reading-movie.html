@@ -1,1058 +1,678 @@
-
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英語生活閱讀測驗：電影時刻表設計平台</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Quicksand:wght@400;600;700&display=swap');
-        
-        body {
-            font-family: 'Quicksand', 'Noto Sans TC', sans-serif;
-            background-color: #f1f5f9;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-City｜異想課表 (16單元母版)</title>
+<style>
+:root{
+  --paper: #FDFDFD;
+  --wood: #C5A880;
+  --ink: #2C3E50;
+  --blue: #3498DB;
+  --green: #2A5944;
+  --red: #E74C3C;
+  --line-blue: #A9CCE3;
+  
+  --navy: #1A252F;
+  --soft: #F4F6F7;
+  --blue-soft: #EBF5FB;
+  --green-soft: #E8F8F5;
+  --hint: #FEF9E7;
+  --hint-line: #F1C40F;
+  --gray-blue: #BDC3C7;
+}
+*{box-sizing:border-box}
 
-        /* 螢幕上的 A4 模擬外框 */
-        .a4-page {
-            background: white;
-            width: 210mm;
-            min-height: 297mm;
-            padding: 15mm;
-            margin: 1.5rem auto;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            position: relative;
-            box-sizing: border-box;
-            border-radius: 8px;
-        }
+html,body{margin:0;padding:0;}
+body{
+  background: #E8EDF1; color:var(--ink);
+  font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  padding:18px 0 40px;
+}
+button,select{font:inherit;cursor:pointer;user-select:none;}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 
-        /* 精準一頁 A4 列印控制 */
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 12mm 12mm 12mm 12mm; /* 設定標準邊界，防止多頁溢出 */
-            }
-            body {
-                background: white !important;
-                color: black !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                width: 100% !important;
-            }
-            .no-print {
-                display: none !important;
-            }
-            .a4-page {
-                width: 100% !important;
-                min-height: 0 !important;
-                height: auto !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                box-shadow: none !important;
-                border-radius: 0 !important;
-                page-break-after: always;
-                page-break-inside: avoid;
-            }
-            /* 調整表格與選擇題在列印時更為緊湊 */
-            table td, table th {
-                padding: 6px 10px !important;
-            }
-            .option-label {
-                border: 1px solid #cbd5e1 !important; /* 確保列印外框清晰 */
-                background-color: transparent !important;
-            }
-            .explanation-box {
-                display: none !important; /* 列印學生考卷時隱藏解析 */
-            }
-            .score-badge {
-                display: none !important;
-            }
-        }
+/* =========================================================
+   FLOATING NAV & PRINT WIDGET (右上角浮動收折導覽與列印選單)
+========================================================= */
+.floating-widget{
+  position:fixed;right:16px;top:16px;z-index:1000;
+  background:white;border:1px solid #C8D5E0;border-radius:14px;
+  box-shadow:0 4px 20px rgba(0,0,0,.15);overflow:hidden;
+  font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+}
+.widget-header{
+  background:var(--green);color:white;padding:10px 14px;font-weight:900;
+  display:flex;align-items:center;justify-content:space-between;cursor:pointer;
+  font-size:14px;user-select:none;gap:10px;
+}
+.widget-body{
+  padding:12px;display:flex;flex-direction:column;gap:10px;background:white;
+  max-height:80vh;overflow-y:auto;
+}
+.widget-body.collapsed{display:none;}
+.nav-section-title{
+  font-size:12px;font-weight:900;color:#647789;margin-bottom:4px;border-bottom:1px solid var(--line-blue);padding-bottom:2px;
+}
+.nav-grid{display:grid;grid-template-columns:repeat(4, 1fr);gap:4px;}
+.nav-grid button{
+  padding:6px 4px;border:1px solid #C8D5E0;border-radius:6px;background:white;
+  color:var(--green);font-size:12px;font-weight:900;cursor:pointer;text-align:center;
+}
+.nav-grid button:hover{background:var(--green-soft);border-color:var(--green);}
+.print-select-wrap{display:flex;flex-direction:column;gap:6px;margin-top:4px;}
+.print-select-wrap select{
+  padding:8px;border:1px solid #C8D5E0;border-radius:8px;font-weight:900;color:var(--navy);background:white;cursor:pointer;
+}
+.print-action-btn{
+  background:var(--green);color:white;border:0;border-radius:8px;padding:9px;font-weight:900;cursor:pointer;text-align:center;
+}
+.print-action-btn:hover{background:#1E4030;}
 
-        /* 選擇題標籤懸停 */
-        .option-label {
-            transition: all 0.2s ease;
-        }
-        .option-label:hover {
-            background-color: #f8fafc;
-        }
+/* =========================================================
+   A4 PORTRAIT SHEETS
+========================================================= */
+.sheet{
+  width:210mm;height:297mm;margin:0 auto 18px;padding:7mm 8mm;
+  background:#fff;box-shadow:0 5px 18px rgba(0,0,0,.12);
+  overflow:hidden;display:grid;grid-template-rows:1fr 1fr;gap:5mm;
+  page-break-after:always;
+}
+.sheet:last-child{page-break-after:auto;}
 
-        /* 金色星星特效畫布 */
-        #confetti-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 100;
-        }
-    </style>
+.level-block{
+  min-height:0;display:flex;flex-direction:column;overflow:hidden;
+}
+.level-block:first-child{
+  padding-bottom:2.5mm;border-bottom:1.5px dashed #D5E0E9;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+.level-header{
+  min-height:12mm;display:flex;align-items:center;justify-content:space-between;
+  gap:5mm;margin-bottom:2mm;
+}
+.level-title{margin:0;color:var(--green);font-size:16.5pt;line-height:1;font-weight:900;white-space:nowrap;}
+.student-info{display:flex;align-items:center;gap:3mm;color:#273E52;font-size:14pt;font-weight:700;white-space:nowrap;}
+.info-line{display:inline-block;min-width:25mm;height:5mm;border-bottom:1.4px solid #647789;}
+.name-line{min-width:36mm;}
+
+/* =========================================================
+   CONTENT LAYOUT (50:50)
+========================================================= */
+.level-content{
+  flex:1;min-height:0;display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:4mm;
+}
+.left-side,.right-side{min-width:0;min-height:0;}
+.left-side{display:flex;flex-direction:column; height:100%; min-height:0;}
+
+/* 左側：課表排版 */
+.schedule-box{
+  border:1px solid var(--line-blue); border-radius:3mm; background:var(--paper); 
+  display:flex; flex-direction:column; flex:1; overflow:hidden; position: relative;
+}
+.schedule-title{
+  height:7mm;display:flex;align-items:center;justify-content:center;
+  background:var(--green);color:white;font-size:10.5pt;font-weight:900;flex-shrink:0; letter-spacing: 1px;
+}
+.schedule-table-wrap{flex:1; display:flex; flex-direction:column; overflow:hidden;}
+.schedule-table{width:100%; height:100%; border-collapse:collapse; text-align:center; table-layout: fixed;}
+.schedule-table th, .schedule-table td {
+  padding:4px 2px; font-size:11pt; font-weight:bold; vertical-align: middle;
+  word-break: break-word;
+}
+.schedule-table th {background:var(--green); color:white; border-right: 1px solid #1E4030;}
+.schedule-table th:first-child { width: 15%; }
+.schedule-table th:not(:first-child) { width: 17%; }
+.schedule-table td {border-bottom: 1px dashed var(--line-blue); border-right: 1px dashed var(--line-blue); background: #FFFFFF;}
+.schedule-table td:last-child {border-right: none;}
+
+.time-header {font-size: 8pt; color: #E8F8F5; display: block; font-weight: normal; margin-top: 1px;}
+
+/* 右側：測驗區 */
+.right-side{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;}
+.question-head{
+  min-height:9mm;display:flex;align-items:center;justify-content:space-between;
+  gap:2mm;padding:1.2mm 2mm;margin-bottom:1.5mm;background:var(--soft);
+  border:1px solid var(--line-blue);border-radius:2.5mm;width:100%;
+}
+.question-title-wrap{display:flex;align-items:center;gap:2mm;min-width:0;}
+.question-title{margin:0;color:var(--green);font-size:12pt;font-weight:900;}
+.score{min-width:11mm;color:var(--green);font-size:10.5pt;font-weight:900;text-align:center;}
+
+.tools{display:flex;align-items:center;gap:.8mm;flex-shrink:0;}
+.tools button{
+  padding:1mm 1.6mm;border:1px solid #BFCFDE;border-radius:6px;
+  background:white;color:var(--green);font-size:8pt;font-weight:900;cursor:pointer;
+}
+.tools button.active{color:#875100;background:#FFF2D7;border-color:var(--hint-line);}
+
+.questions{
+  flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:flex-start;padding:0 5px; gap: 4px;
+}
+.questions.three-items{justify-content:space-around;}
+
+.question{border-bottom:1px dashed var(--gray-blue);padding:4px 0 5px;}
+.question:last-child{border-bottom:none;}
+.question-line{display:flex;align-items:baseline;gap:4px;font-size:11pt;font-weight:bold;cursor:pointer;line-height:1.25;}
+.answer-blank{color:var(--blue);white-space:nowrap;min-width:2.5em;text-align:right;}
+.answer-blank.good{color:var(--green)}
+.answer-blank.reveal{color:var(--red)}
+
+.options{
+  margin-left: 2.8em; 
+  display: flex; 
+  flex-wrap: wrap; 
+  font-size: 10pt; 
+  margin-top: 2px;
+  row-gap: 1px;     
+  column-gap: 12px; 
+}
+.choice{border:1px solid transparent;border-radius:5px;background:transparent;color:#4F595D;padding:1px 4px;font-weight:bold;}
+.choice.selected{color:var(--ink);background:var(--blue-soft);border-color:var(--blue);}
+.choice.correct{color:var(--green);background:var(--green-soft);border-color:var(--green);}
+.choice.reveal{color:var(--red);background:#F9EBEA;border-color:var(--red);}
+
+.hint-word{padding:0 2px;border-radius:4px;background:var(--hint);box-shadow:inset 0 -2px 0 var(--hint-line);}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+.footer{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:8pt;color:#788896;padding-top:1.5mm;margin-top:auto;
+}
+.footer .credit{
+  margin-left:auto;text-align:right;font-size:7.5pt;letter-spacing:.2px;
+}
+
+/* =========================================================
+   TEACHER ANSWER MODE
+========================================================= */
+body.teacher-mode .answer-blank{
+  color: var(--red) !important;
+  font-weight: 900 !important;
+}
+body.teacher-mode .answer-blank::after{
+  content: "（" attr(data-ans) "）";
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+@page{size:A4 portrait;margin:0;}
+@media print{
+  html,body{width:210mm;margin:0;padding:0;background:white;}
+  .floating-widget{display:none !important;}
+  .sheet{width:210mm;height:297mm;margin:0;box-shadow:none;}
+  .tools,.score{display:none !important;}
+}
+</style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen pb-16">
 
-    <canvas id="confetti-canvas"></canvas>
+<body>
 
-    <!-- 頂部控制台 (列印時隱藏) -->
-    <header class="no-print sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm px-6 py-3">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <div>
-                <h1 class="text-lg font-extrabold text-indigo-900 flex items-center gap-2">
-                    <i class="fa-solid fa-film text-rose-500"></i>
-                    英語生活閱讀測驗：電影時刻表設計平台
-                </h1>
-                <p class="text-[11px] text-slate-500 mt-0.5">
-                    優化版面：A4 完美一頁列印規格、極簡表頭、選項橫向並排。點擊「自由編輯」可直接改字。
-                </p>
-            </div>
-            
-            <div class="flex flex-wrap items-center gap-2">
-                <!-- 自由編輯模式 -->
-                <button id="btn-edit-mode" onclick="toggleEditMode()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition-colors flex items-center gap-1.5">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                    <span id="edit-mode-text">開啟自由編輯</span>
-                </button>
-
-                <!-- 全部列印 -->
-                <button onclick="printAllLevels()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 transition-colors flex items-center gap-1.5">
-                    <i class="fa-solid fa-book"></i>
-                    <span>一次列印5關卡(教師包)</span>
-                </button>
-
-                <!-- 列印目前頁 -->
-                <button onclick="window.print()" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-all shadow-md shadow-indigo-200 flex items-center gap-1.5">
-                    <i class="fa-solid fa-print"></i>
-                    <span>列印本關 A4 考卷</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- 關卡切換 Tab -->
-        <div class="max-w-7xl mx-auto mt-3 flex flex-wrap gap-1.5 border-t border-slate-100 pt-2.5">
-            <span class="text-xs font-bold text-slate-400 self-center mr-1">選擇關卡:</span>
-            <button onclick="switchLevel(0)" id="tab-0" class="tab-btn px-2.5 py-1 text-xs font-semibold rounded-full bg-indigo-600 text-white shadow-sm transition-all">Level 1-1 (簡易)</button>
-            <button onclick="switchLevel(1)" id="tab-1" class="tab-btn px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">Level 1-2 (簡易)</button>
-            <button onclick="switchLevel(2)" id="tab-2" class="tab-btn px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">Level 2-1 (中階)</button>
-            <button onclick="switchLevel(3)" id="tab-3" class="tab-btn px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">Level 2-2 (中階)</button>
-            <button onclick="switchLevel(4)" id="tab-4" class="tab-btn px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">Level 3 (高階)</button>
-        </div>
-    </header>
-
-    <!-- 編輯狀態通知 (列印時隱藏) -->
-    <div id="editor-notice" class="no-print hidden max-w-4xl mx-auto mt-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg shadow-sm">
-        <div class="flex items-start gap-2.5">
-            <i class="fa-solid fa-circle-info text-amber-600 mt-0.5"></i>
-            <div class="text-xs">
-                <h4 class="font-bold text-amber-900">自由編輯模式已開啟</h4>
-                <p class="text-amber-700 mt-0.5">可以直接在下方紙張點擊任何<b>標題、表格格子、對話文字、題目與解析</b>進行即時客製化修改。</p>
-                <div class="mt-2 flex gap-1.5">
-                    <button onclick="randomizeCurrentData()" class="px-2 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium transition-colors">
-                        <i class="fa-solid fa-dice"></i> 隨機替換測試資料
-                    </button>
-                    <button onclick="toggleEditMode()" class="px-2 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded font-medium transition-colors">
-                        鎖定並完成編輯
-                    </button>
-                </div>
-            </div>
-        </div>
+<!-- 右上角浮動收折導覽與列印面板 -->
+<div class="floating-widget" id="floatingWidget">
+  <div class="widget-header" onclick="toggleWidget()">
+    <span>📍 快速導覽與列印選單</span>
+    <span id="widgetToggleIcon">▼</span>
+  </div>
+  <div class="widget-body" id="widgetBody">
+    <div class="nav-section-title">A 卷 (A1 - A4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-0')">A1</button>
+      <button onclick="scrollToId('level-1')">A2</button>
+      <button onclick="scrollToId('level-2')">A3</button>
+      <button onclick="scrollToId('level-3')">A4</button>
+    </div>
+    
+    <div class="nav-section-title">B 卷 (B1 - B4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-4')">B1</button>
+      <button onclick="scrollToId('level-5')">B2</button>
+      <button onclick="scrollToId('level-6')">B3</button>
+      <button onclick="scrollToId('level-7')">B4</button>
     </div>
 
-    <!-- A4 主考卷內容 -->
-    <main class="container mx-auto px-4 mt-4">
-        
-        <!-- 單關作答/列印檢視 -->
-        <div id="single-level-view">
-            <div id="a4-sheet" class="a4-page transition-all duration-300">
-                
-                <!-- 精簡版頭 (左側標題，右側班級座號姓名) -->
-                <div class="border-b-2 border-slate-800 pb-2 mb-4 flex flex-row items-center justify-between">
-                    <div>
-                        <h2 id="sheet-title" class="text-base font-extrabold text-slate-900 tracking-wide" contenteditable="false">
-                            English Reading Practice: Movie Schedule
-                        </h2>
-                    </div>
-                    
-                    <!-- 緊湊型學生作答欄位 -->
-                    <div class="flex items-center gap-3 text-xs shrink-0">
-                        <div class="flex items-center border-b border-slate-400 pb-0.5 w-24">
-                            <span class="font-bold text-slate-700 shrink-0">Class:</span>
-                            <input type="text" class="w-full bg-transparent focus:outline-none px-1 text-center font-mono" placeholder="_______">
-                        </div>
-                        <div class="flex items-center border-b border-slate-400 pb-0.5 w-16">
-                            <span class="font-bold text-slate-700 shrink-0">No:</span>
-                            <input type="text" class="w-full bg-transparent focus:outline-none px-1 text-center font-mono" placeholder="___">
-                        </div>
-                        <div class="flex items-center border-b border-slate-400 pb-0.5 w-28">
-                            <span class="font-bold text-slate-700 shrink-0">Name:</span>
-                            <input type="text" class="w-full bg-transparent focus:outline-none px-1 text-center" placeholder="__________">
-                        </div>
-                        
-                        <!-- 線上得分欄位 / 列印空框 -->
-                        <div class="border-2 border-slate-800 px-2.5 py-0.5 text-center min-w-[50px] rounded bg-slate-50">
-                            <span class="text-[9px] block text-slate-500 font-bold leading-none">Score</span>
-                            <span id="score-num" class="text-sm font-black font-mono">-</span>
-                        </div>
-                    </div>
-                </div>
+    <div class="nav-section-title">C 卷 (C1 - C4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-8')">C1</button>
+      <button onclick="scrollToId('level-9')">C2</button>
+      <button onclick="scrollToId('level-10')">C3</button>
+      <button onclick="scrollToId('level-11')">C4</button>
+    </div>
 
-                <!-- Part A: 表格與等級標誌 -->
-                <div class="mb-3.5">
-                    <h3 class="text-xs font-bold text-slate-900 flex items-center gap-2 mb-1.5">
-                        <span class="bg-slate-900 text-white w-4.5 h-4.5 rounded-full inline-flex items-center justify-center text-[10px] shrink-0 font-mono">1</span>
-                        Part A: Movie Schedule
-                        <span id="level-badge" class="ml-1 bg-indigo-100 text-indigo-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded tracking-wider">Level 1 (Easy)</span>
-                    </h3>
-                    
-                    <div class="overflow-x-auto border border-slate-300 rounded-md">
-                        <table id="schedule-table" class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-100/80 border-b border-slate-300">
-                                    <th class="p-2 text-xs font-extrabold text-slate-700 w-1/4 border-r border-slate-300">Movie (電影)</th>
-                                    <th class="p-2 text-xs font-bold text-slate-700 border-r border-slate-300">Time 1</th>
-                                    <th class="p-2 text-xs font-bold text-slate-700 border-r border-slate-300">Time 2</th>
-                                    <th class="p-2 text-xs font-bold text-slate-700 border-r border-slate-300">Time 3</th>
-                                    <th class="p-2 text-xs font-bold text-slate-700">Time 4</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-200">
-                                <!-- 表格動態資料 -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <div class="nav-section-title">D 卷 (D1 - D4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-12')">D1</button>
+      <button onclick="scrollToId('level-13')">D2</button>
+      <button onclick="scrollToId('level-14')">D3</button>
+      <button onclick="scrollToId('level-15')">D4</button>
+    </div>
 
-                <!-- Part B: 情境對話 -->
-                <div class="mb-3.5">
-                    <h3 class="text-xs font-bold text-slate-900 flex items-center gap-2 mb-1.5">
-                        <span class="bg-slate-900 text-white w-4.5 h-4.5 rounded-full inline-flex items-center justify-center text-[10px] shrink-0 font-mono">2</span>
-                        Part B: Dialogue
-                    </h3>
-                    <div id="dialogue-box" class="bg-indigo-50/40 border border-indigo-100/60 rounded-md p-3 space-y-1.5">
-                        <!-- 對話動態資料 -->
-                    </div>
-                </div>
+    <div class="nav-section-title">列印模式設定</div>
+    <div class="print-select-wrap">
+      <select id="printModeSelect">
+        <option value="student">📄 列印學生作答卷</option>
+        <option value="teacher">🔑 列印教師解答卷</option>
+      </select>
+      <button class="print-action-btn" onclick="executePrint()">開始列印 / 存為 PDF</button>
+    </div>
+  </div>
+</div>
 
-                <!-- Part C: 單選題 -->
-                <div class="mb-1">
-                    <h3 class="text-xs font-bold text-slate-900 flex items-center gap-2 mb-2">
-                        <span class="bg-slate-900 text-white w-4.5 h-4.5 rounded-full inline-flex items-center justify-center text-[10px] shrink-0 font-mono">3</span>
-                        Part C: Questions
-                    </h3>
-                    
-                    <div id="questions-container" class="space-y-2.5">
-                        <!-- 題目動態資料，選項將完美併排 -->
-                    </div>
-                </div>
+<div id="pages"></div>
 
-                <!-- A4 頁尾標誌 (僅列印時可見) -->
-                <div class="hidden print:block text-center text-[9px] text-slate-400 border-t border-slate-100 pt-2 mt-4">
-                    Movie Schedule English Learning System. Checked & Standard Verified.
-                </div>
+<script>
+'use strict';
+
+// --- 資料庫 ---
+const SUBJECTS = [
+  {name:'Chinese', zh:'國文', emoji:'📖'},
+  {name:'English', zh:'英文', emoji:'🔤'},
+  {name:'Math', zh:'數學', emoji:'📐'},
+  {name:'Science', zh:'自然', emoji:'🔬'},
+  {name:'History', zh:'歷史', emoji:'📜'},
+  {name:'PE', zh:'體育', emoji:'🏀'},
+  {name:'Art', zh:'美術', emoji:'🎨'},
+  {name:'Music', zh:'音樂', emoji:'🎵'},
+  {name:'Computer', zh:'電腦', emoji:'💻'}
+];
+
+const CLUBS = [
+  {name:'Guitar Club', zh:'吉他社', emoji:'🎸'},
+  {name:'Movie Club', zh:'電影社', emoji:'🎬'},
+  {name:'Cooking Club', zh:'烹飪社', emoji:'🍳'}
+];
+
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const TIMES = ["08:15", "09:15", "10:15", "11:15"];
+
+// 隨機勵志短句庫
+const motivationalQuotes = [
+  "Believe in yourself, every step you take makes you stronger and wiser!",
+  "Reading English stories opens up a wonderful new world of imagination.",
+  "Keep trying your best today, success belongs to those who never give up!",
+  "Great job! Small progress every day leads to big achievements."
+];
+
+function seededRandom(seed) {
+  let x = Math.sin(seed++) * 10000;
+  return x - Math.floor(x);
+}
+
+function shuffleWithSeed(array, seed) {
+  let arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(seededRandom(seed + i) * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function getPrevDay(dayStr) {
+  let idx = DAYS.indexOf(dayStr);
+  if (idx === 0) return "Sunday";
+  return DAYS[idx - 1];
+}
+
+function fillOptions(ans, w1, w2, fallback, seed) {
+  let opts = [...new Set([ans, w1, w2])];
+  let i = 0;
+  while(opts.length < 3) {
+    if(!opts.includes(fallback[i])) opts.push(fallback[i]);
+    i++;
+  }
+  return shuffleWithSeed(opts, seed);
+}
+
+// ================= 基礎 4 等級生成 =================
+function generateBaseGrid(seed) {
+  let grid = Array(5).fill().map(() => Array(4).fill(""));
+  let r = (s) => seededRandom(s);
+  
+  let peDays = shuffleWithSeed([0, 1, 2, 3, 4], seed).slice(0, 2).sort();
+  grid[peDays[0]][Math.floor(r(seed+1)*3)] = "PE";
+  grid[peDays[1]][Math.floor(r(seed+2)*3)] = "PE";
+  
+  let otherDays = shuffleWithSeed([0, 1, 2, 3, 4], seed + 10);
+  grid[otherDays[0]][Math.floor(r(seed+3)*3)] = "Art";
+  grid[otherDays[1]][Math.floor(r(seed+4)*3)] = "Computer";
+  grid[otherDays[2]][Math.floor(r(seed+5)*3)] = "Music";
+
+  let clubDays = shuffleWithSeed([0, 1, 2, 3, 4], seed + 20).slice(0, 2);
+  let clubs = shuffleWithSeed(CLUBS, seed + 25);
+
+  const mainSubjs = ["Chinese", "English", "Math", "Science", "History"];
+  for(let d=0; d<5; d++){
+    for(let p=0; p<4; p++){
+      if(grid[d][p] === "") {
+         let subjs = shuffleWithSeed(mainSubjs, seed + d * 10 + p);
+         grid[d][p] = subjs[0];
+      }
+    }
+  }
+  return { grid, peDays, otherDays, clubDays, clubs };
+}
+
+function generateLevelData(lvlType, seed) {
+  let { grid, peDays, otherDays, clubDays, clubs } = generateBaseGrid(seed);
+  let questions = [];
+  const allSubjs = [...new Set(grid.flat())];
+  const fakes = shuffleWithSeed(allSubjs, seed + 100);
+
+  if (lvlType === 'L1') {
+    let artDay = DAYS[otherDays[0]], artP = grid[otherDays[0]].indexOf("Art") + 1;
+    let qList = [
+      { stem: `What class is on Monday for Class 1?`, ans: grid[0][0], w1: grid[0][1], w2: grid[1][0] },
+      { stem: `When do we have Art?`, ans: `On ${artDay} for Class ${artP}`, w1: `On Monday for Class 2`, w2: `On Friday for Class 4` },
+      { stem: `What class is on ${DAYS[2]} for Class 3?`, ans: grid[2][2], w1: grid[2][0], w2: grid[3][2] },
+      { stem: `When do we have Computer?`, ans: `On ${DAYS[otherDays[1]]} for Class ${grid[otherDays[1]].indexOf("Computer") + 1}`, w1: `On Tuesday for Class 1`, w2: `On Thursday for Class 3` },
+      { stem: `Do we have ${grid[4][1]} on Friday?`, ans: `Yes, we do.`, w1: `No, we don't.`, w2: `I don't know.` }
+    ];
+    questions = qList.map((q, idx) => {
+      let opts = fillOptions(q.ans, q.w1, q.w2, ["Yes, we do.", "No, we don't.", ...fakes], seed + idx);
+      return { stem: q.stem, options: opts, answer: opts.indexOf(q.ans) };
+    });
+  }
+  else if (lvlType === 'L2') {
+    let dB = 2, pB = 2;
+    let subjB = grid[dB][pB];
+    let prevB = grid[dB][pB-1];
+    let dA = 1, pA = 1;
+    let subjA = grid[dA][pA];
+    let nextA = grid[dA][pA+1];
+    let mathCount = grid.flat().filter(x => x === "Math").length;
+    let countWord = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven"][mathCount] || mathCount.toString();
+    
+    let qList = [
+      { stem: `What class is <b>before</b> ${subjB} on ${DAYS[dB]}?`, ans: prevB, w1: grid[dB][pB+1]||"PE", w2: grid[dB][0] },
+      { stem: `What class is <b>after</b> ${subjA} on ${DAYS[dA]}?`, ans: nextA, w1: grid[dA][pA-1]||"Art", w2: grid[dA][3] },
+      { stem: `How many Math classes do we have this week?`, ans: countWord, w1: "Two", w2: "Five" },
+      { stem: `What class is before ${grid[3][1]} on Thursday?`, ans: grid[3][0], w1: grid[3][2], w2: grid[4][0] },
+      { stem: `Do we have ${grid[4][3]} after ${grid[4][2]} on Friday?`, ans: `Yes, we do.`, w1: `No, we don't.`, w2: `I don't know.` }
+    ];
+    questions = qList.map((q, idx) => {
+      let opts = fillOptions(q.ans, q.w1, q.w2, ["One", "Three", "Four", "Yes, we do.", "No, we don't.", ...fakes], seed + idx);
+      return { stem: q.stem, options: opts, answer: opts.indexOf(q.ans) };
+    });
+  }
+  else if (lvlType === 'L3') {
+    let artD = otherDays[0];
+    let todayForArt = getPrevDay(DAYS[artD]);
+    let compD = otherDays[1];
+    let compP = grid[compD].indexOf("Computer") + 1;
+    let musD = otherDays[2];
+    let musP = grid[musD].indexOf("Music") + 1;
+
+    let qList = [
+      { stem: `Today is ${todayForArt}. Tom needs paints for Art tomorrow. What day is Art?`, ans: DAYS[artD], w1: DAYS[(artD+1)%5], w2: DAYS[(artD+2)%5] },
+      { stem: `The class goes to the computer room on ${DAYS[compD]}. What class is it?`, ans: `Class ${compP}`, w1: `Class ${(compP%4)+1}`, w2: `Class ${((compP+1)%4)+1}` },
+      { stem: `Mary has Music today. Look at ${DAYS[musD]}. What class is it?`, ans: `Class ${musP}`, w1: `Class ${(musP%4)+1}`, w2: `Class ${((musP+1)%4)+1}` },
+      { stem: `Which day features Science in the schedule?`, ans: `${DAYS[1]}`, w1: `${DAYS[0]}`, w2: `${DAYS[4]}` },
+      { stem: `Is PE scheduled on ${DAYS[peDays[0]]}?`, ans: `Yes, it is.`, w1: `No, it isn't.`, w2: `I don't know.` }
+    ];
+    questions = qList.map((q, idx) => {
+      let opts = fillOptions(q.ans, q.w1, q.w2, ["Monday", "Friday", "Class 1", "Class 4"], seed + idx);
+      return { stem: q.stem, options: opts, answer: opts.indexOf(q.ans) };
+    });
+  }
+  else if (lvlType === 'L4') {
+    let peD1 = peDays[0];
+    let peD2 = peDays[1];
+    let peP2 = grid[peD2].indexOf("PE") + 1;
+    let engDays = [];
+    for(let d=0; d<5; d++) { if(grid[d].includes("English")) engDays.push(DAYS[d]); }
+    let engAns = engDays.length >= 2 ? `${engDays[0]} and ${engDays[1]}` : "Every day";
+
+    let qList = [
+      { stem: `Leo missed PE on ${DAYS[peD1]}. When is his <b>next</b> PE class?`, ans: `On ${DAYS[peD2]} for Class ${peP2}`, w1: `On ${DAYS[peD1]} for Class 4`, w2: `On Friday for Class 1` },
+      { stem: `Which days does Mary have English?`, ans: engAns, w1: `${DAYS[2]} and ${DAYS[3]}`, w2: `${DAYS[1]} and Friday` },
+      { stem: `Tom has to prepare for ${grid[0][1]} on Monday. What class is it?`, ans: `Class 2`, w1: `Class 1`, w2: `Class 3` },
+      { stem: `How many classes are scheduled each day?`, ans: `4 classes`, w1: `3 classes`, w2: `5 classes` },
+      { stem: `Is Chinese taught on ${DAYS[0]}?`, ans: grid[0].includes("Chinese") ? "Yes, it is." : "No, it isn't.", w1: "Maybe.", w2: "I don't know." }
+    ];
+    questions = qList.map((q, idx) => {
+      let opts = fillOptions(q.ans, q.w1, q.w2, ["Class 4", "Monday and Tuesday", `On Thursday for Class 2`], seed + idx);
+      return { stem: q.stem, options: opts, answer: opts.indexOf(q.ans) };
+    });
+  }
+
+  return { grid, questions };
+}
+
+// ================= 產生 16 個單元大禮包 =================
+function generateAll16Levels() {
+  const versions = [
+    { prefix: 'A', seedOffset: 100 },
+    { prefix: 'B', seedOffset: 200 },
+    { prefix: 'C', seedOffset: 300 },
+    { prefix: 'D', seedOffset: 400 }
+  ];
+
+  const types = ['L1', 'L2', 'L3', 'L4'];
+  let allLevels = [];
+
+  versions.forEach(ver => {
+    types.forEach((t, idx) => {
+      const actualCode = `${ver.prefix}${idx + 1}`;
+      const seed = ver.seedOffset + idx * 50;
+      const data = generateLevelData(t, seed);
+
+      allLevels.push({
+        code: actualCode,
+        grid: data.grid,
+        questions: data.questions
+      });
+    });
+  });
+
+  return allLevels;
+}
+
+const all16Levels = generateAll16Levels();
+let selections = all16Levels.map(level => Array(level.questions.length).fill(null));
+let hintStates = all16Levels.map(() => false);
+
+// ================= UI 渲染 =================
+function createLevel(data, levelIndex){
+  let tableHTML = `
+    <tr>
+      <th></th>
+      <th>Mon (一)</th><th>Tue (二)</th><th>Wed (三)</th><th>Thu (四)</th><th>Fri (五)</th>
+    </tr>
+  `;
+  for(let p=0; p<4; p++) {
+    tableHTML += `<tr>`;
+    tableHTML += `<th>${p+1}<span class="time-header">${TIMES[p]}</span></th>`;
+    for(let d=0; d<5; d++) {
+       tableHTML += `<td>${data.grid[d][p]}</td>`;
+    }
+    tableHTML += `</tr>`;
+  }
+
+  const questionsHTML = data.questions.map((q, qIndex) => {
+    const ansLetter = String.fromCharCode(65 + q.answer);
+    return `
+      <div class="question">
+        <div class="question-line">
+          <span class="answer-blank" id="answer-${levelIndex}-${qIndex}" data-ans="${ansLetter}">（ ）</span>
+          <span>${qIndex+1}. ${q.stem}</span>
+        </div>
+        <div class="options">
+          ${q.options.map((choice, j) => `
+            <button class="choice" data-level="${levelIndex}" data-q="${qIndex}" data-opt="${j}"
+                    onclick="chooseAnswer(${levelIndex}, ${qIndex},${j}, this)">
+              (${String.fromCharCode(65+j)})${choice}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const quote = motivationalQuotes[levelIndex % motivationalQuotes.length];
+
+  return `
+    <section class="level-block" id="level-${levelIndex}">
+      <div class="level-header">
+        <h1 class="level-title">🏫 E-City｜異想課表 ${data.code}</h1>
+        <div class="student-info">
+          <span>班級：</span><span class="info-line"></span>
+          <span>姓名：</span><span class="info-line name-line"></span>
+        </div>
+      </div>
+
+      <div class="level-content">
+        <!-- 左側課表 -->
+        <div class="left-side">
+          <section class="schedule-box">
+            <div class="schedule-title">School Timetable (學校課表)</div>
+            <div class="schedule-table-wrap">
+              <table class="schedule-table">
+                ${tableHTML}
+              </table>
             </div>
-
-            <!-- 線上評分控制面板 (列印時隱藏) -->
-            <div class="no-print max-w-4xl mx-auto flex justify-between items-center bg-slate-900 text-white p-3 rounded-xl shadow-md mb-8">
-                <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-graduation-cap text-lg text-emerald-400"></i>
-                    <div>
-                        <h4 class="font-bold text-xs">線上互動評分系統</h4>
-                        <p class="text-[10px] text-slate-400">作答後點擊進行系統自動批改 (P改)。</p>
-                    </div>
-                </div>
-                <div class="flex gap-1.5">
-                    <button onclick="resetAnswers()" class="px-3 py-1.5 text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors">
-                        重做
-                    </button>
-                    <button onclick="gradeQuiz()" class="px-4 py-1.5 text-xs font-semibold text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg transition-all shadow-md">
-                        送出批改
-                    </button>
-                </div>
-            </div>
+          </section>
         </div>
 
-        <!-- 全關卡教師列印包 (預設隱藏，點擊列印全部時動態生成並進入列印模式) -->
-        <div id="all-levels-print-view" class="hidden"></div>
+        <!-- 右側測驗區 -->
+        <div class="right-side">
+          <div class="question-head">
+            <div class="question-title-wrap">
+              <h2 class="question-title">Questions</h2>
+              <div class="score" id="score-${levelIndex}"></div>
+            </div>
+            <div class="tools">
+              <button onclick="gradeLevel(${levelIndex})">批改</button>
+              <button onclick="clearLevel(${levelIndex})">清除</button>
+              <button onclick="showAnswers(${levelIndex})">解答</button>
+            </div>
+          </div>
+          <div class="questions three-items">${questionsHTML}</div>
+        </div>
+      </div>
 
-    </main>
+      <div class="footer">
+        <span>⭐ ${quote}</span>
+        <span class="credit">© SINNY SPEDU LABS &nbsp;&nbsp; ${data.code}</span>
+      </div>
+    </section>
+  `;
+}
 
-    <!-- 腳本邏輯 -->
-    <script>
-        const levelsData = [
-            {
-                id: 1,
-                title: "Level 1-1 (Easy)",
-                badge: "Level 1 (Easy)",
-                schedule: {
-                    headers: ["Movie (電影)", "Time 1", "Time 2", "Time 3", "Time 4"],
-                    rows: [
-                        ["Super Puppy", "09:00 AM", "11:30 AM", "02:00 PM", "04:30 PM"],
-                        ["Robot War", "10:00 AM", "01:00 PM", "03:30 PM", "07:00 PM"],
-                        ["Magic School", "10:30 AM", "01:30 PM", "04:00 PM", "06:30 PM"],
-                        ["Space King", "11:00 AM", "02:30 PM", "05:00 PM", "08:00 PM"]
-                    ]
-                },
-                dialogue: [
-                    { speaker: "Tom", text: "Today is Monday. Let's watch a movie." },
-                    { speaker: "Leo", text: "OK! I want to watch Space King." },
-                    { speaker: "Tom", text: "It is on at 02:30 PM. Let's go!" }
-                ],
-                questions: [
-                    {
-                        num: 1,
-                        q: "What day is today?",
-                        options: ["Monday", "Friday", "Sunday"],
-                        ans: 0,
-                        exp: "對話第一句提到 'Today is Monday'，因此今天是星期一。"
-                    },
-                    {
-                        num: 2,
-                        q: "Which movie do Tom and Leo want to watch?",
-                        options: ["Robot War", "Space King", "Super Puppy"],
-                        ans: 1,
-                        exp: "Leo 說 'I want to watch Space King'，所以答案為 Space King。"
-                    },
-                    {
-                        num: 3,
-                        q: "What time will they watch the movie?",
-                        options: ["02:30 PM", "11:00 AM", "05:00 PM"],
-                        ans: 0,
-                        exp: "Tom 說 'It is on at 02:30 PM'，因此他們會看這個時間的場次。"
-                    },
-                    {
-                        num: 4,
-                        q: "How many movies are there on the schedule?",
-                        options: ["Five", "Three", "Four"],
-                        ans: 2,
-                        exp: "表格中橫列共有四部電影（Super Puppy, Robot War, Magic School, Space King）。"
-                    },
-                    {
-                        num: 5,
-                        q: "When is the first show of Super Puppy?",
-                        options: ["11:30 AM", "09:00 AM", "10:00 AM"],
-                        ans: 1,
-                        exp: "對照表格，Super Puppy 的第一個時間（Time 1）為 09:00 AM。"
-                    }
-                ]
-            },
-            {
-                id: 2,
-                title: "Level 1-2 (Easy)",
-                badge: "Level 1 (Easy)",
-                schedule: {
-                    headers: ["Movie (電影)", "Time 1", "Time 2", "Time 3", "Time 4"],
-                    rows: [
-                        ["Happy Farm", "09:30 AM", "12:00 PM", "02:30 PM", "05:00 PM"],
-                        ["Sea Monster", "10:15 AM", "01:15 PM", "04:15 PM", "07:15 PM"],
-                        ["Super Runner", "11:00 AM", "02:00 PM", "05:30 PM", "08:30 PM"],
-                        ["Cats Life", "11:45 AM", "02:45 PM", "06:00 PM", "09:00 PM"]
-                    ]
-                },
-                dialogue: [
-                    { speaker: "Amy", text: "Today is Friday. I want to see a movie." },
-                    { speaker: "Ben", text: "Great! Let's watch Cats Life." },
-                    { speaker: "Amy", text: "Look at the schedule. It is on at 02:45 PM." }
-                ],
-                questions: [
-                    {
-                        num: 6,
-                        q: "What day is today?",
-                        options: ["Friday", "Tuesday", "Thursday"],
-                        ans: 0,
-                        exp: "Amy 第一句話說 'Today is Friday'，所以今天是星期五。"
-                    },
-                    {
-                        num: 7,
-                        q: "What movie does Ben want to watch?",
-                        options: ["Super Runner", "Sea Monster", "Cats Life"],
-                        ans: 2,
-                        exp: "Ben 直接提議 'Let's watch Cats Life'。"
-                    },
-                    {
-                        num: 8,
-                        q: "What time does the movie Cats Life start in the dialogue?",
-                        options: ["11:45 AM", "02:45 PM", "06:00 PM"],
-                        ans: 1,
-                        exp: "Amy 說 'It is on at 02:45 PM'，是指 Cats Life 的第二個場次時間。"
-                    },
-                    {
-                        num: 9,
-                        q: "Which movie has a show at 10:15 AM?",
-                        options: ["Sea Monster", "Happy Farm", "Super Runner"],
-                        ans: 0,
-                        exp: "對照表格 10:15 AM 對應的電影是 Sea Monster 的第一個場次。"
-                    },
-                    {
-                        num: 10,
-                        q: "How many showtimes are there for each movie?",
-                        options: ["Three", "Four", "Five"],
-                        ans: 1,
-                        exp: "表格最上方欄位為 Time 1 到 Time 4，所以每部電影各有 4 個播放場次。"
-                    }
-                ]
-            },
-            {
-                id: 3,
-                title: "Level 2-1 (Medium)",
-                badge: "Level 2 (Medium)",
-                schedule: {
-                    headers: ["Movie (電影)", "Time 1", "Time 2", "Time 3", "Time 4"],
-                    rows: [
-                        ["Ghost House", "09:00 AM", "12:00 PM", "03:00 PM", "06:00 PM"],
-                        ["Ice World", "09:40 AM", "01:10 PM", "04:40 PM", "08:10 PM"],
-                        ["Dino Island", "10:20 AM", "01:50 PM", "05:20 PM", "08:50 PM"],
-                        ["Candy Shop", "11:00 AM", "02:30 PM", "05:50 PM", "09:20 PM"]
-                    ]
-                },
-                dialogue: [
-                    { speaker: "Sam", text: "Today is Wednesday. Let's watch Ghost House together!" },
-                    { speaker: "Zoe", text: "Wonderful! But it is 01:00 PM now. We are too late for the 12:00 PM show." },
-                    { speaker: "Sam", text: "That's okay. We can watch the next show at 03:00 PM." }
-                ],
-                questions: [
-                    {
-                        num: 11,
-                        q: "What day is today?",
-                        options: ["Wednesday", "Saturday", "Monday"],
-                        ans: 0,
-                        exp: "Sam 起頭說 'Today is Wednesday'，代表今天是星期三。"
-                    },
-                    {
-                        num: 12,
-                        q: "What time is it now in the dialogue?",
-                        options: ["12:00 PM", "03:00 PM", "01:00 PM"],
-                        ans: 2,
-                        exp: "Zoe 對話中提到 'it is 01:00 PM now'，說明當下的時間點。"
-                    },
-                    {
-                        num: 13,
-                        q: "Why can they not watch the 12:00 PM show?",
-                        options: ["They are late", "They do not have money", "The theater is closed"],
-                        ans: 0,
-                        exp: "因為現在是 01:00 PM，已經錯過中午 12 點的場次，所以是 'late' 遲到/來不及。"
-                    },
-                    {
-                        num: 14,
-                        q: "Which show of Ghost House will they watch?",
-                        options: ["09:00 AM", "03:00 PM", "06:00 PM"],
-                        ans: 1,
-                        exp: "Sam 後來提議 'watch the next show at 03:00 PM'。"
-                    },
-                    {
-                        num: 15,
-                        q: "What time is the last show of Candy Shop?",
-                        options: ["09:20 PM", "05:50 PM", "11:00 AM"],
-                        ans: 0,
-                        exp: "對照時刻表，Candy Shop 的最後一場（Time 4）是 09:20 PM。"
-                    }
-                ]
-            },
-            {
-                id: 4,
-                title: "Level 2-2 (Medium)",
-                badge: "Level 2 (Medium)",
-                schedule: {
-                    headers: ["Movie (電影)", "Time 1", "Time 2", "Time 3", "Time 4"],
-                    rows: [
-                        ["Magic Ring", "09:15 AM", "12:15 PM", "03:15 PM", "06:15 PM"],
-                        ["Fire Man", "10:00 AM", "01:30 PM", "04:30 PM", "07:30 PM"],
-                        ["Super Chef", "10:45 AM", "02:15 PM", "05:15 PM", "08:15 PM"],
-                        ["Baby Bear", "11:30 AM", "02:45 PM", "05:45 PM", "08:45 PM"]
-                    ]
-                },
-                dialogue: [
-                    { speaker: "Mia", text: "Today is Thursday. Do you want to see Super Chef?" },
-                    { speaker: "Ken", text: "Yes, please! But it is 11:00 AM now. We missed the 10:45 AM show." },
-                    { speaker: "Mia", text: "No problem. Let's watch the movie at 02:15 PM." }
-                ],
-                questions: [
-                    {
-                        num: 16,
-                        q: "What day is today?",
-                        options: ["Thursday", "Friday", "Wednesday"],
-                        ans: 0,
-                        exp: "Mia 的第一句話中提到 'Today is Thursday'。"
-                    },
-                    {
-                        num: 17,
-                        q: "What movie do Mia and Ken want to see?",
-                        options: ["Fire Man", "Baby Bear", "Super Chef"],
-                        ans: 2,
-                        exp: "對話中兩人都同意去看 'Super Chef' 電影。"
-                    },
-                    {
-                        num: 18,
-                        q: "What time is it now?",
-                        options: ["02:15 PM", "11:00 AM", "10:45 AM"],
-                        ans: 1,
-                        exp: "Ken 說 'it is 11:00 AM now'，代表當前時間點。"
-                    },
-                    {
-                        num: 19,
-                        q: "Which showtime did they miss?",
-                        options: ["10:45 AM", "02:15 PM", "05:15 PM"],
-                        ans: 0,
-                        exp: "Ken 接著說 'We missed the 10:45 AM show'，也就是錯過了 10:45 點的那場。"
-                    },
-                    {
-                        num: 20,
-                        q: "When is the first show of Fire Man?",
-                        options: ["01:30 PM", "10:00 AM", "04:30 PM"],
-                        ans: 1,
-                        exp: "從表格中對照 Fire Man 的 Time 1，可以看到第一場時間為 10:00 AM。"
-                    }
-                ]
-            },
-            {
-                id: 5,
-                title: "Level 3 (Hard)",
-                badge: "Level 3 (Hard)",
-                schedule: {
-                    headers: ["Movie (電影)", "Time 1", "Time 2", "Time 3", "Time 4"],
-                    rows: [
-                        ["Tree Man", "09:30 AM", "12:30 PM", "03:30 PM", "06:30 PM"],
-                        ["Night Star", "10:15 AM", "01:45 PM", "05:00 PM", "08:15 PM"],
-                        ["Cyber City", "11:00 AM", "02:15 PM", "05:30 PM", "08:45 PM"],
-                        ["Toy Train", "11:45 AM", "03:00 PM", "06:15 PM", "09:30 PM"]
-                    ]
-                },
-                dialogue: [
-                    { speaker: "John", text: "It is Sunday today. What movie do you want to watch?" },
-                    { speaker: "Mary", text: "I want to watch Cyber City, but I am only free after 03:00 PM." },
-                    { speaker: "John", text: "OK. The next show is at 05:30 PM. Is that good for you?" },
-                    { speaker: "Mary", text: "Yes! Let's meet at the theater at 05:10 PM." }
-                ],
-                questions: [
-                    {
-                        num: 21,
-                        q: "What day are John and Mary meeting?",
-                        options: ["Sunday", "Saturday", "Thursday"],
-                        ans: 0,
-                        exp: "對話開頭提到 'It is Sunday today'。"
-                    },
-                    {
-                        num: 22,
-                        q: "Which movie are they going to watch?",
-                        options: ["Toy Train", "Tree Man", "Cyber City"],
-                        ans: 2,
-                        exp: "兩人同意要看的片子是 'Cyber City'。"
-                    },
-                    {
-                        num: 23,
-                        q: "Why can Mary NOT watch the 02:15 PM show?",
-                        options: ["She is not free before 03:00 PM", "She does not like the movie", "The show is full"],
-                        ans: 0,
-                        exp: "Mary 說 'I am only free after 03:00 PM'，代表她下午 3 點後才有空，所以趕不及 2:15 點的場次。"
-                    },
-                    {
-                        num: 24,
-                        q: "What time does the movie start?",
-                        options: ["05:10 PM", "05:30 PM", "02:15 PM"],
-                        ans: 1,
-                        exp: "John 說 'The next show is at 05:30 PM'（也就是他們要看的那場），故為電影開演時間。"
-                    },
-                    {
-                        num: 25,
-                        q: "What time will John and Mary meet at the theater?",
-                        options: ["05:30 PM", "03:00 PM", "05:10 PM"],
-                        ans: 2,
-                        exp: "Mary 最後說 'Let's meet at the theater at 05:10 PM'，也就是雙方約在戲院碰面的時間。"
-                    }
-                ]
-            }
-        ];
+function renderAll(){
+  const pageRoot = document.getElementById("pages");
+  pageRoot.innerHTML = "";
 
-        let currentLevelsData = JSON.parse(JSON.stringify(levelsData));
-        let activeLevelIdx = 0;
-        let isEditMode = false;
-        let userSelections = {};
+  for(let i=0; i<all16Levels.length; i+=2){
+    const first = createLevel(all16Levels[i], i);
+    const second = createLevel(all16Levels[i+1], i+1);
+    pageRoot.insertAdjacentHTML("beforeend", `
+      <section class="sheet">
+        ${first}
+        ${second}
+      </section>
+    `);
+  }
+}
 
-        window.onload = function() {
-            renderLevel(activeLevelIdx);
-        };
+// 導覽與列印控制
+function toggleWidget(){
+  const body = document.getElementById('widgetBody');
+  const icon = document.getElementById('widgetToggleIcon');
+  body.classList.toggle('collapsed');
+  icon.textContent = body.classList.contains('collapsed') ? '▲' : '▼';
+}
 
-        // 渲染指定關卡
-        function renderLevel(levelIdx) {
-            activeLevelIdx = levelIdx;
-            const data = currentLevelsData[levelIdx];
-            
-            // 變更關卡 Tab UI
-            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-                if (idx === levelIdx) {
-                    btn.className = "tab-btn px-2.5 py-1 text-xs font-semibold rounded-full bg-indigo-600 text-white shadow-sm transition-all";
-                } else {
-                    btn.className = "tab-btn px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all";
-                }
-            });
+function scrollToId(elementId){
+  const el = document.getElementById(elementId);
+  if(el){
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
 
-            // 更新 A4 上的 Level 徽章與標題
-            document.getElementById('level-badge').innerText = data.badge;
-            
-            const titleEl = document.getElementById('sheet-title');
-            titleEl.innerText = `English Reading Practice: Movie Schedule`;
-            titleEl.contentEditable = isEditMode;
+function executePrint(){
+  const mode = document.getElementById('printModeSelect').value;
+  if(mode === 'teacher'){
+    document.body.classList.add('teacher-mode');
+  } else {
+    document.body.classList.remove('teacher-mode');
+  }
+  window.print();
+}
 
-            // 分數清零
-            document.getElementById('score-num').innerText = "-";
+// 互動邏輯
+function getOptions(levelIndex, qIndex){
+  return document.querySelectorAll(`.choice[data-level="${levelIndex}"][data-q="${qIndex}"]`);
+}
+function getAnswerSlot(levelIndex, qIndex){
+  return document.getElementById(`answer-${levelIndex}-${qIndex}`);
+}
 
-            // 渲染三大區塊
-            renderTable(data.schedule);
-            renderDialogue(data.dialogue);
-            renderQuestions(data.questions);
+function chooseAnswer(levelIndex, qIndex, optIndex, element){
+  const options = getOptions(levelIndex, qIndex);
+  options.forEach(el => el.classList.remove("selected"));
 
-            userSelections = {};
-        }
+  selections[levelIndex][qIndex] = optIndex;
+  element.classList.add("selected");
 
-        // Part A: 表格渲染
-        function renderTable(schedule) {
-            const tbody = document.querySelector('#schedule-table tbody');
-            tbody.innerHTML = '';
-            
-            schedule.rows.forEach((row, rowIdx) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50/50 transition-colors";
-                
-                row.forEach((cell, colIdx) => {
-                    const td = document.createElement('td');
-                    // 減少內距確保 A4 能一頁裝下
-                    td.className = `p-2 text-xs border-r border-slate-200 last:border-r-0 ${colIdx === 0 ? 'font-semibold text-slate-900 bg-slate-50/30' : 'text-slate-600 font-mono'}`;
-                    td.innerText = cell;
-                    td.contentEditable = isEditMode;
-                    td.onblur = function() {
-                        currentLevelsData[activeLevelIdx].schedule.rows[rowIdx][colIdx] = td.innerText;
-                    };
-                    tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
-            });
-        }
+  const slot = getAnswerSlot(levelIndex, qIndex);
+  slot.textContent = `（${String.fromCharCode(65 + optIndex)}）`;
+  slot.className = "answer-blank";
+  document.getElementById(`score-${levelIndex}`).textContent = "";
+}
 
-        // Part B: 對話渲染
-        function renderDialogue(dialogue) {
-            const box = document.getElementById('dialogue-box');
-            box.innerHTML = '';
+function gradeLevel(levelIndex){
+  let correctCount = 0;
+  all16Levels[levelIndex].questions.forEach((q, qIndex) => {
+    const chosen = selections[levelIndex][qIndex];
+    const options = getOptions(levelIndex, qIndex);
+    options.forEach(el => el.classList.remove("correct"));
+    if(chosen === null) return;
 
-            dialogue.forEach((line, lineIdx) => {
-                const item = document.createElement('div');
-                item.className = "flex items-start gap-2 text-xs leading-relaxed";
-                
-                const speakerSpan = document.createElement('span');
-                speakerSpan.className = "font-extrabold text-indigo-700 min-w-[55px] shrink-0";
-                speakerSpan.innerText = line.speaker + ":";
-                speakerSpan.contentEditable = isEditMode;
-                speakerSpan.onblur = function() {
-                    currentLevelsData[activeLevelIdx].dialogue[lineIdx].speaker = speakerSpan.innerText.replace(':', '');
-                };
+    if(chosen === q.answer){
+      correctCount++;
+      options[chosen].classList.add("correct");
+      const slot = getAnswerSlot(levelIndex, qIndex);
+      slot.className = "answer-blank good";
+    }else{
+      options[chosen].classList.remove("selected");
+      selections[levelIndex][qIndex] = null;
+      getAnswerSlot(levelIndex, qIndex).textContent = "（ ）";
+    }
+  });
+  document.getElementById(`score-${levelIndex}`).textContent = `${correctCount} / 3`;
+}
 
-                const textSpan = document.createElement('span');
-                textSpan.className = "text-slate-700 italic";
-                textSpan.innerText = `"${line.text}"`;
-                textSpan.contentEditable = isEditMode;
-                textSpan.onblur = function() {
-                    currentLevelsData[activeLevelIdx].dialogue[lineIdx].text = textSpan.innerText.replace(/"/g, '');
-                };
+function clearLevel(levelIndex){
+  selections[levelIndex].fill(null);
+  all16Levels[levelIndex].questions.forEach((_, qIndex) => {
+    getOptions(levelIndex, qIndex).forEach(el => el.classList.remove("selected", "correct"));
+    const slot = getAnswerSlot(levelIndex, qIndex);
+    slot.textContent = "（ ）";
+    slot.className = "answer-blank";
+  });
+  document.getElementById(`score-${levelIndex}`).textContent = "";
+}
 
-                item.appendChild(speakerSpan);
-                item.appendChild(textSpan);
-                box.appendChild(item);
-            });
-        }
+function showAnswers(levelIndex){
+  all16Levels[levelIndex].questions.forEach((q, qIndex) => {
+    getOptions(levelIndex, qIndex).forEach(el => el.classList.remove("selected", "correct"));
+    const slot = getAnswerSlot(levelIndex, qIndex);
+    slot.textContent = `（${String.fromCharCode(65 + q.answer)}）`;
+    slot.className = "answer-blank reveal";
+  });
+  document.getElementById(`score-${levelIndex}`).textContent = "解答";
+}
 
-        // Part C: 題目渲染 (A, B, C 橫向三欄式並排，節省高度)
-        function renderQuestions(questions) {
-            const container = document.getElementById('questions-container');
-            container.innerHTML = '';
-
-            questions.forEach((qObj, qIdx) => {
-                const qDiv = document.createElement('div');
-                qDiv.className = "p-2 rounded-lg border border-transparent hover:border-slate-100 transition-all";
-                qDiv.setAttribute('data-q-num', qObj.num);
-
-                // 題目敘述
-                const qTitle = document.createElement('h4');
-                qTitle.className = "font-bold text-slate-800 text-xs mb-1.5 flex items-start gap-1.5";
-                
-                const qNumSpan = document.createElement('span');
-                qNumSpan.className = "bg-indigo-50 text-indigo-700 text-[10px] px-1.5 py-0.5 rounded font-mono shrink-0";
-                qNumSpan.innerText = qObj.num;
-                
-                const qTextSpan = document.createElement('span');
-                qTextSpan.innerText = qObj.q;
-                qTextSpan.contentEditable = isEditMode;
-                qTextSpan.onblur = function() {
-                    currentLevelsData[activeLevelIdx].questions[qIdx].q = qTextSpan.innerText;
-                };
-
-                qTitle.appendChild(qNumSpan);
-                qTitle.appendChild(qTextSpan);
-                qDiv.appendChild(qTitle);
-
-                // 橫向並排選項：在螢幕與列印都設定為 3 欄並排 (grid-cols-3)
-                const optContainer = document.createElement('div');
-                optContainer.className = "grid grid-cols-3 gap-2";
-
-                const letters = ['A', 'B', 'C'];
-                qObj.options.forEach((opt, optIdx) => {
-                    const label = document.createElement('label');
-                    label.className = "option-label flex items-center gap-1.5 p-1.5 rounded-md border border-slate-200 cursor-pointer text-[11px] truncate";
-                    label.id = `label-q${qObj.num}-${optIdx}`;
-
-                    const radio = document.createElement('input');
-                    radio.type = "radio";
-                    radio.name = `q_${qObj.num}`;
-                    radio.value = optIdx;
-                    radio.className = "w-3.5 h-3.5 text-indigo-600 focus:ring-indigo-500 border-slate-300";
-                    radio.onclick = function() {
-                        userSelections[`q_${qObj.num}`] = optIdx;
-                    };
-
-                    const optTextSpan = document.createElement('span');
-                    optTextSpan.className = "text-slate-700 truncate";
-                    
-                    const prefix = document.createElement('strong');
-                    prefix.className = "mr-1 text-slate-400";
-                    prefix.innerText = `(${letters[optIdx]})`;
-
-                    const valSpan = document.createElement('span');
-                    valSpan.innerText = opt;
-                    valSpan.contentEditable = isEditMode;
-                    valSpan.onblur = function() {
-                        currentLevelsData[activeLevelIdx].questions[qIdx].options[optIdx] = valSpan.innerText;
-                    };
-
-                    optTextSpan.appendChild(prefix);
-                    optTextSpan.appendChild(valSpan);
-                    
-                    label.appendChild(radio);
-                    label.appendChild(optTextSpan);
-                    optContainer.appendChild(label);
-                });
-
-                qDiv.appendChild(optContainer);
-
-                // 解析盒
-                const expDiv = document.createElement('div');
-                expDiv.id = `exp-box-${qObj.num}`;
-                expDiv.className = "explanation-box hidden mt-1.5 bg-slate-50 border-l-2 border-indigo-400 p-2 rounded text-[11px] text-slate-600";
-                
-                const expTextSpan = document.createElement('span');
-                expTextSpan.innerHTML = `<strong>解析：</strong> ${qObj.exp}`;
-                expTextSpan.contentEditable = isEditMode;
-                expTextSpan.onblur = function() {
-                    currentLevelsData[activeLevelIdx].questions[qIdx].exp = expTextSpan.innerHTML.replace('<strong>解析：</strong> ', '');
-                };
-
-                expDiv.appendChild(expTextSpan);
-                qDiv.appendChild(expDiv);
-
-                container.appendChild(qDiv);
-            });
-        }
-
-        // 開關編輯模式
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            const btnText = document.getElementById('edit-mode-text');
-            const notice = document.getElementById('editor-notice');
-            
-            if (isEditMode) {
-                btnText.innerText = "完成並鎖定編輯";
-                document.getElementById('btn-edit-mode').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-amber-500 text-white border border-amber-600 hover:bg-amber-600 transition-colors flex items-center gap-1.5";
-                notice.classList.remove('hidden');
-            } else {
-                btnText.innerText = "開啟自由編輯";
-                document.getElementById('btn-edit-mode').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition-colors flex items-center gap-1.5";
-                notice.classList.add('hidden');
-            }
-
-            renderLevel(activeLevelIdx);
-        }
-
-        // 隨機替換示範（通用編輯特點示範）
-        function randomizeCurrentData() {
-            if (!confirm("確定要隨機生成新時刻表與對話嗎？")) return;
-            
-            const randomMovies = ["Monster City", "Sky Fighter", "Magic Wand", "Happy Pig"];
-            const randomTimes = [
-                ["08:00 AM", "11:00 AM", "02:00 PM", "05:00 PM"],
-                ["09:00 AM", "12:00 PM", "03:00 PM", "06:00 PM"],
-                ["10:00 AM", "01:00 PM", "04:00 PM", "07:00 PM"],
-                ["11:00 AM", "02:00 PM", "05:00 PM", "08:00 PM"]
-            ];
-            const randomDays = ["Saturday", "Sunday", "Friday"];
-
-            const data = currentLevelsData[activeLevelIdx];
-            const chosenDay = randomDays[Math.floor(Math.random() * randomDays.length)];
-
-            for(let i=0; i<4; i++) {
-                data.schedule.rows[i][0] = randomMovies[i];
-                const times = randomTimes[i];
-                data.schedule.rows[i][1] = times[0];
-                data.schedule.rows[i][2] = times[1];
-                data.schedule.rows[i][3] = times[2];
-                data.schedule.rows[i][4] = times[3];
-            }
-
-            data.dialogue[0].text = `Today is ${chosenDay}. Let's watch a movie.`;
-            data.dialogue[1].text = `OK! I want to watch ${randomMovies[0]}.`;
-            data.dialogue[2].text = `Look! The first show is at ${data.schedule.rows[0][1]}.`;
-
-            data.questions[0].q = "What day is today?";
-            data.questions[0].options = [chosenDay, "Tuesday", "Monday"].sort(() => 0.5 - Math.random());
-            data.questions[0].ans = data.questions[0].options.indexOf(chosenDay);
-
-            data.questions[1].q = "Which movie do they want to watch?";
-            data.questions[1].options = [randomMovies[0], randomMovies[1], randomMovies[2]].sort(() => 0.5 - Math.random());
-            data.questions[1].ans = data.questions[1].options.indexOf(randomMovies[0]);
-
-            renderLevel(activeLevelIdx);
-        }
-
-        // 線上即時批改 (P改)
-        function gradeQuiz() {
-            const data = currentLevelsData[activeLevelIdx];
-            let correctCount = 0;
-
-            data.questions.forEach((qObj) => {
-                const userAns = userSelections[`q_${qObj.num}`];
-                const isCorrect = userAns !== undefined && parseInt(userAns) === qObj.ans;
-                const expBox = document.getElementById(`exp-box-${qObj.num}`);
-                
-                expBox.classList.remove('hidden');
-
-                // 恢復外框後批改
-                for (let i = 0; i < 3; i++) {
-                    const lbl = document.getElementById(`label-q${qObj.num}-${i}`);
-                    lbl.className = "option-label flex items-center gap-1.5 p-1.5 rounded-md border border-slate-200 cursor-pointer text-[11px] truncate";
-                }
-
-                if (userAns !== undefined) {
-                    const userLabel = document.getElementById(`label-q${qObj.num}-${userAns}`);
-                    if (isCorrect) {
-                        correctCount++;
-                        userLabel.className = "option-label flex items-center gap-1.5 p-1.5 rounded-md border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold text-[11px] truncate";
-                    } else {
-                        userLabel.className = "option-label flex items-center gap-1.5 p-1.5 rounded-md border-2 border-rose-500 bg-rose-50 text-rose-900 font-bold text-[11px] truncate";
-                    }
-                }
-
-                // 正確答案加上綠色框線提示
-                const correctLabel = document.getElementById(`label-q${qObj.num}-${qObj.ans}`);
-                correctLabel.className += " ring-2 ring-emerald-500/50 bg-emerald-50/20";
-            });
-
-            const total = data.questions.length;
-            const score = Math.round((correctCount / total) * 100);
-            document.getElementById('score-num').innerText = score;
-
-            if (score === 100) {
-                fireConfetti();
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // 重置
-        function resetAnswers() {
-            renderLevel(activeLevelIdx);
-        }
-
-        // 灑花動畫
-        function fireConfetti() {
-            const canvas = document.getElementById('confetti-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            let particles = [];
-            for (let i = 0; i < 120; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height - canvas.height,
-                    r: Math.random() * 3 + 3,
-                    d: Math.random() * canvas.height,
-                    color: `hsl(${Math.random() * 360}, 100%, 60%)`,
-                    tilt: Math.random() * 10 - 5,
-                    tiltAngleIncremental: Math.random() * 0.07 + 0.02,
-                    tiltAngle: 0
-                });
-            }
-
-            function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                particles.forEach((p, idx) => {
-                    p.tiltAngle += p.tiltAngleIncremental;
-                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
-                    p.x += Math.sin(p.tiltAngle);
-                    p.tilt = Math.sin(p.tiltAngle - idx / 3) * 12;
-
-                    ctx.beginPath();
-                    ctx.lineWidth = p.r;
-                    ctx.strokeStyle = p.color;
-                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
-                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
-                    ctx.stroke();
-                });
-
-                if (particles.some(p => p.y < canvas.height)) {
-                    requestAnimationFrame(draw);
-                } else {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                }
-            }
-            draw();
-        }
-
-        // 一次列印 5 大關教師包 (完美一頁一關防溢出)
-        function printAllLevels() {
-            const printView = document.getElementById('all-levels-print-view');
-            const singleView = document.getElementById('single-level-view');
-            
-            printView.innerHTML = '';
-            
-            currentLevelsData.forEach((data, levelIdx) => {
-                const page = document.createElement('div');
-                page.className = "a4-page print-clean mb-8";
-                
-                let tableRowsHtml = '';
-                data.schedule.rows.forEach(row => {
-                    tableRowsHtml += `
-                        <tr class="border-b border-slate-300">
-                            <td class="p-2 text-xs font-semibold text-slate-900 bg-slate-50/10 border-r border-slate-200">${row[0]}</td>
-                            <td class="p-2 text-xs font-mono text-slate-600 border-r border-slate-200">${row[1]}</td>
-                            <td class="p-2 text-xs font-mono text-slate-600 border-r border-slate-200">${row[2]}</td>
-                            <td class="p-2 text-xs font-mono text-slate-600 border-r border-slate-200">${row[3]}</td>
-                            <td class="p-2 text-xs font-mono text-slate-600">${row[4]}</td>
-                        </tr>
-                    `;
-                });
-
-                let dialogueLinesHtml = '';
-                data.dialogue.forEach(line => {
-                    dialogueLinesHtml += `
-                        <div class="flex items-start gap-2 text-xs leading-relaxed">
-                            <span class="font-extrabold text-indigo-700 min-w-[55px] shrink-0">${line.speaker}:</span>
-                            <span class="text-slate-700 italic">"${line.text}"</span>
-                        </div>
-                    `;
-                });
-
-                let questionsHtml = '';
-                const letters = ['A', 'B', 'C'];
-                data.questions.forEach(qObj => {
-                    let optionsHtml = '';
-                    qObj.options.forEach((opt, optIdx) => {
-                        optionsHtml += `
-                            <div class="flex items-center gap-1.5 p-1.5 rounded border border-slate-200 text-[11px] truncate">
-                                <span class="border border-slate-400 rounded-full w-4 h-4 flex items-center justify-center text-[9px] text-slate-500 shrink-0">${letters[optIdx]}</span>
-                                <span class="text-slate-700 truncate">${opt}</span>
-                            </div>
-                        `;
-                    });
-
-                    questionsHtml += `
-                        <div class="p-1">
-                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1.5">
-                                <span class="bg-indigo-50 text-indigo-700 text-[10px] px-1.5 py-0.5 rounded font-mono">${qObj.num}</span>
-                                <span>${qObj.q}</span>
-                            </h4>
-                            <div class="grid grid-cols-3 gap-2">
-                                ${optionsHtml}
-                            </div>
-                        </div>
-                    `;
-                });
-
-                page.innerHTML = `
-                    <div class="border-b-2 border-slate-800 pb-2 mb-4 flex flex-row items-center justify-between">
-                        <div>
-                            <h2 class="text-base font-extrabold text-slate-900 tracking-wide">English Reading Practice: Movie Schedule</h2>
-                        </div>
-                        <div class="flex items-center gap-3 text-xs shrink-0">
-                            <div class="flex items-center border-b border-slate-400 pb-0.5 w-24">
-                                <span class="font-bold text-slate-700 shrink-0">Class:</span>
-                                <div class="w-full h-4"></div>
-                            </div>
-                            <div class="flex items-center border-b border-slate-400 pb-0.5 w-16">
-                                <span class="font-bold text-slate-700 shrink-0">No:</span>
-                                <div class="w-full h-4"></div>
-                            </div>
-                            <div class="flex items-center border-b border-slate-400 pb-0.5 w-28">
-                                <span class="font-bold text-slate-700 shrink-0">Name:</span>
-                                <div class="w-full h-4"></div>
-                            </div>
-                            <div class="border-2 border-slate-800 px-2.5 py-0.5 text-center min-w-[50px] rounded bg-slate-50">
-                                <span class="text-[9px] block text-slate-500 font-bold leading-none">Score</span>
-                                <span class="text-sm font-black font-mono">-</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Table -->
-                    <div class="mb-3.5">
-                        <h3 class="text-xs font-bold text-slate-900 mb-1.5 flex items-center gap-2">
-                            <span class="bg-slate-900 text-white w-4.5 h-4.5 rounded-full inline-flex items-center justify-center text-[10px] shrink-0 font-mono">1</span>
-                            Part A: Movie Schedule
-                            <span class="ml-1 bg-indigo-100 text-indigo-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded tracking-wider">${data.badge}</span>
-                        </h3>
-                        <table class="w-full text-left border border-slate-300 rounded-md overflow-hidden">
-                            <thead>
-                                <tr class="bg-slate-100/80 border-b border-slate-300">
-                                    <th class="p-2 text-xs font-extrabold text-slate-700 w-1/4 border-r border-slate-300">Movie (電影)</th>
-                                    <th class="p-2 text-xs font-bold text-slate-700 border-r border-slate-300">Time 1</th>
-                                    <th class="p-2 text-xs font-bold text-slate-700 border-r border-slate-300">Time 2</th>
-                                    <th class="p-2 text-xs font-bold text-slate-700 border-r border-slate-300">Time 3</th>
-                                    <th class="p-2 text-xs font-bold text-slate-700">Time 4</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${tableRowsHtml}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Dialogue -->
-                    <div class="mb-3.5">
-                        <h3 class="text-xs font-bold text-slate-900 mb-1.5 flex items-center gap-2">
-                            <span class="bg-slate-900 text-white w-4.5 h-4.5 rounded-full inline-flex items-center justify-center text-[10px] shrink-0 font-mono">2</span>
-                            Part B: Dialogue
-                        </h3>
-                        <div class="bg-indigo-50/40 border border-indigo-100/60 rounded-md p-3 space-y-1.5">
-                            ${dialogueLinesHtml}
-                        </div>
-                    </div>
-
-                    <!-- Questions -->
-                    <div class="mb-1">
-                        <h3 class="text-xs font-bold text-slate-900 mb-2 flex items-center gap-2">
-                            <span class="bg-slate-900 text-white w-4.5 h-4.5 rounded-full inline-flex items-center justify-center text-[10px] shrink-0 font-mono">3</span>
-                            Part C: Questions
-                        </h3>
-                        <div class="space-y-2.5">
-                            ${questionsHtml}
-                        </div>
-                    </div>
-
-                    <div class="hidden print:block text-center text-[9px] text-slate-400 border-t border-slate-100 pt-2 mt-4">
-                        Movie Schedule English Learning System. Printed Page ${levelIdx + 1} of 5.
-                    </div>
-                `;
-                
-                printView.appendChild(page);
-            });
-
-            printView.classList.remove('hidden');
-            singleView.classList.add('hidden');
-
-            setTimeout(() => {
-                window.print();
-                printView.classList.add('hidden');
-                singleView.classList.remove('hidden');
-            }, 300);
-        }
-    </script>
-  <script src="../shared/js/public-footer.js"></script>
+renderAll();
+</script>
+<script src="../shared/js/public-footer.js"></script>
 </body>
 </html>
