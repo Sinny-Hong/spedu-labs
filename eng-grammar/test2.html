@@ -1,10 +1,515 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>測試頁｜eng-grammar/test2.html</title>
-  <style>body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,sans-serif;background:#f8fafc;color:#19324d}main{text-align:center;padding:32px}h1{margin:0 0 12px}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-City｜異想家庭樹 (16單元母版)</title>
+<style>
+:root{
+  --cream:#fff9ec;
+  --gold:#f5b942;
+  --coral:#e7655d;
+  --ink:#385f81;
+  --blue:#2477cd;
+  --green:#168a57;
+  --red:#d83f43;
+  --line:#dce7ef;
+  --navy:#1A252F;
+  --hint:#FFF0A6;
+  --hint-line:#F1C44A;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:#E8EDF1;color:var(--ink);
+  font-family:"Comic Sans MS","Trebuchet MS","Microsoft JhengHei",sans-serif;
+  padding:18px 0 40px;
+}
+button,select{font:inherit;cursor:pointer}
+
+/* =========================================================
+   FLOATING NAV & PRINT WIDGET
+========================================================= */
+.floating-widget{
+  position:fixed;right:16px;top:16px;z-index:1000;
+  background:white;border:1px solid #C8D5E0;border-radius:14px;
+  box-shadow:0 4px 20px rgba(0,0,0,.15);overflow:hidden;
+  font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+}
+.widget-header{
+  background:var(--coral);color:white;padding:10px 14px;font-weight:900;
+  display:flex;align-items:center;justify-content:space-between;cursor:pointer;
+  font-size:14px;user-select:none;gap:10px;
+}
+.widget-body{
+  padding:12px;display:flex;flex-direction:column;gap:10px;background:white;
+  max-height:80vh;overflow-y:auto;
+}
+.widget-body.collapsed{display:none;}
+.nav-section-title{
+  font-size:12px;font-weight:900;color:#647789;margin-bottom:4px;border-bottom:1px solid var(--line);padding-bottom:2px;
+}
+.nav-grid{display:grid;grid-template-columns:repeat(4, 1fr);gap:4px;}
+.nav-grid button{
+  padding:6px 4px;border:1px solid #C8D5E0;border-radius:6px;background:white;
+  color:var(--coral);font-size:12px;font-weight:900;cursor:pointer;text-align:center;
+}
+.nav-grid button:hover{background:#fdf2f2;border-color:var(--coral);}
+.print-select-wrap{display:flex;flex-direction:column;gap:6px;margin-top:4px;}
+.print-select-wrap select{
+  padding:8px;border:1px solid #C8D5E0;border-radius:8px;font-weight:900;color:var(--navy);background:white;cursor:pointer;
+}
+.print-action-btn{
+  background:var(--coral);color:white;border:0;border-radius:8px;padding:9px;font-weight:900;cursor:pointer;text-align:center;
+}
+.print-action-btn:hover{background:#d05048;}
+
+/* =========================================================
+   A4 PORTRAIT SHEETS
+========================================================= */
+.sheet{
+  width:210mm;height:297mm;margin:0 auto 18px;padding:7mm 8mm;
+  background:#fff;box-shadow:0 5px 18px rgba(0,0,0,.12);
+  overflow:hidden;display:grid;grid-template-rows:1fr 1fr;gap:5mm;
+  page-break-after:always;
+}
+.sheet:last-child{page-break-after:auto;}
+
+.level-block{
+  min-height:0;display:flex;flex-direction:column;overflow:hidden;
+}
+.level-block:first-child{
+  padding-bottom:2.5mm;border-bottom:1.5px dashed #D5E0E9;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+.level-header{
+  min-height:12mm;display:flex;align-items:center;justify-content:space-between;
+  gap:5mm;margin-bottom:2mm;
+}
+.level-title{margin:0;color:var(--ink);font-size:16.5pt;line-height:1;font-weight:900;white-space:nowrap;}
+.student-info{display:flex;align-items:center;gap:3mm;color:#273E52;font-size:14pt;font-weight:700;white-space:nowrap;}
+.info-line{display:inline-block;min-width:25mm;height:5mm;border-bottom:1.4px solid #647789;}
+.name-line{min-width:36mm;}
+
+/* =========================================================
+   CONTENT LAYOUT (50:50)
+========================================================= */
+.level-content{
+  flex:1;min-height:0;display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4mm;
+}
+.panel{
+  min-width:0;min-height:0;background:white;border:1.5px solid var(--gold);
+  border-radius:14px;padding:8px;display:flex;flex-direction:column;
+}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;min-height:7mm;margin-bottom:3px;
+}
+.panel-head h2{margin:0;font-size:12pt;color:var(--ink);font-weight:900;}
+
+.tree-area{flex:1;min-width:0;min-height:0;display:flex;justify-content:center;align-items:center;}
+.family-svg{width:100%;height:100%;max-width:100%;max-height:100%;display:block}
+.person-card{fill:white;stroke:var(--gold);stroke-width:6}
+.person-label{fill:var(--ink);font-family:"Comic Sans MS","Trebuchet MS",sans-serif;font-weight:bold}
+
+.questions{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-around;overflow:hidden;}
+.question{border-bottom:1px solid var(--line);padding:3px 0;min-width:0}
+.question:last-child{border-bottom:none;}
+.question-line{display:flex;align-items:baseline;gap:4px;font-size:10.5pt;font-weight:bold;line-height:1.2}
+.answer-blank{flex:none;color:var(--blue);white-space:nowrap;min-width:2.5em;text-align:right;}
+.answer-blank.good{color:var(--green)}
+.answer-blank.reveal{color:var(--red)}
+
+.options{
+  margin-left:2.5em;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:9.5pt;margin-top:1px;
+}
+.choice{border:0;border-radius:5px;background:transparent;color:var(--ink);padding:1px 4px;font-weight:bold;}
+.choice.selected{color:var(--blue);background:#e4f0ff}
+.choice.correct{color:var(--green);background:#e3f5e9}
+.choice.reveal{color:var(--red);background:#ffe8e8}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+.footer{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:8pt;color:#788896;padding-top:1.5mm;margin-top:auto;
+}
+.footer .credit{
+  margin-left:auto;text-align:right;font-size:7.5pt;letter-spacing:.2px;
+}
+
+/* =========================================================
+   TEACHER ANSWER MODE
+========================================================= */
+body.teacher-mode .answer-blank{
+  color: var(--red) !important;
+  font-weight: 900 !important;
+}
+body.teacher-mode .answer-blank::after{
+  content: attr(data-ans);
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+@page{size:A4 portrait;margin:0;}
+@media print{
+  html,body{width:210mm;margin:0;padding:0;background:white;}
+  .floating-widget{display:none !important;}
+  .sheet{width:210mm;height:297mm;margin:0;box-shadow:none;}
+}
+</style>
 </head>
-<body><main><h1>測試頁</h1><p>eng-grammar/test2.html</p></main></body>
+<body>
+
+<div class="floating-widget" id="floatingWidget">
+  <div class="widget-header" onclick="toggleWidget()">
+    <span>📍 快速導覽與列印選單</span>
+    <span id="widgetToggleIcon">▼</span>
+  </div>
+  <div class="widget-body" id="widgetBody">
+    <div class="nav-section-title">A 卷 (A1 - A4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-0')">A1</button>
+      <button onclick="scrollToId('level-1')">A2</button>
+      <button onclick="scrollToId('level-2')">A3</button>
+      <button onclick="scrollToId('level-3')">A4</button>
+    </div>
+    
+    <div class="nav-section-title">B 卷 (B1 - B4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-4')">B1</button>
+      <button onclick="scrollToId('level-5')">B2</button>
+      <button onclick="scrollToId('level-6')">B3</button>
+      <button onclick="scrollToId('level-7')">B4</button>
+    </div>
+
+    <div class="nav-section-title">C 卷 (C1 - C4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-8')">C1</button>
+      <button onclick="scrollToId('level-9')">C2</button>
+      <button onclick="scrollToId('level-10')">C3</button>
+      <button onclick="scrollToId('level-11')">C4</button>
+    </div>
+
+    <div class="nav-section-title">D 卷 (D1 - D4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-12')">D1</button>
+      <button onclick="scrollToId('level-13')">D2</button>
+      <button onclick="scrollToId('level-14')">D3</button>
+      <button onclick="scrollToId('level-15')">D4</button>
+    </div>
+
+    <div class="nav-section-title">列印模式設定</div>
+    <div class="print-select-wrap">
+      <select id="printModeSelect">
+        <option value="student">📄 列印學生作答卷</option>
+        <option value="teacher">🔑 列印教師解答卷</option>
+      </select>
+      <button class="print-action-btn" onclick="executePrint()">開始列印 / 存為 PDF</button>
+    </div>
+  </div>
+</div>
+
+<div id="pages"></div>
+
+<script>
+'use strict';
+
+const baseFamilies = [
+  { type: 'small', family: {father:'Tom',mother:'Mary',me:'Alex',brother:'Jack',sister:'Lucy'} },
+  { type: 'three', family: {grandpa:'John',grandma:'Helen',father:'Tom',mother:'Mary',me:'Alex',brother:'Jack',sister:'Lucy'} },
+  { type: 'large', family: {grandpa:'John',grandma:'Helen',uncle:'Peter',aunt:'Linda',father:'Tom',mother:'Mary',cousin1:'Jenny',cousin2:'Eric',me:'Alex',brother:'Jack'} },
+  { type: 'small', family: {father:'David',mother:'Anna',me:'Ben',brother:'Eric',sister:'Emma'} }
+];
+
+const roles = {grandpa:'👴',grandma:'👵',father:'👨',mother:'👩',uncle:'👨',aunt:'👩',me:'👦',brother:'👦',sister:'👧',cousin1:'👧',cousin2:'👦'};
+const positions = {
+  small:{father:[300,150],mother:[520,150],me:[80,585],sister:[410,585],brother:[740,585]},
+  three:{grandpa:[300,20],grandma:[520,20],father:[300,320],mother:[520,320],me:[80,650],sister:[410,650],brother:[740,650]},
+  large:{grandpa:[300,25],grandma:[520,25],uncle:[60,345],aunt:[300,345],father:[540,345],mother:[780,345],cousin1:[60,665],cousin2:[300,665],me:[540,665],brother:[780,665]}
+};
+const paths = {
+  small:['M480 255 H520','M500 255 V495','M170 495 H830','M170 495 V585','M500 495 V585','M830 495 V585'],
+  three:['M480 125 H520','M500 125 V265','M390 265 V320','M390 265 H390','M480 425 H520','M500 425 V570','M170 570 H830','M170 570 V650','M500 570 V650','M830 570 V650'],
+  large:['M480 130 H520','M500 130 V285','M150 285 H630','M150 285 V345','M630 285 V345','M240 450 H300','M270 450 V615','M150 615 H390','M150 615 V665','M390 615 V665','M720 450 H780','M750 450 V615','M630 615 H870','M630 615 V665','M870 615 V665']
+};
+paths.three.splice(2,2,'M390 265 H500','M390 265 V320');
+
+const motivationalQuotes = [
+  "Believe in yourself, every step you take makes you stronger and wiser!",
+  "Reading English stories opens up a wonderful new world of imagination.",
+  "Keep trying your best today, success belongs to those who never give up!",
+  "Great job! Small progress every day leads to big achievements."
+];
+
+function seededRandom(seed) {
+  let x = Math.sin(seed++) * 10000;
+  return x - Math.floor(x);
+}
+
+function shuffleWithSeed(array, seed) {
+  let arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(seededRandom(seed + i) * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildBank(family, levelType) {
+  const f = family;
+  const q = [
+    {text:`Who is ${f.me}'s father?`, correct:f.father},
+    {text:`Who is ${f.me}'s mother?`, correct:f.mother},
+    {text:`Who is ${f.mother}'s husband?`, correct:f.father},
+    {text:`Who is ${f.father}'s wife?`, correct:f.mother},
+    {text:`Who is ${f.me}'s brother?`, correct:f.brother},
+    {text:`${f.father} is ${f.me}'s ____.`, correct:'father'},
+    {text:`${f.mother} is ${f.me}'s ____.`, correct:'mother'},
+    {text:`${f.brother} is ${f.me}'s ____.`, correct:'brother'},
+    {text:`${f.me} is ${f.father}'s ____.`, correct:'son'},
+    {text:`${f.father} is ${f.mother}'s ____.`, correct:'husband'},
+    {text:`${f.mother} is ${f.father}'s ____.`, correct:'wife'}
+  ];
+  if(levelType !== 'large' && f.sister) {
+    q.push(
+      {text:`Who is ${f.me}'s sister?`, correct:f.sister},
+      {text:`Who is ${f.father}'s daughter?`, correct:f.sister},
+      {text:`${f.sister} is ${f.me}'s ____.`, correct:'sister'},
+      {text:`${f.me} is ${f.sister}'s ____.`, correct:'brother'}
+    );
+  }
+  if(levelType === 'three' || levelType === 'large') {
+    q.push(
+      {text:`Who is ${f.father}'s father?`, correct:f.grandpa},
+      {text:`Who is ${f.father}'s mother?`, correct:f.grandma},
+      {text:`${f.grandpa} is ${f.me}'s ____.`, correct:'grandfather'},
+      {text:`${f.grandma} is ${f.me}'s ____.`, correct:'grandmother'},
+      {text:`${f.me} is ${f.grandpa}'s ____.`, correct:'grandson'}
+    );
+  }
+  if(levelType === 'large') {
+    q.push(
+      {text:`Who is ${f.father}'s brother?`, correct:f.uncle},
+      {text:`Who is ${f.cousin1}'s father?`, correct:f.uncle},
+      {text:`Who is ${f.cousin2}'s mother?`, correct:f.aunt},
+      {text:`${f.uncle} is ${f.me}'s ____.`, correct:'uncle'},
+      {text:`${f.aunt} is ${f.me}'s ____.`, correct:'aunt'},
+      {text:`${f.cousin1} is ${f.me}'s ____.`, correct:'cousin'}
+    );
+  }
+  return q;
+}
+
+function generateLevelData(item, seed) {
+  const bank = buildBank(item.family, item.type);
+  const shuffledBank = shuffleWithSeed(bank, seed);
+  const selected = shuffledBank.slice(0, 5);
+
+  const questions = selected.map((itemQ, qIdx) => {
+    let allValues = [...new Set(Object.values(itemQ))].filter(v => typeof v === 'string');
+    if(itemQ.text.includes('____.')) {
+      if(itemQ.correct === 'father' || itemQ.correct === 'mother') allValues = ['father', 'mother', 'brother', 'sister', 'uncle', 'aunt'];
+      else if(itemQ.correct === 'brother' || itemQ.correct === 'sister') allValues = ['brother', 'sister', 'father', 'mother', 'cousin'];
+      else if(itemQ.correct === 'son') allValues = ['son', 'brother', 'uncle'];
+      else if(itemQ.correct === 'husband' || itemQ.correct === 'wife') allValues = ['husband', 'wife', 'son', 'brother'];
+      else if(itemQ.correct === 'grandfather' || itemQ.correct === 'grandmother') allValues = ['grandfather', 'grandmother', 'father', 'mother'];
+      else if(itemQ.correct === 'grandson') allValues = ['grandson', 'son', 'brother'];
+      else if(itemQ.correct === 'uncle' || itemQ.correct === 'aunt') allValues = ['uncle', 'aunt', 'father', 'mother', 'brother'];
+      else if(itemQ.correct === 'cousin') allValues = ['cousin', 'sister', 'brother'];
+    }
+    const wrongPool = allValues.filter(v => v !== itemQ.correct);
+    const shuffledWrong = shuffleWithSeed(wrongPool, seed + qIdx).slice(0, 2);
+    const options = shuffleWithSeed([itemQ.correct, ...shuffledWrong], seed + qIdx * 10);
+    const answer = options.indexOf(itemQ.correct);
+
+    return {
+      text: itemQ.text,
+      options,
+      answer
+    };
+  });
+
+  return { family: item.family, type: item.type, questions };
+}
+
+function generateAll16Levels() {
+  const versions = [
+    { prefix: 'A', seedOffset: 100 },
+    { prefix: 'B', seedOffset: 200 },
+    { prefix: 'C', seedOffset: 300 },
+    { prefix: 'D', seedOffset: 400 }
+  ];
+
+  let allLevels = [];
+  versions.forEach(ver => {
+    baseFamilies.forEach((item, idx) => {
+      const actualCode = `${ver.prefix}${idx + 1}`;
+      const seed = ver.seedOffset + idx * 50;
+      const data = generateLevelData(item, seed);
+
+      allLevels.push({
+        code: actualCode,
+        family: data.family,
+        type: data.type,
+        questions: data.questions
+      });
+    });
+  });
+  return allLevels;
+}
+
+const all16Levels = generateAll16Levels();
+let selections = all16Levels.map(level => Array(level.questions.length).fill(null));
+
+function renderSvgTree(levelType, family) {
+  let svgContent = `<svg class="family-svg" viewBox="0 0 1000 900" preserveAspectRatio="xMidYMid meet">`;
+  const linePaths = paths[levelType] || paths.small;
+  linePaths.forEach(d => {
+    svgContent += `<path d="${d}" fill="none" stroke="#e7655d" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`;
+  });
+
+  const posMap = positions[levelType] || positions.small;
+  Object.entries(posMap).forEach(([role, [x, y]]) => {
+    const name = family[role];
+    if(!name) return;
+    svgContent += `
+      <g transform="translate(${x},${y})">
+        <rect x="0" y="0" width="180" height="210" rx="23" class="person-card"/>
+        <line x1="0" y1="145" x2="180" y2="145" stroke="#f5b942" stroke-width="5"/>
+        <text x="90" y="109" text-anchor="middle" font-size="87" class="person-label">${roles[role]||'👤'}</text>
+        <text x="90" y="189" text-anchor="middle" font-size="${name.length>7?30:39}" class="person-label">${name}</text>
+      </g>
+    `;
+  });
+  svgContent += `</svg>`;
+  return svgContent;
+}
+
+function createLevel(data, levelIndex){
+  const treeSvg = renderSvgTree(data.type, data.family);
+
+  const questionsHTML = data.questions.map((q, qIndex) => {
+    const ansLetter = String.fromCharCode(65 + q.answer);
+    return `
+      <div class="question">
+        <div class="question-line">
+          <span class="answer-blank" id="answer-${levelIndex}-${qIndex}" data-ans="（${ansLetter}）">（　）</span>
+          <span>${qIndex+1}. ${q.text}</span>
+        </div>
+        <div class="options">
+          ${q.options.map((choice, j) => `
+            <button class="choice" data-level="${levelIndex}" data-q="${qIndex}" data-opt="${j}"
+                    onclick="chooseAnswer(${levelIndex}, ${qIndex},${j}, this)">
+              (${String.fromCharCode(65+j)})${choice}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const quote = motivationalQuotes[levelIndex % motivationalQuotes.length];
+
+  return `
+    <section class="level-block" id="level-${levelIndex}">
+      <div class="level-header">
+        <h1 class="level-title">🌳 E-City｜異想家庭樹 ${data.code}</h1>
+        <div class="student-info">
+          <span>班級：</span><span class="info-line"></span>
+          <span>姓名：</span><span class="info-line name-line"></span>
+        </div>
+      </div>
+
+      <div class="level-content">
+        <section class="panel">
+          <div class="panel-head"><h2>🌳 Family Tree</h2></div>
+          <div class="tree-area">${treeSvg}</div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>✏️ Family Quiz</h2>
+            <div style="font-size:10.5pt; font-weight:bold; color:var(--green);" id="score-${levelIndex}"></div>
+          </div>
+          <div class="questions">${questionsHTML}</div>
+        </section>
+      </div>
+
+      <div class="footer">
+        <span>⭐ ${quote}</span>
+        <span class="credit">© SINNY SPEDU LABS &nbsp;&nbsp; ${data.code}</span>
+      </div>
+    </section>
+  `;
+}
+
+function renderAll(){
+  const pageRoot = document.getElementById("pages");
+  pageRoot.innerHTML = "";
+
+  for(let i=0; i<all16Levels.length; i+=2){
+    const first = createLevel(all16Levels[i], i);
+    const second = createLevel(all16Levels[i+1], i+1);
+    pageRoot.insertAdjacentHTML("beforeend", `
+      <section class="sheet">
+        ${first}
+        ${second}
+      </section>
+    `);
+  }
+}
+
+function toggleWidget(){
+  const body = document.getElementById('widgetBody');
+  const icon = document.getElementById('widgetToggleIcon');
+  body.classList.toggle('collapsed');
+  icon.textContent = body.classList.contains('collapsed') ? '▲' : '▼';
+}
+
+function scrollToId(elementId){
+  const el = document.getElementById(elementId);
+  if(el){
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function executePrint(){
+  const mode = document.getElementById('printModeSelect').value;
+  if(mode === 'teacher'){
+    document.body.classList.add('teacher-mode');
+  } else {
+    document.body.classList.remove('teacher-mode');
+  }
+  window.print();
+}
+
+function getOptions(levelIndex, qIndex){
+  return document.querySelectorAll(`.choice[data-level="${levelIndex}"][data-q="${qIndex}"]`);
+}
+function getAnswerSlot(levelIndex, qIndex){
+  return document.getElementById(`answer-${levelIndex}-${qIndex}`);
+}
+
+function chooseAnswer(levelIndex, qIndex, optIndex, element){
+  const options = getOptions(levelIndex, qIndex);
+  options.forEach(el => el.classList.remove("selected"));
+
+  selections[levelIndex][qIndex] = optIndex;
+  element.classList.add("selected");
+
+  const slot = getAnswerSlot(levelIndex, qIndex);
+  slot.textContent = `（${String.fromCharCode(65 + optIndex)}）`;
+  slot.className = "answer-blank";
+}
+
+renderAll();
+</script>
+<script src="../shared/js/public-footer.js"></script>
+</body>
 </html>
