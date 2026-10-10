@@ -63,19 +63,19 @@ window.GRAMMAR_DATA = [
       { id: "r4", category: "圖表閱讀測驗", title: "閱讀｜漢堡店菜單", desc: "生活實境：速食店菜單、套餐選配與口語點餐對答", filename: "reading-hamberger.html", themeColor: "#EC4899" },
       { id: "r5", category: "圖表閱讀測驗", title: "閱讀｜學校課表", desc: "生活實境：看懂校園作息課表、星期與學科課堂名稱", filename: "reading-suject.html", themeColor: "#EC4899" },
       { id: "r6", category: "圖表閱讀測驗", title: "閱讀｜服飾店", desc: "生活實境：閱讀服飾店商品、尺寸、價格與購物情境", filename: "reading-clothing-store.html", themeColor: "#EC4899" },
-      { id: "r7", category: "圖表閱讀測驗", title: "閱讀｜My Town 異想小鎮", desc: "看城市地圖判讀位置關係，支援原始版、隨機出題、線上批改與雙面列印", filename: "reading-my-town.html", themeColor: "#EC4899" },
+      { id: "r7", category: "圖表閱讀測驗", title: "閱讀｜異想小鎮地圖", desc: "使用 E-City 異想小鎮地圖判讀位置關係，支援原始版、隨機出題、線上批改與雙面列印", filename: "reading-my-town.html", themeColor: "#EC4899" },
 
       // ==== 互動遊戲區 ====
       { id: "g1", category: "互動遊戲區", title: "🎮 遊戲｜地心探險數字挑戰", desc: "挑戰大考驗！熟悉英文數字 1 ~ 100000 聽力、大小與發音", filename: "game-corenum.html", themeColor: "#F43F5E" },
-      { id: "g2", category: "互動遊戲區", title: "🎮 遊戲｜異想家族", desc: "觀察家庭樹、點讀親屬英文並完成五題選擇題，可切換三種難度", filename: "game-family.html", themeColor: "#F43F5E" },
+      { id: "g2", category: "互動遊戲區", title: "E-City｜異想家庭樹", desc: "觀察家庭樹、點讀親屬英文並完成五題選擇題，可切換三種難度", filename: "ecity-family-tree.html", themeColor: "#F43F5E" },
       { id: "g3", category: "互動遊戲區", title: "🎮 遊戲｜小啾的時光農場", desc: "解鎖時光任務！訓練年月日、星期、小時、分鐘及秒針判讀", filename: "game-timefarm.html", themeColor: "#F43F5E" },
       { id: "g4", category: "互動遊戲區", title: "🧩 配對板｜英文數字", desc: "英文數字三排對照，支援語音與課堂互動配對", filename: "match-numbers.html", themeColor: "#F43F5E" },
       { id: "g5", category: "互動遊戲區", title: "🧩 配對板｜家人稱謂", desc: "家人稱謂與親友關係三排對照，支援發音", filename: "match-family.html", themeColor: "#F43F5E" },
       { id: "g6", category: "互動遊戲區", title: "🧩 配對板｜時間與日期", desc: "星期、月份、日期與時間的三排對照語音配對", filename: "match-time-date.html", themeColor: "#F43F5E" },
       { id: "g7", category: "互動遊戲區", title: "🧩 配對板｜人稱代名詞", desc: "限時配對、亂序、干擾卡與課堂訂正挑戰", filename: "match-pronouns.html", themeColor: "#F43F5E" },
       { id: "english-time", category: "互動遊戲區", title: "⏰ 英文時間互動學習館", desc: "搭配大螢幕操作時鐘、英文發音、隨堂挑戰與時間表達鷹架", filename: "game-english-time.html", themeColor: "#F43F5E" },
-      { id: "ecity-01", category: "互動遊戲區", title: "🏙️ E-City｜我的異想小鎮", desc: "隨機城市地圖與八種位置句型挑戰，附中英提示板、單字發音與答題音效", filename: "ecity_01_my_town.html", themeColor: "#F43F5E" },
-      { id: "ecity-tug-of-war", category: "互動遊戲區", title: "🏆 拔河錦標賽", desc: "兩隊用英文數字、日期或數學題庫即時搶答，把繩索拉向己方", filename: "../math/tug-of-war.html", themeColor: "#7C3AED" },
+      { id: "ecity-01", category: "互動遊戲區", title: "E-City｜我的異想小鎮", desc: "隨機城市地圖與八種位置句型挑戰，附中英提示板、單字發音與答題音效", filename: "ecity-my-town.html", themeColor: "#F43F5E" },
+      { id: "ecity-tug-of-war", category: "互動遊戲區", title: "E-City｜拔河錦標賽", desc: "兩隊用英文數字、日期或數學題庫即時搶答，把繩索拉向己方", filename: "../math/ecity-tug-of-war.html", themeColor: "#7C3AED" },
 
       // ==== 測試網頁：五份彼此獨立的 HTML ====
       { id: "test-1", category: "測試網頁", title: "Test 1", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test1.html", themeColor: "#64748B" },
@@ -88,8 +88,8 @@ window.GRAMMAR_DATA = [
       { id: "e2", category: "能力挑戰評估", title: "📝 評估｜生活常識 (V1)", desc: "社會適應能力評估：自我保護、公共規章與基本生活常識", filename: "exam-lifesocial-v1.html", themeColor: "#14B8A6" },
       { id: "e3", category: "能力挑戰評估", title: "📝 評估｜生活英文 (V2)", desc: "進階生活常用口語與情境英語綜合評估 (第二版挑戰卷)", filename: "exam-lifeenglish-v2.html", themeColor: "#14B8A6" },
       { id: "e4", category: "能力挑戰評估", title: "📝 評估｜生活英文 (V3)", desc: "多元情境、基礎生活指標英語口說與寫作評量 (第三版挑戰卷)", filename: "exam-lifeenglish-v3.html", themeColor: "#14B8A6" },
-      { id: "e5", category: "能力挑戰評估", title: "📝 評估｜生活數學 (V1)", desc: "特教功能性數學：找零、算錢、公車票價與日常加減計算挑戰", filename: "exam-lifemath-v1.html", themeColor: "#14B8A6" },
-      { id: "e6", category: "能力挑戰評估", title: "📝 評估｜生活語文 (V1)", desc: "特教功能性語文：公共標誌、重要指示語與口語表達溝通檢測", filename: "exam-lifechinese-v1.html", themeColor: "#14B8A6" }
+      { id: "e5", category: "能力挑戰評估", title: "📝 評估｜生活數學 (V1)", desc: "特教功能性數學：找零、算錢、公車票價與日常加減計算挑戰", filename: "../life/social/exam-lifemath-v1.html", themeColor: "#14B8A6" },
+      { id: "e6", category: "能力挑戰評估", title: "📝 評估｜生活語文 (V1)", desc: "特教功能性語文：公共標誌、重要指示語與口語表達溝通檢測", filename: "../life/social/exam-lifechinese-v1.html", themeColor: "#14B8A6" }
 
 ];
 

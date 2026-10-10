@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>E-City｜拔河錦標賽</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue-main: #2563eb;
+      --blue-border: #bfdbfe;
+      --blue-bg: #eff6ff;
+      --red-main: #dc2626;
+      --red-border: #fecaca;
+      --red-bg: #fef2f2;
+      --gray-border: #cbd5e1;
+      --text-main: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      font-family: 'Lexend', 'Noto Sans TC', sans-serif;
+      background: #f8fafc;
+      color: var(--text-main);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    /* 頂部控制與設定列 */
+    .control-header {
+      background: #ffffff;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 8px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      z-index: 20;
+    }
+    .ctrl-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    select {
+      font-family: inherit;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1.5px solid var(--gray-border);
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: #ffffff;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+    .btn-toggle-group {
+      display: flex;
+      gap: 4px;
+    }
+    .time-btn {
+      padding: 5px 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-family: inherit;
+      border: 1.5px solid var(--gray-border);
+      background: #f1f5f9;
+      color: #475569;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .time-btn.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
+
+    /* 開始 / 重置按鈕 */
+    .action-btn-main {
+      padding: 6px 18px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      font-family: inherit;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      color: #ffffff;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+    .btn-start {
+      background: #16a34a;
+      box-shadow: 0 3px 0 #15803d;
+    }
+    .btn-reset {
+      background: #64748b;
+      box-shadow: 0 3px 0 #475569;
+    }
+    .action-btn-main:active {
+      transform: translateY(2px);
+      box-shadow: none;
+    }
+
+    /* 主頁面佈局容器 */
+    .app-layout {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 8px;
+      gap: 8px;
+    }
+
+    /* 拔河競技場 */
+    .tug-arena {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 2px solid #e2e8f0;
+      padding: 10px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .status-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+    }
+    .score-b { color: var(--blue-main); }
+    .score-r { color: var(--red-main); }
+    .clock-badge {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .rope-track {
+      width: 100%;
+      height: 80px;
+      position: relative;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 2px dashed #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .mid-line {
+      position: absolute;
+      width: 3px;
+      height: 100%;
+      background: #94a3b8;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+    .rope-team-wrapper {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      transform: translateX(0px);
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      z-index: 2;
+      will-change: transform;
+    }
+
+    /* Emoji 拔河隊員：左右隊使用鏡像，確保朝向中央繩索 */
+    .team-squad {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .puller-emoji {
+      display: inline-block;
+      font-size: 36px;
+      line-height: 1;
+      transform-origin: bottom center;
+      filter: drop-shadow(0 3px 2px rgba(15, 23, 42, .18));
+    }
+    .squad-blue .puller-emoji {
+      transform: rotate(-13deg) scaleX(-1);
+    }
+    .squad-red .puller-emoji {
+      transform: rotate(13deg);
+    }
+
+    .rope-cable {
+      width: 160px;
+      height: 8px;
+      background: #854d0e;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 -4px;
+    }
+    .center-ribbon {
+      width: 16px;
+      height: 24px;
+      background: #dc2626;
+      border-radius: 2px;
+      box-shadow: 0 0 4px rgba(220, 38, 38, 0.5);
+    }
+
+    /* 左右答題計算機區 */
+    .calc-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .calc-box {
+      border-radius: 16px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid;
+    }
+    .calc-b {
+      background: var(--blue-bg);
+      border-color: var(--blue-border);
+    }
+    .calc-r {
+      background: var(--red-bg);
+      border-color: var(--red-border);
+    }
+
+    .calc-head {
+      font-size: 1.15rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .calc-b .calc-head { color: var(--blue-main); }
+    .calc-r .calc-head { color: var(--red-main); }
+
+    .q-text {
+      font-size: 1.45rem;
+      font-weight: 800;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.2;
+      padding: 2px 4px;
+      word-break: break-word;
+    }
+    .calc-b .q-text { color: var(--blue-main); }
+    .calc-r .q-text { color: var(--red-main); }
+
+    .ans-box {
+      height: 44px;
+      background: #ffffff;
+      border-radius: 10px;
+      border: 2px solid var(--gray-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 8px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    .ans-box.correct {
+      background: #dcfce7 !important;
+      border-color: #16a34a !important;
+      color: #15803d !important;
+    }
+    .ans-box.wrong {
+      background: #fee2e2 !important;
+      border-color: #dc2626 !important;
+      color: #991b1b !important;
+      font-size: 1.1rem;
+    }
+
+    /* 鍵盤網格 (3x4) */
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 6px;
+      flex: 1;
+    }
+    .btn-k {
+      background: #ffffff;
+      border: 1px solid var(--gray-border);
+      border-radius: 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 0 #cbd5e1;
+      cursor: pointer;
+      min-height: 46px;
+    }
+    .btn-k:active {
+      transform: translateY(2px);
+      box-shadow: none;
+    }
+    .btn-k.func {
+      font-weight: 800;
+      color: #0f172a;
+      background: #f1f5f9;
+    }
+    .key-grid.disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* 結束彈窗 */
+    .modal-curtain {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+    .modal-box {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+    .modal-t {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .modal-sub {
+      font-size: 1.1rem;
+      color: #64748b;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .modal-btns {
+      display: flex;
+      gap: 12px;
+    }
+    .modal-btn-act {
+      flex: 1;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-act-replay { background: #2563eb; color: #fff; }
+    .btn-act-change { background: #e2e8f0; color: #334155; }
+
+    /* ========================================================
+       大電視橫向配置 (螢幕寬度 >= 1024px)
+       左側 32% (藍隊) ── 中央 36% (拔河核心) ── 右側 32% (紅隊)
+       ======================================================== */
+    @media (min-width: 1024px) {
+      body {
+        height: 100vh;
+        overflow: hidden;
+      }
+      .app-layout {
+        max-width: 100%;
+        height: calc(100vh - 58px);
+        display: grid;
+        grid-template-columns: 32% 36% 32%;
+        padding: 12px 18px;
+        gap: 16px;
+      }
+      .calc-container {
+        display: contents;
+      }
+      .calc-b {
+        order: 1;
+        height: 100%;
+        border-radius: 20px;
+        padding: 16px;
+      }
+      .tug-arena {
+        order: 2;
+        height: 100%;
+        border-radius: 20px;
+        padding: 24px 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+      }
+      .calc-r {
+        order: 3;
+        height: 100%;
+        border-radius: 20px;
+        padding: 16px;
+      }
+
+      .status-bar {
+        font-size: 1.8rem;
+      }
+      .clock-badge {
+        font-size: 1.45rem;
+        padding: 6px 22px;
+      }
+      .rope-track {
+        height: 160px;
+        border-width: 3px;
+        border-radius: 16px;
+      }
+      .puller-emoji {
+        font-size: 58px;
+      }
+      .rope-cable {
+        width: 220px;
+        height: 12px;
+      }
+      .center-ribbon {
+        width: 20px;
+        height: 32px;
+      }
+
+      .calc-head {
+        font-size: 1.6rem;
+      }
+      .q-text {
+        font-size: 2.2rem;
+        min-height: 84px;
+      }
+      .ans-box {
+        height: 60px;
+        font-size: 2.4rem;
+        margin-bottom: 12px;
+      }
+      .btn-k {
+        font-size: 2.1rem;
+        border-radius: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 頂部控制列 -->
+  <header class="control-header">
+    <div class="ctrl-item">
+      <label for="bankSel">題庫：</label>
+      <select id="bankSel">
+        <option value="eng_numbers">英文數字 1～100</option>
+        <option value="eng_dates">英文日期（月／日）</option>
+        <option value="math_1digit_pm">一位數加減法</option>
+        <option value="math_2digit_add_nocar">兩位數加法（不進位）</option>
+        <option value="math_2digit_add_carry">兩位數加法（含進位）</option>
+        <option value="math_2digit_sub_nobor">兩位數減法（不退位）</option>
+        <option value="math_2digit_sub_borrow">兩位數減法（含退位）</option>
+        <option value="math_99_mul">九九乘法</option>
+        <option value="math_2d_1d_mul">兩位數 × 一位數</option>
+        <option value="math_2d_1d_div">兩位數 ÷ 一位數</option>
+      </select>
+    </div>
+
+    <label class="ctrl-item" for="voiceToggle">
+      <span>語音：</span>
+      <input id="voiceToggle" type="checkbox">
+      <span id="voiceState">關</span>
+    </label>
+
+    <div class="ctrl-item">
+      <span>計時：</span>
+      <div class="btn-toggle-group">
+        <button class="time-btn" data-sec="60">1 分鐘</button>
+        <button class="time-btn active" data-sec="120">2 分鐘</button>
+      </div>
+    </div>
+
+    <button class="action-btn-main btn-start" id="mainCtrlBtn">▶ 開始遊戲</button>
+  </header>
+
+  <!-- 主競技排版區 -->
+  <div class="app-layout">
+    <!-- 中央拔河戰況區 -->
+    <section class="tug-arena">
+      <div class="status-bar">
+        <div class="score-b">藍隊: <span id="sc-1">0</span></div>
+        <div class="clock-badge" id="clock">02:00</div>
+        <div class="score-r">紅隊: <span id="sc-2">0</span></div>
+      </div>
+      <div class="rope-track" id="track">
+        <div class="mid-line"></div>
+        <div class="rope-team-wrapper" id="ropeBundle">
+          <!-- 藍隊以鏡像 Emoji 面朝右，身體後仰拉向左側 -->
+          <div class="team-squad squad-blue" role="img" aria-label="藍隊兩位隊員面向右方拔河">
+            <span class="puller-emoji" aria-hidden="true">🏃‍♀️</span>
+            <span class="puller-emoji" aria-hidden="true">🏃‍♂️</span>
+          </div>
+
+          <!-- 繩索與標記 -->
+          <div class="rope-cable"><div class="center-ribbon"></div></div>
+
+          <!-- 紅隊保留 Emoji 原方向面朝左，身體後仰拉向右側 -->
+          <div class="team-squad squad-red" role="img" aria-label="紅隊兩位隊員面向左方拔河">
+            <span class="puller-emoji" aria-hidden="true">🏃‍♀️</span>
+            <span class="puller-emoji" aria-hidden="true">🏃‍♂️</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 計算機對抗區 -->
+    <div class="calc-container">
+      <!-- 藍隊 (Team 1) -->
+      <div class="calc-box calc-b">
+        <div class="calc-head">藍隊 Team 1</div>
+        <div class="q-text" id="qt-1">準備中</div>
+        <div class="ans-box" id="ans-1"></div>
+        <div class="key-grid disabled" id="grid-1" data-t="1">
+          <button class="btn-k" data-k="1">1</button>
+          <button class="btn-k" data-k="2">2</button>
+          <button class="btn-k" data-k="3">3</button>
+          <button class="btn-k" data-k="4">4</button>
+          <button class="btn-k" data-k="5">5</button>
+          <button class="btn-k" data-k="6">6</button>
+          <button class="btn-k" data-k="7">7</button>
+          <button class="btn-k" data-k="8">8</button>
+          <button class="btn-k" data-k="9">9</button>
+          <button class="btn-k func" data-k="del">⌫</button>
+          <button class="btn-k" data-k="0">0</button>
+          <button class="btn-k func" data-k="enter">✓</button>
+        </div>
+      </div>
+
+      <!-- 紅隊 (Team 2) -->
+      <div class="calc-box calc-r">
+        <div class="calc-head">紅隊 Team 2</div>
+        <div class="q-text" id="qt-2">準備中</div>
+        <div class="ans-box" id="ans-2"></div>
+        <div class="key-grid disabled" id="grid-2" data-t="2">
+          <button class="btn-k" data-k="1">1</button>
+          <button class="btn-k" data-k="2">2</button>
+          <button class="btn-k" data-k="3">3</button>
+          <button class="btn-k" data-k="4">4</button>
+          <button class="btn-k" data-k="5">5</button>
+          <button class="btn-k" data-k="6">6</button>
+          <button class="btn-k" data-k="7">7</button>
+          <button class="btn-k" data-k="8">8</button>
+          <button class="btn-k" data-k="9">9</button>
+          <button class="btn-k func" data-k="del">⌫</button>
+          <button class="btn-k" data-k="0">0</button>
+          <button class="btn-k func" data-k="enter">✓</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 結算彈窗 -->
+  <div class="modal-curtain" id="endModal">
+    <div class="modal-box">
+      <div class="modal-t" id="winHead">🏆 藍隊獲勝！</div>
+      <div class="modal-sub" id="winDesc">率先領先 7 分！</div>
+      <div class="modal-btns">
+        <button class="modal-btn-act btn-act-replay" id="mBtnReplay">再玩一次</button>
+        <button class="modal-btn-act btn-act-change" id="mBtnChange">更換題庫</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ========================================================
+       題庫生成引擎 (數學題庫與英文題庫分離設計)
+       ======================================================== */
+    const NUM_MAP = {
+      1: "one", 2: "two", 3: "three", 4: "four", 5: "five",
+      6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten",
+      11: "eleven", 12: "twelve", 13: "thirteen", 14: "fourteen", 15: "fifteen",
+      16: "sixteen", 17: "seventeen", 18: "eighteen", 19: "nineteen",
+      20: "twenty", 30: "thirty", 40: "forty", 50: "fifty",
+      60: "sixty", 70: "seventy", 80: "eighty", 90: "ninety", 100: "one hundred"
+    };
+
+    function numToEnglish(n) {
+      if (NUM_MAP[n]) return NUM_MAP[n];
+      const tens = Math.floor(n / 10) * 10;
+      const ones = n % 10;
+      return `${NUM_MAP[tens]}-${NUM_MAP[ones]}`;
+    }
+
+    const MONTH_DATA = [
+      { name: "January", m: "01", days: 31 },
+      { name: "February", m: "02", days: 28 },
+      { name: "March", m: "03", days: 31 },
+      { name: "April", m: "04", days: 30 },
+      { name: "May", m: "05", days: 31 },
+      { name: "June", m: "06", days: 30 },
+      { name: "July", m: "07", days: 31 },
+      { name: "August", m: "08", days: 31 },
+      { name: "September", m: "09", days: 31 },
+      { name: "October", m: "10", days: 31 },
+      { name: "November", m: "11", days: 30 },
+      { name: "December", m: "12", days: 31 }
+    ];
+
+    const ORD_MAP = {
+      1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth",
+      6: "sixth", 7: "seventh", 8: "eighth", 9: "ninth", 10: "tenth",
+      11: "eleventh", 12: "twelfth", 13: "thirteenth", 14: "fourteenth", 15: "fifteenth",
+      16: "sixteenth", 17: "seventeenth", 18: "eighteenth", 19: "nineteenth",
+      20: "twentieth", 30: "thirtieth"
+    };
+
+    function dayToOrdinal(d) {
+      if (ORD_MAP[d]) return ORD_MAP[d];
+      const tens = Math.floor(d / 10) * 10;
+      const ones = d % 10;
+      return `${NUM_MAP[tens]} ${ORD_MAP[ones]}`;
+    }
+
+    // 輔助函式：取得指定範圍整數
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // 數學題庫生成子引擎
+    const MathQuestionGenerators = {
+      // 1. 一位數加減法 (運算數 0~9，結果非負)
+      math_1digit_pm: () => {
+        const isAdd = Math.random() < 0.5;
+        if (isAdd) {
+          const a = randInt(0, 9);
+          const b = randInt(0, 9);
+          return { q: `${a} + ${b}`, a: String(a + b) };
+        } else {
+          const a = randInt(0, 9);
+          const b = randInt(0, a); // 保證 a - b >= 0
+          return { q: `${a} − ${b}`, a: String(a - b) };
+        }
+      },
+
+      // 2. 兩位數加法（不進位）：個位相加 < 10，和 <= 100
+      math_2digit_add_nocar: () => {
+        let a, b, uA, uB;
+        do {
+          uA = randInt(0, 9);
+          uB = randInt(0, 9 - uA); // 個位和 < 10
+          const tA = randInt(1, 8);
+          const tB = randInt(1, 9 - tA); // 十位和 <= 9 保證和 < 100
+          a = tA * 10 + uA;
+          b = tB * 10 + uB;
+        } while (a < 10 || b < 10 || (a + b) > 100);
+        return { q: `${a} + ${b}`, a: String(a + b) };
+      },
+
+      // 3. 兩位數加法（含進位）：個位相加 >= 10，和 <= 100
+      math_2digit_add_carry: () => {
+        let a, b, uA, uB;
+        do {
+          uA = randInt(1, 9);
+          uB = randInt(10 - uA, 9); // 個位相加 >= 10
+          const tA = randInt(1, 7);
+          const tB = randInt(1, 8 - tA); // 十位和加上進位 <= 9
+          a = tA * 10 + uA;
+          b = tB * 10 + uB;
+        } while (a < 10 || b < 10 || (a + b) > 100);
+        return { q: `${a} + ${b}`, a: String(a + b) };
+      },
+
+      // 4. 兩位數減法（不退位）：個位不需借位，被減數與減數皆兩位數
+      math_2digit_sub_nobor: () => {
+        let a, b;
+        do {
+          const uA = randInt(0, 9);
+          const uB = randInt(0, uA); // 個位 uA >= uB
+          const tA = randInt(2, 9);
+          const tB = randInt(1, tA);
+          a = tA * 10 + uA;
+          b = tB * 10 + uB;
+        } while (a < 10 || b < 10 || a <= b);
+        return { q: `${a} − ${b}`, a: String(a - b) };
+      },
+
+      // 5. 兩位數減法（含退位）：個位需借位，差不得為負數
+      math_2digit_sub_borrow: () => {
+        let a, b;
+        do {
+          const uA = randInt(0, 8);
+          const uB = randInt(uA + 1, 9); // 個位 uA < uB (必退位)
+          const tA = randInt(2, 9);
+          const tB = randInt(1, tA - 1); // 保證 a > b
+          a = tA * 10 + uA;
+          b = tB * 10 + uB;
+        } while (a < 10 || b < 10 || a <= b);
+        return { q: `${a} − ${b}`, a: String(a - b) };
+      },
+
+      // 6. 九九乘法：乘數範圍 1～9
+      math_99_mul: () => {
+        const a = randInt(1, 9);
+        const b = randInt(1, 9);
+        return { q: `${a} × ${b}`, a: String(a * b) };
+      },
+
+      // 7. 兩位數 × 一位數：第一個數 10～99，第二個數 1～9，結果 <= 100
+      math_2d_1d_mul: () => {
+        let a, b;
+        do {
+          b = randInt(2, 9);
+          const maxA = Math.floor(100 / b);
+          if (maxA < 10) continue;
+          a = randInt(10, maxA);
+        } while (a * b > 100);
+        return { q: `${a} × ${b}`, a: String(a * b) };
+      },
+
+      // 8. 兩位數 ÷ 一位數：被除數 10～99，除數 2～9，整除
+      math_2d_1d_div: () => {
+        const b = randInt(2, 9);
+        // 商 qAns，被除數 a = b * qAns，a 需在 10～99 之間
+        const minQ = Math.ceil(10 / b);
+        const maxQ = Math.floor(99 / b);
+        const qAns = randInt(minQ, maxQ);
+        const a = b * qAns;
+        return { q: `${a} ÷ ${b}`, a: String(qAns) };
+      }
+    };
+
+    // 總出題調度函式
+    function generateQuestion(bankKey) {
+      if (bankKey === 'eng_numbers') {
+        const val = randInt(1, 100);
+        return { q: numToEnglish(val), a: String(val) };
+      } else if (bankKey === 'eng_dates') {
+        const mObj = MONTH_DATA[randInt(0, MONTH_DATA.length - 1)];
+        const day = randInt(1, mObj.days);
+        const dayStr = String(day).padStart(2, '0');
+        return {
+          q: `${mObj.name} ${dayToOrdinal(day)}`,
+          a: `${mObj.m}${dayStr}` // MMDD 4 位數，字串保留前導 0
+        };
+      } else if (MathQuestionGenerators[bankKey]) {
+        return MathQuestionGenerators[bankKey]();
+      }
+      return { q: "one", a: "1" };
+    }
+
+    /* ========================================================
+       遊戲狀態與變數管理
+       ======================================================== */
+    let totalDuration = 120;
+    let remainSeconds = 120;
+    let timerLoop = null;
+    let isRunning = false;
+
+    // 紀錄各隊狀態與上一題防止連續重複
+    const teamState = {
+      1: { score: 0, ans: "", input: "", locked: true, lastQ: "" },
+      2: { score: 0, ans: "", input: "", locked: true, lastQ: "" }
+    };
+
+    const ropeBundle = document.getElementById("ropeBundle");
+    const endModal = document.getElementById("endModal");
+    const mainCtrlBtn = document.getElementById("mainCtrlBtn");
+    const grid1 = document.getElementById("grid-1");
+    const grid2 = document.getElementById("grid-2");
+    const voiceToggle = document.getElementById("voiceToggle");
+    const voiceState = document.getElementById("voiceState");
+
+    function isEnglishBank() {
+      return document.getElementById("bankSel").value.startsWith("eng_");
+    }
+
+    function updateQuestionSpeechState() {
+      document.querySelectorAll(".q-text").forEach(question => {
+        const enabled = voiceToggle.checked && isEnglishBank();
+        question.style.cursor = enabled ? "pointer" : "default";
+        question.title = enabled ? "點一下朗讀英文題目" : "";
+      });
+    }
+
+    function speakQuestion(team) {
+      if (!voiceToggle.checked || !isEnglishBank() || !("speechSynthesis" in window)) return;
+      const text = document.getElementById(`qt-${team}`).textContent.trim();
+      if (!text || text === "準備中") return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // 更新拔河位置與判定領先 7 分
+    function updateTugPosition() {
+      const diff = teamState[1].score - teamState[2].score; // 藍正(往左), 紅負(往右)
+      const clamped = Math.max(-7, Math.min(7, diff));
+
+      const isTV = window.innerWidth >= 1024;
+      const pxPerStep = isTV ? 30 : 18;
+
+      // 藍隊領先往左 (-px)，紅隊領先往右 (+px)
+      const movePixels = -clamped * pxPerStep;
+      ropeBundle.style.transform = `translateX(${movePixels}px)`;
+
+      // 領先 7 分獲勝判定
+      if (diff >= 7) {
+        stopAndFinish("🏆 藍隊獲勝！", "領先達 7 分，拔河獲勝！");
+      } else if (diff <= -7) {
+        stopAndFinish("🏆 紅隊獲勝！", "領先達 7 分，拔河獲勝！");
+      }
+    }
+
+    function issueNewQuestion(team) {
+      if (!isRunning) return;
+      const bank = document.getElementById("bankSel").value;
+      
+      let item;
+      let tries = 0;
+      do {
+        item = generateQuestion(bank);
+        tries++;
+      } while (item.q === teamState[team].lastQ && tries < 5); // 避免同隊連續出現完全相同題目
+
+      teamState[team].lastQ = item.q;
+      teamState[team].ans = item.a;
+      teamState[team].input = "";
+      teamState[team].locked = false;
+
+      document.getElementById(`qt-${team}`).textContent = item.q;
+      const display = document.getElementById(`ans-${team}`);
+      display.textContent = "";
+      display.className = "ans-box";
+    }
+
+    function onKeyInput(team, val) {
+      if (!isRunning || teamState[team].locked) return;
+      const display = document.getElementById(`ans-${team}`);
+
+      if (val >= "0" && val <= "9") {
+        const limit = teamState[team].ans.length;
+        if (teamState[team].input.length < limit) {
+          teamState[team].input += val;
+          display.textContent = teamState[team].input;
+        }
+      } else if (val === "del") {
+        teamState[team].input = teamState[team].input.slice(0, -1);
+        display.textContent = teamState[team].input;
+      } else if (val === "enter") {
+        if (!teamState[team].input) return;
+        evaluateAnswer(team);
+      }
+    }
+
+    function evaluateAnswer(team) {
+      teamState[team].locked = true; // 防重複快速點擊
+      const display = document.getElementById(`ans-${team}`);
+      const isCorrect = teamState[team].input === teamState[team].ans;
+
+      if (isCorrect) {
+        display.classList.add("correct");
+        teamState[team].score += 1;
+        document.getElementById(`sc-${team}`).textContent = teamState[team].score;
+        updateTugPosition();
+
+        if (isRunning) {
+          setTimeout(() => issueNewQuestion(team), 300);
+        }
+      } else {
+        display.classList.add("wrong");
+        display.textContent = `正解: ${teamState[team].ans}`;
+
+        if (isRunning) {
+          setTimeout(() => issueNewQuestion(team), 1100);
+        }
+      }
+    }
+
+    function formatTimeStr(s) {
+      const m = String(Math.floor(s / 60)).padStart(2, '0');
+      const sec = String(s % 60).padStart(2, '0');
+      return `${m}:${sec}`;
+    }
+
+    function launchTimer() {
+      clearInterval(timerLoop);
+      remainSeconds = totalDuration;
+      document.getElementById("clock").textContent = formatTimeStr(remainSeconds);
+
+      timerLoop = setInterval(() => {
+        remainSeconds--;
+        document.getElementById("clock").textContent = formatTimeStr(remainSeconds);
+
+        if (remainSeconds <= 0) {
+          clearInterval(timerLoop);
+          const scoreDiff = teamState[1].score - teamState[2].score;
+          if (scoreDiff > 0) {
+            stopAndFinish("🏆 藍隊獲勝！", "時間到！藍隊總得分較高！");
+          } else if (scoreDiff < 0) {
+            stopAndFinish("🏆 紅隊獲勝！", "時間到！紅隊總得分較高！");
+          } else {
+            stopAndFinish("🤝 雙方平手！", "時間到！兩隊得分相同！");
+          }
+        }
+      }, 1000);
+    }
+
+    function stopAndFinish(title, reason) {
+      isRunning = false;
+      clearInterval(timerLoop);
+      teamState[1].locked = true;
+      teamState[2].locked = true;
+      grid1.classList.add("disabled");
+      grid2.classList.add("disabled");
+
+      mainCtrlBtn.textContent = "▶ 開始遊戲";
+      mainCtrlBtn.className = "action-btn-main btn-start";
+
+      document.getElementById("winHead").textContent = title;
+      document.getElementById("winDesc").textContent = reason;
+      endModal.style.display = "flex";
+    }
+
+    // 重置並進入就緒待機狀態
+    function resetToIdle() {
+      isRunning = false;
+      clearInterval(timerLoop);
+      endModal.style.display = "none";
+
+      teamState[1] = { score: 0, ans: "", input: "", locked: true, lastQ: "" };
+      teamState[2] = { score: 0, ans: "", input: "", locked: true, lastQ: "" };
+
+      document.getElementById("sc-1").textContent = "0";
+      document.getElementById("sc-2").textContent = "0";
+      document.getElementById("clock").textContent = formatTimeStr(totalDuration);
+      ropeBundle.style.transform = "translateX(0px)";
+
+      document.getElementById("qt-1").textContent = "準備中";
+      document.getElementById("qt-2").textContent = "準備中";
+      document.getElementById("ans-1").textContent = "";
+      document.getElementById("ans-2").textContent = "";
+      document.getElementById("ans-1").className = "ans-box";
+      document.getElementById("ans-2").className = "ans-box";
+
+      grid1.classList.add("disabled");
+      grid2.classList.add("disabled");
+
+      mainCtrlBtn.textContent = "▶ 開始遊戲";
+      mainCtrlBtn.className = "action-btn-main btn-start";
+    }
+
+    // 開始遊戲正式倒數
+    function startGamePlay() {
+      isRunning = true;
+      endModal.style.display = "none";
+
+      teamState[1].score = 0;
+      teamState[2].score = 0;
+      document.getElementById("sc-1").textContent = "0";
+      document.getElementById("sc-2").textContent = "0";
+      ropeBundle.style.transform = "translateX(0px)";
+
+      grid1.classList.remove("disabled");
+      grid2.classList.remove("disabled");
+
+      mainCtrlBtn.textContent = "⏹ 重置遊戲";
+      mainCtrlBtn.className = "action-btn-main btn-reset";
+
+      issueNewQuestion(1);
+      issueNewQuestion(2);
+      launchTimer();
+    }
+
+    /* ========================================================
+       事件監聽與觸控綁定
+       ======================================================== */
+    mainCtrlBtn.addEventListener("click", () => {
+      if (!isRunning) {
+        startGamePlay();
+      } else {
+        resetToIdle();
+      }
+    });
+
+    // 獨立多點觸控支援
+    [grid1, grid2].forEach(grid => {
+      const teamId = parseInt(grid.dataset.t, 10);
+      grid.addEventListener("pointerdown", (e) => {
+        const btn = e.target.closest(".btn-k");
+        if (!btn) return;
+        e.preventDefault();
+        onKeyInput(teamId, btn.dataset.k);
+      });
+    });
+
+    // 計時選擇
+    document.querySelectorAll(".time-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".time-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        totalDuration = parseInt(btn.dataset.sec, 10);
+        resetToIdle();
+      });
+    });
+
+    // 題庫切換
+    document.getElementById("bankSel").addEventListener("change", () => {
+      window.speechSynthesis?.cancel();
+      resetToIdle();
+      updateQuestionSpeechState();
+    });
+    voiceToggle.addEventListener("change", () => {
+      voiceState.textContent = voiceToggle.checked ? "開" : "關";
+      if (!voiceToggle.checked) window.speechSynthesis?.cancel();
+      updateQuestionSpeechState();
+    });
+    document.querySelectorAll(".q-text").forEach((question, index) => {
+      question.addEventListener("click", () => speakQuestion(index + 1));
+    });
+
+    // 彈窗按鈕
+    document.getElementById("mBtnReplay").addEventListener("click", () => {
+      resetToIdle();
+      startGamePlay();
+    });
+    document.getElementById("mBtnChange").addEventListener("click", () => {
+      endModal.style.display = "none";
+      resetToIdle();
+      document.getElementById("bankSel").focus();
+    });
+
+    // 視窗縮放監聽
+    window.addEventListener("resize", updateTugPosition);
+
+    // 初始化待機
+    resetToIdle();
+    updateQuestionSpeechState();
+  </script>
+</body>
+</html>

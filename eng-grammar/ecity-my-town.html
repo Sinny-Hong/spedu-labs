@@ -1,0 +1,773 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-City｜我的異想小鎮</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"Arial Rounded MT Bold","Trebuchet MS",Arial,sans-serif;
+  background:#f5f8fc;color:#25425f;
+}
+header{
+  padding:8px 18px;background:#fff;
+  border-bottom:3px solid #f6ba53;
+  display:flex;align-items:center;justify-content:space-between;
+}
+header h1{margin:0;font-size:21px}
+button{font:inherit;cursor:pointer}
+.toolbar{display:flex;gap:8px;align-items:center}
+.small-btn{
+  border:1px solid #cbd8e7;background:white;
+  border-radius:10px;padding:7px 11px;color:#25425f;
+}
+.small-btn[aria-pressed="false"]{color:#708399}
+.layout{
+  display:grid;grid-template-columns:minmax(0,1.3fr) minmax(310px,1fr);
+  gap:12px;padding:12px;max-width:1500px;margin:auto;
+}
+.panel{
+  background:white;border-radius:17px;
+  box-shadow:0 3px 14px #28456513;padding:12px;min-width:0;
+}
+.map{
+  width:100%;aspect-ratio:1.52;
+  position:relative;
+  background:#e9f3e8;border-radius:15px;
+}
+.road{position:absolute;background:#cdd6df;z-index:1}
+.vertical{left:45.5%;width:9%;top:0;height:100%}
+.horizontal{left:0;width:100%;height:12%}
+.main-road{top:30%}
+.park-road{top:65%}
+.road-label{
+  position:absolute;z-index:2;color:#536478;
+  font-size:clamp(9px,1.3vw,15px);font-weight:bold;
+  pointer-events:none;white-space:nowrap;
+}
+.main-label{left:4%;top:35%}
+.park-label{left:4%;top:70%}
+.sun-label{
+  left:50%;top:16%;
+  transform:translate(-50%,-50%) rotate(-90deg);
+}
+.block{
+  position:absolute;display:flex;
+  justify-content:space-around;align-items:center;
+  gap:3px;padding:2px;z-index:3;
+}
+.building{
+  flex:1;min-width:0;height:86%;
+  border:3px solid transparent;border-radius:10px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:2px;padding:1px;cursor:pointer;
+  transition:background .15s,border-color .15s,transform .15s;
+}
+.building:hover{background:#ffffff80}
+.building.selected{
+  background:#fff1c4;border-color:#f59e0b;
+  box-shadow:0 0 0 2px #fff8e6;
+}
+.emoji{font-size:clamp(21px,3vw,40px);line-height:1.05}
+.name{
+  font-size:clamp(9px,1.12vw,15px);
+  font-weight:800;text-align:center;
+  overflow-wrap:anywhere;line-height:1.08;
+}
+.question-top{
+  display:flex;justify-content:space-between;
+  gap:8px;align-items:center;color:#6b8197;
+  font-weight:bold;margin-bottom:12px;
+}
+.question{
+  font-size:clamp(22px,2.3vw,32px);
+  line-height:1.45;font-weight:800;
+  min-height:88px;margin-bottom:10px;overflow-wrap:anywhere;
+}
+.choices{display:grid;gap:8px;min-width:0}
+.choice{
+  text-align:left;background:#f4f8fc;
+  border:2px solid #e1eaf4;border-radius:13px;
+  padding:11px 13px;font-size:19px;font-weight:bold;color:#25425f;
+  min-width:0;width:100%;overflow-wrap:anywhere;
+}
+.choice:hover:not(:disabled){border-color:#f5b64d}
+.choice.correct{background:#e5f7e8;border-color:#40b56c}
+.choice.wrong{background:#fff0ee;border-color:#e56c63}
+.choice:disabled{cursor:default}
+.feedback{min-height:42px;margin-top:10px;font-size:17px;font-weight:bold}
+.next{
+  background:#f59e0b;color:#fff;border:0;
+  padding:10px 19px;border-radius:12px;font-weight:bold;
+  font-size:17px;
+}
+.next:disabled{opacity:.45;cursor:default}
+.bottom{display:flex;justify-content:flex-end}
+.note-row{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:10px;flex-wrap:wrap;font-size:13px;color:#789;margin-top:8px;
+}
+.copyright{font-size:12px;color:#8192a6;margin-left:auto}.copyright a{color:inherit;text-decoration:none}.copyright a:hover,.copyright a:focus-visible{color:#0b3768;text-decoration:underline}
+.hint-backdrop{
+  position:fixed;inset:0;background:#17365d45;z-index:40;
+  opacity:0;visibility:hidden;transition:.2s;
+}
+.hint-backdrop.open{opacity:1;visibility:visible}
+.hint-modal{
+  position:fixed;z-index:50;left:50%;top:50%;
+  width:min(1180px,82vw);max-height:85vh;background:#fff;
+  border-radius:20px;box-shadow:0 18px 55px #17365d42;
+  opacity:0;visibility:hidden;
+  transform:translate(-50%,-46%) scale(.98);
+  transition:opacity .2s,transform .2s,visibility .2s;
+  display:flex;flex-direction:column;
+}
+.hint-modal.open{
+  opacity:1;visibility:visible;
+  transform:translate(-50%,-50%) scale(1);
+}
+.hint-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:14px 16px;border-bottom:2px solid #f6ba53;
+}
+.hint-head h2{margin:0;font-size:21px}
+.hint-close{
+  border:0;background:#eef3f8;color:#25425f;border-radius:10px;
+  width:38px;height:38px;font-size:22px;font-weight:bold;
+}
+.hint-body{padding:15px 16px 22px;overflow-y:auto;overscroll-behavior:contain}
+.hint-section[hidden]{display:none!important}
+.hint-section h3{margin:0 0 10px;font-size:17px;color:#17365d}
+.phrase-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.phrase-row{
+  display:grid;grid-template-columns:minmax(0,1.45fr) minmax(100px,.7fr);
+  gap:10px;align-items:center;padding:8px 10px;
+  background:#f5f8fc;border:1px solid #e1eaf4;border-radius:10px;
+}
+.speak-text{
+  border:0;background:transparent;color:#1f5f9b;padding:2px;
+  text-align:left;font-weight:800;line-height:1.18;cursor:pointer;
+  overflow-wrap:anywhere;word-break:normal;
+}
+.speak-text:hover,.speak-text:focus-visible{text-decoration:underline;color:#174d7c}
+.phrase-row .speak-text{font-size:25px}
+.phrase-zh{font-size:17px;line-height:1.35;color:#60758a}
+.roads{margin:10px 0 0;padding:10px 12px 10px 28px;background:#fff8e6;border-radius:10px;line-height:1.55;font-size:16px;color:#60758a}
+.roads .speak-text{font-size:21px;color:#17365d}
+.place-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.place-item{
+  padding:9px 10px;background:#f5f8fc;border:1px solid #e1eaf4;
+  border-radius:10px;min-width:0;min-height:92px;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.place-item .speak-text{display:block;width:100%;font-size:25px;color:#17365d}
+.place-item .speak-text::first-letter{font-size:32px;line-height:1}
+.place-zh{display:block;margin-top:3px;font-size:15.5px;line-height:1.25;color:#71869a}
+.question[role="button"]{cursor:pointer}
+.question[role="button"]:hover{color:#1f5f9b}
+@media(max-width:800px){
+  header{padding:7px 9px;align-items:flex-start;gap:6px;flex-direction:column}
+  header h1{font-size:17px;padding-top:6px}
+  .toolbar{width:100%;flex-wrap:wrap;justify-content:flex-start;gap:5px}
+  .small-btn{padding:6px 8px;font-size:13px}
+  .layout{grid-template-columns:minmax(0,1fr);padding:9px;gap:10px;width:100%;min-width:0}
+  .panel{padding:10px}
+  .map{aspect-ratio:1.15;width:100%;max-width:100%;min-width:0}
+  .block,.building{min-width:0}
+  .emoji{font-size:clamp(20px,5vw,35px)}
+  .name{font-size:clamp(9px,2vw,13px)}
+  .question{min-height:auto;font-size:23px}
+  .choice{font-size:18px;padding:12px}
+  .road-label{font-size:11px}
+  .hint-modal{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:15px}
+  .hint-body{padding:12px}
+  .phrase-list{grid-template-columns:1fr}
+  .phrase-row{grid-template-columns:minmax(0,1.35fr) minmax(86px,.75fr);gap:7px;padding:7px 8px}
+  .phrase-row .speak-text{font-size:19px}
+  .phrase-zh{font-size:14.5px}
+  .roads{font-size:14.5px;line-height:1.5}
+  .roads .speak-text{font-size:18px}
+  .place-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .place-item{min-height:82px;padding:8px}
+  .place-item .speak-text{font-size:19px;line-height:1.15}
+  .place-item .speak-text::first-letter{font-size:27px}
+  .place-zh{font-size:14px}
+  .copyright{margin-left:0}
+}
+@media print{.copyright{display:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏙️ E-City｜我的異想小鎮</h1>
+  <div class="toolbar">
+    <button class="small-btn" id="phrase-open" aria-controls="hint-modal" aria-expanded="false">句型提示</button>
+    <button class="small-btn" id="place-open" aria-controls="hint-modal" aria-expanded="false">地點單字</button>
+    <button class="small-btn" id="restart">🔀 換地圖</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="panel">
+    <div class="map" id="map">
+      <div class="road vertical"></div>
+      <div class="road horizontal main-road"></div>
+      <div class="road horizontal park-road"></div>
+      <div class="road-label main-label">Main Street</div>
+      <div class="road-label park-label">Park Street</div>
+      <div class="road-label sun-label">Sun Road</div>
+    </div>
+    <div class="note-row">
+      <span>點選建築可標記與聽發音</span>
+      <span class="copyright">© <a href="https://sinny-hong.github.io/spedu-labs/share/">Sinny’s Spedu Labs</a>｜歡迎教學分享，請保留出處與原始連結。</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="question-top">
+      <span id="progress">Question 1 / 8</span>
+      <span id="score">⭐ 0</span>
+    </div>
+    <div class="question" id="question" role="button" tabindex="0" aria-label="點擊朗讀英文題目"></div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="bottom">
+      <button class="next" id="next" disabled>下一題 ➜</button>
+    </div>
+  </section>
+</main>
+
+<div class="hint-backdrop" id="hint-backdrop"></div>
+<aside class="hint-modal" id="hint-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="hint-title">
+  <div class="hint-head">
+    <h2 id="hint-title">句型提示</h2>
+    <button class="hint-close" id="hint-close" aria-label="關閉提示板">×</button>
+  </div>
+  <div class="hint-body">
+    <section class="hint-section" id="phrase-section">
+      <div class="phrase-list" id="phrase-list"></div>
+      <ul class="roads">
+        <li><button class="speak-text" type="button" data-speech="Main Street">Main Street</button>：主要街道</li>
+        <li><button class="speak-text" type="button" data-speech="Park Street">Park Street</button>：公園街</li>
+        <li><button class="speak-text" type="button" data-speech="Sun Road">Sun Road</button>：太陽路</li>
+      </ul>
+    </section>
+    <section class="hint-section" id="place-section" hidden>
+      <div class="place-list" id="place-list"></div>
+    </section>
+  </div>
+</aside>
+
+<script>
+"use strict";
+
+const PLACES=[
+  ["school","🏫"],["hospital","🏥"],["park","🌳"],
+  ["bank","🏦"],["post office","📮"],["bookstore","📚"],
+  ["flower shop","💐"],["supermarket","🛒"],
+  ["convenience store","🏪"],["restaurant","🍽️"],
+  ["hotel","🏨"],["police station","👮"],
+  ["fire station","🚒"],["movie theater","🎬"],
+  ["bakery","🍞"],["library","📖"],
+  ["coffee shop","☕"],["department store","🏬"],
+  ["museum","🏛️"],["bus stop","🚌"],
+  ["train station","🚉"],["gym","🏋️"],
+  ["home","🏠"]
+];
+
+const PLACE_ZH=Object.freeze({
+  "school":"學校","hospital":"醫院","park":"公園","bank":"銀行",
+  "post office":"郵局","bookstore":"書店","flower shop":"花店",
+  "supermarket":"超市","convenience store":"便利商店","restaurant":"餐廳",
+  "hotel":"旅館","police station":"警察局","fire station":"消防局",
+  "movie theater":"電影院","bakery":"麵包店","library":"圖書館",
+  "coffee shop":"咖啡店","department store":"百貨公司","museum":"博物館",
+  "bus stop":"公車站","train station":"火車站","gym":"健身房","home":"家"
+});
+
+const PHRASES=[
+  ["next to","在……旁邊","next to the school"],
+  ["between A and B","在 A 和 B 中間","between the school and the park"],
+  ["across from","在……對面","across from the bank"],
+  ["near","在……附近","near the library"],
+  ["to the left of","在……左邊","to the left of the hotel"],
+  ["to the right of","在……右邊","to the right of the hotel"],
+  ["on the corner of A and B","在 A 與 B 的轉角","on the corner of Main Street and Sun Road"],
+  ["on Main Street","在 Main Street 上","on Main Street"],
+  ["in front of","在……前面","in front of the school"],
+  ["behind","在……後面","behind the school"]
+];
+
+const shuffle=arr=>{
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+};
+
+const random=arr=>arr[Math.floor(Math.random()*arr.length)];
+
+const GROUPS=[
+  {x:1,y:1,w:43,h:28,count:3},
+  {x:56,y:1,w:43,h:28,count:2},
+  {x:1,y:43,w:43,h:21,count:3},
+  {x:56,y:43,w:43,h:21,count:2},
+  {x:1,y:78,w:43,h:21,count:3},
+  {x:56,y:78,w:43,h:21,count:2}
+];
+
+const STREET_NAMES=["Main Street","Park Street","Sun Road"];
+const KINDS=["next","between","across","near","left","right","corner","street"];
+
+let slots=[];
+let questions=[];
+let current=0;
+let score=0;
+let answered=false;
+let selectedId=null;
+let audioContext=null;
+
+const map=document.getElementById("map");
+const questionEl=document.getElementById("question");
+const choicesEl=document.getElementById("choices");
+const feedbackEl=document.getElementById("feedback");
+const nextBtn=document.getElementById("next");
+
+function renderHints(){
+  const phraseList=document.getElementById("phrase-list");
+  PHRASES.forEach(([label,zh,speech])=>{
+    const row=document.createElement("div");
+    row.className="phrase-row";
+    row.innerHTML=`<button class="speak-text" type="button" data-speech="${speech}">${label}</button><span class="phrase-zh">${zh}</span>`;
+    phraseList.appendChild(row);
+  });
+
+  const placeList=document.getElementById("place-list");
+  PLACES.forEach(([name,emoji])=>{
+    const item=document.createElement("div");
+    item.className="place-item";
+    item.innerHTML=`<button class="speak-text" type="button" data-speech="${name}">${emoji} ${name}</button><span class="place-zh">${PLACE_ZH[name]}</span>`;
+    placeList.appendChild(item);
+  });
+}
+
+function speakEnglish(text){
+  if(!("speechSynthesis" in window)||typeof SpeechSynthesisUtterance==="undefined")return;
+  window.speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance(text);
+  utterance.lang="en-US";
+  utterance.rate=.88;
+  const voices=window.speechSynthesis.getVoices();
+  utterance.voice=voices.find(voice=>voice.lang==="en-US")||voices.find(voice=>voice.lang.startsWith("en"))||null;
+  window.speechSynthesis.speak(utterance);
+}
+
+function setHintOpen(open,mode="phrases"){
+  const modal=document.getElementById("hint-modal");
+  const phraseMode=mode==="phrases";
+  if(open){
+    document.getElementById("phrase-section").hidden=!phraseMode;
+    document.getElementById("place-section").hidden=phraseMode;
+    document.getElementById("hint-title").textContent=phraseMode?"句型提示":"地點單字";
+  }
+  modal.classList.toggle("open",open);
+  document.getElementById("hint-backdrop").classList.toggle("open",open);
+  modal.setAttribute("aria-hidden",String(!open));
+  document.getElementById("phrase-open").setAttribute("aria-expanded",String(open&&phraseMode));
+  document.getElementById("place-open").setAttribute("aria-expanded",String(open&&!phraseMode));
+  if(!open&&"speechSynthesis" in window)window.speechSynthesis.cancel();
+}
+
+function playSound(type){
+  try{
+    audioContext=audioContext||new (window.AudioContext||window.webkitAudioContext)();
+    if(audioContext.state==="suspended")audioContext.resume();
+    const notes=type==="finish"?[523.25,659.25,783.99]:[659.25,783.99];
+    const now=audioContext.currentTime;
+    notes.forEach((frequency,index)=>{
+      const oscillator=audioContext.createOscillator();
+      const gain=audioContext.createGain();
+      const start=now+index*.11;
+      oscillator.type="sine";
+      oscillator.frequency.value=frequency;
+      gain.gain.setValueAtTime(.0001,start);
+      gain.gain.exponentialRampToValueAtTime(.07,start+.015);
+      gain.gain.exponentialRampToValueAtTime(.0001,start+.12);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start(start);
+      oscillator.stop(start+.13);
+    });
+  }catch(error){
+    console.info("Audio unavailable",error);
+  }
+}
+
+function makeSlots(){
+  const places=shuffle(PLACES).slice(0,15);
+  let index=0;
+  const result=[];
+
+  GROUPS.forEach((g,group)=>{
+    for(let pos=0;pos<g.count;pos++){
+      const [name,emoji]=places[index++];
+      const x=g.x+g.w*(pos+.5)/g.count;
+      const y=g.y+g.h/2;
+      result.push({
+        id:group+"-"+pos,
+        group,pos,name,emoji,x,y,
+        row:Math.floor(group/2),
+        side:group%2
+      });
+    }
+  });
+  return result;
+}
+
+function drawMap(){
+  map.querySelectorAll(".block").forEach(el=>el.remove());
+
+  GROUPS.forEach((g,group)=>{
+    const block=document.createElement("div");
+    block.className="block";
+    Object.assign(block.style,{
+      left:g.x+"%",top:g.y+"%",
+      width:g.w+"%",height:g.h+"%"
+    });
+
+    slots.filter(s=>s.group===group).forEach(s=>{
+      const item=document.createElement("div");
+      item.className="building";
+      item.dataset.id=s.id;
+      item.innerHTML=
+        '<span class="emoji">'+s.emoji+'</span>'+
+        '<span class="name">'+s.name+'</span>';
+
+      item.addEventListener("click",()=>{
+        selectedId=selectedId===s.id?null:s.id;
+        updateSelection();
+        speakEnglish(s.name);
+      });
+      block.appendChild(item);
+    });
+
+    map.appendChild(block);
+  });
+}
+
+function updateSelection(){
+  map.querySelectorAll(".building").forEach(el=>{
+    el.classList.toggle("selected",el.dataset.id===selectedId);
+  });
+}
+
+function clearSelection(){
+  selectedId=null;
+  updateSelection();
+}
+
+function distance(a,b){
+  return Math.hypot(a.x-b.x,a.y-b.y);
+}
+
+function sameGroup(a){
+  return slots.filter(b=>b.group===a.group&&b.id!==a.id);
+}
+
+function add(pool,q,valid,key,wrongPool=null){
+  const names=[...new Set(valid)];
+  if(!names.length)return;
+  pool.push({q,valid:names,key,wrongPool});
+}
+
+function buildPools(){
+  const pools=Object.fromEntries(KINDS.map(k=>[k,[]]));
+
+  // next to：同一街廓、緊鄰位置
+  for(const a of slots){
+    const same=sameGroup(a);
+    const adjacent=same.filter(b=>Math.abs(b.pos-a.pos)===1);
+    add(pools.next,
+      `What is next to the ${a.name}?`,
+      adjacent.map(b=>b.name),
+      `next:${a.id}`
+    );
+
+    // between：只取三棟街廓的中間位置
+    if(a.pos===1&&GROUPS[a.group].count===3){
+      const left=slots.find(b=>b.group===a.group&&b.pos===0);
+      const right=slots.find(b=>b.group===a.group&&b.pos===2);
+      add(pools.between,
+        `What is between the ${left.name} and the ${right.name}?`,
+        [a.name],`between:${a.group}`
+      );
+    }
+
+    // left/right：同街廓，以畫面方向判定
+    const left=same.filter(b=>b.pos<a.pos);
+    const right=same.filter(b=>b.pos>a.pos);
+
+    // 干擾項優先取同街廓的反方向；
+    // 其他街廓只取明顯位於反方向的建築。
+    const leftWrong=slots.filter(b=>
+      b.id!==a.id&&(
+        (b.group===a.group&&b.pos>a.pos)||
+        (b.group!==a.group&&b.x>a.x+8)
+      )
+    ).map(b=>b.name);
+
+    const rightWrong=slots.filter(b=>
+      b.id!==a.id&&(
+        (b.group===a.group&&b.pos<a.pos)||
+        (b.group!==a.group&&b.x<a.x-8)
+      )
+    ).map(b=>b.name);
+
+    add(pools.left,
+      `What is to the left of the ${a.name}?`,
+      left.map(b=>b.name),
+      `left:${a.id}`,leftWrong
+    );
+    add(pools.right,
+      `What is to the right of the ${a.name}?`,
+      right.map(b=>b.name),
+      `right:${a.id}`,rightWrong
+    );
+
+    // near：使用實際座標距離
+    // 選最近的建築作答案，明顯較遠的作干擾。
+    const others=slots.filter(b=>b.id!==a.id)
+      .sort((b,c)=>distance(a,b)-distance(a,c));
+    const nearestDistance=distance(a,others[0]);
+    const near=others.filter(b=>
+      distance(a,b)<=nearestDistance+0.01
+    );
+    const far=others.filter(b=>
+      distance(a,b)>=nearestDistance*2.3
+    );
+
+    if(far.length>=2){
+      add(pools.near,
+        `What is near the ${a.name}?`,
+        near.map(b=>b.name),
+        `near:${a.id}`,
+        far.map(b=>b.name)
+      );
+    }
+  }
+
+  // across from：只取隔著 Sun Road 正對的建築
+  for(let row=0;row<3;row++){
+    const left=slots.find(s=>s.group===row*2&&s.pos===2);
+    const right=slots.find(s=>s.group===row*2+1&&s.pos===0);
+
+    if(left&&right){
+      add(pools.across,
+        `What is across from the ${left.name}?`,
+        [right.name],`across:${row}:L`
+      );
+      add(pools.across,
+        `What is across from the ${right.name}?`,
+        [left.name],`across:${row}:R`
+      );
+    }
+  }
+
+  // corner：每個路口四個轉角均為有效答案
+  for(const [street,groups] of [
+    ["Main Street",[0,1,2,3]],
+    ["Park Street",[2,3,4,5]]
+  ]){
+    const corners=groups.map(g=>
+      slots.find(s=>
+        s.group===g&&
+        s.pos===(g%2===0?2:0)
+      )
+    ).filter(Boolean);
+
+    add(pools.corner,
+      `What is on the corner of ${street} and Sun Road?`,
+      corners.map(s=>s.name),
+      `corner:${street}`
+    );
+  }
+
+  // street：僅選遠離另一條橫向道路的街廓
+  // 上方街廓歸 Main Street；下方街廓歸 Park Street。
+  const main=slots.filter(s=>s.row===0);
+  const park=slots.filter(s=>s.row===2);
+
+  add(pools.street,
+    "What is on Main Street?",
+    main.map(s=>s.name),
+    "street:main",
+    park.map(s=>s.name)
+  );
+  add(pools.street,
+    "What is on Park Street?",
+    park.map(s=>s.name),
+    "street:park",
+    main.map(s=>s.name)
+  );
+
+  return pools;
+}
+
+function makeQuestion(pool,kind){
+  const q=random(pool);
+  if(!q)return null;
+
+  const answer=random(q.valid);
+  let wrong=(q.wrongPool||slots.map(s=>s.name))
+    .filter(n=>n!==answer&&!q.valid.includes(n));
+
+  wrong=shuffle([...new Set(wrong)]);
+
+  // 只接受有兩個明確錯誤選項的題目
+  if(wrong.length<2)return null;
+
+  return {
+    ...q,kind,answer,
+    options:shuffle([answer,...wrong.slice(0,2)])
+  };
+}
+
+function generateQuestions(){
+  const pools=buildPools();
+  const result=[];
+
+  for(const kind of KINDS){
+    const pool=shuffle(pools[kind]);
+    let question=null;
+
+    for(const q of pool){
+      question=makeQuestion([q],kind);
+      if(question)break;
+    }
+    if(!question){
+      throw new Error("無法產生題型："+kind);
+    }
+    result.push(question);
+  }
+
+  return shuffle(result);
+}
+
+function showQuestion(){
+  clearSelection();
+  answered=false;
+
+  if(current>=questions.length){
+    showResult();
+    return;
+  }
+
+  const q=questions[current];
+  document.getElementById("progress").textContent=
+    `Question ${current+1} / ${questions.length}`;
+  document.getElementById("score").textContent=`⭐ ${score}`;
+  questionEl.textContent=q.q;
+  choicesEl.innerHTML="";
+  feedbackEl.textContent="";
+  nextBtn.disabled=true;
+  nextBtn.textContent="下一題 ➜";
+
+  q.options.forEach((name,i)=>{
+    const btn=document.createElement("button");
+    btn.className="choice";
+    btn.textContent=String.fromCharCode(65+i)+". "+name;
+    btn.addEventListener("click",()=>answerQuestion(name));
+    choicesEl.appendChild(btn);
+  });
+}
+
+function answerQuestion(choice){
+  if(answered)return;
+  answered=true;
+
+  const q=questions[current];
+  const correct=choice===q.answer;
+  if(correct){
+    score++;
+    playSound("correct");
+  }
+
+  choicesEl.querySelectorAll("button").forEach(btn=>{
+    const name=btn.textContent.slice(3);
+    btn.disabled=true;
+    if(name===q.answer)btn.classList.add("correct");
+    else if(name===choice)btn.classList.add("wrong");
+  });
+
+  feedbackEl.textContent=correct
+    ?"✅ Correct! Great job!"
+    :"❌ The answer is "+q.answer+".";
+
+  document.getElementById("score").textContent=`⭐ ${score}`;
+  nextBtn.disabled=false;
+  if(current===questions.length-1)nextBtn.textContent="查看成績 ➜";
+}
+
+function showResult(){
+  playSound("finish");
+  document.getElementById("progress").textContent="Finished!";
+  questionEl.textContent=`🎉 ${score} / ${questions.length}`;
+  choicesEl.innerHTML="";
+  feedbackEl.textContent=
+    score===questions.length
+      ?"Excellent! 全部答對！"
+      :"完成挑戰！可以再玩一次。";
+  nextBtn.disabled=false;
+  nextBtn.textContent="🔀 再玩一次";
+}
+
+function startGame(){
+  slots=makeSlots();
+  drawMap();
+  questions=generateQuestions();
+  current=0;
+  score=0;
+  showQuestion();
+}
+
+nextBtn.addEventListener("click",()=>{
+  if(current>=questions.length){
+    startGame();
+  }else{
+    current++;
+    showQuestion();
+  }
+});
+
+document.getElementById("restart").addEventListener("click",startGame);
+document.getElementById("phrase-open").addEventListener("click",()=>setHintOpen(true,"phrases"));
+document.getElementById("place-open").addEventListener("click",()=>setHintOpen(true,"places"));
+document.getElementById("hint-close").addEventListener("click",()=>setHintOpen(false));
+document.getElementById("hint-backdrop").addEventListener("click",()=>setHintOpen(false));
+document.getElementById("hint-modal").addEventListener("click",event=>{
+  const button=event.target.closest("[data-speech]");
+  if(button)speakEnglish(button.dataset.speech);
+});
+questionEl.addEventListener("click",()=>{
+  if(current<questions.length)speakEnglish(questions[current].q);
+});
+questionEl.addEventListener("keydown",event=>{
+  if((event.key==="Enter"||event.key===" ")&&current<questions.length){
+    event.preventDefault();
+    speakEnglish(questions[current].q);
+  }
+});
+document.addEventListener("keydown",event=>{
+  if(event.key==="Escape")setHintOpen(false);
+});
+
+renderHints();
+startGame();
+</script>
+</body>
+</html>
