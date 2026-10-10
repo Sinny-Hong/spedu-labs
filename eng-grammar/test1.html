@@ -1,10 +1,671 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>測試頁｜eng-grammar/test1.html</title>
-  <style>body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,sans-serif;background:#f8fafc;color:#19324d}main{text-align:center;padding:32px}h1{margin:0 0 12px}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-City｜異想課表 (16單元母版)</title>
+<style>
+:root{
+  --paper: #FDFDFD;
+  --wood: #C5A880;
+  --ink: #2C3E50;
+  --blue: #3498DB;
+  --green: #2A5944;
+  --red: #C62828;
+  --line-blue: #A9CCE3;
+  
+  --navy: #1A252F;
+  --soft: #F4F6F7;
+  --blue-soft: #EBF5FB;
+  --green-soft: #E8F8F5;
+  --hint: #FFF0A6;
+  --hint-line: #F1C44A;
+  --gray-blue: #BDC3C7;
+}
+*{box-sizing:border-box}
+
+html,body{margin:0;padding:0;}
+body{
+  background: #E8EDF1; color:var(--ink);
+  font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  padding:18px 0 40px;
+}
+button,select{font:inherit;cursor:pointer;user-select:none;}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* =========================================================
+   FLOATING NAV & PRINT WIDGET
+========================================================= */
+.floating-widget{
+  position:fixed;right:16px;top:16px;z-index:1000;
+  background:white;border:1px solid #C8D5E0;border-radius:14px;
+  box-shadow:0 4px 20px rgba(0,0,0,.15);overflow:hidden;
+  font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+}
+.widget-header{
+  background:var(--green);color:white;padding:10px 14px;font-weight:900;
+  display:flex;align-items:center;justify-content:space-between;cursor:pointer;
+  font-size:14px;user-select:none;gap:10px;
+}
+.widget-body{
+  padding:12px;display:flex;flex-direction:column;gap:10px;background:white;
+  max-height:80vh;overflow-y:auto;
+}
+.widget-body.collapsed{display:none;}
+.nav-section-title{
+  font-size:12px;font-weight:900;color:#647789;margin-bottom:4px;border-bottom:1px solid var(--line-blue);padding-bottom:2px;
+}
+.nav-grid{display:grid;grid-template-columns:repeat(4, 1fr);gap:4px;}
+.nav-grid button{
+  padding:6px 4px;border:1px solid #C8D5E0;border-radius:6px;background:white;
+  color:var(--green);font-size:12px;font-weight:900;cursor:pointer;text-align:center;
+}
+.nav-grid button:hover{background:var(--green-soft);border-color:var(--green);}
+.print-select-wrap{display:flex;flex-direction:column;gap:6px;margin-top:4px;}
+.print-select-wrap select{
+  padding:8px;border:1px solid #C8D5E0;border-radius:8px;font-weight:900;color:var(--navy);background:white;cursor:pointer;
+}
+.print-action-btn{
+  background:var(--green);color:white;border:0;border-radius:8px;padding:9px;font-weight:900;cursor:pointer;text-align:center;
+}
+.print-action-btn:hover{background:#1E4030;}
+
+/* =========================================================
+   A4 PORTRAIT SHEETS
+========================================================= */
+.sheet{
+  width:210mm;height:297mm;margin:0 auto 18px;padding:7mm 8mm;
+  background:#fff;box-shadow:0 5px 18px rgba(0,0,0,.12);
+  overflow:hidden;display:grid;grid-template-rows:1fr 1fr;gap:5mm;
+  page-break-after:always;
+}
+.sheet:last-child{page-break-after:auto;}
+
+.level-block{
+  min-height:0;display:flex;flex-direction:column;overflow:hidden;
+}
+.level-block:first-child{
+  padding-bottom:2.5mm;border-bottom:1.5px dashed #D5E0E9;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+.level-header{
+  min-height:12mm;display:flex;align-items:center;justify-content:space-between;
+  gap:5mm;margin-bottom:2mm;
+}
+.level-title{margin:0;color:var(--green);font-size:16.5pt;line-height:1;font-weight:900;white-space:nowrap;}
+.student-info{display:flex;align-items:center;gap:3mm;color:#273E52;font-size:14pt;font-weight:700;white-space:nowrap;}
+.info-line{display:inline-block;min-width:25mm;height:5mm;border-bottom:1.4px solid #647789;}
+.name-line{min-width:36mm;}
+
+/* =========================================================
+   CONTENT LAYOUT (50:50)
+========================================================= */
+.level-content{
+  flex:1;min-height:0;display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:4mm;
+}
+.left-side,.right-side{min-width:0;min-height:0;}
+.left-side{display:flex;flex-direction:column; height:100%; min-height:0;}
+
+.schedule-box{
+  border:1px solid var(--line-blue); border-radius:3mm; background:var(--paper); 
+  display:flex; flex-direction:column; flex:1; overflow:hidden; position: relative;
+}
+.schedule-title{
+  height:7mm;display:flex;align-items:center;justify-content:center;
+  background:var(--green);color:white;font-size:10.5pt;font-weight:900;flex-shrink:0; letter-spacing: 1px;
+}
+.schedule-table-wrap{flex:1; display:flex; flex-direction:column; overflow:hidden;}
+.schedule-table{width:100%; height:100%; border-collapse:collapse; text-align:center; table-layout: fixed;}
+.schedule-table th, .schedule-table td {
+  padding:4px 2px; font-size:9.5pt; font-weight:bold; vertical-align: middle;
+  white-space: nowrap;
+}
+.schedule-table th {background:var(--green); color:white; border-right: 1px solid #1E4030;}
+.schedule-table th:first-child { width: 18%; }
+.schedule-table th:not(:first-child) { width: 16.4%; }
+.schedule-table td {border-bottom: 1px dashed var(--line-blue); border-right: 1px dashed var(--line-blue); background: #FFFFFF;}
+.schedule-table td:last-child {border-right: none;}
+
+.time-cell { font-size: 8.5pt; color: #2C3E50; font-weight: bold; background: #F4F6F7 !important; }
+
+/* 右側：測驗區 */
+.right-side{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;}
+.question-head{
+  min-height:9mm;display:flex;align-items:center;justify-content:space-between;
+  gap:2mm;padding:1.2mm 2mm;margin-bottom:1.5mm;background:var(--soft);
+  border:1px solid var(--line-blue);border-radius:2.5mm;width:100%;
+}
+.question-title-wrap{display:flex;align-items:center;gap:2mm;min-width:0;}
+.question-title{margin:0;color:var(--green);font-size:12pt;font-weight:900;}
+.score{min-width:11mm;color:var(--green);font-size:10.5pt;font-weight:900;text-align:center;}
+
+.tools{display:flex;align-items:center;gap:.8mm;flex-shrink:0;}
+.tools button{
+  padding:1mm 1.6mm;border:1px solid #BFCFDE;border-radius:6px;
+  background:white;color:var(--green);font-size:8pt;font-weight:900;cursor:pointer;
+}
+.tools button.active{color:#875100;background:#FFF2D7;border-color:var(--hint-line);}
+
+.questions{
+  flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-around;padding:0 5px; gap: 2px;
+}
+
+.question{border-bottom:1px dashed var(--gray-blue);padding:3px 0 4px;}
+.question:last-child{border-bottom:none;}
+.question-line{display:flex;align-items:baseline;gap:4px;font-size:10.5pt;font-weight:bold;line-height:1.2;}
+.answer-blank{color:var(--blue);white-space:nowrap;min-width:2.5em;text-align:right;}
+
+.options{
+  margin-left: 2.5em; 
+  display: flex; 
+  flex-wrap: wrap; 
+  font-size: 9.5pt; 
+  margin-top: 1px;
+  row-gap: 1px;     
+  column-gap: 10px; 
+}
+.choice{border:1px solid transparent;border-radius:5px;background:transparent;color:#4F595D;padding:1px 4px;font-weight:bold;}
+.choice.selected{color:var(--ink);background:var(--blue-soft);border-color:var(--blue);}
+.choice.correct{color:var(--green);background:var(--green-soft);border-color:var(--green);}
+
+.hint-word{padding:0 2px;border-radius:3px;}
+.level-block.hint-on .hint-word{
+  background:var(--hint);
+  box-shadow:inset 0 -1px 0 var(--hint-line);
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+.footer{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:8pt;color:#788896;padding-top:1.5mm;margin-top:auto;
+}
+.footer .credit{
+  margin-left:auto;text-align:right;font-size:7.5pt;letter-spacing:.2px;
+}
+
+/* =========================================================
+   TEACHER ANSWER MODE (正確顯影設定)
+========================================================= */
+body.teacher-mode .answer-blank{
+  color: var(--red) !important;
+  font-weight: 900 !important;
+}
+body.teacher-mode .answer-blank::after{
+  content: attr(data-ans);
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+@page{size:A4 portrait;margin:0;}
+@media print{
+  html,body{width:210mm;margin:0;padding:0;background:white;}
+  .floating-widget{display:none !important;}
+  .sheet{width:210mm;height:297mm;margin:0;box-shadow:none;}
+  .tools,.score{display:none !important;}
+}
+</style>
 </head>
-<body><main><h1>測試頁</h1><p>eng-grammar/test1.html</p></main></body>
+
+<body>
+
+<div class="floating-widget" id="floatingWidget">
+  <div class="widget-header" onclick="toggleWidget()">
+    <span>📍 快速導覽與列印選單</span>
+    <span id="widgetToggleIcon">▼</span>
+  </div>
+  <div class="widget-body" id="widgetBody">
+    <div class="nav-section-title">A 卷 (A1 - A4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-0')">A1</button>
+      <button onclick="scrollToId('level-1')">A2</button>
+      <button onclick="scrollToId('level-2')">A3</button>
+      <button onclick="scrollToId('level-3')">A4</button>
+    </div>
+    
+    <div class="nav-section-title">B 卷 (B1 - B4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-4')">B1</button>
+      <button onclick="scrollToId('level-5')">B2</button>
+      <button onclick="scrollToId('level-6')">B3</button>
+      <button onclick="scrollToId('level-7')">B4</button>
+    </div>
+
+    <div class="nav-section-title">C 卷 (C1 - C4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-8')">C1</button>
+      <button onclick="scrollToId('level-9')">C2</button>
+      <button onclick="scrollToId('level-10')">C3</button>
+      <button onclick="scrollToId('level-11')">C4</button>
+    </div>
+
+    <div class="nav-section-title">D 卷 (D1 - D4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-12')">D1</button>
+      <button onclick="scrollToId('level-13')">D2</button>
+      <button onclick="scrollToId('level-14')">D3</button>
+      <button onclick="scrollToId('level-15')">D4</button>
+    </div>
+
+    <div class="nav-section-title">列印模式設定</div>
+    <div class="print-select-wrap">
+      <select id="printModeSelect">
+        <option value="student">📄 列印學生作答卷</option>
+        <option value="teacher">🔑 列印教師解答卷</option>
+      </select>
+      <button class="print-action-btn" onclick="executePrint()">開始列印 / 存為 PDF</button>
+    </div>
+  </div>
+</div>
+
+<div id="pages"></div>
+
+<script>
+'use strict';
+
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const TIMES = ["08:15", "09:15", "10:15", "11:15"];
+
+const motivationalQuotes = [
+  "Believe in yourself, every step you take makes you stronger and wiser!",
+  "Reading English stories opens up a wonderful new world of imagination.",
+  "Keep trying your best today, success belongs to those who never give up!",
+  "Great job! Small progress every day leads to big achievements."
+];
+
+function seededRandom(seed) {
+  let x = Math.sin(seed++) * 10000;
+  return x - Math.floor(x);
+}
+
+function shuffleWithSeed(array, seed) {
+  let arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(seededRandom(seed + i) * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function getPrevDay(dayStr) {
+  let idx = DAYS.indexOf(dayStr);
+  if (idx === 0) return "Sunday";
+  return DAYS[idx - 1];
+}
+
+function fillOptions(ans, w1, w2, fallback, seed) {
+  let opts = [...new Set([ans, w1, w2])];
+  let i = 0;
+  while(opts.length < 3) {
+    if(!opts.includes(fallback[i])) opts.push(fallback[i]);
+    i++;
+  }
+  return shuffleWithSeed(opts, seed);
+}
+
+function escapeRegExp(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlightText(text, words) {
+  let result = String(text);
+  const sorted = [...words].sort((a,b) => b.length-a.length);
+  sorted.forEach(word => {
+    const regex = new RegExp(`\\b(${escapeRegExp(word)})\\b`, "gi");
+    result = result.replace(regex, `<span class="hint-word">$1</span>`);
+  });
+  return result;
+}
+
+function generateBaseGrid(seed) {
+  let grid = Array(5).fill().map(() => Array(4).fill(""));
+  let r = (s) => seededRandom(s);
+  
+  let peDays = shuffleWithSeed([0, 1, 2, 3, 4], seed).slice(0, 2).sort();
+  grid[peDays[0]][Math.floor(r(seed+1)*3)] = "PE";
+  grid[peDays[1]][Math.floor(r(seed+2)*3)] = "PE";
+  
+  let otherDays = shuffleWithSeed([0, 1, 2, 3, 4], seed + 10);
+  grid[otherDays[0]][Math.floor(r(seed+3)*3)] = "Art";
+  grid[otherDays[1]][Math.floor(r(seed+4)*3)] = "Computer";
+  grid[otherDays[2]][Math.floor(r(seed+5)*3)] = "Music";
+
+  const mainSubjs = ["Chinese", "English", "Math", "Science", "History"];
+  for(let d=0; d<5; d++){
+    for(let p=0; p<4; p++){
+      if(grid[d][p] === "") {
+         let subjs = shuffleWithSeed(mainSubjs, seed + d * 10 + p);
+         grid[d][p] = subjs[0];
+      }
+    }
+  }
+  return { grid, peDays, otherDays };
+}
+
+function generateLevelData(lvlType, seed) {
+  let { grid, peDays, otherDays } = generateBaseGrid(seed);
+  let questions = [];
+  const allSubjs = [...new Set(grid.flat())];
+  const fakes = shuffleWithSeed(allSubjs, seed + 100);
+
+  if (lvlType === 'L1') {
+    let artDay = DAYS[otherDays[0]], artP = grid[otherDays[0]].indexOf("Art") + 1;
+    let qList = [
+      { stem: `What class is on Monday for Class 1?`, ans: grid[0][0], w1: grid[0][1], w2: grid[1][0] },
+      { stem: `When do we have Art?`, ans: `On ${artDay} for Class ${artP}`, w1: `On Monday for Class 2`, w2: `On Friday for Class 4` },
+      { stem: `What class is on ${DAYS[2]} for Class 3?`, ans: grid[2][2], w1: grid[2][0], w2: grid[3][2] },
+      { stem: `When do we have Computer?`, ans: `On ${DAYS[otherDays[1]]} for Class ${grid[otherDays[1]].indexOf("Computer") + 1}`, w1: `On Tuesday for Class 1`, w2: `On Thursday for Class 3` },
+      { stem: `Do we have ${grid[4][1]} on Friday?`, ans: `Yes, we do.`, w1: `No, we don't.`, w2: `I don't know.` }
+    ];
+    questions = qList.map((q, idx) => {
+      let opts = fillOptions(q.ans, q.w1, q.w2, ["Yes, we do.", "No, we don't.", ...fakes], seed + idx);
+      return { stem: q.stem, options: opts, answer: opts.indexOf(q.ans) };
+    });
+  }
+  else if (lvlType === 'L2') {
+    let dB = 2, pB = 2;
+    let subjB = grid[dB][pB];
+    let prevB = grid[dB][pB-1];
+    let dA = 1, pA = 1;
+    let subjA = grid[dA][pA];
+    let nextA = grid[dA][pA+1];
+    let mathCount = grid.flat().filter(x => x === "Math").length;
+    let countWord = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven"][mathCount] || mathCount.toString();
+    
+    let qList = [
+      { stem: `What class is <b>before</b> ${subjB} on ${DAYS[dB]}?`, ans: prevB, w1: grid[dB][pB+1]||"PE", w2: grid[dB][0] },
+      { stem: `What class is <b>after</b> ${subjA} on ${DAYS[dA]}?`, ans: nextA, w1: grid[dA][pA-1]||"Art", w2: grid[dA][3] },
+      { stem: `How many Math classes do we have?`, ans: countWord, w1: "Two", w2: "Five" },
+      { stem: `What class is before ${grid[3][1]} on Thursday?`, ans: grid[3][0], w1: grid[3][2], w2: grid[4][0] },
+      { stem: `Do we have ${grid[4][3]} after ${grid[4][2]} on Friday?`, ans: `Yes, we do.`, w1: `No, we don't.`, w2: `I don't know.` }
+    ];
+    questions = qList.map((q, idx) => {
+      let opts = fillOptions(q.ans, q.w1, q.w2, ["One", "Three", "Four", "Yes, we do.", "No, we don't.", ...fakes], seed + idx);
+      return { stem: q.stem, options: opts, answer: opts.indexOf(q.ans) };
+    });
+  }
+  else if (lvlType === 'L3') {
+    let artD = otherDays[0];
+    let todayForArt = getPrevDay(DAYS[artD]);
+    let compD = otherDays[1];
+    let compP = grid[compD].indexOf("Computer") + 1;
+    let musD = otherDays[2];
+    let musP = grid[musD].indexOf("Music") + 1;
+
+    let qList = [
+      { stem: `Today is ${todayForArt}. Art is tomorrow. What day is Art?`, ans: DAYS[artD], w1: DAYS[(artD+1)%5], w2: DAYS[(artD+2)%5] },
+      { stem: `Computer room is on ${DAYS[compD]}. What class is it?`, ans: `Class ${compP}`, w1: `Class ${(compP%4)+1}`, w2: `Class ${((compP+1)%4)+1}` },
+      { stem: `Mary has Music on ${DAYS[musD]}. What class is it?`, ans: `Class ${musP}`, w1: `Class ${(musP%4)+1}`, w2: `Class ${((musP+1)%4)+1}` },
+      { stem: `Which day features Science?`, ans: `${DAYS[1]}`, w1: `${DAYS[0]}`, w2: `${DAYS[4]}` },
+      { stem: `Is PE on ${DAYS[peDays[0]]}?`, ans: `Yes, it is.`, w1: `No, it isn't.`, w2: `I don't know.` }
+    ];
+    questions = qList.map((q, idx) => {
+      let opts = fillOptions(q.ans, q.w1, q.w2, ["Monday", "Friday", "Class 1", "Class 4"], seed + idx);
+      return { stem: q.stem, options: opts, answer: opts.indexOf(q.ans) };
+    });
+  }
+  else if (lvlType === 'L4') {
+    let peD1 = peDays[0];
+    let peD2 = peDays[1];
+    let peP2 = grid[peD2].indexOf("PE") + 1;
+    let engDays = [];
+    for(let d=0; d<5; d++) { if(grid[d].includes("English")) engDays.push(DAYS[d]); }
+    let engAns = engDays.length >= 2 ? `${engDays[0]} and ${engDays[1]}` : "Every day";
+
+    let qList = [
+      { stem: `Leo missed PE on ${DAYS[peD1]}. Next PE class?`, ans: `On ${DAYS[peD2]} for Class ${peP2}`, w1: `On ${DAYS[peD1]} for Class 4`, w2: `On Friday for Class 1` },
+      { stem: `Which days does Mary have English?`, ans: engAns, w1: `${DAYS[2]} and ${DAYS[3]}`, w2: `${DAYS[1]} and Friday` },
+      { stem: `Tom prepares for ${grid[0][1]} on Monday. What class?`, ans: `Class 2`, w1: `Class 1`, w2: `Class 3` },
+      { stem: `How many classes scheduled daily?`, ans: `4 classes`, w1: `3 classes`, w2: `5 classes` },
+      { stem: `Is Chinese on ${DAYS[0]}?`, ans: grid[0].includes("Chinese") ? "Yes." : "No.", w1: "Maybe.", w2: "I don't know." }
+    ];
+    questions = qList.map((q, idx) => {
+      let opts = fillOptions(q.ans, q.w1, q.w2, ["Class 4", "Monday and Tuesday", `On Thursday for Class 2`], seed + idx);
+      return { stem: q.stem, options: opts, answer: opts.indexOf(q.ans) };
+    });
+  }
+
+  let hintWords = [...DAYS, "Class 1", "Class 2", "Class 3", "Class 4", "before", "after", "next", "Art", "PE", "Music", "Computer", "Science", "Chinese", "English", "History", "Math"];
+  return { grid, questions, hintWords };
+}
+
+function generateAll16Levels() {
+  const versions = [
+    { prefix: 'A', seedOffset: 100 },
+    { prefix: 'B', seedOffset: 200 },
+    { prefix: 'C', seedOffset: 300 },
+    { prefix: 'D', seedOffset: 400 }
+  ];
+
+  const types = ['L1', 'L2', 'L3', 'L4'];
+  let allLevels = [];
+
+  versions.forEach(ver => {
+    types.forEach((t, idx) => {
+      const actualCode = `${ver.prefix}${idx + 1}`;
+      const seed = ver.seedOffset + idx * 50;
+      const data = generateLevelData(t, seed);
+
+      allLevels.push({
+        code: actualCode,
+        grid: data.grid,
+        questions: data.questions,
+        hintWords: data.hintWords
+      });
+    });
+  });
+
+  return allLevels;
+}
+
+const all16Levels = generateAll16Levels();
+let selections = all16Levels.map(level => Array(level.questions.length).fill(null));
+let hintStates = all16Levels.map(() => false);
+
+function createLevel(data, levelIndex){
+  let tableHTML = `
+    <tr>
+      <th>Time</th>
+      <th>Mon (一)</th><th>Tue (二)</th><th>Wed (三)</th><th>Thu (四)</th><th>Fri (五)</th>
+    </tr>
+  `;
+  for(let p=0; p<4; p++) {
+    tableHTML += `<tr>`;
+    tableHTML += `<td class="time-cell">${TIMES[p]}</td>`;
+    for(let d=0; d<5; d++) {
+       tableHTML += `<td>${data.grid[d][p]}</td>`;
+    }
+    tableHTML += `</tr>`;
+  }
+
+  const questionsHTML = data.questions.map((q, qIndex) => {
+    const ansLetter = String.fromCharCode(65 + q.answer);
+    const highlightedStem = highlightText(q.stem, data.hintWords);
+    return `
+      <div class="question">
+        <div class="question-line">
+          <span class="answer-blank" id="answer-${levelIndex}-${qIndex}" data-ans="（${ansLetter}）">（　）</span>
+          <span>${qIndex+1}. ${highlightedStem}</span>
+        </div>
+        <div class="options">
+          ${q.options.map((choice, j) => `
+            <button class="choice" data-level="${levelIndex}" data-q="${qIndex}" data-opt="${j}"
+                    onclick="chooseAnswer(${levelIndex}, ${qIndex},${j}, this)">
+              (${String.fromCharCode(65+j)})${highlightText(choice, data.hintWords)}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const quote = motivationalQuotes[levelIndex % motivationalQuotes.length];
+
+  return `
+    <section class="level-block" id="level-${levelIndex}">
+      <div class="level-header">
+        <h1 class="level-title">🏫 E-City｜異想課表 ${data.code}</h1>
+        <div class="student-info">
+          <span>班級：</span><span class="info-line"></span>
+          <span>姓名：</span><span class="info-line name-line"></span>
+        </div>
+      </div>
+
+      <div class="level-content">
+        <div class="left-side">
+          <section class="schedule-box">
+            <div class="schedule-title">School Timetable (學校課表)</div>
+            <div class="schedule-table-wrap">
+              <table class="schedule-table">
+                ${tableHTML}
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <div class="right-side">
+          <div class="question-head">
+            <div class="question-title-wrap">
+              <h2 class="question-title">Questions</h2>
+              <div class="score" id="score-${levelIndex}"></div>
+            </div>
+            <div class="tools">
+              <button onclick="toggleHint(${levelIndex}, this)">提示</button>
+              <button onclick="gradeLevel(${levelIndex})">批改</button>
+              <button onclick="clearLevel(${levelIndex})">清除</button>
+              <button onclick="showAnswers(${levelIndex})">解答</button>
+            </div>
+          </div>
+          <div class="questions">${questionsHTML}</div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <span>⭐ ${quote}</span>
+        <span class="credit">© SINNY SPEDU LABS &nbsp;&nbsp; ${data.code}</span>
+      </div>
+    </section>
+  `;
+}
+
+function renderAll(){
+  const pageRoot = document.getElementById("pages");
+  pageRoot.innerHTML = "";
+
+  for(let i=0; i<all16Levels.length; i+=2){
+    const first = createLevel(all16Levels[i], i);
+    const second = createLevel(all16Levels[i+1], i+1);
+    pageRoot.insertAdjacentHTML("beforeend", `
+      <section class="sheet">
+        ${first}
+        ${second}
+      </section>
+    `);
+  }
+}
+
+function toggleWidget(){
+  const body = document.getElementById('widgetBody');
+  const icon = document.getElementById('widgetToggleIcon');
+  body.classList.toggle('collapsed');
+  icon.textContent = body.classList.contains('collapsed') ? '▲' : '▼';
+}
+
+function scrollToId(elementId){
+  const el = document.getElementById(elementId);
+  if(el){
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function executePrint(){
+  const mode = document.getElementById('printModeSelect').value;
+  if(mode === 'teacher'){
+    document.body.classList.add('teacher-mode');
+  } else {
+    document.body.classList.remove('teacher-mode');
+  }
+  window.print();
+}
+
+function getOptions(levelIndex, qIndex){
+  return document.querySelectorAll(`.choice[data-level="${levelIndex}"][data-q="${qIndex}"]`);
+}
+function getAnswerSlot(levelIndex, qIndex){
+  return document.getElementById(`answer-${levelIndex}-${qIndex}`);
+}
+
+function chooseAnswer(levelIndex, qIndex, optIndex, element){
+  const options = getOptions(levelIndex, qIndex);
+  options.forEach(el => el.classList.remove("selected"));
+
+  selections[levelIndex][qIndex] = optIndex;
+  element.classList.add("selected");
+
+  const slot = getAnswerSlot(levelIndex, qIndex);
+  slot.textContent = `（${String.fromCharCode(65 + optIndex)}）`;
+  slot.className = "answer-blank";
+  document.getElementById(`score-${levelIndex}`).textContent = "";
+}
+
+function gradeLevel(levelIndex){
+  let correctCount = 0;
+  all16Levels[levelIndex].questions.forEach((q, qIndex) => {
+    const chosen = selections[levelIndex][qIndex];
+    const options = getOptions(levelIndex, qIndex);
+    options.forEach(el => el.classList.remove("correct"));
+    if(chosen === null) return;
+
+    if(chosen === q.answer){
+      correctCount++;
+      options[chosen].classList.add("correct");
+      const slot = getAnswerSlot(levelIndex, qIndex);
+      slot.className = "answer-blank good";
+    }else{
+      options[chosen].classList.remove("selected");
+      selections[levelIndex][qIndex] = null;
+      getAnswerSlot(levelIndex, qIndex).textContent = "（　）";
+    }
+  });
+  document.getElementById(`score-${levelIndex}`).textContent = `${correctCount} / 5`;
+}
+
+function clearLevel(levelIndex){
+  selections[levelIndex].fill(null);
+  all16Levels[levelIndex].questions.forEach((_, qIndex) => {
+    getOptions(levelIndex, qIndex).forEach(el => el.classList.remove("selected", "correct"));
+    const slot = getAnswerSlot(levelIndex, qIndex);
+    slot.textContent = "（　）";
+    slot.className = "answer-blank";
+  });
+  document.getElementById(`score-${levelIndex}`).textContent = "";
+}
+
+function showAnswers(levelIndex){
+  all16Levels[levelIndex].questions.forEach((q, qIndex) => {
+    getOptions(levelIndex, qIndex).forEach(el => el.classList.remove("selected", "correct"));
+    const slot = getAnswerSlot(levelIndex, qIndex);
+    slot.textContent = `（${String.fromCharCode(65 + q.answer)}）`;
+    slot.className = "answer-blank reveal";
+  });
+  document.getElementById(`score-${levelIndex}`).textContent = "解答";
+}
+
+function toggleHint(levelIndex, button){
+  hintStates[levelIndex] = !hintStates[levelIndex];
+  const block = document.getElementById(`level-${levelIndex}`);
+  block.classList.toggle("hint-on", hintStates[levelIndex]);
+  button.classList.toggle("active", hintStates[levelIndex]);
+}
+
+renderAll();
+</script>
+<script src="../shared/js/public-footer.js"></script>
+</body>
 </html>
