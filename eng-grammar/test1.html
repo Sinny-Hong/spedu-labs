@@ -1,15 +1,622 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Test 1｜測試檔案</title>
-  <style>
-    body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:"Noto Sans TC",system-ui,sans-serif;background:#f5f7fb;color:#17365d}
-    main{text-align:center;padding:32px}
-    h1{margin:0 0 12px;font-size:clamp(2rem,6vw,4rem)}
-    p{margin:0;color:#64748b;font-size:clamp(1.1rem,3vw,1.5rem)}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-City｜異想行事曆</title>
+<style>
+:root{
+  /* 無印手帳風 MUJI Planner */
+  --cream: #F9F6F0; /* 燕麥白 */
+  --gold: #C4B7A6; /* 牛皮紙灰棕 */
+  --light-gold: #E3DCD3; 
+  --ink: #333333; /* 鉛筆灰黑 */
+  --blue: #648194; /* 莫蘭迪灰藍 */
+  --green: #748C7A; /* 抹茶綠 */
+  --red: #C66861; /* 磚紅 */
+  --line: #E2DDD5; 
+  --navy: #3E4649; /* 炭灰標題 */
+  --orange: #D4A373; 
+  --soft: #F2EFE9; 
+  --blue-soft: #E9EEF1;
+  --green-soft: #EAF0EC; 
+  --hint: #F2D750; /* 螢光筆黃 */
+  --hint-line: #DDB714;
+  --gray-blue: #B5B2AC; 
+}
+*{box-sizing:border-box}
+
+html,body{margin:0;height:100%;overflow:hidden;}
+body{
+  background:var(--cream); color:var(--ink);
+  font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  display: flex; flex-direction: column;
+}
+button,select{font:inherit;cursor:pointer;user-select:none;}
+button:focus-visible,select:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+
+/* 頂部工具列 */
+.topbar{flex:none; min-height:55px;display:flex;justify-content:space-between;align-items:center;padding:5px 15px;}
+h1{margin:0;font-size:clamp(20px,2vw,30px); color: var(--navy);}
+.toolbar{display:flex;align-items:center;gap:6px;}
+.tool,select{background:#fff;color:var(--ink);border:1px solid var(--gray-blue);border-radius:9px;padding:6px 10px;font-weight:700;font-size:15px;}
+.tool:hover,select:hover{background:#F0ECE3;}
+.tool.active{background:var(--hint); border-color:var(--orange);}
+
+/* 桌機整體佈局 */
+.layout{flex:1; display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px;padding:0 10px 10px; min-height:0;}
+.panel{background:white;border:1px solid var(--light-gold);border-radius:18px;padding:10px;display:flex;flex-direction:column;min-height:0;}
+
+/* 左側：滿版行事曆 */
+.left-side{display:flex;flex-direction:column; height:100%; min-height:0;}
+.schedule-box{border:1px solid var(--gray-blue);border-radius:10px;background:white; display:flex; flex-direction:column; flex:1; overflow:hidden;}
+.schedule-title{height:35px;display:flex;align-items:center;justify-content:center;background:var(--navy);color:white;font-size:17px;font-weight:900;flex-shrink:0; letter-spacing: 1px;}
+.schedule-table-wrap{flex:1; overflow-y:auto; overflow-x:auto; padding:0;}
+.schedule-table{width:100%; border-collapse:collapse; text-align:left;}
+.schedule-table th, .schedule-table td {padding:10px 12px; border-bottom:1px solid var(--line); font-size:clamp(16px, 2vh, 20px); font-weight:bold; vertical-align: middle;}
+.schedule-table th {background:var(--soft); color:var(--navy); white-space:nowrap; border-right: 1px solid var(--line);}
+.schedule-table td {border-right: 1px dashed var(--line);}
+.schedule-table td:last-child {border-right: none;}
+.schedule-table tr:last-child td, .schedule-table tr:last-child th {border-bottom:none;}
+.schedule-table tr:hover td {background:var(--green-soft);}
+.day-col {width: 25%; color: var(--navy);}
+.time-col {width: 25%; color: #666;}
+.event-col {width: 50%;}
+.e-icon {font-size:24px; margin-right:8px; vertical-align:middle;}
+.e-name {vertical-align:middle;}
+
+/* 右側：測驗區 */
+.panel-head{display:flex;align-items:center;justify-content:space-between;min-height:40px;margin-bottom:6px;flex-shrink:0;}
+h2{margin:0;font-size:22px; color:var(--navy);}
+.quiztools{display:flex;align-items:center;gap:6px;}
+#score{font-size:17px;color:var(--green);font-weight:bold;margin-right:6px;}
+#check{background:var(--green);border-color:var(--green);color:white}
+#reveal{border-color:#efadb3;color:var(--red)}
+
+/* 動態配置測驗區間距 */
+.questions{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-around;padding:0 5px;}
+.question{border-bottom:1px solid var(--line);padding:8px 0;}
+.question:last-child{border-bottom:none;}
+.question-line{display:flex;align-items:baseline;gap:5px;font-size:clamp(18px, 2.2vh, 24px);font-weight:bold;cursor:pointer;border-radius:6px;line-height:1.3;}
+.question-line:hover{background:var(--blue-soft);}
+.answer-blank{color:var(--blue);white-space:nowrap;min-width:3em;text-align:right;}
+.answer-blank.good{color:var(--green)}
+.answer-blank.reveal{color:var(--red)}
+
+.options{margin-left:4.5em;display:flex;gap:12px;flex-wrap:wrap;font-size:clamp(16px, 2vh, 20px);margin-top:6px;}
+.choice{border:2px solid transparent;border-radius:8px;background:transparent;color:#4F595D;padding:4px 8px;font-weight:bold;}
+.choice:hover:not(:disabled){background:var(--blue-soft);border-color:#BDC3C7;}
+.choice.selected{color:var(--navy);background:var(--blue-soft);border-color:#8BA6B8;}
+.choice.correct{color:var(--green);background:var(--green-soft);border-color:#8BB89A;}
+.choice.reveal{color:var(--red);background:#F9EBEA;}
+.choice:disabled{cursor:default}
+
+.hint-word{padding:0 2px;border-radius:4px;background:var(--hint);box-shadow:inset 0 -2px 0 var(--hint-line);}
+
+/* 彈出視窗 */
+.overlay{position:fixed;inset:0;z-index:100;background:#3E4649CC;display:flex;align-items:center;justify-content:center;padding:12px}
+.overlay[hidden]{display:none}
+.modal{background:var(--cream);border:1px solid var(--light-gold);border-radius:15px;width:min(900px,96vw);max-height:90dvh;display:flex;flex-direction:column;overflow:hidden;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:white;border-bottom:1px solid var(--light-gold);flex-shrink:0;}
+.modal-head h2{font-size:22px;margin:0;color:var(--navy);}
+.modal-body{overflow:auto;padding:18px;}
+
+/* 海報內容排版 */
+.poster-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));gap:10px;}
+.poster-item{background:white;border:1px solid var(--gray-blue);border-radius:10px;padding:10px;text-align:center;cursor:pointer;}
+.poster-item:hover{background:var(--green-soft);border-color:var(--green);}
+.p-icon{font-size:32px;line-height:1.2;}
+.p-en{font-size:16px;font-weight:bold;color:var(--navy);margin:6px 0 2px;}
+.p-zh{font-size:14px;color:#7A7874;font-weight:bold;}
+
+/* ====== 手機直向響應式布局 ====== */
+@media (max-width: 768px) {
+  html, body { height: auto; overflow: auto; overflow-x: hidden; }
+  .topbar { flex-direction: column; align-items: stretch; padding: 12px; gap: 10px; }
+  .topbar h1 { text-align: center; font-size: 24px; }
+  .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+  .tool, select { width: 100%; text-align: center; padding: 8px; font-size: 16px; }
+  .layout { display: flex; flex-direction: column; height: auto; overflow: visible; padding: 10px; gap: 16px; }
+  .panel { overflow: visible; }
+  .left-side { display: flex; flex-direction: column; height: auto; gap: 12px; }
+  .schedule-table-wrap { overflow-x: auto; }
+  .schedule-table th, .schedule-table td { font-size: 14px; padding: 6px; }
+  .e-icon { font-size: 18px; }
+  .questions { overflow: visible; height: auto; justify-content: flex-start; gap: 10px;}
+  .options { margin-left: 1.5em; font-size: 17px; gap: 8px; }
+  .question-line { font-size: 19px; }
+}
+</style>
 </head>
-<body><main><h1>Test 1</h1><p>測試檔案</p></main></body>
+<body>
+
+<header class="topbar">
+  <h1>📓 E-City｜異想行事曆</h1>
+  <nav class="toolbar">
+    <select id="levelChoice">
+      <option value="L1">L1: 行程檢索 (5題)</option>
+      <option value="L2">L2: 今天與明天 (5題)</option>
+      <option value="L3">L3: 邀約與衝突 (3大題)</option>
+      <option value="L4">L4: 跨日推演 (3大題)</option>
+      <option value="L5">L5: 條件篩選 (3大題)</option>
+    </select>
+    <button class="tool" id="next">↻ 換題</button>
+    <button class="tool" id="btn-phrases">💬 時間單字</button>
+    <button class="tool" id="btn-menu">📝 活動海報</button>
+  </nav>
+</header>
+
+<main class="layout">
+  <!-- 左側 100% 滿版表格 -->
+  <section class="panel">
+    <div class="left-side">
+      <section class="schedule-box">
+        <div class="schedule-title">David's Schedule (本週行程表)</div>
+        <div class="schedule-table-wrap">
+          <table class="schedule-table" id="scheduleTable">
+            <!-- 內容由 JS 產生 -->
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- 右側 測驗區 -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>✏️ Questions</h2>
+      <div class="quiztools">
+        <span id="score">— / 5</span>
+        <button id="hint" class="tool">💡提示</button>
+        <button id="check" class="tool">批改</button>
+        <button id="clear" class="tool">清除</button>
+        <button id="reveal" class="tool">解答</button>
+      </div>
+    </div>
+    <div id="questions" class="questions"></div>
+  </section>
+</main>
+
+<div id="posterOverlay" class="overlay" hidden>
+  <section class="modal">
+    <div class="modal-head">
+      <h2 id="posterTitle">📋 海報</h2>
+      <button class="tool close-modal">✕ 關閉</button>
+    </div>
+    <div class="modal-body" id="posterBody"></div>
+  </section>
+</div>
+
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+
+// --- 資料庫 ---
+const BASIC_ACTIVITIES = [
+  {name:'have an English class', zh:'上英文課', emoji:'📖'},
+  {name:'have a math test', zh:'考數學', emoji:'📐'},
+  {name:'do homework', zh:'寫作業', emoji:'✍️'},
+  {name:'clean the room', zh:'打掃房間', emoji:'🧹'},
+  {name:'go shopping', zh:'去購物', emoji:'🛒'},
+  {name:'play basketball', zh:'打籃球', emoji:'🏀'},
+  {name:'watch TV', zh:'看電視', emoji:'📺'},
+  {name:'have dinner', zh:'吃晚餐', emoji:'🍽️'}
+];
+
+// 已依照指示換成高頻課文單字
+const ADVANCED_ACTIVITIES = [
+  {name:'go to the music club', zh:'去音樂社', emoji:'🎵'},
+  {name:'go to a concert', zh:'去演唱會', emoji:'🎤'},
+  {name:'go mountain climbing', zh:'去爬山', emoji:'⛰️'},
+  {name:'go to a birthday party', zh:'去生日派對', emoji:'🎂'},
+  {name:'visit Grandma', zh:'拜訪奶奶', emoji:'👵'},
+  {name:'go to the movies', zh:'去看電影', emoji:'🍿'}
+];
+
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const TIMES = ["09:00 AM", "10:30 AM", "02:00 PM", "04:00 PM", "06:30 PM", "08:00 PM"];
+
+const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const Cap = str => str.charAt(0).toUpperCase() + str.slice(1);
+
+// --- 狀態管理 ---
+let currentData = null;
+let answers = {};
+let mode = 'answer';
+let hintsActive = false;
+let totalQuestions = 5;
+
+// 嚴格選項去重工具
+function fillOptions(ans, w1, w2, fallback) {
+  let opts = [...new Set([ans, w1, w2])];
+  let i = 0;
+  while(opts.length < 3) {
+    if(!opts.includes(fallback[i])) opts.push(fallback[i]);
+    i++;
+  }
+  return shuffle(opts);
+}
+
+function getFakeActivities(schedule, correctName) {
+  let all = schedule.map(s => s.act.name);
+  return shuffle([...new Set(all.filter(n => n !== correctName))]);
+}
+
+function getFakeDays(correctDay) {
+  return shuffle(DAYS.filter(d => d !== correctDay));
+}
+
+// ================= L1~L5 邏輯 =================
+
+// L1: 行程檢索 (5短題)
+function generateL1(schedule) {
+  const qData = [
+    { stem: `What does David do on ${schedule[0].day} at ${schedule[0].time}?`, ans: Cap(schedule[0].act.name), w1: Cap(schedule[1].act.name), w2: Cap(schedule[2].act.name) },
+    { stem: `What does David do on ${schedule[3].day} at ${schedule[3].time}?`, ans: Cap(schedule[3].act.name), w1: Cap(schedule[4].act.name), w2: Cap(schedule[5].act.name) },
+    { stem: `What time does David ${schedule[2].act.name}?`, ans: `On ${schedule[2].day} at ${schedule[2].time}`, w1: `On ${schedule[0].day} at ${schedule[0].time}`, w2: `On ${schedule[1].day} at ${schedule[1].time}` },
+    { stem: `What time does David ${schedule[4].act.name}?`, ans: `On ${schedule[4].day} at ${schedule[4].time}`, w1: `On ${schedule[5].day} at ${schedule[5].time}`, w2: `On ${schedule[6].day} at ${schedule[6].time}` },
+    { stem: `Does David ${schedule[6].act.name} on ${schedule[5].day}?`, ans: "No, he doesn't.", w1: "Yes, he does.", w2: "I don't know." }
+  ];
+  
+  const fakes = schedule.map(s => Cap(s.act.name));
+  const questions = qData.map(q => {
+    return { stem: q.stem, options: fillOptions(q.ans, q.w1, q.w2, ["Yes, he does.", "No, he doesn't.", ...fakes]), answer: 0, locked: false };
+  });
+  questions.forEach(q => q.answer = q.options.indexOf(qData.find(d => d.stem === q.stem).ans));
+  return questions;
+}
+
+// L2: 今天與明天 (5短題)
+function generateL2(schedule) {
+  const t1 = 1, t2 = 4, t3 = 6; // index
+  const yesterdayIdx = (t3 - 1 >= 0) ? t3 - 1 : 6;
+  
+  const qData = [
+    { stem: `Today is ${schedule[t1].day}. What does David do at ${schedule[t1].time}?`, ans: Cap(schedule[t1].act.name), w1: Cap(schedule[t1+1].act.name), w2: Cap(schedule[t1+2].act.name) },
+    { stem: `Tomorrow (明天) is ${schedule[t2].day}. What will David do at ${schedule[t2].time}?`, ans: Cap(schedule[t2].act.name), w1: Cap(schedule[t2-1].act.name), w2: Cap(schedule[t2+1].act.name) },
+    { stem: `Today is ${schedule[t3].day}. Where is David at ${schedule[t3].time}?`, ans: `He ${schedule[t3].act.name}`, w1: `He ${schedule[t3-1].act.name}`, w2: `He ${schedule[t3-2].act.name}` },
+    { stem: `Yesterday (昨天) was ${schedule[yesterdayIdx].day}. Did he ${schedule[yesterdayIdx].act.name}?`, ans: "Yes, he did.", w1: "No, he didn't.", w2: "I don't know." },
+    { stem: `Look at ${schedule[0].day}. Does he ${schedule[1].act.name}?`, ans: "No.", w1: "Yes.", w2: "I don't know." }
+  ];
+  
+  const fakes = schedule.map(s => Cap(s.act.name));
+  const questions = qData.map(q => {
+    return { stem: q.stem, options: fillOptions(q.ans, q.w1, q.w2, ["Yes.", "No.", ...fakes]), answer: 0, locked: false };
+  });
+  questions.forEach(q => q.answer = q.options.indexOf(qData.find(d => d.stem === q.stem).ans));
+  return questions;
+}
+
+// L3: 邀約與衝突 (3長題)
+function generateL3(schedule) {
+  const qData = [
+    { 
+      stem: `Leo wants to play video games with David on ${schedule[2].day} at ${schedule[2].time}. Can David play with him?`, 
+      ans: `No, he ${schedule[2].act.name}.`, 
+      w1: `Yes, he is free.`, 
+      w2: `No, he ${schedule[1].act.name}.` 
+    },
+    { 
+      stem: `Mary wants to meet David on ${schedule[4].day}. Look at the schedule. What time is David busy (忙碌)?`, 
+      ans: `At ${schedule[4].time}.`, 
+      w1: `At ${schedule[3].time}.`, 
+      w2: `At ${schedule[5].time}.` 
+    },
+    { 
+      stem: `David's mom asks him: "When do you ${schedule[6].act.name}?" What does David say?`, 
+      ans: `On ${schedule[6].day} at ${schedule[6].time}.`, 
+      w1: `On ${schedule[5].day} at ${schedule[5].time}.`, 
+      w2: `On ${schedule[0].day} at ${schedule[0].time}.` 
+    }
+  ];
+  
+  const questions = qData.map(q => {
+    return { stem: q.stem, options: fillOptions(q.ans, q.w1, q.w2, ["Yes, he is free.", `At 08:00 PM.`]), answer: 0, locked: false };
+  });
+  questions.forEach(q => q.answer = q.options.indexOf(qData.find(d => d.stem === q.stem).ans));
+  return questions;
+}
+
+// L4: 跨日推演 (3長題)
+function generateL4(schedule) {
+  // 選一天作為「昨天」
+  const yDayIdx = 2; // Wed
+  const tDayIdx = 3; // Thu
+  
+  // 選一天作為「明天考試」
+  const testIdx = 5; // Sat
+  const studyIdx = 4; // Fri
+  
+  const qData = [
+    { 
+      stem: `David ${schedule[yDayIdx].act.name} <b>yesterday</b> (昨天). What is he going to do <b>today</b> (今天) at ${schedule[tDayIdx].time}?`, 
+      ans: `He will ${schedule[tDayIdx].act.name}.`, 
+      w1: `He will ${schedule[tDayIdx+1].act.name}.`, 
+      w2: `He will ${schedule[yDayIdx].act.name}.` 
+    },
+    { 
+      stem: `David has to ${schedule[testIdx].act.name} on ${schedule[testIdx].day}. He needs to prepare the night before (前一晚). What day is it?`, 
+      ans: `${schedule[studyIdx].day}.`, 
+      w1: `${schedule[testIdx].day}.`, 
+      w2: `${schedule[studyIdx-1].day}.` 
+    },
+    { 
+      stem: `David ${schedule[0].act.name} on Monday. Does he ${schedule[1].act.name} on Tuesday?`, 
+      ans: `Yes, he does.`, 
+      w1: `No, he doesn't.`, 
+      w2: `We don't know.` 
+    }
+  ];
+  
+  const questions = qData.map(q => {
+    return { stem: q.stem, options: fillOptions(q.ans, q.w1, q.w2, ["Friday.", "Saturday.", "Sunday."]), answer: 0, locked: false };
+  });
+  questions.forEach(q => q.answer = q.options.indexOf(qData.find(d => d.stem === q.stem).ans));
+  return questions;
+}
+
+// L5: 條件篩選 (3長題)
+function generateL5(schedule) {
+  const qData = [
+    { 
+      stem: `David's mom wants him to do some chores (做家事). Look at the schedule. When does he ${schedule[1].act.name}?`, 
+      ans: `On ${schedule[1].day} at ${schedule[1].time}.`, 
+      w1: `On ${schedule[2].day} at ${schedule[2].time}.`, 
+      w2: `On ${schedule[3].day} at ${schedule[3].time}.` 
+    },
+    { 
+      stem: `Grandma wants to see David. David is busy on ${schedule[4].day}. When can he ${schedule[6].act.name}?`, 
+      ans: `On ${schedule[6].day} at ${schedule[6].time}.`, 
+      w1: `On ${schedule[4].day} at ${schedule[4].time}.`, 
+      w2: `On ${schedule[5].day} at ${schedule[5].time}.` 
+    },
+    { 
+      stem: `Look at the weekend (週末). What does David do on ${schedule[5].day} and ${schedule[6].day}?`, 
+      ans: `He ${schedule[5].act.name} and ${schedule[6].act.name}.`, 
+      w1: `He ${schedule[0].act.name} and ${schedule[1].act.name}.`, 
+      w2: `He ${schedule[4].act.name} and ${schedule[5].act.name}.` 
+    }
+  ];
+  
+  const questions = qData.map(q => {
+    return { stem: q.stem, options: fillOptions(q.ans, q.w1, q.w2, [`On Monday.`, `On Sunday.`]), answer: 0, locked: false };
+  });
+  questions.forEach(q => q.answer = q.options.indexOf(qData.find(d => d.stem === q.stem).ans));
+  return questions;
+}
+
+// 核心生成器
+function generateLevelData() {
+  const lvl = $('#levelChoice').value;
+  let pool = [...BASIC_ACTIVITIES];
+  
+  if(lvl === 'L3' || lvl === 'L4' || lvl === 'L5') {
+    pool = [...BASIC_ACTIVITIES, ...ADVANCED_ACTIVITIES];
+    totalQuestions = 3;
+  } else {
+    totalQuestions = 5;
+  }
+  
+  $('#score').textContent = `— / ${totalQuestions}`;
+
+  // 為 7 天各抽 1 個事件 (為了版面清晰，一天顯示一行重點行程)
+  let acts = shuffle(pool).slice(0, 7);
+  let timePool = shuffle(TIMES);
+  
+  const schedule = DAYS.map((d, i) => ({
+    day: d,
+    time: timePool[i % timePool.length],
+    act: acts[i]
+  }));
+  
+  let questions;
+  if (lvl === 'L1') questions = generateL1(schedule);
+  else if (lvl === 'L2') questions = generateL2(schedule);
+  else if (lvl === 'L3') questions = generateL3(schedule);
+  else if (lvl === 'L4') questions = generateL4(schedule);
+  else if (lvl === 'L5') questions = generateL5(schedule);
+
+  let hintWords = [...DAYS, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "today", "tomorrow", "yesterday"];
+  schedule.forEach(s => {
+    hintWords.push(s.act.name);
+    hintWords.push(s.time);
+  });
+
+  return { schedule, questions, hintWords };
+}
+
+// 高亮與語音
+function highlightText(text, isOption = false) {
+  if (!hintsActive || isOption) return text;
+  let res = String(text);
+  const sorted = [...currentData.hintWords].sort((a,b) => b.length - a.length);
+  sorted.forEach(word => {
+    const regex = new RegExp(`\\b(${escapeRegExp(word)})\\b`, "gi");
+    res = res.replace(regex, `<span class="hint-word">$1</span>`);
+  });
+  return res;
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g, '').replace(/AM/g, 'A M').replace(/PM/g, 'P M'));
+  utterance.lang = "en-US";
+  utterance.rate = 0.85;
+  window.speechSynthesis.speak(utterance);
+}
+
+// 渲染 UI
+function renderUI() {
+  let tableHTML = `
+    <tr>
+      <th class="day-col">Day (星期)</th>
+      <th class="time-col">Time (時間)</th>
+      <th class="event-col">Activity (活動)</th>
+    </tr>
+  `;
+  currentData.schedule.forEach(item => {
+    tableHTML += `
+      <tr tabindex="0" onclick="speak('${item.day}. At ${item.time}, I will ${item.act.name}.')" style="cursor:pointer;">
+        <td class="day-col">${item.day}</td>
+        <td class="time-col">${item.time}</td>
+        <td class="event-col"><span class="e-icon">${item.act.emoji}</span><span class="e-name">${item.act.name}</span></td>
+      </tr>
+    `;
+  });
+  $('#scheduleTable').innerHTML = tableHTML;
+
+  const quiz = $('#questions');
+  quiz.innerHTML = '';
+  currentData.questions.forEach((q, i) => {
+    const sec = document.createElement('div');
+    sec.className = 'question';
+    
+    const line = document.createElement('div');
+    line.className = 'question-line';
+    line.onclick = () => speak(q.stem);
+    
+    const blank = document.createElement('span');
+    blank.className = 'answer-blank';
+    let letter = '　';
+    if(mode === 'reveal') { 
+      letter = String.fromCharCode(65 + q.answer); 
+      blank.classList.add('reveal'); 
+    }
+    else if(q.locked) { 
+      letter = String.fromCharCode(65 + answers[i]); 
+      blank.classList.add('good'); 
+    }
+    else if(answers[i] !== undefined) {
+      letter = String.fromCharCode(65 + answers[i]);
+    }
+    blank.innerHTML = `（ ${letter} ）`;
+    
+    const title = document.createElement('span');
+    title.innerHTML = `${i+1}. ${highlightText(q.stem, false)}`;
+    line.append(blank, title);
+    sec.append(line);
+    
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((choice, j) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice';
+      btn.innerHTML = `(${String.fromCharCode(65+j)}) ${highlightText(choice, true)}`;
+      
+      if(mode === 'answer' && !q.locked && answers[i] === j) btn.classList.add('selected');
+      if(q.locked && answers[i] === j) btn.classList.add('correct');
+      if(mode === 'reveal' && j === q.answer) btn.classList.add('reveal');
+      
+      btn.disabled = mode !== 'answer' || q.locked;
+      btn.onclick = () => { 
+        if(mode === 'answer' && !q.locked) { answers[i] = j; renderUI(); } 
+      };
+      opts.append(btn);
+    });
+    
+    sec.append(opts);
+    quiz.append(sec);
+  });
+}
+
+// 初始化與綁定
+function loadRandomLevel() {
+  currentData = generateLevelData();
+  answers = {};
+  mode = 'answer';
+  hintsActive = false;
+  $('#hint').classList.remove('active');
+  $('#score').textContent = `— / ${totalQuestions}`;
+  renderUI();
+}
+
+$('#next').onclick = loadRandomLevel;
+$('#levelChoice').onchange = loadRandomLevel;
+
+$('#hint').onclick = (e) => {
+  hintsActive = !hintsActive;
+  e.target.classList.toggle('active', hintsActive);
+  renderUI();
+};
+
+// 錯題重答批改邏輯
+$('#check').onclick = () => {
+  let correct = 0;
+  currentData.questions.forEach((q, i) => {
+    if(answers[i] === q.answer) {
+      correct++;
+      q.locked = true; 
+    } else {
+      delete answers[i]; 
+    }
+  });
+  
+  if(correct === totalQuestions) {
+     mode = 'checked'; 
+  }
+  
+  $('#score').textContent = `${correct} / ${totalQuestions}`;
+  renderUI();
+};
+
+$('#clear').onclick = () => { 
+  answers = {}; 
+  mode = 'answer'; 
+  currentData.questions.forEach(q => q.locked = false); 
+  $('#score').textContent = `— / ${totalQuestions}`; 
+  renderUI(); 
+};
+$('#reveal').onclick = () => { mode = 'reveal'; $('#score').textContent = '解答'; renderUI(); };
+
+// 海報邏輯
+const posterOverlay = $('#posterOverlay');
+const posterBody = $('#posterBody');
+
+function openPoster(type) {
+  if(type === 'phrases') {
+    $('#posterTitle').textContent = '💬 時間單字 (Time Words)';
+    const phrases = [
+      { en: "Monday", zh: "星期一", emoji: "1️⃣" },
+      { en: "Tuesday", zh: "星期二", emoji: "2️⃣" },
+      { en: "Wednesday", zh: "星期三", emoji: "3️⃣" },
+      { en: "Thursday", zh: "星期四", emoji: "4️⃣" },
+      { en: "Friday", zh: "星期五", emoji: "5️⃣" },
+      { en: "Saturday", zh: "星期六", emoji: "6️⃣" },
+      { en: "Sunday", zh: "星期日", emoji: "7️⃣" },
+      { en: "Today", zh: "今天", emoji: "📍" },
+      { en: "Tomorrow", zh: "明天", emoji: "➡️" },
+      { en: "Yesterday", zh: "昨天", emoji: "⬅️" }
+    ];
+    posterBody.innerHTML = `<div class="poster-grid">` + phrases.map(p => `
+      <div class="poster-item" onclick="speak('${p.en}')">
+        <div class="p-icon">${p.emoji}</div>
+        <div class="p-en">${p.en}</div>
+        <div class="p-zh">${p.zh}</div>
+      </div>
+    `).join('') + `</div>`;
+  } else {
+    $('#posterTitle').textContent = '📝 活動單字 (Activities)';
+    const vocab = [...BASIC_ACTIVITIES, ...ADVANCED_ACTIVITIES];
+    posterBody.innerHTML = `<div class="poster-grid">` + vocab.map(f => `
+      <div class="poster-item" onclick="speak('${f.name}')">
+        <div class="p-icon">${f.emoji}</div>
+        <div class="p-en">${f.name}</div>
+        <div class="p-zh">${f.zh}</div>
+      </div>
+    `).join('') + `</div>`;
+  }
+  posterOverlay.hidden = false;
+}
+
+$('#btn-phrases').onclick = () => openPoster('phrases');
+$('#btn-menu').onclick = () => openPoster('menu');
+posterOverlay.querySelector('.close-modal').onclick = () => posterOverlay.hidden = true;
+posterOverlay.onclick = e => { if(e.target === posterOverlay) posterOverlay.hidden = true; };
+
+// 啟動
+loadRandomLevel();
+</script>
+</body>
 </html>
