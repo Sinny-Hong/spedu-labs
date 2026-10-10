@@ -28,11 +28,6 @@
     .grammar-page .resource-card:focus-visible {
       outline: 3px solid rgba(245, 158, 11, .28); outline-offset: 2px;
     }
-    .grammar-page .favorite {
-      width: 32px; height: 32px; padding: 0;
-      display: grid; place-items: center; border-radius: 50%; font-size: 22px;
-    }
-    .grammar-page .favorite:hover { background: #fff4dc; }
     .grammar-page .resource-card .resource-title {
       margin: 8px 0 4px; color: var(--navy); font-size: 17px;
       line-height: 1.4; font-weight: 900;
@@ -60,8 +55,6 @@
       <a class="brand-home" href="../index.html" aria-label="回到異想教室首頁"><img src="../assets/logo-banner.png" alt="Sinny Spedu Labs"></a>
       <div class="workspace-name"><small>GRAMMAR WORKSPACE</small><strong>生活英文與文法</strong></div>
       <nav class="category-nav" id="categoryList" aria-label="教材分類">
-        <button class="category-btn active" data-filter="all"><span>全部教材</span><span class="category-count" data-total-count></span></button>
-        <button class="category-btn" data-filter="favorites"><span>我的收藏</span><span class="category-count" data-favorite-count>0</span></button>
         <p class="category-label">教材分類</p>
       </nav>
       <p class="sidebar-note">點擊上方橫標即可回到異想教室首頁。</p>
@@ -91,17 +84,16 @@
 
     const availableGrammarData = window.GRAMMAR_DATA;
 
-    document.querySelector("[data-total-count]").textContent = availableGrammarData.length;
     document.getElementById("categoryList").insertAdjacentHTML("beforeend",
       window.GRAMMAR_CATEGORIES.map(category =>
-        `<button class="category-btn" data-filter="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${availableGrammarData.filter(item => item.category === category).length}</span></button>`
+        `<button class="category-btn" type="button" data-jump-category="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${availableGrammarData.filter(item => item.category === category).length}</span></button>`
       ).join("")
     );
 
     document.getElementById("grammarCards").innerHTML = window.GRAMMAR_CATEGORIES.map(category => {
       const cards = availableGrammarData.filter(item => item.category === category).map(item => {
         return `<article class="resource-card" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}" data-href="${escapeHtml(item.filename)}" tabindex="0" role="link">
-          <div class="card-top"><span class="tag">${escapeHtml(item.tag || item.category)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
+          <div class="card-top"><span class="tag">${escapeHtml(item.tag || item.category)}</span></div>
           <h2 class="resource-title">${escapeHtml(item.title)}</h2>
           <p class="resource-description">${escapeHtml(item.desc)}</p>
         </article>`;
@@ -112,6 +104,53 @@
       </section>`;
     }).join("");
   </script>
-  <script src="../shared/js/workspace.js?v=3.0"></script>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".resource-card")];
+      const sections = [...document.querySelectorAll(".category-section")];
+      const jumpButtons = [...document.querySelectorAll("[data-jump-category]")];
+      const search = document.getElementById("resourceSearch");
+      const count = document.getElementById("resultCount");
+      const empty = document.getElementById("emptyState");
+      const sidebar = document.getElementById("sidebar");
+      const toggle = document.getElementById("mobileToggle");
+
+      const updateSearch = () => {
+        const query = (search.value || "").trim().toLocaleLowerCase("zh-Hant");
+        let visible = 0;
+        cards.forEach(card => {
+          card.hidden = Boolean(query) && !card.textContent.toLocaleLowerCase("zh-Hant").includes(query);
+          if (!card.hidden) visible += 1;
+        });
+        count.textContent = `${visible} 項資源`;
+        empty.classList.toggle("show", visible === 0);
+      };
+
+      jumpButtons.forEach(button => button.addEventListener("click", () => {
+        const target = sections.find(section => section.dataset.categorySection === button.dataset.jumpCategory);
+        if (!target) return;
+        jumpButtons.forEach(item => item.classList.toggle("active", item === button));
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (window.innerWidth <= 720) sidebar.classList.remove("open");
+      }));
+
+      search.addEventListener("input", updateSearch);
+      toggle.addEventListener("click", () => sidebar.classList.toggle("open"));
+      cards.forEach(card => {
+        if (!card.dataset.href) return;
+        const openResource = () => { window.location.href = card.dataset.href; };
+        card.setAttribute("aria-label", `開啟${card.querySelector("h2")?.textContent.trim() || "教材"}`);
+        card.addEventListener("click", event => {
+          if (!event.target.closest("button, a, input, select, textarea")) openResource();
+        });
+        card.addEventListener("keydown", event => {
+          if (event.target !== card || (event.key !== "Enter" && event.key !== " ")) return;
+          event.preventDefault();
+          openResource();
+        });
+      });
+      updateSearch();
+    })();
+  </script>
 </body>
 </html>
