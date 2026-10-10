@@ -7,20 +7,20 @@
 <style>
 :root{
   /* 無印手帳風 MUJI Planner */
-  --cream: #F9F6F0; /* 燕麥白 */
-  --gold: #C4B7A6; /* 牛皮紙灰棕 */
+  --cream: #F9F6F0; 
+  --gold: #C4B7A6; 
   --light-gold: #E3DCD3; 
-  --ink: #333333; /* 鉛筆灰黑 */
-  --blue: #648194; /* 莫蘭迪灰藍 */
-  --green: #748C7A; /* 抹茶綠 */
-  --red: #C66861; /* 磚紅 */
+  --ink: #333333; 
+  --blue: #648194; 
+  --green: #748C7A; 
+  --red: #C66861; 
   --line: #E2DDD5; 
-  --navy: #3E4649; /* 炭灰標題 */
+  --navy: #3E4649; 
   --orange: #D4A373; 
   --soft: #F2EFE9; 
   --blue-soft: #E9EEF1;
   --green-soft: #EAF0EC; 
-  --hint: #F2D750; /* 螢光筆黃 */
+  --hint: #F2D750; 
   --hint-line: #DDB714;
   --gray-blue: #B5B2AC; 
 }
@@ -66,7 +66,7 @@ h1{margin:0;font-size:clamp(20px,2vw,30px); color: var(--navy);}
 .e-name {vertical-align:middle;}
 
 /* 右側：測驗區 */
-.panel-head{display:flex;align-items:center;justify-content:space-between;min-height:40px;margin-bottom:6px;flex-shrink:0;}
+.panel-head{display:flex;align-items:center;justify-content:space-between;min-height:40px;margin-bottom:4px;flex-shrink:0;}
 h2{margin:0;font-size:22px; color:var(--navy);}
 .quiztools{display:flex;align-items:center;gap:6px;}
 #score{font-size:17px;color:var(--green);font-weight:bold;margin-right:6px;}
@@ -74,8 +74,10 @@ h2{margin:0;font-size:22px; color:var(--navy);}
 #reveal{border-color:#efadb3;color:var(--red)}
 
 /* 動態配置測驗區間距 */
-.questions{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-around;padding:0 5px;}
-.question{border-bottom:1px solid var(--line);padding:8px 0;}
+.questions{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:flex-start;padding:0 5px; gap: 6px;}
+.questions.three-items{justify-content:space-around;}
+
+.question{border-bottom:1px solid var(--line);padding:6px 0 8px;}
 .question:last-child{border-bottom:none;}
 .question-line{display:flex;align-items:baseline;gap:5px;font-size:clamp(18px, 2.2vh, 24px);font-weight:bold;cursor:pointer;border-radius:6px;line-height:1.3;}
 .question-line:hover{background:var(--blue-soft);}
@@ -83,8 +85,16 @@ h2{margin:0;font-size:22px; color:var(--navy);}
 .answer-blank.good{color:var(--green)}
 .answer-blank.reveal{color:var(--red)}
 
-.options{margin-left:4.5em;display:flex;gap:12px;flex-wrap:wrap;font-size:clamp(16px, 2vh, 20px);margin-top:6px;}
-.choice{border:2px solid transparent;border-radius:8px;background:transparent;color:#4F595D;padding:4px 8px;font-weight:bold;}
+.options{
+  margin-left:4.5em;
+  display:flex; 
+  flex-wrap: wrap;
+  font-size:clamp(16px, 2vh, 20px);
+  margin-top:3px;
+  row-gap: 2px;     /* 壓縮換行後的上下行距，解決 A 和 C 距離過遠問題 */
+  column-gap: 12px;
+}
+.choice{border:2px solid transparent;border-radius:8px;background:transparent;color:#4F595D;padding:2px 6px;font-weight:bold;}
 .choice:hover:not(:disabled){background:var(--blue-soft);border-color:#BDC3C7;}
 .choice.selected{color:var(--navy);background:var(--blue-soft);border-color:#8BA6B8;}
 .choice.correct{color:var(--green);background:var(--green-soft);border-color:#8BB89A;}
@@ -122,8 +132,8 @@ h2{margin:0;font-size:22px; color:var(--navy);}
   .schedule-table-wrap { overflow-x: auto; }
   .schedule-table th, .schedule-table td { font-size: 14px; padding: 6px; }
   .e-icon { font-size: 18px; }
-  .questions { overflow: visible; height: auto; justify-content: flex-start; gap: 10px;}
-  .options { margin-left: 1.5em; font-size: 17px; gap: 8px; }
+  .questions { overflow: visible; height: auto; justify-content: flex-start; gap: 8px;}
+  .options { margin-left: 1.5em; font-size: 17px; row-gap: 2px; column-gap: 10px; }
   .question-line { font-size: 19px; }
 }
 </style>
@@ -147,7 +157,7 @@ h2{margin:0;font-size:22px; color:var(--navy);}
 </header>
 
 <main class="layout">
-  <!-- 左側 100% 滿版表格 -->
+  <!-- 左側 100% 滿版行事曆 -->
   <section class="panel">
     <div class="left-side">
       <section class="schedule-box">
@@ -203,7 +213,6 @@ const BASIC_ACTIVITIES = [
   {name:'have dinner', zh:'吃晚餐', emoji:'🍽️'}
 ];
 
-// 已依照指示換成高頻課文單字
 const ADVANCED_ACTIVITIES = [
   {name:'go to the music club', zh:'去音樂社', emoji:'🎵'},
   {name:'go to a concert', zh:'去演唱會', emoji:'🎤'},
@@ -220,14 +229,12 @@ const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
 const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const Cap = str => str.charAt(0).toUpperCase() + str.slice(1);
 
-// --- 狀態管理 ---
 let currentData = null;
 let answers = {};
 let mode = 'answer';
 let hintsActive = false;
 let totalQuestions = 5;
 
-// 嚴格選項去重工具
 function fillOptions(ans, w1, w2, fallback) {
   let opts = [...new Set([ans, w1, w2])];
   let i = 0;
@@ -238,18 +245,8 @@ function fillOptions(ans, w1, w2, fallback) {
   return shuffle(opts);
 }
 
-function getFakeActivities(schedule, correctName) {
-  let all = schedule.map(s => s.act.name);
-  return shuffle([...new Set(all.filter(n => n !== correctName))]);
-}
-
-function getFakeDays(correctDay) {
-  return shuffle(DAYS.filter(d => d !== correctDay));
-}
-
 // ================= L1~L5 邏輯 =================
 
-// L1: 行程檢索 (5短題)
 function generateL1(schedule) {
   const qData = [
     { stem: `What does David do on ${schedule[0].day} at ${schedule[0].time}?`, ans: Cap(schedule[0].act.name), w1: Cap(schedule[1].act.name), w2: Cap(schedule[2].act.name) },
@@ -267,16 +264,15 @@ function generateL1(schedule) {
   return questions;
 }
 
-// L2: 今天與明天 (5短題)
 function generateL2(schedule) {
-  const t1 = 1, t2 = 4, t3 = 6; // index
+  const t1 = 1, t2 = 4, t3 = 6;
   const yesterdayIdx = (t3 - 1 >= 0) ? t3 - 1 : 6;
   
   const qData = [
     { stem: `Today is ${schedule[t1].day}. What does David do at ${schedule[t1].time}?`, ans: Cap(schedule[t1].act.name), w1: Cap(schedule[t1+1].act.name), w2: Cap(schedule[t1+2].act.name) },
-    { stem: `Tomorrow (明天) is ${schedule[t2].day}. What will David do at ${schedule[t2].time}?`, ans: Cap(schedule[t2].act.name), w1: Cap(schedule[t2-1].act.name), w2: Cap(schedule[t2+1].act.name) },
+    { stem: `Tomorrow is ${schedule[t2].day}. What will David do at ${schedule[t2].time}?`, ans: Cap(schedule[t2].act.name), w1: Cap(schedule[t2-1].act.name), w2: Cap(schedule[t2+1].act.name) },
     { stem: `Today is ${schedule[t3].day}. Where is David at ${schedule[t3].time}?`, ans: `He ${schedule[t3].act.name}`, w1: `He ${schedule[t3-1].act.name}`, w2: `He ${schedule[t3-2].act.name}` },
-    { stem: `Yesterday (昨天) was ${schedule[yesterdayIdx].day}. Did he ${schedule[yesterdayIdx].act.name}?`, ans: "Yes, he did.", w1: "No, he didn't.", w2: "I don't know." },
+    { stem: `Yesterday was ${schedule[yesterdayIdx].day}. Did he ${schedule[yesterdayIdx].act.name}?`, ans: "Yes, he did.", w1: "No, he didn't.", w2: "I don't know." },
     { stem: `Look at ${schedule[0].day}. Does he ${schedule[1].act.name}?`, ans: "No.", w1: "Yes.", w2: "I don't know." }
   ];
   
@@ -288,7 +284,6 @@ function generateL2(schedule) {
   return questions;
 }
 
-// L3: 邀約與衝突 (3長題)
 function generateL3(schedule) {
   const qData = [
     { 
@@ -298,7 +293,7 @@ function generateL3(schedule) {
       w2: `No, he ${schedule[1].act.name}.` 
     },
     { 
-      stem: `Mary wants to meet David on ${schedule[4].day}. Look at the schedule. What time is David busy (忙碌)?`, 
+      stem: `Mary wants to meet David on ${schedule[4].day}. Look at the schedule. What time is David busy?`, 
       ans: `At ${schedule[4].time}.`, 
       w1: `At ${schedule[3].time}.`, 
       w2: `At ${schedule[5].time}.` 
@@ -318,25 +313,21 @@ function generateL3(schedule) {
   return questions;
 }
 
-// L4: 跨日推演 (3長題)
 function generateL4(schedule) {
-  // 選一天作為「昨天」
-  const yDayIdx = 2; // Wed
-  const tDayIdx = 3; // Thu
-  
-  // 選一天作為「明天考試」
-  const testIdx = 5; // Sat
-  const studyIdx = 4; // Fri
+  const yDayIdx = 2; 
+  const tDayIdx = 3; 
+  const testIdx = 5; 
+  const studyIdx = 4; 
   
   const qData = [
     { 
-      stem: `David ${schedule[yDayIdx].act.name} <b>yesterday</b> (昨天). What is he going to do <b>today</b> (今天) at ${schedule[tDayIdx].time}?`, 
+      stem: `David ${schedule[yDayIdx].act.name} <b>yesterday</b>. What is he going to do <b>today</b> at ${schedule[tDayIdx].time}?`, 
       ans: `He will ${schedule[tDayIdx].act.name}.`, 
       w1: `He will ${schedule[tDayIdx+1].act.name}.`, 
       w2: `He will ${schedule[yDayIdx].act.name}.` 
     },
     { 
-      stem: `David has to ${schedule[testIdx].act.name} on ${schedule[testIdx].day}. He needs to prepare the night before (前一晚). What day is it?`, 
+      stem: `David has to ${schedule[testIdx].act.name} on ${schedule[testIdx].day}. He needs to prepare the night before. What day is it?`, 
       ans: `${schedule[studyIdx].day}.`, 
       w1: `${schedule[testIdx].day}.`, 
       w2: `${schedule[studyIdx-1].day}.` 
@@ -356,11 +347,10 @@ function generateL4(schedule) {
   return questions;
 }
 
-// L5: 條件篩選 (3長題)
 function generateL5(schedule) {
   const qData = [
     { 
-      stem: `David's mom wants him to do some chores (做家事). Look at the schedule. When does he ${schedule[1].act.name}?`, 
+      stem: `David's mom wants him to do some chores. Look at the schedule. When does he ${schedule[1].act.name}?`, 
       ans: `On ${schedule[1].day} at ${schedule[1].time}.`, 
       w1: `On ${schedule[2].day} at ${schedule[2].time}.`, 
       w2: `On ${schedule[3].day} at ${schedule[3].time}.` 
@@ -372,7 +362,7 @@ function generateL5(schedule) {
       w2: `On ${schedule[5].day} at ${schedule[5].time}.` 
     },
     { 
-      stem: `Look at the weekend (週末). What does David do on ${schedule[5].day} and ${schedule[6].day}?`, 
+      stem: `Look at the weekend. What does David do on ${schedule[5].day} and ${schedule[6].day}?`, 
       ans: `He ${schedule[5].act.name} and ${schedule[6].act.name}.`, 
       w1: `He ${schedule[0].act.name} and ${schedule[1].act.name}.`, 
       w2: `He ${schedule[4].act.name} and ${schedule[5].act.name}.` 
@@ -386,7 +376,6 @@ function generateL5(schedule) {
   return questions;
 }
 
-// 核心生成器
 function generateLevelData() {
   const lvl = $('#levelChoice').value;
   let pool = [...BASIC_ACTIVITIES];
@@ -400,7 +389,6 @@ function generateLevelData() {
   
   $('#score').textContent = `— / ${totalQuestions}`;
 
-  // 為 7 天各抽 1 個事件 (為了版面清晰，一天顯示一行重點行程)
   let acts = shuffle(pool).slice(0, 7);
   let timePool = shuffle(TIMES);
   
@@ -469,6 +457,13 @@ function renderUI() {
 
   const quiz = $('#questions');
   quiz.innerHTML = '';
+  
+  if (totalQuestions === 3) {
+    quiz.classList.add('three-items');
+  } else {
+    quiz.classList.remove('three-items');
+  }
+
   currentData.questions.forEach((q, i) => {
     const sec = document.createElement('div');
     sec.className = 'question';
@@ -479,7 +474,7 @@ function renderUI() {
     
     const blank = document.createElement('span');
     blank.className = 'answer-blank';
-    let letter = '　';
+    let letter = ' ';
     if(mode === 'reveal') { 
       letter = String.fromCharCode(65 + q.answer); 
       blank.classList.add('reveal'); 
@@ -541,7 +536,6 @@ $('#hint').onclick = (e) => {
   renderUI();
 };
 
-// 錯題重答批改邏輯
 $('#check').onclick = () => {
   let correct = 0;
   currentData.questions.forEach((q, i) => {
@@ -615,7 +609,6 @@ $('#btn-menu').onclick = () => openPoster('menu');
 posterOverlay.querySelector('.close-modal').onclick = () => posterOverlay.hidden = true;
 posterOverlay.onclick = e => { if(e.target === posterOverlay) posterOverlay.hidden = true; };
 
-// 啟動
 loadRandomLevel();
 </script>
 </body>

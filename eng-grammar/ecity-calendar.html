@@ -6,7 +6,6 @@
 <title>E-City｜異想月曆</title>
 <style>
 :root{
-  /* 小桌曆風 Desk Calendar */
   --desk: #EBE7E0; 
   --paper: #FFFFFF; 
   --binder: #D9534F; 
@@ -48,8 +47,8 @@ h1{margin:0;font-size:clamp(20px,2vw,30px); color: var(--navy);}
 .layout{flex:1; display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px;padding:0 10px 10px; min-height:0;}
 .panel{background:white;border:1px solid var(--gray-blue);border-radius:12px;padding:10px;display:flex;flex-direction:column;min-height:0; box-shadow: 0 4px 12px rgba(0,0,0,0.08);}
 
-/* 左側：月曆與文本 */
-.left-side{display:flex;flex-direction:column; height:100%; min-height:0; gap:12px;}
+/* 左側：月曆與文本配置 */
+.left-side{display:flex;flex-direction:column; height:100%; min-height:0; gap:10px;}
 
 /* 月曆區塊 */
 .calendar-box{
@@ -58,71 +57,74 @@ h1{margin:0;font-size:clamp(20px,2vw,30px); color: var(--navy);}
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 .calendar-title{
-  height:35px;display:flex;align-items:center;justify-content:center;
-  background:var(--binder);color:white;font-size:18px;font-weight:900; letter-spacing: 1px;
+  height:32px;display:flex;align-items:center;justify-content:center;
+  background:var(--binder);color:white;font-size:17px;font-weight:900; letter-spacing: 1px;
 }
-.calendar-table-wrap{width:100%; overflow-x:auto; padding:5px;}
+.calendar-table-wrap{width:100%; overflow-x:auto; padding:4px;}
 .calendar-table{width:100%; border-collapse:collapse; text-align:center; table-layout: fixed;}
 .calendar-table th {
-  padding:6px 2px; border-bottom:2px solid var(--line); font-size:15px; color:var(--navy);
+  padding:4px 2px; border-bottom:2px solid var(--line); font-size:14px; color:var(--navy);
 }
 .calendar-table th.sun { color: var(--red); }
 .calendar-table th.sat { color: var(--weekend-sat); }
 
 .calendar-table td {
-  height: 55px; border:1px solid var(--line); vertical-align: top; padding: 4px; position: relative;
-  font-weight:bold; font-size: 14px; color: #555;
+  height: 42px; 
+  border:1px solid var(--line); vertical-align: top; padding: 2px; position: relative;
+  font-weight:bold; font-size: 13px; color: #555;
 }
 .calendar-table td.empty { background: #FAFAFA; border: 1px dashed #EEE;}
 .calendar-table td.has-event { background: #FFFDF4; cursor: pointer; }
 .calendar-table td.has-event:hover { background: var(--blue-soft); }
 
-.date-num { text-align: left; font-size: 16px; margin-bottom: 2px; }
+.date-num { text-align: left; font-size: 14px; margin-bottom: 0px; }
 .td-sun .date-num { color: var(--red); }
 .td-sat .date-num { color: var(--weekend-sat); }
 
 .event-tag {
-  font-size: 12px; line-height: 1.1; color: var(--navy); 
+  font-size: 10px; line-height: 1; color: var(--navy); 
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-.event-emoji { font-size: 20px; }
+.event-emoji { font-size: 16px; }
 
 /* 文本區塊 */
 .text-section{display:flex;flex-direction:column;flex:1; min-height:0; border:1px solid var(--line); border-radius:10px; background:var(--soft); overflow:hidden;}
-.text-title{margin:0;padding:6px 10px;background:#EAECEE;border-bottom:1px solid var(--line);font-size:15px;font-weight:900;color:var(--navy);flex-shrink:0;}
-.text-content{flex:1;overflow-y:auto;padding:12px;}
-.text-line{margin-bottom:8px;font-size:clamp(18px, 2.2vh, 22px);line-height:1.4;font-weight:bold; cursor:pointer; padding:4px; border-radius:6px;}
+.text-title{margin:0;padding:6px 10px;background:#EAECEE;border-bottom:1px solid var(--line);font-size:14px;font-weight:900;color:var(--navy);flex-shrink:0;}
+.text-content{flex:1;overflow-y:auto;padding:10px;}
+.text-line{margin-bottom:6px;font-size:clamp(16px, 2vh, 20px);line-height:1.3;font-weight:bold; cursor:pointer; padding:4px; border-radius:6px;}
 .text-line:hover{background:var(--blue-soft);}
 
-/* 右側：測驗區 */
-.panel-head{display:flex;align-items:center;justify-content:space-between;min-height:40px;margin-bottom:6px;flex-shrink:0;}
+/* 右側：測驗區 (平均分配高度 space-around) */
+.panel-head{display:flex;align-items:center;justify-content:space-between;min-height:40px;margin-bottom:4px;flex-shrink:0;}
 h2{margin:0;font-size:22px; color:var(--navy);}
 .quiztools{display:flex;align-items:center;gap:6px;}
 #score{font-size:17px;color:var(--green);font-weight:bold;margin-right:6px;}
 #check{background:var(--green);border-color:var(--green);color:white}
 #reveal{border-color:#efadb3;color:var(--red)}
 
-.questions{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-around;padding:0 5px;}
-.question{border-bottom:1px dashed var(--gray-blue);padding:10px 0;}
+.questions{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-around;padding:0 5px; gap: 4px;}
+.question{border-bottom:1px dashed var(--gray-blue);padding:6px 0 6px;}
 .question:last-child{border-bottom:none;}
 
 /* 題幹 */
-.question-line{display:flex;align-items:baseline;gap:5px;font-size:clamp(18px, 2.2vh, 24px);font-weight:bold;cursor:pointer;border-radius:6px;line-height:1.3;}
+.question-line{display:flex;align-items:baseline;gap:5px;font-size:clamp(17px, 2vh, 21px);font-weight:bold;cursor:pointer;border-radius:6px;line-height:1.3;}
 .question-line:hover{background:var(--hint);}
 .answer-blank{color:var(--blue);white-space:nowrap;min-width:3em;text-align:right;}
 .answer-blank.good{color:var(--green)}
 .answer-blank.reveal{color:var(--red)}
 
-/* 選項退縮與無框線設計 */
+/* 選項設計 */
 .options{
-  margin-left: 3.5em; /* 調整退縮，對齊題幹文字 */
-  display:flex; gap:16px; flex-wrap:wrap; font-size:clamp(16px, 2vh, 20px); margin-top:8px;
+  margin-left: 3.2em; 
+  display:flex; flex-wrap:wrap; font-size:clamp(15px, 1.8vh, 19px); margin-top:2px;
+  row-gap: 2px;     
+  column-gap: 14px; 
 }
 .choice{
   border:2px solid transparent; border-radius:8px; 
   background:transparent; 
   color:#606C71; 
-  padding:4px 8px; font-weight:bold; transition: 0.1s;
+  padding:2px 6px; font-weight:bold; transition: 0.1s;
 }
 .choice:hover:not(:disabled){
   background:var(--blue-soft); color:var(--navy);
@@ -148,7 +150,7 @@ h2{margin:0;font-size:22px; color:var(--navy);}
 .modal-head h2{font-size:22px;margin:0;color:var(--navy);}
 .modal-body{overflow:auto;padding:18px;}
 
-/* 海報內容排版 */
+/* 海報網格 */
 .poster-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));gap:10px;}
 .poster-item{background:white;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center;cursor:pointer; box-shadow: 1px 1px 4px rgba(0,0,0,0.05);}
 .poster-item:hover{background:var(--blue-soft);border-color:var(--blue);}
@@ -156,12 +158,23 @@ h2{margin:0;font-size:22px; color:var(--navy);}
 .p-en{font-size:16px;font-weight:bold;color:var(--ink);margin:6px 0 2px;}
 .p-zh{font-size:14px;color:#7A7874;font-weight:bold;}
 
+/* 句型點讀卡片風格 (加大字體、具備點讀互動) */
+.grammar-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.grammar-card {
+  background: white; border: 2px solid var(--line); border-radius: 12px; padding: 14px 18px;
+  cursor: pointer; transition: 0.15s; box-shadow: 1px 2px 6px rgba(0,0,0,0.04);
+}
+.grammar-card:hover { background: var(--blue-soft); border-color: var(--blue); transform: translateY(-2px); }
+.g-title { font-size: 17px; font-weight: bold; color: var(--navy); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.g-pattern { font-size: 19px; font-weight: bold; color: var(--blue); margin-bottom: 4px; font-family: inherit; }
+.g-zh { font-size: 15px; color: #666; font-weight: bold; }
+
 /* ====== 手機直向響應式布局 ====== */
 @media (max-width: 768px) {
   html, body { height: auto; overflow: auto; overflow-x: hidden; }
   .topbar { flex-direction: column; align-items: stretch; padding: 12px; gap: 10px; }
   .topbar h1 { text-align: center; font-size: 24px; }
-  .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+  .toolbar { display: flex; flex-direction: column; gap: 8px; width: 100%; }
   .tool, select { width: 100%; text-align: center; padding: 8px; font-size: 16px; }
   .layout { display: flex; flex-direction: column; height: auto; overflow: visible; padding: 10px; gap: 16px; }
   .panel { overflow: visible; }
@@ -169,15 +182,8 @@ h2{margin:0;font-size:22px; color:var(--navy);}
   .calendar-table td { height: 45px; padding: 2px; }
   .event-emoji { font-size: 16px; }
   .text-section, .text-content { overflow: visible; height: auto; }
-  .questions { overflow: visible; height: auto; justify-content: flex-start; gap: 10px;}
-  
-  /* 修正手機版選項排版：橫向排列、退縮對齊 */
-  .options { 
-    margin-left: 2.8em; /* 調整手機版退縮，對齊題幹文字 */
-    flex-direction: row; /* 恢復橫向排列 */
-    font-size: 17px; 
-    gap: 8px; 
-  } 
+  .questions { overflow: visible; height: auto; justify-content: flex-start; gap: 8px;}
+  .options { margin-left: 1.5em; font-size: 17px; row-gap: 2px; column-gap: 10px; }
   .question-line { font-size: 19px; }
 }
 </style>
@@ -190,13 +196,13 @@ h2{margin:0;font-size:22px; color:var(--navy);}
     <select id="levelChoice">
       <option value="L1">L1: 日期檢索 (5題)</option>
       <option value="L2">L2: 日期與星期 (5題)</option>
-      <option value="L3">L3: 今天與明天 (3題)</option>
-      <option value="L4">L4: 上週與下週 (3題)</option>
-      <option value="L5">L5: 連續日期區間 (3題)</option>
+      <option value="L3">L3: 今天與明天 (5題)</option>
+      <option value="L4">L4: 上週與下週 (5題)</option>
+      <option value="L5">L5: 連續日期區間 (5題)</option>
     </select>
     <button class="tool" id="next">↻ 換題</button>
-    <button class="tool" id="btn-phrases">💬 時間單字</button>
-    <button class="tool" id="btn-menu">📝 活動海報</button>
+    <button class="tool" id="btn-poster">📝 活動海報</button>
+    <button class="tool" id="btn-grammar">📚 句型教學</button>
   </nav>
 </header>
 
@@ -219,7 +225,7 @@ h2{margin:0;font-size:22px; color:var(--navy);}
     </div>
   </section>
 
-  <!-- 右側 測驗區 -->
+  <!-- 右側 測驗區 (平均分配高度) -->
   <section class="panel">
     <div class="panel-head">
       <h2>✏️ Questions</h2>
@@ -249,7 +255,7 @@ h2{margin:0;font-size:22px; color:var(--navy);}
 'use strict';
 const $ = s => document.querySelector(s);
 
-// --- 擴充的 12 個月份與節慶資料庫 ---
+// --- 12 個月份與節慶資料庫 ---
 const ALL_MONTHS = [
   { name: "January", days: 31, h_name: "Chinese New Year", h_emoji: "🧧", h_zh: "農曆春節" },
   { name: "February", days: 28, h_name: "Lantern Festival", h_emoji: "🏮", h_zh: "元宵節" },
@@ -288,7 +294,6 @@ const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
 const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const Cap = str => str.charAt(0).toUpperCase() + str.slice(1);
 
-// 產生序數 (1st, 2nd, 3rd...)
 function getOrdinal(n) {
   if (n > 3 && n < 21) return n + 'th';
   switch (n % 10) {
@@ -299,14 +304,12 @@ function getOrdinal(n) {
   }
 }
 
-// 狀態管理
 let currentData = null;
 let answers = {};
 let mode = 'answer';
 let hintsActive = false;
-let totalQuestions = 5;
+const totalQuestions = 5;
 
-// 選項去重防呆
 function fillOptions(ans, w1, w2, fallback) {
   let opts = [...new Set([ans, w1, w2])];
   let i = 0;
@@ -320,15 +323,12 @@ function fillOptions(ans, w1, w2, fallback) {
 // ================= 月曆生成引擎 =================
 function generateCalendar() {
   const profile = shuffle(ALL_MONTHS)[0];
-  const startDay = Math.floor(Math.random() * 7); // 0(Sun) ~ 6(Sat)
+  const startDay = Math.floor(Math.random() * 7); 
   
   let events = [];
-  
-  // 1. 決定節慶日期 (為了遊戲性，不一定要完全死扣真實日期，隨機配置在該月)
   let h_date = Math.floor(Math.random() * 25) + 3; 
   events.push({ date: h_date, name: profile.h_name, emoji: profile.h_emoji });
 
-  // 2. 決定考試 (找一個平日)
   let t_obj = shuffle(TESTS)[0];
   let t_date = 0;
   while(true) {
@@ -338,7 +338,6 @@ function generateCalendar() {
   }
   events.push({ date: t_date, name: t_obj.name, emoji: t_obj.emoji });
 
-  // 3. 決定單日休閒 (找一個週末)
   let f1_obj = shuffle(FUN_1DAY)[0];
   let f1_date = 0;
   while(true) {
@@ -348,7 +347,6 @@ function generateCalendar() {
   }
   events.push({ date: f1_date, name: f1_obj.name, emoji: f1_obj.emoji });
 
-  // 4. 決定多日行程 (2天)
   let f2_obj = shuffle(FUN_MULTIDAY)[0];
   let f2_start = 0;
   let f2_end = 0;
@@ -361,7 +359,6 @@ function generateCalendar() {
   events.push({ date: f2_start, name: f2_obj.name, emoji: f2_obj.emoji, span: 'start' });
   events.push({ date: f2_end, name: f2_obj.name, emoji: f2_obj.emoji, span: 'end' });
 
-  // Helper 函數：取得星期幾
   const getDayStr = (d) => DAYS[(startDay + d - 1) % 7];
 
   return { profile, startDay, events, h_date, t_date, t_obj, f1_date, f1_obj, f2_start, f2_end, f2_obj, getDayStr };
@@ -371,8 +368,7 @@ function generateCalendar() {
 
 function generateLevelData() {
   const lvl = $('#levelChoice').value;
-  totalQuestions = (lvl === 'L1' || lvl === 'L2') ? 5 : 3;
-  $('#score').textContent = `— / ${totalQuestions}`;
+  $('#score').textContent = `— / 5`;
 
   let cal = generateCalendar();
   let M = cal.profile.name;
@@ -423,7 +419,9 @@ function generateLevelData() {
     qData = [
       { stem: `What date is the ${cal.t_obj.name}?`, ans: `${M} ${getOrdinal(cal.t_date)}`, w1: `${M} ${getOrdinal(today)}`, w2: `${M} ${getOrdinal(cal.f1_date)}` },
       { stem: `What day is <b>today</b> (今天)?`, ans: cal.getDayStr(today), w1: cal.getDayStr(cal.t_date), w2: cal.getDayStr(cal.f1_date) },
-      { stem: `What day do they ${cal.f1_obj.name}?`, ans: cal.getDayStr(cal.f1_date), w1: cal.getDayStr(today), w2: "Sunday" }
+      { stem: `What day do they ${cal.f1_obj.name}?`, ans: cal.getDayStr(cal.f1_date), w1: cal.getDayStr(today), w2: "Sunday" },
+      { stem: `Is today before or after the ${cal.t_obj.name}?`, ans: cal.t_date > today ? "Before" : "After", w1: "Same day", w2: "I don't know" },
+      { stem: `What day is tomorrow if today is ${M} ${getOrdinal(today)}?`, ans: cal.getDayStr(today + 1), w1: cal.getDayStr(today), w2: cal.getDayStr(today - 1) }
     ];
   }
 
@@ -442,7 +440,9 @@ function generateLevelData() {
     qData = [
       { stem: `Look at the calendar. What date is ${cal.profile.h_name}?`, ans: `${M} ${getOrdinal(cal.h_date)}`, w1: `${M} ${getOrdinal(today)}`, w2: `${M} ${getOrdinal(cal.t_date)}` },
       { stem: `What day is ${cal.profile.h_name}?`, ans: cal.getDayStr(cal.h_date), w1: cal.getDayStr(cal.t_date), w2: cal.getDayStr(1) },
-      { stem: `What date is exactly <b>one week after</b> (一週後) ${M} ${getOrdinal(cal.t_date)}?`, ans: `${M} ${getOrdinal(cal.t_date + 7)}`, w1: `${M} ${getOrdinal(cal.t_date + 1)}`, w2: `${M} ${getOrdinal(cal.t_date - 7 > 0 ? cal.t_date - 7 : 28)}` }
+      { stem: `What date is exactly <b>one week after</b> (一週後) ${M} ${getOrdinal(cal.t_date)}?`, ans: `${M} ${getOrdinal(cal.t_date + 7)}`, w1: `${M} ${getOrdinal(cal.t_date + 1)}`, w2: `${M} ${getOrdinal(cal.t_date - 7 > 0 ? cal.t_date - 7 : 28)}` },
+      { stem: `Is ${cal.profile.h_name} in this month (${M})?`, ans: "Yes, it is.", w1: "No, it isn't.", w2: "I don't know." },
+      { stem: `What day is one week before ${M} ${getOrdinal(cal.h_date)}?`, ans: cal.getDayStr(today), w1: cal.getDayStr(cal.h_date), w2: "Sunday" }
     ];
   }
 
@@ -454,7 +454,9 @@ function generateLevelData() {
     qData = [
       { stem: `What day do they <b>start</b> (開始) to ${cal.f2_obj.name}?`, ans: cal.getDayStr(cal.f2_start), w1: cal.getDayStr(cal.f2_end), w2: cal.getDayStr(cal.t_date) },
       { stem: `What day do they <b>go home</b> (回家)?`, ans: cal.getDayStr(cal.f2_end), w1: cal.getDayStr(cal.f2_start), w2: cal.getDayStr(cal.h_date) },
-      { stem: `How many days (幾天) are they going to ${cal.f2_obj.name}?`, ans: `2 days`, w1: `1 day`, w2: `3 days` }
+      { stem: `How many days (幾天) are they going to ${cal.f2_obj.name}?`, ans: `2 days`, w1: `1 day`, w2: `3 days` },
+      { stem: `Does the ${cal.f2_obj.name} include a weekend day?`, ans: (cal.getDayStr(cal.f2_start)==="Saturday"||cal.getDayStr(cal.f2_start)==="Sunday"||cal.getDayStr(cal.f2_end)==="Saturday"||cal.getDayStr(cal.f2_end)==="Sunday") ? "Yes." : "No.", w1: "Maybe.", w2: "I don't know." },
+      { stem: `What date is the day after ${M} ${getOrdinal(cal.f2_end)}?`, ans: `${M} ${getOrdinal(cal.f2_end + 1)}`, w1: `${M} ${getOrdinal(cal.f2_start)}`, w2: `${M} ${getOrdinal(cal.f2_end - 1)}` }
     ];
   }
 
@@ -509,7 +511,6 @@ function renderUI() {
         if (col === 0) cls += "td-sun ";
         if (col === 6) cls += "td-sat ";
         
-        // Check for events
         let ev = cal.events.find(e => e.date === dayCount);
         if (ev) cls += "has-event ";
         
@@ -543,7 +544,7 @@ function renderUI() {
     
     const blank = document.createElement('span');
     blank.className = 'answer-blank';
-    let letter = '　';
+    let letter = ' ';
     if(mode === 'reveal') { letter = String.fromCharCode(65 + q.answer); blank.classList.add('reveal'); }
     else if(q.locked) { letter = String.fromCharCode(65 + answers[i]); blank.classList.add('good'); }
     else if(answers[i] !== undefined) { letter = String.fromCharCode(65 + answers[i]); }
@@ -559,7 +560,6 @@ function renderUI() {
     q.options.forEach((choice, j) => {
       const btn = document.createElement('button');
       btn.className = 'choice';
-      // 選項格式：(A) 選項內容
       btn.innerHTML = `(${String.fromCharCode(65+j)}) ${highlightText(choice, true)}`;
       if(mode === 'answer' && !q.locked && answers[i] === j) btn.classList.add('selected');
       if(q.locked && answers[i] === j) btn.classList.add('correct');
@@ -592,7 +592,6 @@ $('#hint').onclick = (e) => {
   renderUI();
 };
 
-// 批改
 $('#check').onclick = () => {
   let correct = 0;
   currentData.questions.forEach((q, i) => {
@@ -600,57 +599,83 @@ $('#check').onclick = () => {
     else { delete answers[i]; }
   });
   if(correct === totalQuestions) { mode = 'checked'; }
-  $('#score').textContent = `${correct} / ${totalQuestions}`;
+  $('#score').textContent = `${correct} / 5`;
   renderUI();
 };
 
 $('#clear').onclick = () => { 
   answers = {}; mode = 'answer'; 
   currentData.questions.forEach(q => q.locked = false); 
-  $('#score').textContent = `— / ${totalQuestions}`; 
+  $('#score').textContent = `— / 5`; 
   renderUI(); 
 };
 $('#reveal').onclick = () => { mode = 'reveal'; $('#score').textContent = '解答'; renderUI(); };
 
-// 海報
+// 彈出視窗：活動海報
 const posterOverlay = $('#posterOverlay');
 const posterBody = $('#posterBody');
 
-function openPoster(type) {
-  if(type === 'phrases') {
-    $('#posterTitle').textContent = '💬 時間單字 (Time Words)';
-    const phrases = [
-      { en: "Today", zh: "今天", emoji: "📍" },
-      { en: "Tomorrow", zh: "明天", emoji: "➡️" },
-      { en: "Yesterday", zh: "昨天", emoji: "⬅️" },
-      { en: "Next week", zh: "下週", emoji: "⏭️" },
-      { en: "Last week", zh: "上週", emoji: "⏮️" },
-      { en: "Weekend", zh: "週末 (六、日)", emoji: "🎉" }
-    ];
-    posterBody.innerHTML = `<div class="poster-grid">` + phrases.map(p => `
-      <div class="poster-item" onclick="speak('${p.en}')">
-        <div class="p-icon">${p.emoji}</div>
-        <div class="p-en">${p.en}</div>
-        <div class="p-zh">${p.zh}</div>
-      </div>
-    `).join('') + `</div>`;
-  } else {
-    $('#posterTitle').textContent = '📝 節慶總覽 (Holidays)';
-    // 只顯示 12 個月份的節慶，不顯示一般活動
-    const vocab = [...ALL_MONTHS.map(m => ({name: m.h_name, zh: m.h_zh, emoji: m.h_emoji}))];
-    posterBody.innerHTML = `<div class="poster-grid">` + vocab.map(f => `
-      <div class="poster-item" onclick="speak('${f.name}')">
-        <div class="p-icon">${f.emoji}</div>
-        <div class="p-en">${f.name}</div>
-        <div class="p-zh">${f.zh}</div>
-      </div>
-    `).join('') + `</div>`;
-  }
+function openPosterModal() {
+  $('#posterTitle').textContent = '📝 12月份節慶總覽';
+  const holidays = ALL_MONTHS.map(m => `
+    <div class="poster-item" onclick="speak('${m.h_name}')">
+      <div class="p-icon">${m.h_emoji}</div>
+      <div class="p-en">${m.h_name}</div>
+      <div class="p-zh">${m.h_zh}</div>
+    </div>
+  `).join('');
+
+  const timeWords = [
+    {en: "Today", zh: "今天", emoji: "📍"},
+    {en: "Tomorrow", zh: "明天", emoji: "➡️"},
+    {en: "Yesterday", zh: "昨天", emoji: "⬅️"},
+    {en: "Next week", zh: "下週", emoji: "⏭️"},
+    {en: "Last week", zh: "上週", emoji: "⏮️"},
+    {en: "Weekend", zh: "週末", emoji: "🎉"}
+  ].map(p => `
+    <div class="poster-item" onclick="speak('${p.en}')">
+      <div class="p-icon">${p.emoji}</div>
+      <div class="p-en">${p.en}</div>
+      <div class="p-zh">${p.zh}</div>
+    </div>
+  `).join('');
+
+  posterBody.innerHTML = `
+    <h3 style="margin:0 0 8px 0; color:var(--navy);">🗓️ 12月份重要節慶</h3>
+    <div class="poster-grid" style="margin-bottom:15px;">${holidays}</div>
+    <h3 style="margin:0 0 8px 0; color:var(--navy);">💬 時間單字庫</h3>
+    <div class="poster-grid">${timeWords}</div>
+  `;
   posterOverlay.hidden = false;
 }
 
-$('#btn-phrases').onclick = () => openPoster('phrases');
-$('#btn-menu').onclick = () => openPoster('menu');
+// 彈出視窗：句型教學 (加大字體、有點讀發音)
+function openGrammarModal() {
+  $('#posterTitle').textContent = '📚 核心句型點讀教學';
+  
+  const grammarList = [
+    { title: "1. 詢問日期與事件", pattern: "When is [Event]? It is on [Month] [Date].", zh: "何時舉辦活動？在某月某日。" },
+    { title: "2. 詢問星期幾", pattern: "What day is [Month] [Date]? It is [Day].", zh: "某月某日是星期幾？是星期幾。" },
+    { title: "3. 跨日區間表達", pattern: "We will [Action] from [Date] to [Date].", zh: "我們將從某日到某日進行某活動。" },
+    { title: "4. 相對時間推算", pattern: "Today is [Date]. Tomorrow is [Date].", zh: "今天是某日，明天是某日。" }
+  ];
+
+  posterBody.innerHTML = `
+    <div class="grammar-grid">
+      ${grammarList.map(g => `
+        <div class="grammar-card" onclick="speak('${g.pattern.replace(/\[.*?\]/g, '')}')">
+          <div class="g-title">🔊 ${g.title}</div>
+          <div class="g-pattern">${g.pattern}</div>
+          <div class="g-zh">${g.zh}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  posterOverlay.hidden = false;
+}
+
+$('#btn-poster').onclick = openPosterModal;
+$('#btn-grammar').onclick = openGrammarModal;
 posterOverlay.querySelector('.close-modal').onclick = () => posterOverlay.hidden = true;
 posterOverlay.onclick = e => { if(e.target === posterOverlay) posterOverlay.hidden = true; };
 
