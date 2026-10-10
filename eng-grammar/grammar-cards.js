@@ -82,6 +82,7 @@ window.GRAMMAR_DATA = [
       // ==== 測試網頁：五份彼此獨立的 HTML ====
       { id: "test-1", category: "測試網頁", title: "Test 1", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test1.html", themeColor: "#64748B" },
       { id: "test-2", category: "測試網頁", title: "Test 2", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test2.html", themeColor: "#64748B" },
+      { id: "test-3", category: "測試網頁", title: "Test 3", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test3.html", themeColor: "#64748B" },
       { id: "test-4", category: "測試網頁", title: "Test 4", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test4.html", themeColor: "#64748B" },
       { id: "test-5", category: "測試網頁", title: "Test 5", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test5.html", themeColor: "#64748B" },
 
