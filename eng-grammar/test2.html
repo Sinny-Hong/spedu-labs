@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>英文數字拔河大對決</title>
+  <title>異想拔河 - 英文數字與日期對決</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;700;800&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --blue-main: #1d61b8;
-      --blue-bg: #eef6ff;
-      --blue-border: #99c5f7;
-      --red-main: #c92a2a;
-      --red-bg: #fff0f0;
-      --red-border: #f8a5a5;
+      --blue-main: #2563eb;
+      --blue-border: #bfdbfe;
+      --blue-bg: #eff6ff;
+      --red-main: #dc2626;
+      --red-border: #fecaca;
+      --red-bg: #fef2f2;
       --gray-border: #cbd5e1;
-      --bg-color: #f1f5f9;
+      --text-main: #0f172a;
     }
 
     * {
@@ -30,521 +30,857 @@
 
     body {
       font-family: 'Lexend', 'Noto Sans TC', sans-serif;
-      background: var(--bg-color);
+      background: #f8fafc;
+      color: var(--text-main);
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
-      color: #1e293b;
       overflow-x: hidden;
       overflow-y: auto;
     }
 
-    /* 頂部設定列 */
-    .settings-bar {
+    /* 頂部控制與設定列 */
+    .control-header {
       background: #ffffff;
-      padding: 6px 12px;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 8px 16px;
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      gap: 10px;
-      font-size: 0.85rem;
-      flex-shrink: 0;
-      z-index: 10;
+      gap: 16px;
+      flex-wrap: wrap;
+      z-index: 20;
     }
-    .setting-group {
+    .ctrl-item {
       display: flex;
       align-items: center;
       gap: 6px;
-    }
-    .setting-label {
+      font-size: 0.95rem;
       font-weight: 700;
-      color: #475569;
     }
-    select.setting-select {
+    select {
       font-family: inherit;
-      padding: 4px 8px;
-      border-radius: 6px;
-      border: 1px solid #cbd5e1;
-      background: #fff;
-      font-size: 0.85rem;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1.5px solid var(--gray-border);
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: #ffffff;
+      color: var(--text-main);
       outline: none;
     }
-    .btn-time-group {
+    .btn-toggle-group {
       display: flex;
       gap: 4px;
     }
-    .btn-time {
+    .time-btn {
+      padding: 5px 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
       font-family: inherit;
-      padding: 4px 10px;
-      border: 1px solid #cbd5e1;
-      background: #fff;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.8rem;
+      border: 1.5px solid var(--gray-border);
+      background: #f1f5f9;
       color: #475569;
-      transition: all 0.15s;
+      border-radius: 8px;
+      cursor: pointer;
     }
-    .btn-time.active {
-      background: #2563eb;
-      color: #fff;
-      border-color: #2563eb;
+    .time-btn.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
     }
 
-    /* 手機版：上下堆疊 */
-    .game-layout {
+    /* 開始 / 重置大按鈕 */
+    .action-btn-main {
+      padding: 6px 18px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      font-family: inherit;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      color: #ffffff;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+    .btn-start {
+      background: #16a34a;
+      box-shadow: 0 3px 0 #15803d;
+    }
+    .btn-reset {
+      background: #64748b;
+      box-shadow: 0 3px 0 #475569;
+    }
+    .action-btn-main:active {
+      transform: translateY(2px);
+      box-shadow: none;
+    }
+
+    /* 主頁面佈局容器 */
+    .app-layout {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 6px 8px 10px;
-      gap: 6px;
-      max-width: 1300px;
-      margin: 0 auto;
       width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 8px;
+      gap: 8px;
     }
 
-    /* 拔河中央競技區塊 */
-    .arena-panel {
+    /* 拔河競技場 */
+    .tug-arena {
       background: #ffffff;
-      border-radius: 12px;
-      padding: 8px 12px;
+      border-radius: 16px;
+      border: 2px solid #e2e8f0;
+      padding: 10px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      flex-shrink: 0;
+      justify-content: center;
     }
-    .arena-header {
+    .status-bar {
       width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
-      font-size: 1.15rem;
       font-weight: 800;
+      font-size: 1.3rem;
+      margin-bottom: 8px;
     }
-    .score-blue { color: var(--blue-main); }
-    .score-red { color: var(--red-main); }
-    .timer-badge {
+    .score-b { color: var(--blue-main); }
+    .score-r { color: var(--red-main); }
+    .clock-badge {
       background: #0f172a;
       color: #ffffff;
-      padding: 3px 12px;
+      padding: 4px 16px;
       border-radius: 20px;
-      font-size: 1rem;
-      font-weight: 700;
+      font-size: 1.15rem;
+      font-weight: 800;
       letter-spacing: 1px;
     }
 
     .rope-track {
       width: 100%;
-      height: 56px;
-      background: #f8fafc;
-      border: 2px dashed #cbd5e1;
-      border-radius: 10px;
+      height: 76px;
       position: relative;
-      overflow: hidden;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 2px dashed #94a3b8;
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
-    .track-center-line {
+    .mid-line {
       position: absolute;
-      left: 50%;
       width: 3px;
       height: 100%;
       background: #94a3b8;
+      left: 50%;
       transform: translateX(-50%);
+      z-index: 1;
     }
-    .rope-rig {
+    .rope-team-wrapper {
       position: absolute;
       display: flex;
       align-items: center;
-      justify-content: center;
-      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      transform: translateX(0px);
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      z-index: 2;
       will-change: transform;
     }
-    .char-avatar {
-      font-size: 1.9rem;
+    .tugger {
+      font-size: 2.8rem;
       line-height: 1;
     }
-    .rope-bar {
-      width: 120px;
-      height: 7px;
+    .rope-cable {
+      width: 160px;
+      height: 8px;
       background: #78350f;
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .rope-ribbon {
-      width: 12px;
-      height: 16px;
+    .center-ribbon {
+      width: 16px;
+      height: 24px;
       background: #dc2626;
       border-radius: 2px;
+      box-shadow: 0 0 4px rgba(220, 38, 38, 0.5);
     }
 
-    /* 下方計算機區域 */
-    .teams-container {
+    /* 左右答題計算機區 */
+    .calc-container {
       flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 6px;
+      gap: 10px;
+      width: 100%;
     }
-    .team-card {
-      border-radius: 12px;
-      padding: 8px 6px;
+
+    .calc-box {
+      border-radius: 16px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
-      align-items: center;
       border: 2px solid;
     }
-    .team-blue {
+    .calc-b {
       background: var(--blue-bg);
       border-color: var(--blue-border);
     }
-    .team-red {
+    .calc-r {
       background: var(--red-bg);
       border-color: var(--red-border);
     }
 
-    .team-header-label {
-      font-size: 0.95rem;
-      font-weight: 800;
-      margin-bottom: 2px;
-    }
-    .team-blue .team-header-label { color: var(--blue-main); }
-    .team-red .team-header-label { color: var(--red-main); }
-
-    .question-box {
+    .calc-head {
       font-size: 1.15rem;
       font-weight: 800;
-      min-height: 2.8rem;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .calc-b .calc-head { color: var(--blue-main); }
+    .calc-r .calc-head { color: var(--red-main); }
+
+    .q-text {
+      font-size: 1.45rem;
+      font-weight: 800;
+      min-height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      line-height: 1.15;
-      padding: 0 4px;
+      line-height: 1.2;
+      padding: 2px 4px;
       word-break: break-word;
     }
-    .team-blue .question-box { color: var(--blue-main); }
-    .team-red .question-box { color: var(--red-main); }
+    .calc-b .q-text { color: var(--blue-main); }
+    .calc-r .q-text { color: var(--red-main); }
 
-    .display-screen {
-      width: 100%;
-      max-width: 170px;
-      height: 38px;
+    .ans-box {
+      height: 44px;
       background: #ffffff;
-      border-radius: 8px;
+      border-radius: 10px;
       border: 2px solid var(--gray-border);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       font-weight: 800;
       color: #0f172a;
-      margin: 4px 0 8px;
-      box-shadow: inset 0 2px 3px rgba(0,0,0,0.06);
+      margin-bottom: 8px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+      transition: background-color 0.2s, border-color 0.2s;
     }
-    .display-screen.correct {
-      background: #dcfce7;
-      border-color: #22c55e;
-      color: #15803d;
+    .ans-box.correct {
+      background: #dcfce7 !important;
+      border-color: #16a34a !important;
+      color: #15803d !important;
     }
-    .display-screen.wrong {
-      background: #fee2e2;
-      border-color: #ef4444;
-      color: #b91c1c;
-      font-size: 1rem;
+    .ans-box.wrong {
+      background: #fee2e2 !important;
+      border-color: #dc2626 !important;
+      color: #991b1b !important;
+      font-size: 1.1rem;
     }
 
-    /* 3 欄 × 4 列 鍵盤 */
-    .numpad {
+    /* 鍵盤網格 (3x4) */
+    .key-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 5px;
-      width: 100%;
-      max-width: 210px;
+      grid-template-rows: repeat(4, 1fr);
+      gap: 6px;
+      flex: 1;
     }
-    .num-btn {
-      font-family: inherit;
+    .btn-k {
       background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      padding: 10px 0;
-      font-size: 1.3rem;
+      border: 1px solid var(--gray-border);
+      border-radius: 10px;
+      font-size: 1.5rem;
       font-weight: 700;
       color: #334155;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 0 #94a3b8;
+      box-shadow: 0 2px 0 #cbd5e1;
       cursor: pointer;
+      min-height: 46px;
     }
-    .num-btn:active {
+    .btn-k:active {
       transform: translateY(2px);
       box-shadow: none;
     }
-    .num-btn.btn-action {
-      font-size: 1.25rem;
+    .btn-k.func {
       font-weight: 800;
-      background: #f8fafc;
+      color: #0f172a;
+      background: #f1f5f9;
+    }
+    .key-grid.disabled {
+      opacity: 0.6;
+      pointer-events: none;
     }
 
-    /* 大電視與寬螢幕版 (左中右三欄佈局) */
-    @media (min-width: 900px) and (orientation: landscape) {
-      body {
-        height: 100vh;
-        height: 100dvh;
-        overflow: hidden;
-      }
-      .settings-bar {
-        padding: 6px 16px;
-      }
-      .game-layout {
-        display: grid;
-        grid-template-columns: 32% 36% 32%;
-        gap: 12px;
-        padding: 10px 16px 14px;
-        height: calc(100vh - 46px);
-        height: calc(100dvh - 46px);
-      }
-      .teams-container {
-        display: contents;
-      }
-      .team-card.team-blue {
-        order: 1;
-        padding: 16px;
-        justify-content: space-between;
-      }
-      .arena-panel {
-        order: 2;
-        height: 100%;
-        justify-content: center;
-        padding: 20px 16px;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.06);
-      }
-      .team-card.team-red {
-        order: 3;
-        padding: 16px;
-        justify-content: space-between;
-      }
-
-      .team-header-label { font-size: 1.4rem; }
-      .question-box {
-        font-size: 1.7rem;
-        min-height: 4rem;
-      }
-      .display-screen {
-        max-width: 260px;
-        height: 52px;
-        font-size: 2rem;
-        margin: 8px 0 14px;
-      }
-      .display-screen.wrong { font-size: 1.3rem; }
-
-      .numpad {
-        max-width: 320px;
-        gap: 8px;
-      }
-      .num-btn {
-        padding: 14px 0;
-        font-size: 1.8rem;
-        border-radius: 10px;
-        box-shadow: 0 3px 0 #94a3b8;
-      }
-
-      .arena-header {
-        font-size: 1.6rem;
-        margin-bottom: 24px;
-      }
-      .timer-badge {
-        font-size: 1.3rem;
-        padding: 6px 18px;
-      }
-      .rope-track {
-        height: 110px;
-      }
-      .char-avatar { font-size: 3.2rem; }
-      .rope-bar {
-        width: 180px;
-        height: 10px;
-      }
-      .rope-ribbon {
-        width: 18px;
-        height: 24px;
-      }
-    }
-
-    /* 手機橫向特殊適應 */
-    @media (max-width: 899px) and (orientation: landscape) {
-      .game-layout {
-        display: grid;
-        grid-template-columns: 34% 32% 34%;
-        gap: 6px;
-        padding: 4px 8px;
-      }
-      .teams-container { display: contents; }
-      .team-card.team-blue { order: 1; padding: 4px; }
-      .arena-panel { order: 2; height: 100%; justify-content: center; padding: 6px; }
-      .team-card.team-red { order: 3; padding: 4px; }
-      .rope-track { height: 46px; }
-      .char-avatar { font-size: 1.5rem; }
-      .rope-bar { width: 90px; }
-      .num-btn { padding: 4px 0; font-size: 1.1rem; }
-      .question-box { font-size: 1rem; min-height: 2.2rem; }
-      .display-screen { height: 32px; font-size: 1.2rem; margin: 2px 0 4px; }
-    }
-
-    /* 遊戲結算彈窗 */
-    .modal-overlay {
+    /* 結束彈窗 */
+    .modal-curtain {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
       display: none;
       align-items: center;
       justify-content: center;
+      z-index: 100;
       padding: 16px;
-      z-index: 999;
     }
-    .modal-card {
+    .modal-box {
       background: #ffffff;
-      border-radius: 16px;
-      padding: 24px 28px;
+      border-radius: 20px;
+      padding: 24px;
       width: 100%;
       max-width: 420px;
       text-align: center;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
     }
-    .modal-title {
-      font-size: 1.6rem;
+    .modal-t {
+      font-size: 1.8rem;
       font-weight: 800;
       margin-bottom: 8px;
     }
-    .modal-desc {
+    .modal-sub {
       font-size: 1.1rem;
-      color: #475569;
+      color: #64748b;
       margin-bottom: 20px;
       font-weight: 600;
     }
-    .modal-actions {
+    .modal-btns {
       display: flex;
       gap: 12px;
-      justify-content: center;
     }
-    .btn-modal {
-      font-family: inherit;
+    .modal-btn-act {
       flex: 1;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 12px;
       font-size: 1rem;
       font-weight: 700;
+      font-family: inherit;
+      border-radius: 10px;
       border: none;
       cursor: pointer;
     }
-    .btn-replay { background: #2563eb; color: #fff; }
-    .btn-change-bank { background: #e2e8f0; color: #334155; }
+    .btn-act-replay { background: #2563eb; color: #fff; }
+    .btn-act-change { background: #e2e8f0; color: #334155; }
+
+    /* ========================================================
+       大電視橫向配置 (螢幕寬度 >= 1024px)
+       左側 32% (藍隊) ── 中央 36% (拔河核心) ── 右側 32% (紅隊)
+       ======================================================== */
+    @media (min-width: 1024px) {
+      body {
+        height: 100vh;
+        overflow: hidden;
+      }
+      .app-layout {
+        max-width: 100%;
+        height: calc(100vh - 58px);
+        display: grid;
+        grid-template-columns: 32% 36% 32%;
+        padding: 12px 18px;
+        gap: 16px;
+      }
+      /* 計算機容器改由 grid-contents 承接，平鋪於左右兩側 */
+      .calc-container {
+        display: contents;
+      }
+      .calc-b {
+        order: 1;
+        height: 100%;
+        border-radius: 20px;
+        padding: 16px;
+      }
+      .tug-arena {
+        order: 2;
+        height: 100%;
+        border-radius: 20px;
+        padding: 24px 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+      }
+      .calc-r {
+        order: 3;
+        height: 100%;
+        border-radius: 20px;
+        padding: 16px;
+      }
+
+      /* 放大中央拔河元素 */
+      .status-bar {
+        font-size: 1.8rem;
+      }
+      .clock-badge {
+        font-size: 1.45rem;
+        padding: 6px 22px;
+      }
+      .rope-track {
+        height: 160px;
+        border-width: 3px;
+        border-radius: 16px;
+      }
+      .tugger {
+        font-size: 4.8rem;
+      }
+      .rope-cable {
+        width: 220px;
+        height: 12px;
+      }
+      .center-ribbon {
+        width: 20px;
+        height: 32px;
+      }
+
+      /* 放大左右計算機元素 */
+      .calc-head {
+        font-size: 1.6rem;
+      }
+      .q-text {
+        font-size: 2.2rem;
+        min-height: 84px;
+      }
+      .ans-box {
+        height: 60px;
+        font-size: 2.4rem;
+        margin-bottom: 12px;
+      }
+      .btn-k {
+        font-size: 2.1rem;
+        border-radius: 14px;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- 設定工具列 -->
-  <header class="settings-bar">
-    <div class="setting-group">
-      <label class="setting-label" for="bankSelect">題庫：</label>
-      <select id="bankSelect" class="setting-select">
+  <!-- 頂部控制列 -->
+  <header class="control-header">
+    <div class="ctrl-item">
+      <label for="bankSel">題庫：</label>
+      <select id="bankSel">
         <option value="numbers">英文數字 (1～100)</option>
-        <option value="dates">英文日期 (月/日 MMDD)</option>
-        <option value="mix">數字＋日期混合</option>
+        <option value="dates">英文日期 (月/日)</option>
+        <option value="mixed">數字＋日期混合</option>
       </select>
     </div>
-    <div class="setting-group">
-      <span class="setting-label">計時：</span>
-      <div class="btn-time-group">
-        <button type="button" class="btn-time" data-duration="60">1 分鐘</button>
-        <button type="button" class="btn-time active" data-duration="120">2 分鐘</button>
+
+    <div class="ctrl-item">
+      <span>計時：</span>
+      <div class="btn-toggle-group">
+        <button class="time-btn" data-sec="60">1 分鐘</button>
+        <button class="time-btn active" data-sec="120">2 分鐘</button>
       </div>
     </div>
+
+    <button class="action-btn-main btn-start" id="mainCtrlBtn">▶ 開始遊戲</button>
   </header>
 
-  <!-- 主競技場版面 -->
-  <main class="game-layout">
-    <!-- 拔河戰況區 -->
-    <section class="arena-panel">
-      <div class="arena-header">
-        <div class="score-blue">藍隊: <span id="score-1">0</span></div>
-        <div class="timer-badge" id="timer">02:00</div>
-        <div class="score-red">紅隊: <span id="score-2">0</span></div>
+  <!-- 主競技排版區 -->
+  <div class="app-layout">
+    <!-- 中央拔河戰況區 -->
+    <section class="tug-arena">
+      <div class="status-bar">
+        <div class="score-b">藍隊: <span id="sc-1">0</span></div>
+        <div class="clock-badge" id="clock">02:00</div>
+        <div class="score-r">紅隊: <span id="sc-2">0</span></div>
       </div>
-      <div class="rope-track" id="ropeTrack">
-        <div class="track-center-line"></div>
-        <div class="rope-rig" id="ropeRig">
-          <div class="char-avatar">🤼‍♂️</div>
-          <div class="rope-bar"><div class="rope-ribbon"></div></div>
-          <div class="char-avatar">🤼‍♀️</div>
+      <div class="rope-track" id="track">
+        <div class="mid-line"></div>
+        <div class="rope-team-wrapper" id="ropeBundle">
+          <div class="tugger">🤼‍♂️</div>
+          <div class="rope-cable"><div class="center-ribbon"></div></div>
+          <div class="tugger">🤼‍♀️</div>
         </div>
       </div>
     </section>
 
-    <!-- 計算機雙隊對抗區 -->
-    <div class="teams-container">
+    <!-- 計算機對抗區 -->
+    <div class="calc-container">
       <!-- 藍隊 (Team 1) -->
-      <section class="team-card team-blue" id="panel-1">
-        <div class="team-header-label">藍隊 Team 1</div>
-        <div class="question-box" id="q-1">---</div>
-        <div class="display-screen" id="disp-1"></div>
-        <div class="numpad" data-team="1">
-          <button type="button" class="num-btn" data-key="1">1</button>
-          <button type="button" class="num-btn" data-key="2">2</button>
-          <button type="button" class="num-btn" data-key="3">3</button>
-          <button type="button" class="num-btn" data-key="4">4</button>
-          <button type="button" class="num-btn" data-key="5">5</button>
-          <button type="button" class="num-btn" data-key="6">6</button>
-          <button type="button" class="num-btn" data-key="7">7</button>
-          <button type="button" class="num-btn" data-key="8">8</button>
-          <button type="button" class="num-btn" data-key="9">9</button>
-          <button type="button" class="num-btn btn-action" data-key="del">⌫</button>
-          <button type="button" class="num-btn" data-key="0">0</button>
-          <button type="button" class="num-btn btn-action" data-key="enter">✓</button>
+      <div class="calc-box calc-b">
+        <div class="calc-head">藍隊 Team 1</div>
+        <div class="q-text" id="qt-1">準備中</div>
+        <div class="ans-box" id="ans-1"></div>
+        <div class="key-grid disabled" id="grid-1" data-t="1">
+          <button class="btn-k" data-k="1">1</button>
+          <button class="btn-k" data-k="2">2</button>
+          <button class="btn-k" data-k="3">3</button>
+          <button class="btn-k" data-k="4">4</button>
+          <button class="btn-k" data-k="5">5</button>
+          <button class="btn-k" data-k="6">6</button>
+          <button class="btn-k" data-k="7">7</button>
+          <button class="btn-k" data-k="8">8</button>
+          <button class="btn-k" data-k="9">9</button>
+          <button class="btn-k func" data-k="del">⌫</button>
+          <button class="btn-k" data-k="0">0</button>
+          <button class="btn-k func" data-k="enter">✓</button>
         </div>
-      </section>
+      </div>
 
       <!-- 紅隊 (Team 2) -->
-      <section class="team-card team-red" id="panel-2">
-        <div class="team-header-label">紅隊 Team 2</div>
-        <div class="question-box" id="q-2">---</div>
-        <div class="display-screen" id="disp-2"></div>
-        <div class="numpad" data-team="2">
-          <button type="button" class="num-btn" data-key="1">1</button>
-          <button type="button" class="num-btn" data-key="2">2</button>
-          <button type="button" class="num-btn" data-key="3">3</button>
-          <button type="button" class="num-btn" data-key="4">4</button>
-          <button type="button" class="num-btn" data-key="5">5</button>
-          <button type="button" class="num-btn" data-key="6">6</button>
-          <button type="button" class="num-btn" data-key="7">7</button>
-          <button type="button" class="num-btn" data-key="8">8</button>
-          <button type="button" class="num-btn" data-key="9">9</button>
-          <button type="button" class="num-btn btn-action" data-key="del">⌫</button>
-          <button type="button" class="num-btn" data-key="0">0</button>
-          <button type="button" class="num-btn btn-action" data-key="enter">✓</button>
+      <div class="calc-box calc-r">
+        <div class="calc-head">紅隊 Team 2</div>
+        <div class="q-text" id="qt-2">準備中</div>
+        <div class="ans-box" id="ans-2"></div>
+        <div class="key-grid disabled" id="grid-2" data-t="2">
+          <button class="btn-k" data-k="1">1</button>
+          <button class="btn-k" data-k="2">2</button>
+          <button class="btn-k" data-k="3">3</button>
+          <button class="btn-k" data-k="4">4</button>
+          <button class="btn-k" data-k="5">5</button>
+          <button class="btn-k" data-k="6">6</button>
+          <button class="btn-k" data-k="7">7</button>
+          <button class="btn-k" data-k="8">8</button>
+          <button class="btn-k" data-k="9">9</button>
+          <button class="btn-k func" data-k="del">⌫</button>
+          <button class="btn-k" data-k="0">0</button>
+          <button class="btn-k func" data-k="enter">✓</button>
         </div>
-      </section>
+      </div>
     </div>
-  </main>
+  </div>
 
   <!-- 結算彈窗 -->
-  <div class="modal-overlay" id="resultModal">
-    <div class="modal-card">
-      <div class="modal-title" id="winnerTitle">🏆 獲勝判定</div>
-      <div class="modal-desc" id="winnerDesc">比賽結束</div>
-      <div class="modal-actions">
-        <button type="button" class="btn-modal btn-replay" id="btnReplay">再玩一次</button>
-        <button type="button" class="btn-modal btn-change-bank" id="btnChangeBank">更換題庫</button>
+  <div class="modal-curtain" id="endModal">
+    <div class="modal-box">
+      <div class="modal-t" id="winHead">🏆 藍隊獲勝！</div>
+      <div class="modal-sub" id="winDesc">率先領先 7 分！</div>
+      <div class="modal-btns">
+        <button class="modal-btn-act btn-act-replay" id="mBtnReplay">再玩一次</button>
+        <button class="modal-btn-act btn-act-change" id="mBtnChange">更換題庫</button>
       </div>
     </div>
   </div>
 
   <script>
-    /* ================= 題庫產生器 (支援字串保留開頭 0) ================= */
+    /* ========================================================
+       可擴充題庫產生器 (維持函式動態生成，保留未來數學題擴充)
+       ======================================================== */
+    const NUM_MAP = {
+      1: "one", 2: "two", 3: "three", 4: "four", 5: "five",
+      6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten",
+      11: "eleven", 12: "twelve", 13: "thirteen", 14: "fourteen", 15: "fifteen",
+      16: "sixteen", 17: "seventeen", 18: "eighteen", 19: "nineteen",
+      20: "twenty", 30: "thirty", 40: "forty", 50: "fifty",
+      60: "sixty", 70: "seventy", 80: "eighty", 90: "ninety", 100: "one hundred"
+    };
+
+    function numToEnglish(n) {
+      if (NUM_MAP[n]) return NUM_MAP[n];
+      const tens = Math.floor(n / 10) * 10;
+      const ones = n % 10;
+      return `${NUM_MAP[tens]}-${NUM_MAP[ones]}`;
+    }
+
+    const MONTH_DATA = [
+      { name: "January", m: "01", days: 31 },
+      { name: "February", m: "02", days: 28 },
+      { name: "March", m: "03", days: 31 },
+      { name: "April", m: "04", days: 30 },
+      { name: "May", m: "05", days: 31 },
+      { name: "June", m: "06", days: 30 },
+      { name: "July", m: "07", days: 31 },
+      { name: "August", m: "08", days: 31 },
+      { name: "September", m: "09", days: 31 },
+      { name: "October", m: "10", days: 31 },
+      { name: "November", m: "11", days: 30 },
+      { name: "December", m: "12", days: 31 }
+    ];
+
+    const ORD_MAP = {
+      1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth",
+      6: "sixth", 7: "seventh", 8: "eighth", 9: "ninth", 10: "tenth",
+      11: "eleventh", 12: "twelfth", 13: "thirteenth", 14: "fourteenth", 15: "fifteenth",
+      16: "sixteenth", 17: "seventeenth", 18: "eighteenth", 19: "nineteenth",
+      20: "twentieth", 30: "thirtieth"
+    };
+
+    function dayToOrdinal(d) {
+      if (ORD_MAP[d]) return ORD_MAP[d];
+      const tens = Math.floor(d / 10) * 10;
+      const ones = d % 10;
+      return `${NUM_MAP[tens]} ${ORD_MAP[ones]}`;
+    }
+
+    // 核心抽題函式（傳回 { q: "題目", a: "答案字串" }）
+    function generateQuestionItem(bankKey) {
+      let targetBank = bankKey;
+      if (targetBank === 'mixed') {
+        targetBank = Math.random() < 0.5 ? 'numbers' : 'dates';
+      }
+
+      if (targetBank === 'numbers') {
+        const val = Math.floor(Math.random() * 100) + 1;
+        return {
+          q: numToEnglish(val),
+          a: String(val)
+        };
+      } else if (targetBank === 'dates') {
+        const mObj = MONTH_DATA[Math.floor(Math.random() * MONTH_DATA.length)];
+        const day = Math.floor(Math.random() * mObj.days) + 1;
+        const dayStr = String(day).padStart(2, '0');
+        return {
+          q: `${mObj.name} ${dayToOrdinal(day)}`,
+          a: `${mObj.m}${dayStr}` // MMDD 4 位數，字串保留前導 0
+        };
+      }
+      return { q: "one", a: "1" };
+    }
+
+    /* ========================================================
+       遊戲狀態管理
+       ======================================================== */
+    let totalDuration = 120;
+    let remainSeconds = 120;
+    let timerLoop = null;
+    let isRunning = false;
+
+    const teamState = {
+      1: { score: 0, ans: "", input: "", locked: true },
+      2: { score: 0, ans: "", input: "", locked: true }
+    };
+
+    const ropeBundle = document.getElementById("ropeBundle");
+    const endModal = document.getElementById("endModal");
+    const mainCtrlBtn = document.getElementById("mainCtrlBtn");
+    const grid1 = document.getElementById("grid-1");
+    const grid2 = document.getElementById("grid-2");
+
+    // 更新拔河位置與領先 7 分判定
+    function updateTugPosition() {
+      const diff = teamState[1].score - teamState[2].score; // 藍正 (往左拉), 紅負 (往右拉)
+      const clamped = Math.max(-7, Math.min(7, diff));
+
+      // 判斷當前是否為大電視寬螢幕模式
+      const isTV = window.innerWidth >= 1024;
+      const pxPerStep = isTV ? 30 : 18;
+
+      // 藍隊領先往左 (-X px)，紅隊領先往右 (+X px)
+      const movePixels = -clamped * pxPerStep;
+      ropeBundle.style.transform = `translateX(${movePixels}px)`;
+
+      // 領先 7 分勝負判定
+      if (diff >= 7) {
+        stopAndFinish("🏆 藍隊獲勝！", "領先達 7 分，拔河獲勝！");
+      } else if (diff <= -7) {
+        stopAndFinish("🏆 紅隊獲勝！", "領先達 7 分，拔河獲勝！");
+      }
+    }
+
+    function issueNewQuestion(team) {
+      if (!isRunning) return;
+      const bank = document.getElementById("bankSel").value;
+      const item = generateQuestionItem(bank);
+
+      teamState[team].ans = item.a;
+      teamState[team].input = "";
+      teamState[team].locked = false;
+
+      document.getElementById(`qt-${team}`).textContent = item.q;
+      const display = document.getElementById(`ans-${team}`);
+      display.textContent = "";
+      display.className = "ans-box";
+    }
+
+    function onKeyInput(team, val) {
+      if (!isRunning || teamState[team].locked) return;
+      const display = document.getElementById(`ans-${team}`);
+
+      if (val >= "0" && val <= "9") {
+        const limit = teamState[team].ans.length;
+        if (teamState[team].input.length < limit) {
+          teamState[team].input += val;
+          display.textContent = teamState[team].input;
+        }
+      } else if (val === "del") {
+        teamState[team].input = teamState[team].input.slice(0, -1);
+        display.textContent = teamState[team].input;
+      } else if (val === "enter") {
+        if (!teamState[team].input) return;
+        evaluateAnswer(team);
+      }
+    }
+
+    function evaluateAnswer(team) {
+      teamState[team].locked = true; // 防重複快速點擊
+      const display = document.getElementById(`ans-${team}`);
+      const isCorrect = teamState[team].input === teamState[team].ans;
+
+      if (isCorrect) {
+        display.classList.add("correct");
+        teamState[team].score += 1;
+        document.getElementById(`sc-${team}`).textContent = teamState[team].score;
+        updateTugPosition();
+
+        if (isRunning) {
+          setTimeout(() => issueNewQuestion(team), 300);
+        }
+      } else {
+        display.classList.add("wrong");
+        display.textContent = `正解: ${teamState[team].ans}`;
+
+        if (isRunning) {
+          setTimeout(() => issueNewQuestion(team), 1100);
+        }
+      }
+    }
+
+    function formatTimeStr(s) {
+      const m = String(Math.floor(s / 60)).padStart(2, '0');
+      const sec = String(s % 60).padStart(2, '0');
+      return `${m}:${sec}`;
+    }
+
+    function launchTimer() {
+      clearInterval(timerLoop);
+      remainSeconds = totalDuration;
+      document.getElementById("clock").textContent = formatTimeStr(remainSeconds);
+
+      timerLoop = setInterval(() => {
+        remainSeconds--;
+        document.getElementById("clock").textContent = formatTimeStr(remainSeconds);
+
+        if (remainSeconds <= 0) {
+          clearInterval(timerLoop);
+          const scoreDiff = teamState[1].score - teamState[2].score;
+          if (scoreDiff > 0) {
+            stopAndFinish("🏆 藍隊獲勝！", "時間到！藍隊總得分較高！");
+          } else if (scoreDiff < 0) {
+            stopAndFinish("🏆 紅隊獲勝！", "時間到！紅隊總得分較高！");
+          } else {
+            stopAndFinish("🤝 雙方平手！", "時間到！兩隊得分相同！");
+          }
+        }
+      }, 1000);
+    }
+
+    function stopAndFinish(title, reason) {
+      isRunning = false;
+      clearInterval(timerLoop);
+      teamState[1].locked = true;
+      teamState[2].locked = true;
+      grid1.classList.add("disabled");
+      grid2.classList.add("disabled");
+
+      mainCtrlBtn.textContent = "▶ 開始遊戲";
+      mainCtrlBtn.className = "action-btn-main btn-start";
+
+      document.getElementById("winHead").textContent = title;
+      document.getElementById("winDesc").textContent = reason;
+      endModal.style.display = "flex";
+    }
+
+    // 重置並進入就緒待機狀態
+    function resetToIdle() {
+      isRunning = false;
+      clearInterval(timerLoop);
+      endModal.style.display = "none";
+
+      teamState[1] = { score: 0, ans: "", input: "", locked: true };
+      teamState[2] = { score: 0, ans: "", input: "", locked: true };
+
+      document.getElementById("sc-1").textContent = "0";
+      document.getElementById("sc-2").textContent = "0";
+      document.getElementById("clock").textContent = formatTimeStr(totalDuration);
+      ropeBundle.style.transform = "translateX(0px)";
+
+      document.getElementById("qt-1").textContent = "準備中";
+      document.getElementById("qt-2").textContent = "準備中";
+      document.getElementById("ans-1").textContent = "";
+      document.getElementById("ans-2").textContent = "";
+      document.getElementById("ans-1").className = "ans-box";
+      document.getElementById("ans-2").className = "ans-box";
+
+      grid1.classList.add("disabled");
+      grid2.classList.add("disabled");
+
+      mainCtrlBtn.textContent = "▶ 開始遊戲";
+      mainCtrlBtn.className = "action-btn-main btn-start";
+    }
+
+    // 開始遊戲正式倒數
+    function startGamePlay() {
+      isRunning = true;
+      endModal.style.display = "none";
+
+      teamState[1].score = 0;
+      teamState[2].score = 0;
+      document.getElementById("sc-1").textContent = "0";
+      document.getElementById("sc-2").textContent = "0";
+      ropeBundle.style.transform = "translateX(0px)";
+
+      grid1.classList.remove("disabled");
+      grid2.classList.remove("disabled");
+
+      mainCtrlBtn.textContent = "⏹ 重置遊戲";
+      mainCtrlBtn.className = "action-btn-main btn-reset";
+
+      issueNewQuestion(1);
+      issueNewQuestion(2);
+      launchTimer();
+    }
+
+    /* ========================================================
+       事件監聽與觸控綁定
+       ======================================================== */
+    // 開始 / 重置按鈕
+    mainCtrlBtn.addEventListener("click", () => {
+      if (!isRunning) {
+        startGamePlay();
+      } else {
+        resetToIdle();
+      }
+    });
+
+    // 虛擬鍵盤觸控（獨立多點觸控支援）
+    [grid1, grid2].forEach(grid => {
+      const teamId = parseInt(grid.dataset.t, 10);
+      grid.addEventListener("pointerdown", (e) => {
+        const btn = e.target.closest(".btn-k");
+        if (!btn) return;
+        e.preventDefault();
+        onKeyInput(teamId, btn.dataset.k);
+      });
+    });
+
+    // 計時選擇
+    document.querySelectorAll(".time-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".time-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        totalDuration = parseInt(btn.dataset.sec, 10);
+        resetToIdle();
+      });
+    });
+
+    // 題庫切換
+    document.getElementById("bankSel").addEventListener("change", resetToIdle);
+
+    // 彈窗按鈕
+    document.getElementById("mBtnReplay").addEventListener("click", () => {
+      resetToIdle();
+      startGamePlay();
+    });
+    document.getElementById("mBtnChange").addEventListener("click", () => {
+      endModal.style.display = "none";
+      resetToIdle();
+      document.getElementById("bankSel").focus();
+    });
+
+    // 視窗縮放監聽重新計算拔河位置
+    window.addEventListener("resize", updateTugPosition);
+
+    // 初始化待機
+    resetToIdle();
+  </script>
+</body>
+</html>
