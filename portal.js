@@ -30,6 +30,10 @@ const classroomPassword = document.getElementById("classroomPassword");
 const passwordError = document.getElementById("passwordError");
 const passwordClose = document.getElementById("passwordClose");
 const passwordToggle = document.getElementById("passwordToggle");
+const fortuneOpen = document.getElementById("fortuneOpen");
+const fortuneModal = document.getElementById("fortuneModal");
+const fortuneClose = document.getElementById("fortuneClose");
+const fortuneFrame = document.getElementById("fortuneFrame");
 if (window.lucide) lucide.createIcons();
 
 let playingAllWords = false;
@@ -38,6 +42,24 @@ let weeklyWordGroups = [];
 let viewedWordWeekIndex = -1;
 const CLASSROOM_ACCESS_KEY = "speduClassroomAccess";
 const CLASSROOM_PASSWORD_HASH = "4a081bff0bf93d06ee54ff45353e8b65bce23522ae6a45769f5968ff5956356e";
+
+function openFortuneModal() {
+  if (!fortuneFrame.src) fortuneFrame.src = fortuneFrame.dataset.src;
+  fortuneModal.hidden = false;
+  document.body.classList.add("modal-open");
+  fortuneClose.focus();
+}
+
+function closeFortuneModal() {
+  fortuneModal.hidden = true;
+  document.body.classList.remove("modal-open");
+  fortuneOpen.focus();
+}
+
+fortuneOpen.addEventListener("click", openFortuneModal);
+fortuneClose.addEventListener("click", closeFortuneModal);
+fortuneModal.addEventListener("click", event => { if (event.target === fortuneModal) closeFortuneModal(); });
+document.addEventListener("keydown", event => { if (event.key === "Escape" && !fortuneModal.hidden) closeFortuneModal(); });
 
 async function hashPassword(value) {
   const data = new TextEncoder().encode(value);

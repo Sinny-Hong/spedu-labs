@@ -138,16 +138,29 @@
             </div>
           </div>
 
-          <div class="widget-placeholder">
-            <div class="widget-astronaut">🚀</div>
-            <h3>小工具預備區</h3>
-            <p>未來可放倒數計時、課表、天氣或太空人動態小人偶。</p>
+          <div class="widget-panel">
+            <h3>教室小工具</h3>
+            <div class="widget-grid">
+              <button class="widget-card fortune-card" id="fortuneOpen" type="button"><span>🔮</span><b>異想命運館</b><small>浮動開啟</small></button>
+              <a class="widget-card tug-card" href="./games/tug-of-war.html"><span>🪢</span><b>異想拔河</b><small>獨立開啟</small></a>
+              <span class="widget-slot" aria-label="預留小工具位置">＋</span>
+              <span class="widget-slot" aria-label="預留小工具位置">＋</span>
+              <span class="widget-slot" aria-label="預留小工具位置">＋</span>
+              <span class="widget-slot" aria-label="預留小工具位置">＋</span>
+            </div>
           </div>
         </aside>
       </section>
 
       <footer class="footer">© SINNY SPEDU LABS　異想教室控制台</footer>
     </main>
+  </div>
+
+  <div class="fortune-modal" id="fortuneModal" hidden role="dialog" aria-modal="true" aria-labelledby="fortuneModalTitle">
+    <div class="fortune-dialog">
+      <div class="fortune-toolbar"><h2 id="fortuneModalTitle">異想命運館</h2><button class="fortune-close" id="fortuneClose" type="button" aria-label="關閉異想命運館">×</button></div>
+      <iframe id="fortuneFrame" title="異想命運館" data-src="./fortune/index.html"></iframe>
+    </div>
   </div>
 
   <div class="qr-modal" id="qrModal" hidden role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">

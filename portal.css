@@ -189,14 +189,23 @@ button{cursor:pointer}
 .more-tools.open{display:grid}
 .more-tools button{padding:9px;border:1px solid var(--line);border-radius:9px;background:#f8fafc;color:#98a2b3;font-size:13px}
 
-.widget-placeholder{
+.widget-panel{
   flex:1;min-height:0;border:1px dashed #cbd5e1;border-radius:15px;background:#fbfdff;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  padding:18px;color:#8390a5
+  padding:14px;color:#65758d
 }
-.widget-astronaut{font-size:46px;margin-bottom:8px}
-.widget-placeholder h3{margin:0 0 8px;color:#65758d;font-size:17px}
-.widget-placeholder p{margin:0;line-height:1.55;font-size:13px;max-width:220px}
+.widget-panel h3{margin:0 0 10px;color:var(--navy);font-size:17px;text-align:center}
+.widget-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.widget-card,.widget-slot{min-height:78px;border:1px solid var(--line);border-radius:12px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;text-decoration:none;color:var(--navy)}
+.widget-card{padding:8px;cursor:pointer;font:inherit;transition:transform .16s ease,box-shadow .16s ease}
+.widget-card:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(11,47,95,.12)}
+.widget-card span{font-size:27px}.widget-card b{font-size:13px}.widget-card small{font-size:10px;color:var(--muted)}
+.widget-slot{border-style:dashed;color:#aab4c2;font-size:24px}
+.fortune-modal{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(6,25,50,.78);backdrop-filter:blur(5px)}
+.fortune-modal[hidden]{display:none}
+.fortune-dialog{width:min(96vw,620px);height:min(92vh,720px);overflow:hidden;border:2px solid #f59e0b;border-radius:20px;background:#0f172a;box-shadow:0 24px 70px rgba(0,0,0,.42)}
+.fortune-toolbar{height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 18px;background:#111827;color:#fef3c7}
+.fortune-toolbar h2{margin:0;font-size:18px}.fortune-close{width:38px;height:38px;border:0;border-radius:50%;background:#26334a;color:#fff;font-size:27px;cursor:pointer}
+.fortune-dialog iframe{display:block;width:100%;height:calc(100% - 50px);border:0;background:#020617}
 .footer{position:absolute;left:0;right:0;bottom:3px;text-align:center;color:#98a2b3;font-size:11px;z-index:1}
 .qr-modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:rgba(6,25,50,.74);backdrop-filter:blur(4px)}
 .qr-modal[hidden]{display:none}
@@ -276,6 +285,7 @@ button{cursor:pointer}
   .grade-board{grid-template-columns:1fr}.grade-column{border-right:0;border-bottom:1px solid var(--line)}.grade-column h3{position:static;margin:0 -13px 10px}.missing-heading{position:static}
   .info-card{min-height:180px}
   .clock-panel{min-height:520px}
+  .fortune-modal{padding:0}.fortune-dialog{width:100vw;height:100vh;max-width:none;max-height:none;border:0;border-radius:0}
   .footer{position:static;margin-top:12px}
   .qr-dialog{padding:24px 16px 20px}.qr-dialog h2{font-size:23px}.qr-image{width:min(82vw,452px)}
   .password-dialog{padding:30px 20px 24px}.password-dialog h2{font-size:24px}
