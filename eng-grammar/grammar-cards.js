@@ -74,6 +74,7 @@ window.GRAMMAR_DATA = [
       { id: "g6", category: "互動遊戲區", title: "🧩 配對板｜時間與日期", desc: "星期、月份、日期與時間的三排對照語音配對", filename: "match-time-date.html", themeColor: "#F43F5E" },
       { id: "g7", category: "互動遊戲區", title: "🧩 配對板｜人稱代名詞", desc: "限時配對、亂序、干擾卡與課堂訂正挑戰", filename: "match-pronouns.html", themeColor: "#F43F5E" },
       { id: "ecity-01", category: "互動遊戲區", title: "🏙️ E-City｜我的異想小鎮", desc: "隨機城市地圖與八種位置句型挑戰，附中英提示板、單字發音與答題音效", filename: "ecity_01_my_town.html", themeColor: "#F43F5E" },
+      { id: "ecity-tug-of-war", category: "互動遊戲區", title: "🏆 拔河錦標賽", desc: "兩隊用英文數字、日期或數學題庫即時搶答，把繩索拉向己方", filename: "../math/tug-of-war.html", themeColor: "#7C3AED" },
 
       // ==== 測試網頁：五份彼此獨立的 HTML ====
       { id: "test-1", category: "測試網頁", title: "Test 1", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test1.html", themeColor: "#64748B" },
