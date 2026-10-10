@@ -7,9 +7,9 @@
 <style>
 :root{
   /* 小桌曆風 Desk Calendar */
-  --desk: #EBE7E0; /* 原木桌面底色 */
-  --paper: #FFFFFF; /* 日曆紙白 */
-  --binder: #D9534F; /* 頂端裝訂紅 */
+  --desk: #EBE7E0; 
+  --paper: #FFFFFF; 
+  --binder: #D9534F; 
   --ink: #333333; 
   --blue: #3498DB; 
   --green: #27AE60; 
@@ -103,20 +103,39 @@ h2{margin:0;font-size:22px; color:var(--navy);}
 #reveal{border-color:#efadb3;color:var(--red)}
 
 .questions{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-around;padding:0 5px;}
-.question{border-bottom:1px dashed var(--gray-blue);padding:8px 0;}
+.question{border-bottom:1px dashed var(--gray-blue);padding:10px 0;}
 .question:last-child{border-bottom:none;}
+
+/* 題幹 */
 .question-line{display:flex;align-items:baseline;gap:5px;font-size:clamp(18px, 2.2vh, 24px);font-weight:bold;cursor:pointer;border-radius:6px;line-height:1.3;}
 .question-line:hover{background:var(--hint);}
 .answer-blank{color:var(--blue);white-space:nowrap;min-width:3em;text-align:right;}
 .answer-blank.good{color:var(--green)}
 .answer-blank.reveal{color:var(--red)}
 
-.options{margin-left:4.5em;display:flex;gap:12px;flex-wrap:wrap;font-size:clamp(16px, 2vh, 20px);margin-top:6px;}
-.choice{border:2px solid transparent;border-radius:8px;background:white;color:#4F595D;padding:4px 8px;font-weight:bold; border-color: var(--line);}
-.choice:hover:not(:disabled){background:var(--blue-soft);border-color:var(--blue);}
-.choice.selected{color:var(--ink);background:var(--blue-soft);border-color:var(--blue);}
-.choice.correct{color:var(--green);background:var(--green-soft);border-color:var(--green);}
-.choice.reveal{color:var(--red);background:#F9EBEA;border-color:var(--red);}
+/* 選項退縮與無框線設計 */
+.options{
+  margin-left:5.5em; /* 向內退縮 */
+  display:flex;gap:16px;flex-wrap:wrap;font-size:clamp(16px, 2vh, 20px);margin-top:8px;
+}
+.choice{
+  border:2px solid transparent; border-radius:8px; 
+  background:transparent; /* 移除預設背景 */
+  color:#606C71; /* 較淡的顏色 */
+  padding:4px 8px;font-weight:bold; transition: 0.1s;
+}
+.choice:hover:not(:disabled){
+  background:var(--blue-soft); color:var(--navy);
+}
+.choice.selected{
+  color:var(--ink);background:var(--blue-soft);border-color:var(--blue);
+}
+.choice.correct{
+  color:var(--green);background:var(--green-soft);border-color:var(--green);
+}
+.choice.reveal{
+  color:var(--red);background:#F9EBEA;border-color:var(--red);
+}
 .choice:disabled{cursor:default}
 
 .hint-word{padding:0 2px;border-radius:4px;background:var(--hint);box-shadow:inset 0 -2px 0 var(--hint-line);}
@@ -151,7 +170,7 @@ h2{margin:0;font-size:22px; color:var(--navy);}
   .event-emoji { font-size: 16px; }
   .text-section, .text-content { overflow: visible; height: auto; }
   .questions { overflow: visible; height: auto; justify-content: flex-start; gap: 10px;}
-  .options { margin-left: 1.5em; font-size: 17px; gap: 8px; }
+  .options { margin-left: 1em; font-size: 17px; gap: 8px; flex-direction: column; } /* 手機版選項垂直排列 */
   .question-line { font-size: 19px; }
 }
 </style>
@@ -223,10 +242,19 @@ h2{margin:0;font-size:22px; color:var(--navy);}
 'use strict';
 const $ = s => document.querySelector(s);
 
-// --- 資料庫 ---
-const MONTH_PROFILES = [
+// --- 擴充的 12 個月份與節慶資料庫 ---
+const ALL_MONTHS = [
+  { name: "January", days: 31, h_name: "Chinese New Year", h_emoji: "🧧", h_zh: "農曆春節" },
+  { name: "February", days: 28, h_name: "Lantern Festival", h_emoji: "🏮", h_zh: "元宵節" },
+  { name: "March", days: 31, h_name: "Youth Day", h_emoji: "👦", h_zh: "青年節" },
+  { name: "April", days: 30, h_name: "Children's Day", h_emoji: "🎈", h_zh: "兒童節" },
   { name: "May", days: 31, h_name: "Mother's Day", h_emoji: "👩", h_zh: "母親節" },
+  { name: "June", days: 30, h_name: "Dragon Boat Festival", h_emoji: "🛶", h_zh: "端午節" },
+  { name: "July", days: 31, h_name: "Summer Vacation", h_emoji: "🏖️", h_zh: "暑假開始" },
+  { name: "August", days: 31, h_name: "Father's Day", h_emoji: "👨", h_zh: "父親節" },
+  { name: "September", days: 30, h_name: "Teacher's Day", h_emoji: "🧑‍🏫", h_zh: "教師節" },
   { name: "October", days: 31, h_name: "Halloween", h_emoji: "🎃", h_zh: "萬聖節" },
+  { name: "November", days: 30, h_name: "Thanksgiving", h_emoji: "🦃", h_zh: "感恩節" },
   { name: "December", days: 31, h_name: "Christmas", h_emoji: "🎄", h_zh: "聖誕節" }
 ];
 
@@ -284,22 +312,13 @@ function fillOptions(ans, w1, w2, fallback) {
 
 // ================= 月曆生成引擎 =================
 function generateCalendar() {
-  const profile = shuffle(MONTH_PROFILES)[0];
+  const profile = shuffle(ALL_MONTHS)[0];
   const startDay = Math.floor(Math.random() * 7); // 0(Sun) ~ 6(Sat)
   
   let events = [];
   
-  // 1. 決定節慶日期
-  let h_date = 0;
-  if (profile.name === "May") {
-    // 母親節：五月第二個星期日
-    let firstSun = startDay === 0 ? 1 : (7 - startDay + 1);
-    h_date = firstSun + 7;
-  } else if (profile.name === "October") {
-    h_date = 31; // 萬聖節
-  } else if (profile.name === "December") {
-    h_date = 25; // 聖誕節
-  }
+  // 1. 決定節慶日期 (為了遊戲性，不一定要完全死扣真實日期，隨機配置在該月)
+  let h_date = Math.floor(Math.random() * 25) + 3; 
   events.push({ date: h_date, name: profile.h_name, emoji: profile.h_emoji });
 
   // 2. 決定考試 (找一個平日)
@@ -386,7 +405,6 @@ function generateLevelData() {
   }
 
   else if (lvl === 'L3') {
-    // Tomorrow / Yesterday
     let today = cal.t_date > 1 ? cal.t_date - 1 : cal.t_date + 1;
     let relWord = cal.t_date > 1 ? "tomorrow (明天)" : "yesterday (昨天)";
 
@@ -403,7 +421,6 @@ function generateLevelData() {
   }
 
   else if (lvl === 'L4') {
-    // Next week / Last week
     let today = 0, relWord = "";
     if (cal.h_date > 7) {
       today = cal.h_date - 7; relWord = "next week (下週)";
@@ -423,7 +440,6 @@ function generateLevelData() {
   }
 
   else if (lvl === 'L5') {
-    // From... to...
     textLines = [
       `We will ${cal.f2_obj.name} from ${M} ${getOrdinal(cal.f2_start)} to ${M} ${getOrdinal(cal.f2_end)}.`,
       `Awesome! I can't wait.`
@@ -536,6 +552,7 @@ function renderUI() {
     q.options.forEach((choice, j) => {
       const btn = document.createElement('button');
       btn.className = 'choice';
+      // 選項格式：(A) 選項內容
       btn.innerHTML = `(${String.fromCharCode(65+j)}) ${highlightText(choice, true)}`;
       if(mode === 'answer' && !q.locked && answers[i] === j) btn.classList.add('selected');
       if(q.locked && answers[i] === j) btn.classList.add('correct');
@@ -611,11 +628,9 @@ function openPoster(type) {
       </div>
     `).join('') + `</div>`;
   } else {
-    $('#posterTitle').textContent = '📝 活動與節慶 (Events & Holidays)';
-    const vocab = [
-      ...MONTH_PROFILES.map(m => ({name: m.h_name, zh: m.h_zh, emoji: m.h_emoji})),
-      ...TESTS, ...FUN_1DAY, ...FUN_MULTIDAY
-    ];
+    $('#posterTitle').textContent = '📝 節慶總覽 (Holidays)';
+    // 只顯示 12 個月份的節慶，不顯示一般活動
+    const vocab = [...ALL_MONTHS.map(m => ({name: m.h_name, zh: m.h_zh, emoji: m.h_emoji}))];
     posterBody.innerHTML = `<div class="poster-grid">` + vocab.map(f => `
       <div class="poster-item" onclick="speak('${f.name}')">
         <div class="p-icon">${f.emoji}</div>
