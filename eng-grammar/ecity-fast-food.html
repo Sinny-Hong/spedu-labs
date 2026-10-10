@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-City｜異想速食店</title>
+<style>
+:root{
+  --cream: #fff9ec; 
+  --gold: #f5b942; 
+  --light-gold: #e6c887; /* 面板細邊框 */
+  --ink: #173552; 
+  --blue: #2477cd;
+  --green: #168a57; 
+  --red: #d83f43; 
+  --line: #dce7ef; 
+  --navy: #0B3768;
+  --orange: #F59E0B; 
+  --soft: #F3F7FB; 
+  --blue-soft: #EAF4FC;
+  --green-soft: #E7F5ED; 
+  --hint: #FFF0A6; 
+  --hint-line: #F1C44A;
+  --gray-blue: #b9cadd; /* 工具按鈕細邊框 */
+}
+*{box-sizing:border-box}
+
+/* 桌機版預設：鎖定高度，內部捲動 */
+html,body{margin:0;height:100%;overflow:hidden;}
+body{
+  background:var(--cream); color:var(--ink);
+  font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+button,select{font:inherit;cursor:pointer;user-select:none;}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* 頂部工具列 */
+.topbar{flex:none; min-height:55px;display:flex;justify-content:space-between;align-items:center;padding:5px 15px;}
+h1{margin:0;font-size:clamp(20px,2vw,30px); color: var(--navy);}
+.toolbar{display:flex;align-items:center;gap:6px;}
+.tool,select{background:#fff;color:var(--ink);border:1px solid var(--gray-blue);border-radius:9px;padding:6px 10px;font-weight:700;font-size:15px;}
+.tool:hover,select:hover{background:#fff5d9}
+.tool.active{background:var(--hint); border-color:var(--orange);}
+
+/* 桌機整體佈局 */
+.layout{flex:1; display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px;padding:0 10px 10px; min-height:0;}
+.panel{background:white;border:1px solid var(--light-gold);border-radius:18px;padding:10px;display:flex;flex-direction:column;min-height:0;}
+
+/* 左側：菜單與對話 */
+.left-side{display:grid;grid-template-rows:1fr 1fr;gap:14px; height:100%; min-height:0;}
+.menu-box{border:1px solid var(--gray-blue);border-radius:10px;background:white; display:flex; flex-direction:column; min-height:0;}
+.menu-title{height:30px;display:flex;align-items:center;justify-content:center;background:var(--navy);color:white;font-size:15px;font-weight:900;flex-shrink:0;}
+.menu-grid{display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(2,1fr); flex:1; min-height:0;}
+.menu-item{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;}
+.menu-item:hover{background:#fff5d9}
+.menu-item:nth-child(4n){border-right:none;}
+.menu-item:nth-last-child(-n+4){border-bottom:none;}
+.menu-icon{font-size:clamp(30px, 4vh, 45px);line-height:1;}
+.menu-name{margin-top:2px;color:var(--navy);font-size:clamp(14px, 1.8vh, 18px);font-weight:800;text-align:center;line-height:1.15;word-break:keep-all;}
+.menu-price{margin-top:2px;color:#111;font-size:clamp(15px, 2vh, 19px);font-weight:900;}
+
+/* 左側：對話區 (無框線版) */
+.dialogue-section{display:flex;flex-direction:column;min-height:0;}
+.dialogue-title{margin:0 0 6px;padding:6px 10px;background:var(--soft);border:1px solid var(--line);border-radius:10px;font-size:16px;font-weight:900;color:var(--navy);flex-shrink:0;}
+.dialogue-content{flex:1;overflow-y:auto;padding:2px 8px;}
+.dialogue-line{display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:8px;margin-bottom:8px;font-size:clamp(18px, 2.2vh, 22px);line-height:1.3;cursor:pointer;border-radius:6px;padding:4px;}
+.dialogue-line:hover{background:#f0f7ff;}
+.speaker{font-weight:900;white-space:nowrap;}
+.speech{overflow-wrap:anywhere;}
+
+/* 右側：測驗區 */
+.panel-head{display:flex;align-items:center;justify-content:space-between;min-height:40px;margin-bottom:6px;flex-shrink:0;}
+h2{margin:0;font-size:22px; color:var(--navy);}
+.quiztools{display:flex;align-items:center;gap:6px;}
+#score{font-size:17px;color:var(--green);font-weight:bold;margin-right:6px;}
+#check{background:var(--green);border-color:var(--green);color:white}
+#reveal{border-color:#efadb3;color:var(--red)}
+
+.questions{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-around;padding:0 5px;}
+.question{border-bottom:1px solid var(--line);padding:6px 0;}
+.question:last-child{border-bottom:none;}
+.question-line{display:flex;align-items:baseline;gap:5px;font-size:clamp(18px, 2.2vh, 24px);font-weight:bold;cursor:pointer;border-radius:6px;line-height:1.25;}
+.question-line:hover{background:#f0f7ff;}
+.answer-blank{color:var(--blue);white-space:nowrap;min-width:3em;text-align:right;}
+.answer-blank.good{color:var(--green)}
+.answer-blank.reveal{color:var(--red)}
+
+/* 選項 */
+.options{margin-left:4.5em;display:flex;gap:12px;flex-wrap:wrap;font-size:clamp(16px, 2vh, 20px);margin-top:3px;}
+.choice{border:2px solid transparent;border-radius:8px;background:transparent;color:#4a627a;padding:4px 8px;font-weight:bold;}
+.choice:hover:not(:disabled){background:var(--blue-soft);border-color:#baddfb;}
+.choice.selected{color:var(--navy);background:var(--blue-soft);border-color:#6CA6D3;}
+.choice.correct{color:var(--green);background:var(--green-soft);border-color:#8BC4A3;}
+.choice.reveal{color:var(--red);background:#ffe8e8}
+.choice:disabled{cursor:default}
+
+.hint-word{padding:0 2px;border-radius:4px;background:var(--hint);box-shadow:inset 0 -2px 0 var(--hint-line);}
+
+/* 彈出視窗 */
+.overlay{position:fixed;inset:0;z-index:100;background:#183040a8;display:flex;align-items:center;justify-content:center;padding:12px}
+.overlay[hidden]{display:none}
+.modal{background:#fffdf7;border:1px solid var(--light-gold);border-radius:15px;width:min(900px,96vw);max-height:90dvh;display:flex;flex-direction:column;overflow:hidden;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--cream);border-bottom:1px solid var(--light-gold);flex-shrink:0;}
+.modal-head h2{font-size:22px;margin:0;color:var(--navy);}
+.modal-body{overflow:auto;padding:18px;}
+
+/* 海報內容排版 */
+.poster-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));gap:10px;}
+.poster-item{background:white;border:1px solid var(--gray-blue);border-radius:10px;padding:8px;text-align:center;cursor:pointer;}
+.poster-item:hover{background:#e7f2ff;border-color:var(--blue);}
+.p-icon{font-size:32px;line-height:1.2;}
+.p-en{font-size:16px;font-weight:bold;color:var(--navy);margin:4px 0 2px;}
+.p-zh{font-size:14px;color:#67829a;font-weight:bold;}
+
+.phrases-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(350px, 1fr));gap:12px;}
+.phrase-card{background:white;border:1px solid var(--gray-blue);border-radius:12px;padding:12px;}
+.phrase-en{font-size:20px;font-weight:bold;color:var(--navy);cursor:pointer;padding:4px;border-radius:6px;margin-bottom:4px;}
+.phrase-en:hover{background:#e7f2ff;}
+.phrase-zh{font-size:16px;color:#4a627a;font-weight:bold;margin-left:4px;}
+
+/* ====== 手機直向響應式布局 ====== */
+@media (max-width: 768px) {
+  html, body {
+    height: auto;
+    overflow: auto; /* 允許整頁自然上下滑動 */
+    overflow-x: hidden;
+  }
+  
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+    gap: 10px;
+  }
+  
+  .topbar h1 {
+    text-align: center;
+    font-size: 24px;
+  }
+  
+  /* 頂部工具列：手機版 2x2 網格配置 */
+  .toolbar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .tool, select {
+    width: 100%;
+    text-align: center;
+    padding: 8px;
+    font-size: 16px;
+  }
+  
+  /* 解除桌機鎖定的佈局限制，改為單欄垂直排列 */
+  .layout {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+    padding: 10px;
+    gap: 16px;
+  }
+  
+  .panel {
+    overflow: visible;
+  }
+  
+  .left-side {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    gap: 12px;
+  }
+  
+  .menu-grid {
+    min-height: auto; /* 讓內容自然撐高 */
+  }
+  
+  .menu-icon {
+    font-size: clamp(26px, 6vw, 36px);
+  }
+  
+  .menu-name {
+    font-size: clamp(13px, 3.5vw, 16px);
+    white-space: normal; /* 允許英文長單字自然換行 */
+  }
+  
+  .menu-price {
+    font-size: clamp(14px, 3.8vw, 17px);
+  }
+  
+  .dialogue-section, .dialogue-content {
+    overflow: visible;
+    height: auto;
+  }
+  
+  .questions {
+    overflow: visible;
+    height: auto;
+  }
+  
+  /* 縮小手機版題目的左側縮排 */
+  .options {
+    margin-left: 1.5em; 
+    font-size: 17px;
+    gap: 8px;
+  }
+  
+  .question-line {
+    font-size: 19px;
+  }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>🍔 E-City｜異想速食店</h1>
+  <nav class="toolbar">
+    <select id="levelChoice">
+      <option value="L1">1. 點餐尋找</option>
+      <option value="L2">2. 單人點餐</option>
+      <option value="L3">3. 雙人點餐</option>
+      <option value="L4">4. 朋友聚餐</option>
+      <option value="L5">5. 家庭聚餐</option>
+    </select>
+    <button class="tool" id="next">↻ 換題</button>
+    <button class="tool" id="btn-phrases">💬 點餐句型</button>
+    <button class="tool" id="btn-menu">🍟 餐點海報</button>
+  </nav>
+</header>
+
+<main class="layout">
+  <section class="panel">
+    <div class="left-side">
+      <section class="menu-box">
+        <div class="menu-title">TODAY'S MENU</div>
+        <div id="menuGrid" class="menu-grid"></div>
+      </section>
+      <section class="dialogue-section">
+        <div class="dialogue-title">Dialogue</div>
+        <div id="dialogueContent" class="dialogue-content"></div>
+      </section>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>✏️ Questions</h2>
+      <div class="quiztools">
+        <span id="score">— / 5</span>
+        <button id="hint" class="tool">💡提示</button>
+        <button id="check" class="tool">批改</button>
+        <button id="clear" class="tool">清除</button>
+        <button id="reveal" class="tool">解答</button>
+      </div>
+    </div>
+    <div id="questions" class="questions"></div>
+  </section>
+</main>
+
+<div id="posterOverlay" class="overlay" hidden>
+  <section class="modal">
+    <div class="modal-head">
+      <h2 id="posterTitle">📋 海報</h2>
+      <button class="tool close-modal">✕ 關閉</button>
+    </div>
+    <div class="modal-body" id="posterBody"></div>
+  </section>
+</div>
+
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+
+// 加入冠詞與量詞 (qty)
+const FOOD_DB = [
+  {name:'Hamburger', zh:'漢堡', emoji:'🍔', min:50, max:90, qty:'a'},
+  {name:'Hot Dog', zh:'熱狗', emoji:'🌭', min:40, max:60, qty:'a'},
+  {name:'Pizza', zh:'披薩', emoji:'🍕', min:70, max:100, qty:'a slice of'},
+  {name:'French Fries', zh:'薯條', emoji:'🍟', min:30, max:50, qty:'some'},
+  {name:'Salad', zh:'沙拉', emoji:'🥗', min:40, max:60, qty:'some'},
+  {name:'Soup', zh:'湯', emoji:'🥣', min:30, max:50, qty:'a bowl of'},
+  {name:'Fried Chicken', zh:'炸雞', emoji:'🍗', min:40, max:70, qty:'some'},
+  {name:'Sandwich', zh:'三明治', emoji:'🥪', min:35, max:60, qty:'a'},
+  {name:'Toast', zh:'吐司', emoji:'🍞', min:30, max:50, qty:'a piece of'},
+  {name:'Pancake', zh:'鬆餅', emoji:'🥞', min:40, max:60, qty:'a'},
+  {name:'Tea', zh:'茶', emoji:'🍵', min:30, max:40, qty:'a cup of'},
+  {name:'Coffee', zh:'咖啡', emoji:'☕', min:45, max:70, qty:'a cup of'},
+  {name:'Juice', zh:'果汁', emoji:'🧃', min:35, max:50, qty:'a glass of'},
+  {name:'Milk', zh:'牛奶', emoji:'🥛', min:30, max:45, qty:'a glass of'},
+  {name:'Cola', zh:'可樂', emoji:'🥤', min:30, max:40, qty:'a cup of'},
+  {name:'Water', zh:'水', emoji:'💧', min:20, max:30, qty:'a bottle of'},
+  {name:'Ice Cream', zh:'冰淇淋', emoji:'🍨', min:30, max:50, qty:'an'},
+  {name:'Cookie', zh:'餅乾', emoji:'🍪', min:30, max:40, qty:'a'},
+  {name:'Cake', zh:'蛋糕', emoji:'🍰', min:40, max:70, qty:'a piece of'},
+  {name:'Pie', zh:'派', emoji:'🥧', min:40, max:60, qty:'a piece of'},
+  {name:'Pudding', zh:'布丁', emoji:'🍮', min:30, max:45, qty:'a'},
+  {name:'Donut', zh:'甜甜圈', emoji:'🍩', min:30, max:50, qty:'a'},
+  {name:'Popcorn', zh:'爆米花', emoji:'🍿', min:40, max:60, qty:'some'},
+  {name:'Waffle', zh:'格子鬆餅', emoji:'🧇', min:40, max:60, qty:'a'}
+];
+
+const NAMES = ["Tom", "Mary", "Kevin", "Lily", "Stan", "Ben", "Amy", "Jack", "Emma", "David"];
+
+const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+const getPrice = (min, max) => Math.floor((Math.random() * (max - min + 1) + min) / 5) * 5;
+const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+let currentData = null;
+let answers = {};
+let mode = 'answer';
+let hintsActive = false;
+
+// 嚴格去重取假價格
+function getFakePrices(menu, correctPrice, count = 2) {
+  let fake = shuffle([...new Set(menu.map(m => m.price).filter(p => p !== correctPrice))]);
+  let offset = 1;
+  while (fake.length < count) { 
+    let p = correctPrice + (offset * 10);
+    if (!fake.includes(p)) fake.push(p);
+    offset++;
+  }
+  return fake.slice(0, count);
+}
+
+// 嚴格去重取假食物
+function getFakeFoods(menu, correctFoodName, count = 2) {
+  let fake = shuffle(menu.filter(m => m.name !== correctFoodName));
+  return fake.slice(0, count);
+}
+
+// Level 1: 點餐尋找 (無人名干擾，純問單價)
+function generateL1(menu) {
+  const targetFoods = shuffle(menu).slice(0, 5);
+  const dialogue = [
+    ["Clerk", "Hello, welcome to the restaurant."],
+    ["Clerk", "What would you like today?"]
+  ];
+  const questions = targetFoods.map((f, i) => {
+    const fakes = getFakePrices(menu, f.price);
+    const options = shuffle([`$${f.price}`, `$${fakes[0]}`, `$${fakes[1]}`]);
+    return { stem: `How much is ${f.qty} ${f.name}?`, options, answer: options.indexOf(`$${f.price}`), locked: false };
+  });
+  return { dialogue, questions };
+}
+
+// Level 2: 單人點餐
+function generateL2(menu, actors) {
+  const p1 = actors[0];
+  const food = menu[0];
+  const dialogue = [
+    [p1, `Hello. I want ${food.qty} ${food.name}.`],
+    [p1, `How much is it?`],
+    ["Clerk", `It is $${food.price}.`],
+    [p1, `OK, thank you.`]
+  ];
+  const fF = getFakeFoods(menu, food.name);
+  const fP = getFakePrices(menu, food.price);
+  const qData = [
+    { stem: `What does ${p1} want?`, ans: `${food.qty.charAt(0).toUpperCase() + food.qty.slice(1)} ${food.name}`, w1: `${fF[0].qty.charAt(0).toUpperCase() + fF[0].qty.slice(1)} ${fF[0].name}`, w2: `${fF[1].qty.charAt(0).toUpperCase() + fF[1].qty.slice(1)} ${fF[1].name}` },
+    { stem: `How much is the ${food.name}?`, ans: `$${food.price}`, w1: `$${fP[0]}`, w2: `$${fP[1]}` },
+    { stem: `Who wants ${food.qty} ${food.name}?`, ans: p1, w1: actors[1], w2: actors[2] },
+    { stem: `Does ${p1} order ${fF[0].qty} ${fF[0].name}?`, ans: `No.`, w1: `Yes.`, w2: `I don't know.` },
+    { stem: `Who tells the price?`, ans: `The clerk`, w1: p1, w2: actors[1] }
+  ];
+  const questions = qData.map(q => {
+    const options = shuffle([q.ans, q.w1, q.w2]);
+    return { stem: q.stem, options, answer: options.indexOf(q.ans), locked: false };
+  });
+  return { dialogue, questions };
+}
+
+// Level 3: 雙人點餐
+function generateL3(menu, actors) {
+  const p1 = actors[0], p2 = actors[1];
+  const f1 = menu[0], f2 = menu[1];
+  const dialogue = [
+    [p1, `I want ${f1.qty} ${f1.name}.`],
+    [p2, `I would like ${f2.qty} ${f2.name}.`],
+    ["Clerk", `OK. Please wait a minute.`]
+  ];
+  const Cap = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+  const qData = [
+    { stem: `What does ${p1} want?`, ans: `${Cap(f1.qty)} ${f1.name}`, w1: `${Cap(f2.qty)} ${f2.name}`, w2: `${Cap(menu[2].qty)} ${menu[2].name}` },
+    { stem: `What does ${p2} want?`, ans: `${Cap(f2.qty)} ${f2.name}`, w1: `${Cap(f1.qty)} ${f1.name}`, w2: `${Cap(menu[2].qty)} ${menu[2].name}` },
+    { stem: `Who wants ${f1.qty} ${f1.name}?`, ans: p1, w1: p2, w2: "The clerk" },
+    { stem: `Who wants ${f2.qty} ${f2.name}?`, ans: p2, w1: p1, w2: "The clerk" },
+    { stem: `How much is the ${f1.name}?`, ans: `$${f1.price}`, w1: `$${f2.price !== f1.price ? f2.price : menu[2].price}`, w2: `$${menu[3].price}` }
+  ];
+  const questions = qData.map(q => {
+    const options = shuffle([...new Set([q.ans, q.w1, q.w2])]); 
+    while(options.length < 3) options.push("I don't know.");
+    return { stem: q.stem, options, answer: options.indexOf(q.ans), locked: false };
+  });
+  return { dialogue, questions };
+}
+
+// Level 4: 朋友聚餐 (加總)
+function generateL4(menu, actors) {
+  const p1 = actors[0], p2 = actors[1];
+  const f1 = menu[0], f2 = menu[1];
+  const total = f1.price + f2.price;
+  const dialogue = [
+    [p1, `I want ${f1.qty} ${f1.name}.`],
+    [p2, `I want ${f2.qty} ${f2.name}.`],
+    [p1, `How much is the total?`],
+    ["Clerk", `The total is $${total}.`]
+  ];
+  const fP = getFakePrices(menu, f1.price);
+  let fakeTotals = shuffle([...new Set([total + 10, total - 5, total + 15])].filter(t => t > 0));
+  const Cap = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+  
+  const qData = [
+    { stem: `What does ${p1} order?`, ans: `${Cap(f1.qty)} ${f1.name}`, w1: `${Cap(f2.qty)} ${f2.name}`, w2: `${Cap(menu[2].qty)} ${menu[2].name}` },
+    { stem: `How much is the ${f1.name}?`, ans: `$${f1.price}`, w1: `$${f2.price !== f1.price ? f2.price : fP[0]}`, w2: `$${fP[1]}` },
+    { stem: `Who asks the price?`, ans: p1, w1: p2, w2: "The clerk" },
+    { stem: `What does ${p2} order?`, ans: `${Cap(f2.qty)} ${f2.name}`, w1: `${Cap(f1.qty)} ${f1.name}`, w2: `${Cap(menu[2].qty)} ${menu[2].name}` },
+    { stem: `How much is the total?`, ans: `$${total}`, w1: `$${fakeTotals[0]}`, w2: `$${fakeTotals[1]}` }
+  ];
+  const questions = qData.map(q => {
+    const options = shuffle([...new Set([q.ans, q.w1, q.w2])]);
+    while(options.length < 3) options.push("I don't know.");
+    return { stem: q.stem, options, answer: options.indexOf(q.ans), locked: false };
+  });
+  return { dialogue, questions };
+}
+
+// Level 5: 家庭聚餐
+function generateL5(menu) {
+  const f1 = menu[0], f2 = menu[1], f3 = menu[2];
+  const total = f1.price + f2.price + f3.price;
+  const dialogue = [
+    ["Dad", `I will pay today. I want ${f1.qty} ${f1.name}.`],
+    ["Mom", `I would like ${f2.qty} ${f2.name}.`],
+    ["Son", `I want ${f3.qty} ${f3.name}.`],
+    ["Clerk", `The total is $${total}.`]
+  ];
+  let fakeTotals = shuffle([...new Set([total + 10, total - 15, total + 20])].filter(t => t > 0));
+  const Cap = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
+  const qData = [
+    { stem: `Who pays for the food?`, ans: `Dad`, w1: `Mom`, w2: `Son` },
+    { stem: `What does Dad want?`, ans: `${Cap(f1.qty)} ${f1.name}`, w1: `${Cap(f2.qty)} ${f2.name}`, w2: `${Cap(f3.qty)} ${f3.name}` },
+    { stem: `Who wants ${f2.qty} ${f2.name}?`, ans: `Mom`, w1: `Dad`, w2: `Son` },
+    { stem: `Does Son order ${f1.qty} ${f1.name}?`, ans: `No.`, w1: `Yes.`, w2: `I don't know.` },
+    { stem: `How much is the total?`, ans: `$${total}`, w1: `$${fakeTotals[0]}`, w2: `$${fakeTotals[1]}` }
+  ];
+  const questions = qData.map(q => {
+    const options = shuffle([...new Set([q.ans, q.w1, q.w2])]);
+    while(options.length < 3) options.push("I don't know.");
+    return { stem: q.stem, options, answer: options.indexOf(q.ans), locked: false };
+  });
+  return { dialogue, questions };
+}
+
+// 核心生成器
+function generateLevelData() {
+  const lvl = $('#levelChoice').value;
+  const menu = shuffle(FOOD_DB).slice(0, 8).map(item => ({ ...item, price: getPrice(item.min, item.max) }));
+  const actors = shuffle(NAMES).slice(0, 5);
+  let data;
+  
+  if (lvl === 'L1') data = generateL1(menu, actors);
+  else if (lvl === 'L2') data = generateL2(menu, actors);
+  else if (lvl === 'L3') data = generateL3(menu, actors);
+  else if (lvl === 'L4') data = generateL4(menu, actors);
+  else if (lvl === 'L5') data = generateL5(menu, actors);
+
+  return {
+    menu,
+    dialogue: data.dialogue,
+    questions: shuffle(data.questions), 
+    hintWords: [...menu.map(m => m.name), ...actors, "Dad", "Mom", "Son", "Who", "Clerk"]
+  };
+}
+
+// 高亮與語音
+function highlightText(text, isOption = false) {
+  if (!hintsActive || isOption) return text;
+  let res = String(text);
+  const sorted = [...currentData.hintWords].sort((a,b) => b.length - a.length);
+  sorted.forEach(word => {
+    const regex = new RegExp(`\\b(${escapeRegExp(word)})\\b`, "gi");
+    res = res.replace(regex, `<span class="hint-word">$1</span>`);
+  });
+  return res;
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g, ''));
+  utterance.lang = "en-US";
+  utterance.rate = 0.85;
+  window.speechSynthesis.speak(utterance);
+}
+
+// 渲染 UI
+function renderUI() {
+  $('#menuGrid').innerHTML = currentData.menu.map(item => `
+    <div class="menu-item" tabindex="0" onclick="speak('${item.name}')">
+      <div class="menu-icon">${item.emoji}</div>
+      <div class="menu-name">${item.name}</div>
+      <div class="menu-price">$${item.price}</div>
+    </div>
+  `).join('');
+
+  $('#dialogueContent').innerHTML = currentData.dialogue.map(line => `
+    <div class="dialogue-line" tabindex="0" onclick="speak('${line[1]}')">
+      <div class="speaker">${line[0]}:</div>
+      <div class="speech">${highlightText(line[1], false)}</div>
+    </div>
+  `).join('');
+
+  const quiz = $('#questions');
+  quiz.innerHTML = '';
+  currentData.questions.forEach((q, i) => {
+    const sec = document.createElement('div');
+    sec.className = 'question';
+    
+    const line = document.createElement('div');
+    line.className = 'question-line';
+    line.onclick = () => speak(q.stem);
+    
+    const blank = document.createElement('span');
+    blank.className = 'answer-blank';
+    let letter = '　';
+    if(mode === 'reveal') { 
+      letter = String.fromCharCode(65 + q.answer); 
+      blank.classList.add('reveal'); 
+    }
+    else if(q.locked) { 
+      letter = String.fromCharCode(65 + answers[i]); 
+      blank.classList.add('good'); 
+    }
+    else if(answers[i] !== undefined) {
+      letter = String.fromCharCode(65 + answers[i]);
+    }
+    blank.innerHTML = `（ ${letter} ）`;
+    
+    const title = document.createElement('span');
+    title.innerHTML = `${i+1}. ${highlightText(q.stem, false)}`;
+    line.append(blank, title);
+    sec.append(line);
+    
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((choice, j) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice';
+      btn.innerHTML = `(${String.fromCharCode(65+j)}) ${highlightText(choice, true)}`;
+      
+      if(mode === 'answer' && !q.locked && answers[i] === j) btn.classList.add('selected');
+      if(q.locked && answers[i] === j) btn.classList.add('correct');
+      if(mode === 'reveal' && j === q.answer) btn.classList.add('reveal');
+      
+      btn.disabled = mode !== 'answer' || q.locked;
+      btn.onclick = () => { 
+        if(mode === 'answer' && !q.locked) { answers[i] = j; renderUI(); } 
+      };
+      opts.append(btn);
+    });
+    
+    sec.append(opts);
+    quiz.append(sec);
+  });
+}
+
+// 初始化與綁定
+function loadRandomLevel() {
+  currentData = generateLevelData();
+  answers = {};
+  mode = 'answer';
+  hintsActive = false;
+  $('#hint').classList.remove('active');
+  $('#score').textContent = '— / 5';
+  renderUI();
+}
+
+$('#next').onclick = loadRandomLevel;
+$('#levelChoice').onchange = loadRandomLevel;
+
+$('#hint').onclick = (e) => {
+  hintsActive = !hintsActive;
+  e.target.classList.toggle('active', hintsActive);
+  renderUI();
+};
+
+// 錯題重答批改邏輯
+$('#check').onclick = () => {
+  let correct = 0;
+  currentData.questions.forEach((q, i) => {
+    if(answers[i] === q.answer) {
+      correct++;
+      q.locked = true; 
+    } else {
+      delete answers[i]; 
+    }
+  });
+  
+  if(correct === 5) {
+     mode = 'checked'; 
+  }
+  
+  $('#score').textContent = `${correct} / 5`;
+  renderUI();
+};
+
+$('#clear').onclick = () => { 
+  answers = {}; 
+  mode = 'answer'; 
+  currentData.questions.forEach(q => q.locked = false); 
+  $('#score').textContent = '— / 5'; 
+  renderUI(); 
+};
+$('#reveal').onclick = () => { mode = 'reveal'; $('#score').textContent = '解答'; renderUI(); };
+
+// 海報邏輯
+const posterOverlay = $('#posterOverlay');
+const posterBody = $('#posterBody');
+
+function openPoster(type) {
+  if(type === 'phrases') {
+    $('#posterTitle').textContent = '💬 點餐句型 (Ordering Phrases)';
+    const phrases = [
+      { en: "I want a hamburger.", zh: "我想要一個漢堡。" },
+      { en: "I would like a pizza.", zh: "我想要一個披薩。" },
+      { en: "How much is it?", zh: "這個多少錢？" },
+      { en: "How much is the total?", zh: "總共多少錢？" },
+      { en: "I will pay today.", zh: "今天我來付錢。" }
+    ];
+    posterBody.innerHTML = `<div class="phrases-grid">` + phrases.map(p => `
+      <div class="phrase-card">
+        <div class="phrase-en" onclick="speak('${p.en}')">${p.en}</div>
+        <div class="phrase-zh">${p.zh}</div>
+      </div>
+    `).join('') + `</div>`;
+  } else {
+    $('#posterTitle').textContent = '🍟 餐點總覽 (Menu Vocabulary)';
+    posterBody.innerHTML = `<div class="poster-grid">` + FOOD_DB.map(f => `
+      <div class="poster-item" onclick="speak('${f.name}')">
+        <div class="p-icon">${f.emoji}</div>
+        <div class="p-en">${f.name}</div>
+        <div class="p-zh">${f.zh}</div>
+      </div>
+    `).join('') + `</div>`;
+  }
+  posterOverlay.hidden = false;
+}
+
+$('#btn-phrases').onclick = () => openPoster('phrases');
+$('#btn-menu').onclick = () => openPoster('menu');
+posterOverlay.querySelector('.close-modal').onclick = () => posterOverlay.hidden = true;
+posterOverlay.onclick = e => { if(e.target === posterOverlay) posterOverlay.hidden = true; };
+
+// 啟動
+loadRandomLevel();
+</script>
+</body>
+</html>
+

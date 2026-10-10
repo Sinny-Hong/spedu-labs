@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-City｜異想服飾店</title>
+<style>
+:root{
+  /* 服飾店 莫蘭迪粉紫與奶茶色系 */
+  --cream: #FAF5F5; 
+  --gold: #D6BBAA; 
+  --light-gold: #EDE1DA; 
+  --ink: #2E2630; 
+  --blue: #5C7B90;
+  --green: #4D8B6F; 
+  --red: #B55C62; 
+  --line: #E2D3CD; 
+  --navy: #4A3A4D;
+  --orange: #D27D78; 
+  --soft: #F4EEED; 
+  --blue-soft: #EEF2F5;
+  --green-soft: #E8F1EC; 
+  --hint: #FCE8E3; 
+  --hint-line: #E8B4AA;
+  --gray-blue: #C4CCD3; 
+  --sale: #C85A5A; /* 特價標籤專用紅 */
+}
+*{box-sizing:border-box}
+
+/* 桌機版預設：鎖定高度，內部捲動 */
+html,body{margin:0;height:100%;overflow:hidden;}
+body{
+  background:var(--cream); color:var(--ink);
+  font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+button,select{font:inherit;cursor:pointer;user-select:none;}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* 頂部工具列 */
+.topbar{flex:none; min-height:55px;display:flex;justify-content:space-between;align-items:center;padding:5px 15px;}
+h1{margin:0;font-size:clamp(20px,2vw,30px); color: var(--navy);}
+.toolbar{display:flex;align-items:center;gap:6px;}
+.tool,select{background:#fff;color:var(--ink);border:1px solid var(--gray-blue);border-radius:9px;padding:6px 10px;font-weight:700;font-size:15px;}
+.tool:hover,select:hover{background:#F7F0ED;}
+.tool.active{background:var(--hint); border-color:var(--orange);}
+
+/* 桌機整體佈局 */
+.layout{flex:1; display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px;padding:0 10px 10px; min-height:0;}
+.panel{background:white;border:1px solid var(--light-gold);border-radius:18px;padding:10px;display:flex;flex-direction:column;min-height:0;}
+
+/* 左側：菜單與對話 */
+.left-side{display:grid;grid-template-rows:1fr 1fr;gap:14px; height:100%; min-height:0;}
+.menu-box{border:1px solid var(--gray-blue);border-radius:10px;background:white; display:flex; flex-direction:column; min-height:0;}
+.menu-title{height:30px;display:flex;align-items:center;justify-content:center;background:var(--navy);color:white;font-size:15px;font-weight:900;flex-shrink:0;}
+.menu-grid{display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(2,1fr); flex:1; min-height:0;}
+.menu-item{position:relative; display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;}
+.menu-item:hover{background:#F7F0ED;}
+.menu-item:nth-child(4n){border-right:none;}
+.menu-item:nth-last-child(-n+4){border-bottom:none;}
+.menu-icon{font-size:clamp(30px, 4vh, 45px);line-height:1;transition:transform 0.1s;}
+.has-promo .menu-icon{transform:translateX(4px);} /* 避開角標 */
+.menu-name{margin-top:2px;color:var(--navy);font-size:clamp(14px, 1.8vh, 18px);font-weight:800;text-align:center;line-height:1.15;word-break:keep-all;}
+.menu-price{margin-top:2px;color:#111;font-size:clamp(15px, 2vh, 19px);font-weight:900;}
+
+/* 促銷標籤 */
+.promo-tag{
+  position:absolute; top:-1px; left:-1px; z-index:2; 
+  padding:2px 5px; background:var(--sale); color:#fff; 
+  border-radius:0 0 8px 0; font-size:13px; font-weight:900; 
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.15);
+}
+
+/* 左側：對話區 */
+.dialogue-section{display:flex;flex-direction:column;min-height:0;}
+.dialogue-title{margin:0 0 6px;padding:6px 10px;background:var(--soft);border:1px solid var(--line);border-radius:10px;font-size:16px;font-weight:900;color:var(--navy);flex-shrink:0;}
+.dialogue-content{flex:1;overflow-y:auto;padding:2px 8px;}
+.dialogue-line{display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:8px;margin-bottom:8px;font-size:clamp(18px, 2.2vh, 22px);line-height:1.3;cursor:pointer;border-radius:6px;padding:4px;}
+.dialogue-line:hover{background:var(--blue-soft);}
+.speaker{font-weight:900;white-space:nowrap;}
+.speech{overflow-wrap:anywhere;}
+
+/* 右側：測驗區 */
+.panel-head{display:flex;align-items:center;justify-content:space-between;min-height:40px;margin-bottom:6px;flex-shrink:0;}
+h2{margin:0;font-size:22px; color:var(--navy);}
+.quiztools{display:flex;align-items:center;gap:6px;}
+#score{font-size:17px;color:var(--green);font-weight:bold;margin-right:6px;}
+#check{background:var(--green);border-color:var(--green);color:white}
+#reveal{border-color:#efadb3;color:var(--red)}
+
+.questions{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-around;padding:0 5px;}
+.question{border-bottom:1px solid var(--line);padding:6px 0;}
+.question:last-child{border-bottom:none;}
+.question-line{display:flex;align-items:baseline;gap:5px;font-size:clamp(18px, 2.2vh, 24px);font-weight:bold;cursor:pointer;border-radius:6px;line-height:1.25;}
+.question-line:hover{background:var(--blue-soft);}
+.answer-blank{color:var(--blue);white-space:nowrap;min-width:3em;text-align:right;}
+.answer-blank.good{color:var(--green)}
+.answer-blank.reveal{color:var(--red)}
+
+/* 選項 */
+.options{margin-left:4.5em;display:flex;gap:12px;flex-wrap:wrap;font-size:clamp(16px, 2vh, 20px);margin-top:3px;}
+.choice{border:2px solid transparent;border-radius:8px;background:transparent;color:#556b7d;padding:4px 8px;font-weight:bold;}
+.choice:hover:not(:disabled){background:var(--blue-soft);border-color:#D0DEE9;}
+.choice.selected{color:var(--navy);background:var(--blue-soft);border-color:#8BB0CC;}
+.choice.correct{color:var(--green);background:var(--green-soft);border-color:#97C7B0;}
+.choice.reveal{color:var(--red);background:#F9E6E7;}
+.choice:disabled{cursor:default}
+
+.hint-word{padding:0 2px;border-radius:4px;background:var(--hint);box-shadow:inset 0 -2px 0 var(--hint-line);}
+
+/* 彈出視窗 */
+.overlay{position:fixed;inset:0;z-index:100;background:#2E2630b3;display:flex;align-items:center;justify-content:center;padding:12px}
+.overlay[hidden]{display:none}
+.modal{background:#FAF7F5;border:1px solid var(--light-gold);border-radius:15px;width:min(900px,96vw);max-height:90dvh;display:flex;flex-direction:column;overflow:hidden;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--cream);border-bottom:1px solid var(--light-gold);flex-shrink:0;}
+.modal-head h2{font-size:22px;margin:0;color:var(--navy);}
+.modal-body{overflow:auto;padding:18px;}
+
+/* 海報內容排版 */
+.poster-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));gap:10px;}
+.poster-item{background:white;border:1px solid var(--gray-blue);border-radius:10px;padding:8px;text-align:center;cursor:pointer;}
+.poster-item:hover{background:var(--blue-soft);border-color:var(--blue);}
+.p-icon{font-size:32px;line-height:1.2;}
+.p-en{font-size:16px;font-weight:bold;color:var(--navy);margin:4px 0 2px;}
+.p-zh{font-size:14px;color:#7A6E7D;font-weight:bold;}
+
+.phrases-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(350px, 1fr));gap:12px;}
+.phrase-card{background:white;border:1px solid var(--gray-blue);border-radius:12px;padding:12px;}
+.phrase-en{font-size:20px;font-weight:bold;color:var(--navy);cursor:pointer;padding:4px;border-radius:6px;margin-bottom:4px;}
+.phrase-en:hover{background:var(--blue-soft);}
+.phrase-zh{font-size:16px;color:#7A6E7D;font-weight:bold;margin-left:4px;}
+
+/* ====== 手機直向響應式布局 ====== */
+@media (max-width: 768px) {
+  html, body { height: auto; overflow: auto; overflow-x: hidden; }
+  .topbar { flex-direction: column; align-items: stretch; padding: 12px; gap: 10px; }
+  .topbar h1 { text-align: center; font-size: 24px; }
+  .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+  .tool, select { width: 100%; text-align: center; padding: 8px; font-size: 16px; }
+  .layout { display: flex; flex-direction: column; height: auto; overflow: visible; padding: 10px; gap: 16px; }
+  .panel { overflow: visible; }
+  .left-side { display: flex; flex-direction: column; height: auto; gap: 12px; }
+  .menu-grid { min-height: auto; }
+  .menu-icon { font-size: clamp(26px, 6vw, 36px); }
+  .menu-name { font-size: clamp(13px, 3.5vw, 16px); white-space: normal; }
+  .menu-price { font-size: clamp(14px, 3.8vw, 17px); }
+  .dialogue-section, .dialogue-content { overflow: visible; height: auto; }
+  .questions { overflow: visible; height: auto; }
+  .options { margin-left: 1.5em; font-size: 17px; gap: 8px; }
+  .question-line { font-size: 19px; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>👕 E-City｜異想服飾店</h1>
+  <nav class="toolbar">
+    <select id="levelChoice">
+      <option value="L1">1. 服飾尋找</option>
+      <option value="L2">2. 單人購物</option>
+      <option value="L3">3. 雙人購物</option>
+      <option value="L4">4. 折扣計算</option>
+      <option value="L5">5. 買一送一</option>
+    </select>
+    <button class="tool" id="next">↻ 換題</button>
+    <button class="tool" id="btn-phrases">💬 購物句型</button>
+    <button class="tool" id="btn-menu">👗 服飾海報</button>
+  </nav>
+</header>
+
+<main class="layout">
+  <section class="panel">
+    <div class="left-side">
+      <section class="menu-box">
+        <div class="menu-title">CLOTHES SHOP</div>
+        <div id="menuGrid" class="menu-grid"></div>
+      </section>
+      <section class="dialogue-section">
+        <div class="dialogue-title">Dialogue</div>
+        <div id="dialogueContent" class="dialogue-content"></div>
+      </section>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>✏️ Questions</h2>
+      <div class="quiztools">
+        <span id="score">— / 5</span>
+        <button id="hint" class="tool">💡提示</button>
+        <button id="check" class="tool">批改</button>
+        <button id="clear" class="tool">清除</button>
+        <button id="reveal" class="tool">解答</button>
+      </div>
+    </div>
+    <div id="questions" class="questions"></div>
+  </section>
+</main>
+
+<div id="posterOverlay" class="overlay" hidden>
+  <section class="modal">
+    <div class="modal-head">
+      <h2 id="posterTitle">📋 海報</h2>
+      <button class="tool close-modal">✕ 關閉</button>
+    </div>
+    <div class="modal-body" id="posterBody"></div>
+  </section>
+</div>
+
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+
+// 服飾資料庫：加入自然量詞與台幣價格區間
+const CLOTHES_DB = [
+  {name:'T-shirt', zh:'T恤', emoji:'👕', min:300, max:500, qty:'a'},
+  {name:'Jacket', zh:'外套', emoji:'🧥', min:800, max:1500, qty:'a'},
+  {name:'Pants', zh:'褲子', emoji:'👖', min:600, max:900, qty:'a pair of'},
+  {name:'Dress', zh:'洋裝', emoji:'👗', min:700, max:1200, qty:'a'},
+  {name:'Shoes', zh:'鞋子', emoji:'👟', min:1000, max:2000, qty:'a pair of'},
+  {name:'Cap', zh:'帽子', emoji:'🧢', min:200, max:400, qty:'a'},
+  {name:'Shirt', zh:'襯衫', emoji:'👚', min:400, max:800, qty:'a'},
+  {name:'Skirt', zh:'裙子', emoji:'🥻', min:500, max:900, qty:'a'},
+  {name:'Socks', zh:'襪子', emoji:'🧦', min:100, max:200, qty:'a pair of'},
+  {name:'Coat', zh:'大衣', emoji:'🥼', min:1000, max:2000, qty:'a'},
+  {name:'Shorts', zh:'短褲', emoji:'🩳', min:300, max:600, qty:'a pair of'},
+  {name:'Glasses', zh:'眼鏡', emoji:'👓', min:500, max:1000, qty:'a pair of'}
+];
+
+const NAMES = ["Tom", "Mary", "Kevin", "Lily", "Stan", "Ben", "Amy", "Jack", "Emma", "David"];
+
+const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+// 定價為 50 的倍數，方便 L4 打八折能出現整數
+const getPrice = (min, max) => Math.floor((Math.random() * (max - min + 1) + min) / 50) * 50;
+const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const Cap = str => str.charAt(0).toUpperCase() + str.slice(1);
+
+let currentData = null;
+let answers = {};
+let mode = 'answer';
+let hintsActive = false;
+
+// 嚴格去重取假價格
+function getFakePrices(menu, correctPrice, count = 2) {
+  let fake = shuffle([...new Set(menu.map(m => m.price).filter(p => p !== correctPrice))]);
+  let offset = 1;
+  while (fake.length < count) { 
+    let p = correctPrice + (offset * 100);
+    if (!fake.includes(p)) fake.push(p);
+    offset++;
+  }
+  return fake.slice(0, count);
+}
+
+// 嚴格去重取假食物/衣物
+function getFakeItems(menu, correctItemName, count = 2) {
+  let fake = shuffle(menu.filter(m => m.name !== correctItemName));
+  return fake.slice(0, count);
+}
+
+// L1: 服飾尋找
+function generateL1(menu, actors) {
+  const targetItems = shuffle(menu).slice(0, 5);
+  const dialogue = [
+    ["Clerk", "Welcome to the clothes shop."],
+    ["Clerk", "May I help you?"]
+  ];
+  const questions = targetItems.map((f, i) => {
+    const fakes = getFakePrices(menu, f.price);
+    const options = shuffle([`NT$${f.price}`, `NT$${fakes[0]}`, `NT$${fakes[1]}`]);
+    return { stem: `${actors[i]}: I want the ${f.name}.`, options, answer: options.indexOf(`NT$${f.price}`), locked: false };
+  });
+  return { dialogue, questions };
+}
+
+// L2: 單人購物
+function generateL2(menu, actors) {
+  const p1 = actors[0];
+  const item = menu[0];
+  const dialogue = [
+    [p1, `Hello. I want ${item.qty} ${item.name}.`],
+    [p1, `How much is it?`],
+    ["Clerk", `It is NT$${item.price}.`],
+    [p1, `OK. I will take it.`]
+  ];
+  const fItem = getFakeItems(menu, item.name);
+  const fP = getFakePrices(menu, item.price);
+  const qData = [
+    { stem: `What does ${p1} want to buy?`, ans: `${Cap(item.qty)} ${item.name}`, w1: `${Cap(fItem[0].qty)} ${fItem[0].name}`, w2: `${Cap(fItem[1].qty)} ${fItem[1].name}` },
+    { stem: `How much is the ${item.name}?`, ans: `NT$${item.price}`, w1: `NT$${fP[0]}`, w2: `NT$${fP[1]}` },
+    { stem: `Who wants ${item.qty} ${item.name}?`, ans: p1, w1: actors[1], w2: "The clerk" },
+    { stem: `Does ${p1} order ${fItem[0].qty} ${fItem[0].name}?`, ans: `No, he/she doesn't.`, w1: `Yes, he/she does.`, w2: `I don't know.` },
+    { stem: `Who tells the price?`, ans: `The clerk`, w1: p1, w2: actors[2] }
+  ];
+  const questions = qData.map(q => {
+    const options = shuffle([q.ans, q.w1, q.w2]);
+    return { stem: q.stem, options, answer: options.indexOf(q.ans), locked: false };
+  });
+  return { dialogue, questions };
+}
+
+// L3: 雙人購物
+function generateL3(menu, actors) {
+  const p1 = actors[0], p2 = actors[1];
+  const i1 = menu[0], i2 = menu[1];
+  const dialogue = [
+    [p1, `I want ${i1.qty} ${i1.name}.`],
+    [p2, `I would like ${i2.qty} ${i2.name}.`],
+    ["Clerk", `OK. Please wait a minute.`]
+  ];
+  const qData = [
+    { stem: `What does ${p1} want?`, ans: `${Cap(i1.qty)} ${i1.name}`, w1: `${Cap(i2.qty)} ${i2.name}`, w2: `${Cap(menu[2].qty)} ${menu[2].name}` },
+    { stem: `What does ${p2} want?`, ans: `${Cap(i2.qty)} ${i2.name}`, w1: `${Cap(i1.qty)} ${i1.name}`, w2: `${Cap(menu[2].qty)} ${menu[2].name}` },
+    { stem: `Who wants the ${i1.name}?`, ans: p1, w1: p2, w2: "The clerk" },
+    { stem: `Who wants the ${i2.name}?`, ans: p2, w1: p1, w2: "The clerk" },
+    { stem: `How much is the ${i1.name}?`, ans: `NT$${i1.price}`, w1: `NT$${i2.price !== i1.price ? i2.price : menu[2].price}`, w2: `NT$${menu[3].price}` }
+  ];
+  const questions = qData.map(q => {
+    const options = shuffle([...new Set([q.ans, q.w1, q.w2])]);
+    while(options.length < 3) options.push("I don't know.");
+    return { stem: q.stem, options, answer: options.indexOf(q.ans), locked: false };
+  });
+  return { dialogue, questions };
+}
+
+// L4: 折扣計算 (20% OFF)
+function generateL4(menu, actors) {
+  const p1 = actors[0];
+  const i1 = menu[0];
+  i1.promo = "20% OFF"; // 標記促銷
+  const original = i1.price;
+  const sale = original * 0.8;
+  const dialogue = [
+    ["Clerk", `Look! The ${i1.name} is 20% off today.`],
+    [p1, `Great. What is the original price?`],
+    ["Clerk", `It is NT$${original}.`],
+    [p1, `How much is it now?`],
+    ["Clerk", `It is NT$${sale}.`],
+    [p1, `I want that one.`]
+  ];
+  let fakeSales = shuffle([...new Set([sale + 100, sale - 50, sale + 50])].filter(t => t > 0 && t !== original && t !== sale));
+  
+  const qData = [
+    { stem: `Which item is 20% off?`, ans: `The ${i1.name}`, w1: `The ${menu[1].name}`, w2: `The ${menu[2].name}` },
+    { stem: `What is the original price of the ${i1.name}?`, ans: `NT$${original}`, w1: `NT$${sale}`, w2: `NT$${original + 100}` },
+    { stem: `How much is the ${i1.name} now?`, ans: `NT$${sale}`, w1: `NT$${original}`, w2: `NT$${fakeSales[0]}` },
+    { stem: `What does ${p1} want to buy?`, ans: `The ${i1.name}`, w1: `The ${menu[1].name}`, w2: `The ${menu[2].name}` },
+    { stem: `Who tells the sale price?`, ans: `The clerk`, w1: p1, w2: actors[1] }
+  ];
+  const questions = qData.map(q => {
+    const options = shuffle([...new Set([q.ans, q.w1, q.w2])]);
+    while(options.length < 3) options.push("I don't know.");
+    return { stem: q.stem, options, answer: options.indexOf(q.ans), locked: false };
+  });
+  return { dialogue, questions };
+}
+
+// L5: 買一送一 (BOGO)
+function generateL5(menu, actors) {
+  const p1 = actors[0];
+  const i1 = menu[0], i2 = menu[1];
+  i1.promo = "BOGO"; // 標記促銷
+  const total = i1.price + i2.price; // 買兩件 i1 只要付一件的錢
+  
+  const dialogue = [
+    ["Clerk", `The ${i1.name} is Buy 1 Get 1 Free today.`],
+    [p1, `Nice! I want two ${i1.name}.`],
+    ["Clerk", `You only pay NT$${i1.price} for the two.`],
+    [p1, `Great. I also want ${i2.qty} ${i2.name}.`],
+    ["Clerk", `The ${i2.name} is not on sale. The total is NT$${total}.`]
+  ];
+  
+  let fakeTotals = shuffle([...new Set([total + i1.price, total - i2.price, total + 100])].filter(t => t > 0));
+  
+  const qData = [
+    { stem: `What is special about the ${i1.name}?`, ans: `Buy 1 Get 1 Free`, w1: `20% off`, w2: `Not on sale` },
+    { stem: `What does ${p1} buy?`, ans: `Two ${i1.name} & ${i2.name}`, w1: `One ${i1.name} & ${i2.name}`, w2: `Two ${i1.name} only` },
+    { stem: `How much does ${p1} pay for two ${i1.name}?`, ans: `NT$${i1.price}`, w1: `NT$${i1.price * 2}`, w2: `NT$${i1.price + 100}` },
+    { stem: `Is the ${i2.name} on sale?`, ans: `No, it isn't.`, w1: `Yes, it is.`, w2: `I don't know.` },
+    { stem: `How much is the total?`, ans: `NT$${total}`, w1: `NT$${fakeTotals[0]}`, w2: `NT$${fakeTotals[1]}` }
+  ];
+  const questions = qData.map(q => {
+    const options = shuffle([...new Set([q.ans, q.w1, q.w2])]);
+    while(options.length < 3) options.push("I don't know.");
+    return { stem: q.stem, options, answer: options.indexOf(q.ans), locked: false };
+  });
+  return { dialogue, questions };
+}
+
+// 核心生成器
+function generateLevelData() {
+  const lvl = $('#levelChoice').value;
+  // 隨機抽選 8 樣商品
+  const menu = shuffle(CLOTHES_DB).slice(0, 8).map(item => ({ ...item, price: getPrice(item.min, item.max), promo: null }));
+  const actors = shuffle(NAMES).slice(0, 5);
+  let data;
+  
+  if (lvl === 'L1') data = generateL1(menu, actors);
+  else if (lvl === 'L2') data = generateL2(menu, actors);
+  else if (lvl === 'L3') data = generateL3(menu, actors);
+  else if (lvl === 'L4') data = generateL4(menu, actors);
+  else if (lvl === 'L5') data = generateL5(menu, actors);
+
+  return {
+    menu,
+    dialogue: data.dialogue,
+    questions: shuffle(data.questions), 
+    hintWords: [...menu.map(m => m.name), ...actors, "Who", "Clerk", "original price", "total"]
+  };
+}
+
+// 促銷標籤 HTML
+function getPromoHTML(tag) {
+  if(!tag) return "";
+  if(tag === "BOGO") return `<div class="promo-tag">Buy 1<br>Get 1 Free</div>`;
+  return `<div class="promo-tag">${tag}</div>`;
+}
+
+// 高亮與語音
+function highlightText(text, isOption = false) {
+  if (!hintsActive || isOption) return text;
+  let res = String(text);
+  const sorted = [...currentData.hintWords].sort((a,b) => b.length - a.length);
+  sorted.forEach(word => {
+    const regex = new RegExp(`\\b(${escapeRegExp(word)})\\b`, "gi");
+    res = res.replace(regex, `<span class="hint-word">$1</span>`);
+  });
+  return res;
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g, '').replace(/NT\$/g, 'N T '));
+  utterance.lang = "en-US";
+  utterance.rate = 0.85;
+  window.speechSynthesis.speak(utterance);
+}
+
+// 渲染 UI
+function renderUI() {
+  $('#menuGrid').innerHTML = currentData.menu.map(item => `
+    <div class="menu-item ${item.promo ? 'has-promo' : ''}" tabindex="0" onclick="speak('${item.name}')">
+      ${getPromoHTML(item.promo)}
+      <div class="menu-icon">${item.emoji}</div>
+      <div class="menu-name">${item.name}</div>
+      <div class="menu-price">NT$${item.price}</div>
+    </div>
+  `).join('');
+
+  $('#dialogueContent').innerHTML = currentData.dialogue.map(line => `
+    <div class="dialogue-line" tabindex="0" onclick="speak('${line[1]}')">
+      <div class="speaker">${line[0]}:</div>
+      <div class="speech">${highlightText(line[1], false)}</div>
+    </div>
+  `).join('');
+
+  const quiz = $('#questions');
+  quiz.innerHTML = '';
+  currentData.questions.forEach((q, i) => {
+    const sec = document.createElement('div');
+    sec.className = 'question';
+    
+    const line = document.createElement('div');
+    line.className = 'question-line';
+    line.onclick = () => speak(q.stem);
+    
+    const blank = document.createElement('span');
+    blank.className = 'answer-blank';
+    let letter = ' ';
+    if(mode === 'reveal') { 
+      letter = String.fromCharCode(65 + q.answer); 
+      blank.classList.add('reveal'); 
+    }
+    else if(q.locked) { 
+      letter = String.fromCharCode(65 + answers[i]); 
+      blank.classList.add('good'); 
+    }
+    else if(answers[i] !== undefined) {
+      letter = String.fromCharCode(65 + answers[i]);
+    }
+    blank.innerHTML = `（ ${letter} ）`;
+    
+    const title = document.createElement('span');
+    title.innerHTML = `${i+1}. ${highlightText(q.stem, false)}`;
+    line.append(blank, title);
+    sec.append(line);
+    
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((choice, j) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice';
+      btn.innerHTML = `(${String.fromCharCode(65+j)}) ${highlightText(choice, true)}`;
+      
+      if(mode === 'answer' && !q.locked && answers[i] === j) btn.classList.add('selected');
+      if(q.locked && answers[i] === j) btn.classList.add('correct');
+      if(mode === 'reveal' && j === q.answer) btn.classList.add('reveal');
+      
+      btn.disabled = mode !== 'answer' || q.locked;
+      btn.onclick = () => { 
+        if(mode === 'answer' && !q.locked) { answers[i] = j; renderUI(); } 
+      };
+      opts.append(btn);
+    });
+    
+    sec.append(opts);
+    quiz.append(sec);
+  });
+}
+
+// 初始化與綁定
+function loadRandomLevel() {
+  currentData = generateLevelData();
+  answers = {};
+  mode = 'answer';
+  hintsActive = false;
+  $('#hint').classList.remove('active');
+  $('#score').textContent = '— / 5';
+  renderUI();
+}
+
+$('#next').onclick = loadRandomLevel;
+$('#levelChoice').onchange = loadRandomLevel;
+
+$('#hint').onclick = (e) => {
+  hintsActive = !hintsActive;
+  e.target.classList.toggle('active', hintsActive);
+  renderUI();
+};
+
+// 錯題重答批改邏輯
+$('#check').onclick = () => {
+  let correct = 0;
+  currentData.questions.forEach((q, i) => {
+    if(answers[i] === q.answer) {
+      correct++;
+      q.locked = true; 
+    } else {
+      delete answers[i]; 
+    }
+  });
+  
+  if(correct === 5) {
+     mode = 'checked'; 
+  }
+  
+  $('#score').textContent = `${correct} / 5`;
+  renderUI();
+};
+
+$('#clear').onclick = () => { 
+  answers = {}; 
+  mode = 'answer'; 
+  currentData.questions.forEach(q => q.locked = false); 
+  $('#score').textContent = '— / 5'; 
+  renderUI(); 
+};
+$('#reveal').onclick = () => { mode = 'reveal'; $('#score').textContent = '解答'; renderUI(); };
+
+// 海報邏輯
+const posterOverlay = $('#posterOverlay');
+const posterBody = $('#posterBody');
+
+function openPoster(type) {
+  if(type === 'phrases') {
+    $('#posterTitle').textContent = '💬 購物句型 (Shopping Phrases)';
+    const phrases = [
+      { en: "I want the jacket.", zh: "我要這件外套。" },
+      { en: "How much is it?", zh: "這個多少錢？" },
+      { en: "What is the original price?", zh: "原價是多少錢？" },
+      { en: "The dress is 20% off today.", zh: "這件洋裝今天打八折。" },
+      { en: "Buy 1 Get 1 Free.", zh: "買一送一。" },
+      { en: "I will take it.", zh: "我買了 / 我要拿這個。" }
+    ];
+    posterBody.innerHTML = `<div class="phrases-grid">` + phrases.map(p => `
+      <div class="phrase-card">
+        <div class="phrase-en" onclick="speak('${p.en}')">${p.en}</div>
+        <div class="phrase-zh">${p.zh}</div>
+      </div>
+    `).join('') + `</div>`;
+  } else {
+    $('#posterTitle').textContent = '👗 服飾總覽 (Clothes Vocabulary)';
+    posterBody.innerHTML = `<div class="poster-grid">` + CLOTHES_DB.map(f => `
+      <div class="poster-item" onclick="speak('${f.name}')">
+        <div class="p-icon">${f.emoji}</div>
+        <div class="p-en">${f.name}</div>
+        <div class="p-zh">${f.zh}</div>
+      </div>
+    `).join('') + `</div>`;
+  }
+  posterOverlay.hidden = false;
+}
+
+$('#btn-phrases').onclick = () => openPoster('phrases');
+$('#btn-menu').onclick = () => openPoster('menu');
+posterOverlay.querySelector('.close-modal').onclick = () => posterOverlay.hidden = true;
+posterOverlay.onclick = e => { if(e.target === posterOverlay) posterOverlay.hidden = true; };
+
+// 啟動
+loadRandomLevel();
+</script>
+</body>
+</html>

@@ -75,6 +75,8 @@ window.GRAMMAR_DATA = [
       { id: "g7", category: "互動遊戲區", title: "🧩 配對板｜人稱代名詞", desc: "限時配對、亂序、干擾卡與課堂訂正挑戰", filename: "match-pronouns.html", themeColor: "#F43F5E" },
       { id: "english-time", category: "互動遊戲區", title: "⏰ 英文時間互動學習館", desc: "搭配大螢幕操作時鐘、英文發音、隨堂挑戰與時間表達鷹架", filename: "game-english-time.html", themeColor: "#F43F5E" },
       { id: "ecity-01", category: "互動遊戲區", title: "E-City｜我的異想小鎮", desc: "隨機城市地圖與八種位置句型挑戰，附中英提示板、單字發音與答題音效", filename: "ecity-my-town.html", themeColor: "#F43F5E" },
+      { id: "ecity-fast-food", category: "互動遊戲區", title: "異想城市系列｜異想速食店", desc: "透過餐點菜單與點餐對話，練習英文單字、價格搜尋及閱讀理解。", filename: "ecity-fast-food.html", themeColor: "#F43F5E" },
+      { id: "ecity-clothes-shop", category: "互動遊戲區", title: "異想城市系列｜異想服飾店", desc: "透過服飾商品與購物對話，練習服飾單字、價格辨識及折扣理解。", filename: "ecity-clothes.html", themeColor: "#F43F5E" },
       { id: "ecity-tug-of-war", category: "互動遊戲區", title: "E-City｜拔河錦標賽", desc: "兩隊用英文數字、日期或數學題庫即時搶答，把繩索拉向己方", filename: "../math/ecity-tug-of-war.html", themeColor: "#7C3AED" },
 
       // ==== 測試網頁：五份彼此獨立的 HTML ====
