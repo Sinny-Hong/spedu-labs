@@ -1,3119 +1,554 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>冒險者課堂公會 ⚔️ 遊戲化積分與實體搖獎券管理系統</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Canvas Confetti 彩帶特效 -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <!-- Google Fonts 圓體與遊戲字體 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
-  
-  <style>
-    body {
-      font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
-      background-color: #f8fafc;
-    }
-    .rpg-card {
-      box-shadow: 0 8px 0 0 rgba(0, 0, 0, 0.08);
-      transition: all 0.15s ease;
-    }
-    .rpg-btn {
-      box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.2);
-      transition: transform 0.05s ease, box-shadow 0.05s ease;
-    }
-    .rpg-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.2) !important;
-    }
-    .shimmer-bar {
-      background-image: linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0.2) 25%,
-        transparent 25%,
-        transparent 50%,
-        rgba(255, 255, 255, 0.2) 50%,
-        rgba(255, 255, 255, 0.2) 75%,
-        transparent 75%,
-        transparent
-      );
-      background-size: 30px 30px;
-      animation: move-stripes 2s linear infinite;
-    }
-    @keyframes move-stripes {
-      0% { background-position: 0 0; }
-      100% { background-position: 60px 0; }
-    }
-    .card-flip-anim {
-      animation: cardFlip 0.5s ease forwards;
-    }
-    @keyframes cardFlip {
-      0% { transform: scale(0.8) rotateY(90deg); opacity: 0; }
-      50% { transform: scale(1.08) rotateY(0deg); opacity: 1; }
-      100% { transform: scale(1) rotateY(0deg); opacity: 1; }
-    }
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-City｜異想速食店</title>
+<style>
+:root{
+  --cream: #fff9ec; --gold: #f5b942; --ink: #173552; --blue: #2477cd;
+  --green: #168a57; --red: #d83f43; --line: #dce7ef; --navy: #0B3768;
+  --orange: #F59E0B; --soft: #F3F7FB; --blue-soft: #EAF4FC;
+  --green-soft: #E7F5ED; --hint: #FFF0A6; --hint-line: #F1C44A;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;}
+body{
+  background:var(--cream); color:var(--ink);
+  font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+}
+button,select{font:inherit;cursor:pointer;user-select:none;}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* 頂部工具列 */
+.topbar{min-height:55px;display:flex;justify-content:space-between;align-items:center;padding:5px 15px;}
+h1{margin:0;font-size:clamp(20px,2vw,30px); color: var(--navy);}
+.toolbar{display:flex;align-items:center;gap:6px;}
+.tool,select{background:#fff;color:var(--ink);border:2px solid var(--gold);border-radius:9px;padding:5px 9px;font-weight:700;font-size:15px;}
+.tool:hover,select:hover{background:#fff5d9}
+.tool.active{background:var(--hint); border-color:var(--orange);}
+
+/* 整體佈局 */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px;padding:0 10px 10px;height:calc(100vh - 60px);min-height:480px;}
+.panel{background:white;border:2px solid var(--gold);border-radius:18px;padding:10px;display:flex;flex-direction:column;min-height:0;}
+
+/* 左側：菜單與對話 */
+.left-side{display:grid;grid-template-rows:1fr 1fr;gap:14px; height:100%; min-height:0;}
+.menu-box{border:1.5px solid var(--navy);border-radius:10px;background:white; display:flex; flex-direction:column; min-height:0;}
+.menu-title{height:30px;display:flex;align-items:center;justify-content:center;background:var(--navy);color:white;font-size:15px;font-weight:900;flex-shrink:0;}
+.menu-grid{display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(2,1fr); flex:1; min-height:0;}
+.menu-item{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;}
+.menu-item:hover{background:#fff5d9}
+.menu-item:nth-child(4n){border-right:none;}
+.menu-item:nth-last-child(-n+4){border-bottom:none;}
+.menu-icon{font-size:clamp(30px, 4vh, 45px);line-height:1;}
+.menu-name{margin-top:2px;color:var(--navy);font-size:clamp(14px, 1.8vh, 18px);font-weight:800;text-align:center;line-height:1.1;}
+.menu-price{margin-top:2px;color:#111;font-size:clamp(15px, 2vh, 19px);font-weight:900;}
+
+/* 左側：對話區 (無框線版) */
+.dialogue-section{display:flex;flex-direction:column;min-height:0;}
+.dialogue-title{margin:0 0 6px;padding:6px 10px;background:var(--soft);border:1px solid var(--line);border-radius:10px;font-size:16px;font-weight:900;color:var(--navy);}
+.dialogue-content{flex:1;overflow-y:auto;padding:2px 8px;}
+.dialogue-line{display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:8px;margin-bottom:8px;font-size:clamp(18px, 2.2vh, 22px);line-height:1.3;cursor:pointer;border-radius:6px;padding:4px;}
+.dialogue-line:hover{background:#f0f7ff;}
+.speaker{font-weight:900;white-space:nowrap;}
+.speech{overflow-wrap:anywhere;}
+
+/* 右側：測驗區 */
+.panel-head{display:flex;align-items:center;justify-content:space-between;min-height:40px;margin-bottom:6px;}
+h2{margin:0;font-size:22px; color:var(--navy);}
+.quiztools{display:flex;align-items:center;gap:6px;}
+#score{font-size:17px;color:var(--green);font-weight:bold;margin-right:6px;}
+#check{background:var(--green);border-color:var(--green);color:white}
+#reveal{border-color:#efadb3;color:var(--red)}
+
+.questions{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-around;padding:0 5px;}
+.question{border-bottom:1px solid var(--line);padding:6px 0;}
+.question:last-child{border-bottom:none;}
+.question-line{display:flex;align-items:baseline;gap:5px;font-size:clamp(18px, 2.2vh, 24px);font-weight:bold;cursor:pointer;border-radius:6px;line-height:1.25;}
+.question-line:hover{background:#f0f7ff;}
+.answer-blank{color:var(--blue);white-space:nowrap;min-width:3em;text-align:right;}
+.answer-blank.good{color:var(--green)}
+.answer-blank.reveal{color:var(--red)}
+
+/* 選項退一格、顏色變淡 */
+.options{margin-left:4.5em;display:flex;gap:12px;flex-wrap:wrap;font-size:clamp(16px, 2vh, 20px);margin-top:3px;}
+.choice{border:2px solid transparent;border-radius:8px;background:transparent;color:#4a627a;padding:4px 8px;font-weight:bold;}
+.choice:hover:not(:disabled){background:var(--blue-soft);border-color:#baddfb;}
+.choice.selected{color:var(--navy);background:var(--blue-soft);border-color:#6CA6D3;}
+.choice.correct{color:var(--green);background:var(--green-soft);border-color:#8BC4A3;}
+.choice.reveal{color:var(--red);background:#ffe8e8}
+.choice:disabled{cursor:default}
+
+.hint-word{padding:0 2px;border-radius:4px;background:var(--hint);box-shadow:inset 0 -2px 0 var(--hint-line);}
+
+/* 彈出視窗 */
+.overlay{position:fixed;inset:0;z-index:100;background:#183040a8;display:flex;align-items:center;justify-content:center;padding:12px}
+.overlay[hidden]{display:none}
+.modal{background:#fffdf7;border:3px solid var(--gold);border-radius:15px;width:min(900px,96vw);max-height:90dvh;display:flex;flex-direction:column;overflow:hidden;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--cream);border-bottom:2px solid var(--gold);flex-shrink:0;}
+.modal-head h2{font-size:22px;margin:0;color:var(--navy);}
+.modal-body{overflow:auto;padding:18px;}
+
+/* 海報內容排版 */
+.poster-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));gap:10px;}
+.poster-item{background:white;border:2px solid #c9d9e8;border-radius:10px;padding:8px;text-align:center;cursor:pointer;}
+.poster-item:hover{background:#e7f2ff;border-color:var(--blue);}
+.p-icon{font-size:32px;line-height:1.2;}
+.p-en{font-size:16px;font-weight:bold;color:var(--navy);margin:4px 0 2px;}
+.p-zh{font-size:14px;color:#67829a;font-weight:bold;}
+
+.phrases-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(350px, 1fr));gap:12px;}
+.phrase-card{background:white;border:2px solid #c9d9e8;border-radius:12px;padding:12px;}
+.phrase-en{font-size:20px;font-weight:bold;color:var(--navy);cursor:pointer;padding:4px;border-radius:6px;margin-bottom:4px;}
+.phrase-en:hover{background:#e7f2ff;}
+.phrase-zh{font-size:16px;color:#4a627a;font-weight:bold;margin-left:4px;}
+</style>
 </head>
-<body class="text-slate-800 min-h-screen pb-20 select-none">
+<body>
 
-  <!-- 頂部冒險者公會導航 -->
-  <header class="bg-indigo-700 text-white shadow-lg sticky top-0 z-40 border-b-4 border-indigo-900">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center space-x-3">
-        <div class="w-11 h-11 bg-amber-400 rounded-2xl flex items-center justify-center text-2xl shadow-inner border-2 border-amber-300">
-          ⚔️
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-xl md:text-2xl font-black tracking-wide">課堂冒險公會</h1>
-            <span class="bg-indigo-900/80 text-amber-300 text-xs px-2.5 py-0.5 rounded-full font-bold border border-amber-400/30">
-              Lv. 冒險督導
-            </span>
-          </div>
-          <p class="text-xs text-indigo-200">正字積分結算 • 實體搖獎券管理 • 動態階梯門檻</p>
-        </div>
-      </div>
-      
-      <!-- 課堂切換與管理按鈕 -->
-      <div class="flex items-center gap-2">
-        <div class="relative">
-          <select id="classSelector" onchange="changeClass()" class="bg-indigo-900 text-amber-300 font-black text-sm rounded-xl pl-3 pr-8 py-2 border-2 border-indigo-400 focus:outline-none cursor-pointer appearance-none">
-            <!-- 動態生成班級清單 -->
-          </select>
-          <span class="absolute right-2.5 top-2.5 pointer-events-none text-xs text-indigo-300">▼</span>
-        </div>
-        
-        <button type="button" onclick="openModal('newClassModal')" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-black px-3 py-2 rounded-xl text-xs md:text-sm rpg-btn flex items-center gap-1 shadow-amber-600">
-          <span>➕</span> 新增班級
-        </button>
-        <button type="button" onclick="openEditClassModal()" title="編輯或刪除當前班級" class="bg-indigo-800 hover:bg-indigo-900 text-white font-black px-2.5 py-2 rounded-xl text-xs md:text-sm rpg-btn border border-indigo-500 flex items-center gap-1">
-          <span>⚙️</span> 班級設定
-        </button>
+<header class="topbar">
+  <h1>🍔 E-City｜異想速食店</h1>
+  <nav class="toolbar">
+    <select id="levelChoice">
+      <option value="L1">1. 點餐尋找</option>
+      <option value="L2">2. 單人點餐</option>
+      <option value="L3">3. 雙人點餐</option>
+      <option value="L4">4. 朋友聚餐</option>
+      <option value="L5">5. 家庭聚餐</option>
+    </select>
+    <button class="tool" id="next">↻ 換題</button>
+    <button class="tool" id="btn-phrases">💬 點餐句型</button>
+    <button class="tool" id="btn-menu">🍟 餐點海報</button>
+  </nav>
+</header>
+
+<main class="layout">
+  <section class="panel">
+    <div class="left-side">
+      <section class="menu-box">
+        <div class="menu-title">TODAY'S MENU</div>
+        <div id="menuGrid" class="menu-grid"></div>
+      </section>
+      <section class="dialogue-section">
+        <div class="dialogue-title">Dialogue</div>
+        <div id="dialogueContent" class="dialogue-content"></div>
+      </section>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>✏️ Questions</h2>
+      <div class="quiztools">
+        <span id="score">— / 5</span>
+        <button id="hint" class="tool">💡提示</button>
+        <button id="check" class="tool">批改</button>
+        <button id="clear" class="tool">清除</button>
+        <button id="reveal" class="tool">解答</button>
       </div>
     </div>
-  </header>
+    <div id="questions" class="questions"></div>
+  </section>
+</main>
 
-  <main class="max-w-7xl mx-auto px-4 mt-6">
-
-    <!-- 全班合作討伐里程碑 (支援 200分 / 350分 / 500分 切換 與 4 大隨機獎勵輪盤) -->
-    <section class="bg-gradient-to-r from-violet-900 via-indigo-900 to-purple-900 rounded-3xl p-5 md:p-6 text-white mb-6 border-4 border-indigo-800 shadow-xl relative overflow-hidden">
-      <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
-      
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 relative z-10">
-        <div class="flex items-center gap-3">
-          <div class="text-4xl animate-bounce">🐲</div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-lg md:text-xl font-black text-amber-300">全班 Boss 戰役：課堂狂熱里程碑</h2>
-              <span id="bossStageBadge" class="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[11px] px-2 py-0.5 rounded-lg font-bold">
-                第 1 階段討伐中
-              </span>
-            </div>
-            <p class="text-xs text-indigo-200 mt-0.5">
-              當前班級人數：<span id="classMemberCountText" class="text-amber-300 font-bold">0</span> 人 ｜ 齊心合力累積正字分數，解鎖全班專屬課堂獎勵！
-            </p>
-          </div>
-        </div>
-
-        <!-- 本階段目標隨機獎勵池展示 -->
-        <div class="bg-black/40 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-amber-400/30 flex items-center gap-3 self-start md:self-auto">
-          <span class="text-2xl animate-pulse">🎁</span>
-          <div>
-            <div class="text-[11px] text-amber-300 font-black uppercase tracking-wider">全班四大隨機獎勵池</div>
-            <div class="text-xs text-white font-bold flex items-center gap-1.5 mt-0.5">
-              <span>🍗 點心 (15%)</span>
-              <span>•</span>
-              <span>🎵 點歌</span>
-              <span>•</span>
-              <span>🛡️ 免作業</span>
-              <span>•</span>
-              <span>🎤 分享</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 進度條本體 -->
-      <div class="relative z-10">
-        <div class="flex justify-between items-center text-xs font-black mb-1.5 px-1">
-          <span class="text-indigo-200">全班累積進度：<span id="bossTotalScoreText" class="text-amber-300 text-sm font-bold">0</span> 分</span>
-          <span class="text-amber-300">目標總分：<span id="bossTargetScoreText" class="text-white text-sm font-bold">200</span> 分 (<span id="bossPercentText">0%</span>)</span>
-        </div>
-        <div class="w-full bg-slate-950/60 rounded-2xl h-6 p-1 border-2 border-indigo-500/50 relative overflow-hidden shadow-inner">
-          <div id="bossProgressBar" class="h-full bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-400 rounded-xl shimmer-bar transition-all duration-700" style="width: 0%"></div>
-        </div>
-      </div>
-
-      <!-- 難度標準設定 (200 / 350 / 500) 與領取按鈕 -->
-      <div class="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-indigo-300 pt-2 border-t border-white/10">
-        <div class="flex items-center gap-2">
-          <span>討伐目標門檻：</span>
-          <select id="bossTargetSelect" onchange="updateBossTarget()" class="bg-indigo-950 text-amber-300 font-bold text-xs rounded-lg px-2.5 py-1.5 border border-indigo-500 focus:outline-none cursor-pointer">
-            <option value="200" selected>總分 200 分 (入門挑戰 🥉)</option>
-            <option value="350">總分 350 分 (進階歷練 🥈)</option>
-            <option value="500">總分 500 分 (史詩征途 🥇)</option>
-          </select>
-        </div>
-        <button id="claimMilestoneBtn" type="button" onclick="claimMilestoneReward()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2 rounded-xl rpg-btn text-xs flex items-center gap-1.5 shadow-amber-600 transition-all">
-          <span>🏆</span> 領取大獎並進入下一輪
-        </button>
-      </div>
-    </section>
-
-    <!-- 主功能頁籤切換按鈕 -->
-    <div class="flex space-x-2 border-b-2 border-slate-200 mb-6 overflow-x-auto pb-1">
-      <button onclick="switchTab('scoreTab')" id="tab-scoreTab" class="tab-btn font-black px-5 py-2.5 rounded-t-2xl text-sm md:text-base bg-indigo-600 text-white shadow-md flex items-center gap-2">
-        <span>📝</span> 課堂正字與行為登記
-      </button>
-      <button onclick="switchTab('historyTab')" id="tab-historyTab" class="tab-btn font-black px-5 py-2.5 rounded-t-2xl text-sm md:text-base bg-slate-200 text-slate-600 hover:bg-slate-300 flex items-center gap-2">
-        <span>📜</span> 每日加分日誌
-      </button>
-      <button onclick="switchTab('gachaTab')" id="tab-gachaTab" class="tab-btn font-black px-5 py-2.5 rounded-t-2xl text-sm md:text-base bg-slate-200 text-slate-600 hover:bg-slate-300 flex items-center gap-2">
-        <span>🎟️</span> 實體搖獎券庫存
-        <span id="unclaimedTicketsBadge" class="bg-rose-500 text-white text-xs px-2 py-0.5 rounded-full font-black">0</span>
-      </button>
-      <button onclick="switchTab('toolsTab')" id="tab-toolsTab" class="tab-btn font-black px-5 py-2.5 rounded-t-2xl text-sm md:text-base bg-slate-200 text-slate-600 hover:bg-slate-300 flex items-center gap-2">
-        <span>🎲</span> 抽籤與小隊分組
-      </button>
-      <button onclick="switchTab('manageTab')" id="tab-manageTab" class="tab-btn font-black px-5 py-2.5 rounded-t-2xl text-sm md:text-base bg-slate-200 text-slate-600 hover:bg-slate-300 flex items-center gap-2">
-        <span>👥</span> 學生與班級管理
-      </button>
+<div id="posterOverlay" class="overlay" hidden>
+  <section class="modal">
+    <div class="modal-head">
+      <h2 id="posterTitle">📋 海報</h2>
+      <button class="tool close-modal">✕ 關閉</button>
     </div>
+    <div class="modal-body" id="posterBody"></div>
+  </section>
+</div>
 
-    <!-- 頁籤 1: 課堂正字記號與同儕行為登記結算 -->
-    <section id="scoreTab" class="tab-content">
-      <div class="bg-white rounded-3xl p-5 md:p-6 shadow-sm border-2 border-slate-200 rpg-card mb-6">
-        
-        <!-- 解題冷卻計時器 (抑制衝動解題機制) -->
-        <div id="cooldownTimerWidget" class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border-2 border-amber-400 rounded-2xl p-4 mb-5 text-white shadow-lg flex flex-wrap items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <div id="timerIconBadge" class="w-12 h-12 bg-amber-400 text-slate-950 rounded-2xl flex items-center justify-center text-2xl font-black shadow-inner">
-              🧠
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-sm font-black text-amber-300 uppercase tracking-wider">小組討論 • 解題冷卻計時器</span>
-                <span id="timerStatusBadge" class="bg-slate-800 text-indigo-200 text-[10px] px-2 py-0.5 rounded-md font-bold border border-indigo-700">準備中</span>
-              </div>
-              <div id="timerHintText" class="text-xs text-slate-300 mt-0.5">小組合作解題期間禁止衝動搶答，冷卻結束後才開放發表！</div>
-            </div>
-          </div>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
 
-          <div class="flex items-center gap-4">
-            <!-- 倒數時間大數字 -->
-            <div id="timerDisplay" class="font-mono font-black text-3xl md:text-4xl text-amber-400 tracking-wider bg-black/50 px-4 py-1.5 rounded-xl border border-white/10 shadow-inner">
-              00:00
-            </div>
+// 加入冠詞與量詞 (qty)
+const FOOD_DB = [
+  {name:'Hamburger', zh:'漢堡', emoji:'🍔', min:50, max:90, qty:'a'},
+  {name:'Hot Dog', zh:'熱狗', emoji:'🌭', min:40, max:60, qty:'a'},
+  {name:'Pizza', zh:'披薩', emoji:'🍕', min:70, max:100, qty:'a slice of'},
+  {name:'French Fries', zh:'薯條', emoji:'🍟', min:30, max:50, qty:'some'},
+  {name:'Salad', zh:'沙拉', emoji:'🥗', min:40, max:60, qty:'some'},
+  {name:'Soup', zh:'湯', emoji:'🥣', min:30, max:50, qty:'a bowl of'},
+  {name:'Fried Chicken', zh:'炸雞', emoji:'🍗', min:40, max:70, qty:'some'},
+  {name:'Sandwich', zh:'三明治', emoji:'🥪', min:35, max:60, qty:'a'},
+  {name:'Toast', zh:'吐司', emoji:'🍞', min:30, max:50, qty:'a piece of'},
+  {name:'Pancake', zh:'鬆餅', emoji:'🥞', min:40, max:60, qty:'a'},
+  {name:'Tea', zh:'茶', emoji:'🍵', min:30, max:40, qty:'a cup of'},
+  {name:'Coffee', zh:'咖啡', emoji:'☕', min:45, max:70, qty:'a cup of'},
+  {name:'Juice', zh:'果汁', emoji:'🧃', min:35, max:50, qty:'a glass of'},
+  {name:'Milk', zh:'牛奶', emoji:'🥛', min:30, max:45, qty:'a glass of'},
+  {name:'Cola', zh:'可樂', emoji:'🥤', min:30, max:40, qty:'a cup of'},
+  {name:'Water', zh:'水', emoji:'💧', min:20, max:30, qty:'a bottle of'},
+  {name:'Ice Cream', zh:'冰淇淋', emoji:'🍨', min:30, max:50, qty:'an'},
+  {name:'Cookie', zh:'餅乾', emoji:'🍪', min:30, max:40, qty:'a'},
+  {name:'Cake', zh:'蛋糕', emoji:'🍰', min:40, max:70, qty:'a piece of'},
+  {name:'Pie', zh:'派', emoji:'🥧', min:40, max:60, qty:'a piece of'},
+  {name:'Pudding', zh:'布丁', emoji:'🍮', min:30, max:45, qty:'a'},
+  {name:'Donut', zh:'甜甜圈', emoji:'🍩', min:30, max:50, qty:'a'},
+  {name:'Popcorn', zh:'爆米花', emoji:'🍿', min:40, max:60, qty:'some'},
+  {name:'Waffle', zh:'格子鬆餅', emoji:'🧇', min:40, max:60, qty:'a'}
+];
 
-            <!-- 控制快捷鍵 -->
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <button type="button" onclick="startCooldownTimer(60)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs px-3 py-2 rounded-xl rpg-btn border border-indigo-400">
-                60秒
-              </button>
-              <button type="button" onclick="startCooldownTimer(90)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs px-3 py-2 rounded-xl rpg-btn border border-indigo-400">
-                90秒
-              </button>
-              <button type="button" onclick="startCooldownTimer(120)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs px-3 py-2 rounded-xl rpg-btn border border-indigo-400">
-                2分鐘
-              </button>
-              <button id="timerToggleBtn" type="button" onclick="toggleCooldownTimer()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs px-3 py-2 rounded-xl rpg-btn shadow-amber-600">
-                暫停
-              </button>
-              <button type="button" onclick="resetCooldownTimer()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-xs px-2.5 py-2 rounded-xl">
-                重設
-              </button>
-            </div>
-          </div>
-        </div>
+const NAMES = ["Tom", "Mary", "Kevin", "Lily", "Stan", "Ben", "Amy", "Jack", "Emma", "David"];
 
-        <!-- 操作列：醒目的日期與堂數設定 + 抽卡按鈕 -->
-        <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-2xl p-4 text-white shadow-md mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="bg-slate-950/80 px-3.5 py-2 rounded-xl border border-amber-300 flex items-center gap-2 shadow-inner">
-              <span class="text-lg">📅</span>
-              <label class="text-xs font-black text-amber-300">登記日期：</label>
-              <input type="date" id="scoreDate" class="bg-transparent font-black text-sm text-white focus:outline-none cursor-pointer">
-            </div>
+const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+const getPrice = (min, max) => Math.floor((Math.random() * (max - min + 1) + min) / 5) * 5;
+const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-            <div class="bg-slate-950/80 px-3.5 py-2 rounded-xl border border-amber-300 flex items-center gap-2 shadow-inner">
-              <span class="text-lg">⏰</span>
-              <label class="text-xs font-black text-amber-300">課堂節次：</label>
-              <select id="lessonPeriodSelect" class="bg-transparent font-black text-sm text-amber-200 focus:outline-none cursor-pointer">
-                <option value="第 1 節" class="bg-slate-900 text-white">第 1 節課</option>
-                <option value="第 2 節" class="bg-slate-900 text-white">第 2 節課</option>
-                <option value="第 3 節" class="bg-slate-900 text-white">第 3 節課</option>
-                <option value="第 4 節" class="bg-slate-900 text-white">第 4 節課</option>
-                <option value="第 5 節" class="bg-slate-900 text-white">第 5 節課</option>
-                <option value="第 6 節" class="bg-slate-900 text-white">第 6 節課</option>
-                <option value="第 7 節" class="bg-slate-900 text-white" selected>第 7 節課</option>
-                <option value="第 8 節/課輔" class="bg-slate-900 text-white">第 8 節 / 課輔社團</option>
-              </select>
-            </div>
-          </div>
+let currentData = null;
+let answers = {};
+let mode = 'answer';
+let hintsActive = false;
 
-          <div class="flex items-center gap-2">
-            <!-- 老師開啟抽卡儀式 -->
-            <button type="button" onclick="openCardDrawModal()" class="bg-purple-700 hover:bg-purple-600 text-white font-black px-4 py-2.5 rounded-xl text-xs md:text-sm rpg-btn shadow-purple-950 border border-purple-400 flex items-center gap-1.5">
-              <span>🎴</span> 啟動抽卡儀式
-            </button>
-            <button type="button" onclick="batchSubmitScores()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black px-5 py-2.5 rounded-xl rpg-btn shadow-emerald-700 border border-emerald-300 flex items-center gap-1.5 text-sm">
-              <span>💾</span> 結算並儲存積分
-            </button>
-          </div>
-        </div>
+// 嚴格去重取假價格
+function getFakePrices(menu, correctPrice, count = 2) {
+  let fake = shuffle([...new Set(menu.map(m => m.price).filter(p => p !== correctPrice))]);
+  let offset = 1;
+  while (fake.length < count) { 
+    let p = correctPrice + (offset * 10);
+    if (!fake.includes(p)) fake.push(p);
+    offset++;
+  }
+  return fake.slice(0, count);
+}
 
-        <!-- 功能卡說明與同儕互助標籤說明 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-          <div class="bg-amber-50/90 border border-amber-200 rounded-2xl p-3 flex flex-wrap items-center gap-1.5 text-xs font-bold text-amber-900">
-            <span class="bg-amber-400 text-amber-950 px-2 py-0.5 rounded-lg">✨ 功能卡一覽</span>
-            <span class="bg-white px-2 py-0.5 rounded border border-amber-200">📜 雙倍卷軸 (×2,上限+10)</span>
-            <span class="bg-white px-2 py-0.5 rounded border border-amber-200">⚡ 爆擊護符 (+3分)</span>
-            <span class="bg-white px-2 py-0.5 rounded border border-amber-200">🛡️ 保底庇護 (未滿5補至5)</span>
-            <span class="bg-white px-2 py-0.5 rounded border border-amber-200">💎 幸運爆發 (擲D6骰加分)</span>
-          </div>
+// 嚴格去重取假食物
+function getFakeFoods(menu, correctFoodName, count = 2) {
+  let fake = shuffle(menu.filter(m => m.name !== correctFoodName));
+  return fake.slice(0, count);
+}
 
-          <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-3 flex items-center justify-between text-xs font-bold text-indigo-900">
-            <div class="flex items-center gap-2">
-              <span class="text-xl">🎖️</span>
-              <div>
-                <span class="text-indigo-700 font-black">【同儕互助與情緒調節】：</span>
-                <span class="text-slate-600">提供大尺寸「同儕引導 (+2)」、「主動求助 (+1)」、「小組分工 (+1)」按鈕，支援研究歷程記錄！</span>
-              </div>
-            </div>
-            <button type="button" onclick="clearAllBuffs()" class="text-slate-400 hover:text-slate-600 font-bold underline text-[11px] whitespace-nowrap ml-2">
-              重設所有標籤卡片
-            </button>
-          </div>
-        </div>
+// Level 1: 點餐尋找 (無人名干擾，純問單價)
+function generateL1(menu) {
+  const targetFoods = shuffle(menu).slice(0, 5);
+  const dialogue = [
+    ["Clerk", "Hello, welcome to the restaurant."],
+    ["Clerk", "What would you like today?"]
+  ];
+  const questions = targetFoods.map((f, i) => {
+    const fakes = getFakePrices(menu, f.price);
+    const options = shuffle([`$${f.price}`, `$${fakes[0]}`, `$${fakes[1]}`]);
+    return { stem: `How much is ${f.qty} ${f.name}?`, options, answer: options.indexOf(`$${f.price}`), locked: false };
+  });
+  return { dialogue, questions };
+}
 
-        <!-- 學生結算表格 -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse min-w-[1020px]">
-            <thead>
-              <tr class="bg-slate-50 border-b-2 border-slate-200 text-slate-500 text-xs font-black uppercase">
-                <th class="py-3 px-3 w-14 text-center">座號</th>
-                <th class="py-3 px-3 w-40">冒險者姓名</th>
-                <th class="py-3 px-3 w-36">現有總分 / 稱號</th>
-                <th class="py-3 px-3 w-56">課堂答題正字記號 (筆畫)</th>
-                <th class="py-3 px-3 w-80">💖 同儕互助與情緒調節加分 (大按鈕)</th>
-                <th class="py-3 px-3 w-48">裝備功能卡狀態</th>
-                <th class="py-3 px-3 w-24 text-right">今日結算小計</th>
-              </tr>
-            </thead>
-            <tbody id="scoreTableBody" class="divide-y divide-slate-100 text-sm font-bold">
-              <!-- 動態渲染學生資料 -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+// Level 2: 單人點餐
+function generateL2(menu, actors) {
+  const p1 = actors[0];
+  const food = menu[0];
+  const dialogue = [
+    [p1, `Hello. I want ${food.qty} ${food.name}.`],
+    [p1, `How much is it?`],
+    ["Clerk", `It is $${food.price}.`],
+    [p1, `OK, thank you.`]
+  ];
+  const fF = getFakeFoods(menu, food.name);
+  const fP = getFakePrices(menu, food.price);
+  const qData = [
+    { stem: `What does ${p1} want?`, ans: `${food.qty.charAt(0).toUpperCase() + food.qty.slice(1)} ${food.name}`, w1: `${fF[0].qty.charAt(0).toUpperCase() + fF[0].qty.slice(1)} ${fF[0].name}`, w2: `${fF[1].qty.charAt(0).toUpperCase() + fF[1].qty.slice(1)} ${fF[1].name}` },
+    { stem: `How much is the ${food.name}?`, ans: `$${food.price}`, w1: `$${fP[0]}`, w2: `$${fP[1]}` },
+    { stem: `Who wants ${food.qty} ${food.name}?`, ans: p1, w1: actors[1], w2: actors[2] },
+    { stem: `Does ${p1} order ${fF[0].qty} ${fF[0].name}?`, ans: `No.`, w1: `Yes.`, w2: `I don't know.` },
+    { stem: `Who tells the price?`, ans: `The clerk`, w1: p1, w2: actors[1] }
+  ];
+  const questions = qData.map(q => {
+    const options = shuffle([q.ans, q.w1, q.w2]);
+    return { stem: q.stem, options, answer: options.indexOf(q.ans), locked: false };
+  });
+  return { dialogue, questions };
+}
 
-    <!-- 頁籤 2: 每日加分日誌 (支援 CSV 歷程匯出) -->
-    <section id="historyTab" class="tab-content hidden">
-      <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-slate-200 rpg-card">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
-          <div>
-            <h3 class="text-lg font-black text-slate-700 flex items-center gap-2">
-              <span>📜</span> 課堂歷史加分日誌與行為歷程
-            </h3>
-            <p class="text-xs text-slate-400">完整記錄每堂課的原始筆畫、同儕鷹架/求助行為/小組分工標籤與實得得分，可逐筆檢視或獨立刪除</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <!-- CSV 匯出按鈕 -->
-            <button type="button" onclick="exportHistoryLogsToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-3.5 py-1.5 rounded-xl text-xs rpg-btn shadow-emerald-800 flex items-center gap-1.5">
-              <span>📊</span> 匯出歷程數據 (CSV)
-            </button>
-            <button type="button" onclick="openClearAllHistoryModal()" class="text-xs text-rose-500 hover:text-rose-700 font-bold underline flex items-center gap-1 ml-2">
-              <span>🗑️</span> 清空日誌
-            </button>
-          </div>
-        </div>
+// Level 3: 雙人點餐
+function generateL3(menu, actors) {
+  const p1 = actors[0], p2 = actors[1];
+  const f1 = menu[0], f2 = menu[1];
+  const dialogue = [
+    [p1, `I want ${f1.qty} ${f1.name}.`],
+    [p2, `I would like ${f2.qty} ${f2.name}.`],
+    ["Clerk", `OK. Please wait a minute.`]
+  ];
+  const Cap = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+  const qData = [
+    { stem: `What does ${p1} want?`, ans: `${Cap(f1.qty)} ${f1.name}`, w1: `${Cap(f2.qty)} ${f2.name}`, w2: `${Cap(menu[2].qty)} ${menu[2].name}` },
+    { stem: `What does ${p2} want?`, ans: `${Cap(f2.qty)} ${f2.name}`, w1: `${Cap(f1.qty)} ${f1.name}`, w2: `${Cap(menu[2].qty)} ${menu[2].name}` },
+    { stem: `Who wants ${f1.qty} ${f1.name}?`, ans: p1, w1: p2, w2: "The clerk" },
+    { stem: `Who wants ${f2.qty} ${f2.name}?`, ans: p2, w1: p1, w2: "The clerk" },
+    { stem: `How much is the ${f1.name}?`, ans: `$${f1.price}`, w1: `$${f2.price !== f1.price ? f2.price : menu[2].price}`, w2: `$${menu[3].price}` } // 簡單去重防呆
+  ];
+  const questions = qData.map(q => {
+    const options = shuffle([...new Set([q.ans, q.w1, q.w2])]); // 強制去重
+    while(options.length < 3) options.push("I don't know.");
+    return { stem: q.stem, options, answer: options.indexOf(q.ans), locked: false };
+  });
+  return { dialogue, questions };
+}
 
-        <div id="historyLogsContainer" class="space-y-4 max-h-[550px] overflow-y-auto pr-1">
-          <!-- 動態載入歷史日誌 -->
-        </div>
-      </div>
-    </section>
+// Level 4: 朋友聚餐 (加總)
+function generateL4(menu, actors) {
+  const p1 = actors[0], p2 = actors[1];
+  const f1 = menu[0], f2 = menu[1];
+  const total = f1.price + f2.price;
+  const dialogue = [
+    [p1, `I want ${f1.qty} ${f1.name}.`],
+    [p2, `I want ${f2.qty} ${f2.name}.`],
+    [p1, `How much is the total?`],
+    ["Clerk", `The total is $${total}.`]
+  ];
+  const fP = getFakePrices(menu, f1.price);
+  let fakeTotals = shuffle([...new Set([total + 10, total - 5, total + 15])].filter(t => t > 0));
+  const Cap = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+  
+  const qData = [
+    { stem: `What does ${p1} order?`, ans: `${Cap(f1.qty)} ${f1.name}`, w1: `${Cap(f2.qty)} ${f2.name}`, w2: `${Cap(menu[2].qty)} ${menu[2].name}` },
+    { stem: `How much is the ${f1.name}?`, ans: `$${f1.price}`, w1: `$${f2.price !== f1.price ? f2.price : fP[0]}`, w2: `$${fP[1]}` },
+    { stem: `Who asks the price?`, ans: p1, w1: p2, w2: "The clerk" },
+    { stem: `What does ${p2} order?`, ans: `${Cap(f2.qty)} ${f2.name}`, w1: `${Cap(f1.qty)} ${f1.name}`, w2: `${Cap(menu[2].qty)} ${menu[2].name}` },
+    { stem: `How much is the total?`, ans: `$${total}`, w1: `$${fakeTotals[0]}`, w2: `$${fakeTotals[1]}` }
+  ];
+  const questions = qData.map(q => {
+    const options = shuffle([...new Set([q.ans, q.w1, q.w2])]);
+    while(options.length < 3) options.push("I don't know.");
+    return { stem: q.stem, options, answer: options.indexOf(q.ans), locked: false };
+  });
+  return { dialogue, questions };
+}
 
-    <!-- 頁籤 3: 實體搖獎券庫存與核銷中心 (動態升級門檻) -->
-    <section id="gachaTab" class="tab-content hidden">
-      <!-- 獎項展示海報看版 (以專屬 30 顆球兌獎單呈現) -->
-      <div class="bg-white rounded-3xl p-5 md:p-6 shadow-sm border-2 border-slate-200 rpg-card mb-6">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <div class="flex items-center gap-2">
-            <span class="text-2xl">🎰</span>
-            <div>
-              <h3 class="text-lg font-black text-slate-800">搖獎機兌獎單 • 實體獎項規則</h3>
-              <p class="text-xs text-slate-400">共 30 顆球，平分 5 種獎項！若抽到不是 1-30 的神秘球，可任選以上五種獎項其一！</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <label class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-black px-3 py-1.5 rounded-xl text-xs cursor-pointer flex items-center gap-1 shadow-sm transition">
-              <span>🖼️</span> 上傳自訂海報
-              <input type="file" id="prizePosterInput" accept="image/*" onchange="handlePrizePosterUpload(event)" class="hidden">
-            </label>
-            <button type="button" onclick="promptPrizeImageUrl()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-black px-3 py-1.5 rounded-xl text-xs border border-slate-300">
-              🔗 圖片網址
-            </button>
-            <button type="button" onclick="resetDefaultPrizePoster()" class="text-slate-400 hover:text-slate-600 font-bold text-xs underline">
-              恢復預設兌獎單
-            </button>
-          </div>
-        </div>
+// Level 5: 家庭聚餐
+function generateL5(menu) {
+  const f1 = menu[0], f2 = menu[1], f3 = menu[2];
+  const total = f1.price + f2.price + f3.price;
+  const dialogue = [
+    ["Dad", `I will pay today. I want ${f1.qty} ${f1.name}.`],
+    ["Mom", `I would like ${f2.qty} ${f2.name}.`],
+    ["Son", `I want ${f3.qty} ${f3.name}.`],
+    ["Clerk", `The total is $${total}.`]
+  ];
+  let fakeTotals = shuffle([...new Set([total + 10, total - 15, total + 20])].filter(t => t > 0));
+  const Cap = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
-        <!-- 獎項海報主展示區 -->
-        <div id="prizePosterContainer" class="w-full rounded-2xl overflow-hidden border-2 border-indigo-100 bg-sky-50 shadow-inner">
-          <img id="prizePosterImage" src="" alt="搖獎機兌獎單" class="w-full max-h-[520px] object-contain mx-auto rounded-xl">
-        </div>
-      </div>
+  const qData = [
+    { stem: `Who pays for the food?`, ans: `Dad`, w1: `Mom`, w2: `Son` },
+    { stem: `What does Dad want?`, ans: `${Cap(f1.qty)} ${f1.name}`, w1: `${Cap(f2.qty)} ${f2.name}`, w2: `${Cap(f3.qty)} ${f3.name}` },
+    { stem: `Who wants ${f2.qty} ${f2.name}?`, ans: `Mom`, w1: `Dad`, w2: `Son` },
+    { stem: `Does Son order ${f1.qty} ${f1.name}?`, ans: `No.`, w1: `Yes.`, w2: `I don't know.` },
+    { stem: `How much is the total?`, ans: `$${total}`, w1: `$${fakeTotals[0]}`, w2: `$${fakeTotals[1]}` }
+  ];
+  const questions = qData.map(q => {
+    const options = shuffle([...new Set([q.ans, q.w1, q.w2])]);
+    while(options.length < 3) options.push("I don't know.");
+    return { stem: q.stem, options, answer: options.indexOf(q.ans), locked: false };
+  });
+  return { dialogue, questions };
+}
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- 左側：搖獎券統計與升級階梯說明 -->
-        <div class="lg:col-span-1 bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 rounded-3xl p-6 text-white shadow-xl flex flex-col justify-between border-4 border-amber-300 relative overflow-hidden">
-          <div class="text-center">
-            <div class="inline-block p-4 bg-white/20 backdrop-blur-md rounded-full text-6xl mb-3 shadow-inner">
-              🎟️
-            </div>
-            <h2 class="text-2xl font-black tracking-wide">實體搖獎券庫存所</h2>
-            
-            <!-- 動態級距階梯說明卡 -->
-            <div class="bg-slate-950/40 rounded-2xl p-3 my-2 text-left border border-white/20">
-              <span class="text-[11px] font-black text-amber-300 uppercase tracking-wider block mb-1">🎮 動態升級門檻（經驗值爬坡）</span>
-              <div class="text-[11px] text-amber-100 leading-relaxed font-bold">
-                第 1 張：<b class="text-white">40 分</b> (新手破冰) ➔ 第 2 張：<b class="text-white">+50 分</b> (累計90) ➔ 第 3 張：<b class="text-white">+60 分</b> (累計150) ➔ 第 4 張：<b class="text-white">+70 分</b> (累計220) ➔ 第 5 張起：每張固定 <b class="text-amber-300">+75 分</b> (封頂防挫折)
-              </div>
-            </div>
-            
-            <div class="bg-slate-950/30 backdrop-blur-md rounded-2xl p-4 my-4 border border-white/20 text-left space-y-2.5">
-              <div class="flex justify-between items-center text-xs">
-                <span class="text-amber-200 font-bold">班級符合資格待發放券：</span>
-                <span id="pendingIssueSummaryText" class="text-lg font-black text-rose-300">0 張</span>
-              </div>
-              <div class="flex justify-between items-center text-xs">
-                <span class="text-amber-200 font-bold">學生手上持有尚未兌換獎品：</span>
-                <span id="heldTicketsSummaryText" class="text-lg font-black text-white">0 件</span>
-              </div>
-              <div class="flex justify-between items-center text-xs pt-1.5 border-t border-white/10">
-                <span class="text-amber-200 font-bold">歷史累計已核銷獎項：</span>
-                <span id="redeemedTicketsSummaryText" class="text-base font-black text-amber-300">0 件</span>
-              </div>
-            </div>
-          </div>
+// 核心生成器
+function generateLevelData() {
+  const lvl = $('#levelChoice').value;
+  const menu = shuffle(FOOD_DB).slice(0, 8).map(item => ({ ...item, price: getPrice(item.min, item.max) }));
+  const actors = shuffle(NAMES).slice(0, 5);
+  let data;
+  
+  if (lvl === 'L1') data = generateL1(menu, actors);
+  else if (lvl === 'L2') data = generateL2(menu, actors);
+  else if (lvl === 'L3') data = generateL3(menu, actors);
+  else if (lvl === 'L4') data = generateL4(menu, actors);
+  else if (lvl === 'L5') data = generateL5(menu, actors);
 
-          <div class="space-y-2">
-            <button type="button" onclick="issueAllEligibleDirectly()" class="w-full bg-white text-orange-600 font-black py-3 rounded-2xl text-sm rpg-btn shadow-orange-800 flex items-center justify-center gap-1.5">
-              <span>⚡</span> 一鍵快速發放所有待發券 (待搖獎)
-            </button>
-            <p class="text-[11px] text-center text-amber-100">學生累積達標至講台搖獎：點選「領券並選獎」，日後使用時再點「核銷」！</p>
-          </div>
-        </div>
+  return {
+    menu,
+    dialogue: data.dialogue,
+    questions: shuffle(data.questions), // 打亂順序
+    hintWords: [...menu.map(m => m.name), ...actors, "Dad", "Mom", "Son", "Who", "Clerk"]
+  };
+}
 
-        <!-- 右側：個別學生實體搖獎券明細與動態進度 -->
-        <div class="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border-2 border-slate-200 rpg-card">
-          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <div>
-              <h3 class="text-lg font-black text-slate-700 flex items-center gap-2">
-                <span>📋</span> 學生實體券清冊 • 動態階梯進度與核銷中心
-              </h3>
-              <p class="text-xs text-slate-400">各生依 40 ➔ 50 ➔ 60 ➔ 70 ➔ 75 分累進獲券 ➔ 搖球領券選獎 ➔ 實際兌換核銷</p>
-            </div>
-          </div>
+// 高亮與語音
+function highlightText(text, isOption = false) {
+  if (!hintsActive || isOption) return text;
+  let res = String(text);
+  const sorted = [...currentData.hintWords].sort((a,b) => b.length - a.length);
+  sorted.forEach(word => {
+    const regex = new RegExp(`\\b(${escapeRegExp(word)})\\b`, "gi");
+    res = res.replace(regex, `<span class="hint-word">$1</span>`);
+  });
+  return res;
+}
 
-          <div class="overflow-x-auto max-h-[460px]">
-            <table class="w-full text-left">
-              <thead class="sticky top-0 bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-black">
-                <tr>
-                  <th class="py-2.5 px-3">座號</th>
-                  <th class="py-2.5 px-3">姓名</th>
-                  <th class="py-2.5 px-3 w-48">下一張券經驗值進度</th>
-                  <th class="py-2.5 px-3 text-center">可領券資格</th>
-                  <th class="py-2.5 px-3 text-center">持有中獎品</th>
-                  <th class="py-2.5 px-3 text-center">獎品明細與核銷</th>
-                  <th class="py-2.5 px-3 text-right">動作操作</th>
-                </tr>
-              </thead>
-              <tbody id="gachaInventoryTableBody" class="divide-y divide-slate-100 text-sm font-bold">
-                <!-- 動態注入各學生票券庫存與爬坡進度 -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g, ''));
+  utterance.lang = "en-US";
+  utterance.rate = 0.85;
+  window.speechSynthesis.speak(utterance);
+}
 
-    <!-- 頁籤 4: 課堂隨機抽籤與小隊分組工具 -->
-    <section id="toolsTab" class="tab-content hidden">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        <!-- 點名抽籤神器 -->
-        <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-slate-200 rpg-card flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="text-lg font-black text-slate-700 flex items-center gap-2">
-                <span>🎯</span> 天降神兵：課堂隨機抽籤
-              </h3>
-              <button type="button" onclick="clearLotteryResult()" class="text-xs text-indigo-600 hover:text-indigo-800 font-bold underline flex items-center gap-1">
-                <span>🧹</span> 重設抽籤結果
-              </button>
-            </div>
-            <p class="text-xs text-slate-400 mb-4">適合課堂提問、隨機發表；提供純隨機與逆境加權（照顧低分同學）。</p>
-            
-            <!-- 抽籤動畫顯示框 -->
-            <div id="drawWinnerBox" class="h-44 bg-gradient-to-br from-indigo-50 to-slate-100 border-3 border-dashed border-indigo-300 rounded-3xl flex flex-col items-center justify-center text-center p-4 transition-all">
-              <span class="text-4xl mb-2">🎲</span>
-              <span class="text-xl font-black text-indigo-500">準備好接受命運的召喚了嗎？</span>
-              <span class="text-xs text-slate-400 mt-1">點擊下方按鈕開始抽籤</span>
-            </div>
-          </div>
-          
-          <div class="mt-6 flex flex-wrap gap-2.5">
-            <button type="button" onclick="startRandomDraw(false)" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-2xl rpg-btn text-sm flex items-center justify-center gap-1.5 shadow-indigo-900">
-              <span>⚡</span> 純隨機抽 1 人
-            </button>
-            <button type="button" onclick="startRandomDraw(true)" title="總分較低或發言次數較少者，被抽中機率較高" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-black px-4 py-3 rounded-2xl rpg-btn text-xs flex items-center gap-1 shadow-amber-600">
-              <span>⚖️</span> 逆境抽籤 (低分優先)
-            </button>
-            <button type="button" onclick="clearLotteryResult()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-3 py-3 rounded-2xl text-xs border border-slate-300">
-              🧹 重設
-            </button>
-          </div>
-        </div>
-
-        <!-- 自動分組器 (含重設按鈕) -->
-        <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-slate-200 rpg-card">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="text-lg font-black text-slate-700 flex items-center gap-2">
-              <span>🛡️</span> 冒險小隊：自動分組器
-            </h3>
-            <button type="button" onclick="resetGroups()" class="text-xs text-indigo-600 hover:text-indigo-800 font-bold underline flex items-center gap-1">
-              <span>🧹</span> 重設分組
-            </button>
-          </div>
-          <p class="text-xs text-slate-400 mb-4">可指定組數，支援完全隨機或依累積戰力（分數）均衡分配組員！</p>
-
-          <div class="flex flex-wrap items-center gap-2 mb-4 bg-slate-50 p-3 rounded-2xl border border-slate-200">
-            <div class="flex items-center gap-1.5">
-              <label class="text-xs font-bold text-slate-600">組數：</label>
-              <select id="groupCountSelect" class="bg-white border-2 border-slate-300 rounded-xl px-2 py-1 font-black text-xs focus:outline-none">
-                <option value="2">2 組</option>
-                <option value="3">3 組</option>
-                <option value="4" selected>4 組</option>
-                <option value="5">5 組</option>
-                <option value="6">6 組</option>
-                <option value="8">8 組</option>
-              </select>
-            </div>
-            
-            <div class="flex items-center gap-1.5">
-              <label class="text-xs font-bold text-slate-600">模式：</label>
-              <select id="groupModeSelect" class="bg-white border-2 border-slate-300 rounded-xl px-2 py-1 font-black text-xs focus:outline-none">
-                <option value="random">隨機組隊 🎲</option>
-                <option value="balanced">戰力均分 ⚖️</option>
-              </select>
-            </div>
-
-            <div class="flex items-center gap-1.5 ml-auto">
-              <button type="button" onclick="generateGroups()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-3 py-1.5 rounded-xl text-xs rpg-btn shadow-indigo-800">
-                🚀 立即組隊
-              </button>
-              <button type="button" onclick="resetGroups()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-black px-2.5 py-1.5 rounded-xl text-xs">
-                🧹 重設
-              </button>
-            </div>
-          </div>
-
-          <!-- 分組結果容器 -->
-          <div id="groupResultContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto p-1">
-            <div class="text-xs text-slate-400 col-span-2 text-center py-12 border-2 border-dashed border-slate-200 rounded-2xl">
-              尚未生成分組名單，請選擇組數後點擊「立即組隊」
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 頁籤 5: 學生與班級管理 -->
-    <section id="manageTab" class="tab-content hidden">
-      <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-slate-200 rpg-card">
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
-          <div>
-            <h3 class="text-lg font-black text-slate-700 flex items-center gap-2">
-              <span>👥</span> 課堂冒險者名單與小老師管理
-            </h3>
-            <p class="text-xs text-slate-400">在此建立、設定小老師職位、重設分數或批次匯入名單</p>
-          </div>
-          <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-100">
-            當前班級人數：<span id="manageStudentCountText">0</span> 人
-          </span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- 批次與個別新增 -->
-          <div class="space-y-4">
-            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-              <label class="block text-xs font-black text-slate-700 mb-1.5">📥 批次匯入名單 (每行一人，可附座號，如：1 王小明)：</label>
-              <textarea id="batchImportArea" rows="4" placeholder="1 林冠宇&#10;2 張雅晴&#10;3 陳韋志" class="w-full bg-white border-2 border-slate-200 rounded-xl p-3 text-xs font-bold focus:outline-none focus:border-indigo-500"></textarea>
-              <button type="button" onclick="handleBatchImport()" class="mt-2 w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-2 rounded-xl text-xs rpg-btn shadow-indigo-900">
-                🚀 匯入至當前班級
-              </button>
-            </div>
-
-            <!-- 單筆新增 -->
-            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-              <label class="block text-xs font-black text-slate-700 mb-1.5">➕ 單筆新增學生：</label>
-              <div class="flex gap-2">
-                <input type="number" id="singleNoInput" placeholder="座號" class="w-16 bg-white border-2 border-slate-200 rounded-xl px-2 py-1.5 text-xs font-bold text-center focus:outline-none">
-                <input type="text" id="singleNameInput" placeholder="學生姓名" class="flex-1 bg-white border-2 border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none">
-                <button type="button" onclick="addSingleStudent()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black px-4 py-1.5 rounded-xl text-xs rpg-btn shadow-emerald-700">
-                  新增
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 名單清單、小老師勾選與個別分數重設 -->
-          <div class="flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <label class="text-xs font-black text-slate-700">📋 名單預覽與小老師指定：</label>
-                <span class="text-[10px] text-slate-400">點擊 🎖️ 切換小老師</span>
-              </div>
-              <div id="manageStudentList" class="space-y-2 max-h-[300px] overflow-y-auto pr-1 bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                <!-- 動態注入 -->
-              </div>
-            </div>
-
-            <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
-              <button type="button" onclick="resetAllStudentsScore()" class="text-amber-600 hover:text-amber-800 font-black text-xs underline">
-                🔄 重設全班所有學生積分為 0
-              </button>
-              <button type="button" onclick="clearCurrentClassData()" class="text-rose-500 hover:text-rose-700 font-black text-xs underline">
-                🗑️ 清空全班學生名單
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 檔案安全備份與跨裝置匯出/還原專區 -->
-        <div class="mt-6 pt-4 border-t-2 border-slate-100 bg-indigo-50/50 rounded-2xl p-4 border border-indigo-100">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h4 class="text-xs font-black text-indigo-900 flex items-center gap-1.5">
-                <span>📦</span> 系統資料安全備份與跨裝置還原
-              </h4>
-              <p class="text-[11px] text-slate-500 mt-0.5">可將班級學生、所有歷史加分日誌與搖獎券數據下載為備份檔，換電腦或學期末存檔免煩惱！</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="exportDataBackup()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-3 py-1.5 rounded-xl text-xs rpg-btn shadow-indigo-900 flex items-center gap-1">
-                <span>💾</span> 匯出完整備份檔 (.json)
-              </button>
-              <label class="bg-white hover:bg-slate-100 text-indigo-700 border border-indigo-200 font-black px-3 py-1.5 rounded-xl text-xs cursor-pointer flex items-center gap-1 shadow-sm">
-                <span>📥</span> 還原/匯入備份
-                <input type="file" id="importBackupInput" accept=".json" onchange="importDataBackup(event)" class="hidden">
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- 彈窗容器：新增班級 -->
-  <div id="newClassModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-amber-400">
-      <div class="text-3xl mb-2">🏫</div>
-      <h3 class="text-lg font-black text-slate-800">建立新課堂 / 班級</h3>
-      <p class="text-xs text-slate-400 mb-4">輸入新班級名稱以建立獨立積分空間</p>
-      
-      <label class="block text-xs font-bold text-slate-600 mb-1">班級名稱：</label>
-      <input type="text" id="newClassNameInput" placeholder="例如：702班 或 週五社團" class="w-full bg-slate-100 border-2 border-slate-300 rounded-xl p-2.5 font-black text-sm mb-4 focus:outline-none focus:border-indigo-600">
-      
-      <div class="flex gap-2">
-        <button type="button" onclick="createNewClass()" class="flex-1 bg-amber-400 hover:bg-amber-300 text-slate-900 font-black py-2.5 rounded-xl text-xs rpg-btn shadow-amber-600">
-          確認建立
-        </button>
-        <button type="button" onclick="closeModal('newClassModal')" class="bg-slate-200 text-slate-600 font-bold px-4 py-2.5 rounded-xl text-xs">
-          取消
-        </button>
-      </div>
+// 渲染 UI
+function renderUI() {
+  $('#menuGrid').innerHTML = currentData.menu.map(item => `
+    <div class="menu-item" tabindex="0" onclick="speak('${item.name}')">
+      <div class="menu-icon">${item.emoji}</div>
+      <div class="menu-name">${item.name}</div>
+      <div class="menu-price">$${item.price}</div>
     </div>
-  </div>
+  `).join('');
 
-  <!-- 彈窗容器：編輯 / 刪除當前班級 -->
-  <div id="editClassModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-indigo-600">
-      <div class="text-3xl mb-2">⚙️</div>
-      <h3 class="text-lg font-black text-slate-800">班級管理與設定</h3>
-      <p class="text-xs text-slate-400 mb-4">修改班級名稱或刪除此課堂（刪除前請確認）</p>
-      
-      <label class="block text-xs font-bold text-slate-600 mb-1">班級名稱：</label>
-      <input type="text" id="editClassNameInput" class="w-full bg-slate-100 border-2 border-slate-300 rounded-xl p-2.5 font-black text-sm mb-4 focus:outline-none focus:border-indigo-600">
-      
-      <div class="flex flex-col gap-2">
-        <div class="flex gap-2">
-          <button type="button" onclick="saveClassEdit()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-black py-2.5 rounded-xl text-xs rpg-btn shadow-indigo-900">
-            儲存修改名稱
-          </button>
-          <button type="button" onclick="closeModal('editClassModal')" class="bg-slate-200 text-slate-600 font-bold px-4 py-2.5 rounded-xl text-xs">
-            取消
-          </button>
-        </div>
-        <button type="button" onclick="deleteCurrentClass()" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-600 font-black py-2 rounded-xl text-xs border border-rose-200 mt-2">
-          🗑️ 刪除此班級與所有資料
-        </button>
-      </div>
+  $('#dialogueContent').innerHTML = currentData.dialogue.map(line => `
+    <div class="dialogue-line" tabindex="0" onclick="speak('${line[1]}')">
+      <div class="speaker">${line[0]}:</div>
+      <div class="speech">${highlightText(line[1], false)}</div>
     </div>
-  </div>
+  `).join('');
 
-  <!-- 彈窗容器：學生抽卡儀式 -->
-  <div id="cardDrawModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full text-center shadow-2xl border-4 border-purple-500 relative">
-      <div class="text-5xl mb-2 animate-bounce">🎴</div>
-      <h3 class="text-xl font-black text-slate-800 mb-1">課堂裝備功能卡抽取儀式</h3>
-      <p class="text-xs text-slate-400 mb-4">選擇學生並點擊卡背翻牌，裝備將立即同步！</p>
-
-      <div class="mb-4 text-left">
-        <label class="block text-xs font-bold text-slate-600 mb-1">抽卡冒險者：</label>
-        <select id="drawCardStudentSelect" onchange="resetDrawModalState()" class="w-full bg-slate-100 border-2 border-purple-300 rounded-xl p-2.5 font-black text-sm text-slate-700 focus:outline-none">
-          <!-- 學生清單 -->
-        </select>
-      </div>
-
-      <!-- 抽卡卡背動畫區 -->
-      <div id="cardDeckArea" class="py-4">
-        <div onclick="performCardDraw()" class="w-44 h-60 mx-auto bg-gradient-to-tr from-purple-800 via-indigo-600 to-amber-400 rounded-2xl border-4 border-amber-300 shadow-2xl flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-transform rpg-btn">
-          <span class="text-4xl animate-pulse">✨</span>
-          <span class="text-white font-black text-base mt-2">點擊翻牌</span>
-          <span class="text-[11px] text-amber-200">命運之卡</span>
-        </div>
-      </div>
-
-      <!-- 抽中卡片結果 -->
-      <div id="cardResultArea" class="hidden space-y-3">
-        <div class="bg-purple-50 border-3 border-purple-300 rounded-2xl p-5 text-purple-900 card-flip-anim">
-          <div id="cardWinnerInfo" class="text-xs text-purple-600 font-bold mb-1"></div>
-          <div id="cardDrawnTitle" class="text-2xl font-black text-purple-800"></div>
-          <p id="cardDrawnDesc" class="text-xs text-slate-600 mt-2 font-bold"></p>
-        </div>
-        
-        <div class="flex gap-2">
-          <button type="button" onclick="drawNextStudentCard()" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-black py-2.5 rounded-xl text-xs rpg-btn shadow-purple-900">
-            繼續下一位抽卡 ➡️
-          </button>
-          <button type="button" onclick="closeModal('cardDrawModal')" class="bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs">
-            完成
-          </button>
-        </div>
-      </div>
-
-      <button type="button" onclick="closeModal('cardDrawModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold">
-        ✕
-      </button>
-    </div>
-  </div>
-
-  <!-- 彈窗容器：幸運爆發 擲骰子互動 -->
-  <div id="diceRollModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border-4 border-amber-400 relative">
-      <div class="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">LUCKY EXPLOSION DICE</div>
-      <h3 class="text-lg font-black text-slate-800" id="diceRollStudentName">學生擲骰</h3>
-      <p class="text-xs text-slate-400 mb-6">點擊投擲 D6 骰子決定今日幸運加分（1~6 分）！</p>
-
-      <!-- 骰子圖示 -->
-      <div id="diceFaceDisplay" class="w-24 h-24 mx-auto bg-amber-400 text-slate-950 font-black text-5xl rounded-3xl border-4 border-amber-500 flex items-center justify-center shadow-lg transition-transform duration-200">
-        🎲
-      </div>
-
-      <div id="diceResultText" class="mt-4 text-base font-black text-slate-700 min-h-[28px]">
-        點擊下方按鈕開始擲骰
-      </div>
-
-      <div class="mt-5 flex gap-2">
-        <button id="diceRollBtn" type="button" onclick="rollDiceAction()" class="flex-1 bg-amber-400 hover:bg-amber-300 text-slate-900 font-black py-3 rounded-2xl text-sm rpg-btn shadow-amber-600">
-          🎲 擲出幸運點數！
-        </button>
-        <button type="button" onclick="closeModal('diceRollModal')" class="bg-slate-200 text-slate-700 font-bold px-4 py-3 rounded-2xl text-xs">
-          完成
-        </button>
-      </div>
-
-      <button type="button" onclick="closeModal('diceRollModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold">
-        ✕
-      </button>
-    </div>
-  </div>
-
-  <!-- 彈窗容器：單筆歷史紀錄刪除確認 -->
-  <div id="deleteLogModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-rose-500 relative">
-      <div class="text-3xl mb-2">🗑️</div>
-      <h3 class="text-lg font-black text-slate-800">刪除此筆課堂紀錄</h3>
-      <p class="text-xs text-slate-500 mb-3" id="deleteLogTargetInfo">確定要刪除該堂課的結算日誌嗎？</p>
-
-      <!-- 復原扣回分數選項 -->
-      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 mb-4 text-left">
-        <label class="flex items-start gap-2.5 cursor-pointer">
-          <input type="checkbox" id="rollbackScoresCheckbox" checked class="mt-0.5 w-4 h-4 text-amber-600 rounded border-slate-300 focus:ring-amber-500 cursor-pointer">
-          <div>
-            <span class="text-xs font-black text-amber-950 block">同時扣回學生該堂所得分數</span>
-            <span class="text-[11px] text-amber-800 block mt-0.5 leading-snug">若此紀錄為誤登記或重複結算，勾選可自動將學生加上的分數全數復原！</span>
-          </div>
-        </label>
-      </div>
-
-      <div class="flex gap-2">
-        <button type="button" onclick="executeDeleteSingleLog()" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-black py-2.5 rounded-xl text-xs rpg-btn shadow-rose-900">
-          確認刪除
-        </button>
-        <button type="button" onclick="closeModal('deleteLogModal')" class="bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs">
-          取消
-        </button>
-      </div>
-
-      <button type="button" onclick="closeModal('deleteLogModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold">
-        ✕
-      </button>
-    </div>
-  </div>
-
-  <!-- 彈窗容器：清除全班所有歷史紀錄確認 -->
-  <div id="clearAllHistoryModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-rose-600 relative">
-      <div class="text-3xl mb-2">⚠️</div>
-      <h3 class="text-lg font-black text-slate-800">清空所有歷史日誌</h3>
-      <p class="text-xs text-slate-500 mb-4">這將會清除當前班級的「所有」歷史課堂日誌紀錄（學生現有總分不會受影響）。</p>
-
-      <div class="flex gap-2">
-        <button type="button" onclick="executeClearAllHistory()" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-black py-2.5 rounded-xl text-xs rpg-btn shadow-rose-900">
-          確認清空日誌
-        </button>
-        <button type="button" onclick="closeModal('clearAllHistoryModal')" class="bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs">
-          取消
-        </button>
-      </div>
-      <button type="button" onclick="closeModal('clearAllHistoryModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold">
-        ✕
-      </button>
-    </div>
-  </div>
-
-  <!-- 彈窗容器：領券並選擇兌獎內容 (搖獎領券專用) -->
-  <div id="issuePrizeModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border-4 border-amber-400 relative">
-      <div class="text-3xl mb-1">🎟️</div>
-      <h3 class="text-lg font-black text-slate-800">登記領券 • 選擇搖出的獎項內容</h3>
-      <p class="text-xs text-slate-400 mb-3" id="issuePrizeModalStudentInfo">冒險者領券中</p>
-
-      <div class="space-y-3 mb-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1">本次搖獎抽中的獎項內容：</label>
-          <input type="text" id="issuedPrizeContentInput" placeholder="請點選下方球號或直接輸入獎項" class="w-full bg-slate-100 border-2 border-amber-300 rounded-xl p-2.5 font-black text-sm text-slate-800 focus:outline-none focus:border-amber-500">
-        </div>
-
-        <!-- 依兌獎單 5 大獎項快速填寫標籤 -->
-        <div>
-          <label class="block text-[11px] font-bold text-slate-500 mb-1">五大兌獎單獎項快速填入：</label>
-          <div class="flex flex-wrap gap-1.5">
-            <button type="button" onclick="quickFillIssuePrize('✏️ 50元文具任選')" class="bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs px-2.5 py-1 rounded-lg font-black border border-pink-300">✏️ 50元文具任選</button>
-            <button type="button" onclick="quickFillIssuePrize('🎁 獎品櫃100點獎品任選')" class="bg-sky-100 hover:bg-sky-200 text-sky-800 text-xs px-2.5 py-1 rounded-lg font-black border border-sky-300">🎁 獎品櫃100點獎品任選</button>
-            <button type="button" onclick="quickFillIssuePrize('📄 作業減半 (依老師調整)')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs px-2.5 py-1 rounded-lg font-black border border-emerald-300">📄 作業減半</button>
-            <button type="button" onclick="quickFillIssuePrize('🖥️ 大屏下課使用權 (10min)')" class="bg-purple-100 hover:bg-purple-200 text-purple-800 text-xs px-2.5 py-1 rounded-lg font-black border border-purple-300">🖥️ 大屏下課使用權</button>
-            <button type="button" onclick="quickFillIssuePrize('🎴 下節分數抽卡加乘')" class="bg-orange-100 hover:bg-orange-200 text-orange-800 text-xs px-2.5 py-1 rounded-lg font-black border border-orange-300">🎴 下節分數抽卡加乘</button>
-            <button type="button" onclick="quickFillIssuePrize('❓ 神秘球 (任選以上五種獎項其一)')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs px-2.5 py-1 rounded-lg font-black border border-amber-300">❓ 神秘球(自選)</button>
-          </div>
-        </div>
-
-        <!-- 1~30 顆球點選快速填寫盤 -->
-        <div class="bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
-          <div class="flex items-center justify-between mb-1.5">
-            <span class="text-[11px] font-black text-slate-600">🎯 直接點選學生搖出的球號（自動綁定獎項）：</span>
-            <span class="text-[10px] text-slate-400">1~30 號</span>
-          </div>
-          <div id="ballsGridContainer" class="grid grid-cols-10 gap-1 text-center font-black text-xs">
-            <!-- 動態生成 30 顆彩色球 -->
-          </div>
-        </div>
-      </div>
-
-      <div class="flex gap-2">
-        <button type="button" onclick="confirmIssueTicketAndPrize()" class="flex-1 bg-amber-400 hover:bg-amber-300 text-slate-900 font-black py-2.5 rounded-xl text-xs rpg-btn shadow-amber-600">
-          ✅ 發放實體券並綁定此獎項
-        </button>
-        <button type="button" onclick="closeModal('issuePrizeModal')" class="bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs">
-          取消
-        </button>
-      </div>
-
-      <button type="button" onclick="closeModal('issuePrizeModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold">
-        ✕
-      </button>
-    </div>
-  </div>
-
-  <!-- 彈窗容器：學生持有獎品清單與個別核銷中心 -->
-  <div id="studentPrizeDetailModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border-4 border-indigo-600 relative">
-      <div class="text-3xl mb-1">🎁</div>
-      <h3 class="text-lg font-black text-slate-800" id="studentPrizeDetailTitle">學生獎品明細與核銷</h3>
-      <p class="text-xs text-slate-400 mb-4">點擊「核銷」表示學生已實際兌現或使用該獎項</p>
-
-      <div class="space-y-4 max-h-[380px] overflow-y-auto pr-1">
-        <!-- 未核銷獎品區 -->
-        <div>
-          <div class="text-xs font-black text-amber-700 uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>⏳ 持有中待兌現獎項 (尚未核銷)：</span>
-            <span id="unredeemedCountBadge" class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[10px]">0 件</span>
-          </div>
-          <div id="unredeemedPrizeList" class="space-y-2">
-            <!-- 動態注入持有中獎品 -->
-          </div>
-        </div>
-
-        <!-- 歷史已核銷區 -->
-        <div class="pt-3 border-t border-slate-200">
-          <div class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>✅ 歷史已核銷紀錄：</span>
-            <span id="redeemedCountBadge" class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-[10px]">0 件</span>
-          </div>
-          <div id="redeemedPrizeList" class="space-y-2">
-            <!-- 動態注入歷史已核銷清單 -->
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-5 text-right">
-        <button type="button" onclick="closeModal('studentPrizeDetailModal')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-5 py-2 rounded-xl text-xs rpg-btn shadow-indigo-900">
-          完成 / 關閉
-        </button>
-      </div>
-
-      <button type="button" onclick="closeModal('studentPrizeDetailModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold">
-        ✕
-      </button>
-    </div>
-  </div>
-
-  <!-- 彈窗容器：全班 Boss 戰役命運大輪盤開箱 -->
-  <div id="bossRouletteModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-gradient-to-b from-indigo-900 via-purple-950 to-slate-950 text-white rounded-3xl p-6 md:p-8 max-w-lg w-full text-center shadow-2xl border-4 border-amber-400 relative overflow-hidden">
-      <!-- 背景光暈裝飾 -->
-      <div class="absolute -top-16 -left-16 w-48 h-48 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -bottom-16 -right-16 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-      <!-- 輪盤旋轉中視圖 -->
-      <div id="bossRouletteSpinView" class="relative z-10 py-6">
-        <div class="text-4xl md:text-5xl mb-3 animate-spin">🌀</div>
-        <h3 class="text-xl md:text-2xl font-black text-amber-300 mb-1">命運大輪盤急速旋轉中...</h3>
-        <p class="text-xs text-indigo-200 mb-6">全班冒險者齊心討伐成功！命運齒輪正在決定本階段專屬大獎！</p>
-
-        <!-- 輪盤卡牌展示框 -->
-        <div class="w-64 mx-auto bg-slate-900/90 border-4 border-amber-400/80 rounded-3xl p-6 shadow-2xl transition-all">
-          <div id="rouletteDisplayIcon" class="text-6xl mb-2">🎁</div>
-          <div id="rouletteDisplayTag" class="text-[11px] font-black text-amber-400 uppercase tracking-widest mb-1">抽獎中...</div>
-          <div id="rouletteDisplayTitle" class="text-base font-black text-white min-h-[48px] flex items-center justify-center">載入獎池中...</div>
-        </div>
-      </div>
-
-      <!-- 開獎揭曉視圖 -->
-      <div id="bossRouletteResultView" class="hidden relative z-10 py-4 space-y-4">
-        <div class="inline-block p-4 bg-amber-400 text-slate-950 rounded-full text-5xl md:text-6xl mb-1 shadow-lg animate-bounce" id="finalRewardIcon">
-          🍗
-        </div>
-        <div>
-          <span id="finalRewardRarity" class="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-xs px-3 py-1 rounded-full font-black uppercase tracking-wider">
-            ★ 稀有大獎 (15%)
-          </span>
-          <h3 class="text-2xl md:text-3xl font-black text-amber-300 mt-2" id="finalRewardName">
-            公會盛宴：特派能量小點心
-          </h3>
-          <p id="finalRewardDesc" class="text-xs md:text-sm text-indigo-100 mt-2 max-w-sm mx-auto bg-black/40 p-3 rounded-xl border border-white/10 leading-relaxed font-bold">
-            全班獲得老師特派的冒險者美味點心補給一份！
-          </p>
-        </div>
-
-        <div class="bg-amber-400/10 border border-amber-400/30 rounded-2xl p-3 text-xs text-amber-200 font-bold flex items-center justify-center gap-2">
-          <span id="finalRewardBadgeIcon" class="text-xl">🏆</span>
-          <span>恭喜全班達成目標！點擊下方按鈕領取並晉級下一階段戰役！</span>
-        </div>
-
-        <div class="pt-2">
-          <button type="button" onclick="confirmAndEnterNextStage()" class="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black py-3.5 rounded-2xl text-sm md:text-base rpg-btn shadow-amber-700 flex items-center justify-center gap-2">
-            <span>🎉</span> 確定領取獎勵，開啟下一輪挑戰！
-          </button>
-        </div>
-      </div>
-
-      <button type="button" onclick="closeModal('bossRouletteModal')" class="absolute top-4 right-4 text-white/50 hover:text-white text-xl font-bold z-20">
-        ✕
-      </button>
-    </div>
-  </div>
-
-  <!-- 浮動訊息 Toast 提示框 -->
-  <div id="toastNotification" class="fixed bottom-6 right-6 bg-slate-900 text-white font-black px-5 py-3 rounded-2xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2 text-sm border-2 border-amber-400">
-    <span id="toastIcon">✨</span>
-    <span id="toastMessage">系統訊息</span>
-  </div>
-
-  <script>
-    class SoundFX {
-      constructor() {
-        this.ctx = null;
-      }
-      init() {
-        if (!this.ctx) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          if (AudioContext) this.ctx = new AudioContext();
-        }
-      }
-      playTally() {
-        this.init();
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.08);
-        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.08);
-      }
-      playDice() {
-        this.init();
-        if (!this.ctx) return;
-        for (let i = 0; i < 3; i++) {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'square';
-          osc.frequency.setValueAtTime(300 + Math.random() * 400, this.ctx.currentTime + i * 0.05);
-          gain.gain.setValueAtTime(0.08, this.ctx.currentTime + i * 0.05);
-          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + i * 0.05 + 0.04);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(this.ctx.currentTime + i * 0.05);
-          osc.stop(this.ctx.currentTime + i * 0.05 + 0.04);
-        }
-      }
-      playCheer() {
-        this.init();
-        if (!this.ctx) return;
-        const notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, idx) => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.09);
-          gain.gain.setValueAtTime(0.2, this.ctx.currentTime + idx * 0.09);
-          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.09 + 0.2);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(this.ctx.currentTime + idx * 0.09);
-          osc.stop(this.ctx.currentTime + idx * 0.09 + 0.2);
-        });
-      }
-      playWarning() {
-        this.init();
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(220, this.ctx.currentTime);
-        osc.frequency.setValueAtTime(180, this.ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.25);
-      }
-      playRouletteTick() {
-        this.init();
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(400 + Math.random() * 200, this.ctx.currentTime);
-        gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.04);
-      }
-      playGrandFanfare() {
-        this.init();
-        if (!this.ctx) return;
-        const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
-        notes.forEach((freq, idx) => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.1);
-          gain.gain.setValueAtTime(0.2, this.ctx.currentTime + idx * 0.1);
-          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.1 + 0.35);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(this.ctx.currentTime + idx * 0.1);
-          osc.stop(this.ctx.currentTime + idx * 0.1 + 0.35);
-        });
-      }
-      playTimerEnd() {
-        this.init();
-        if (!this.ctx) return;
-        const bellNotes = [880, 1174.66, 1760];
-        bellNotes.forEach((freq, idx) => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.12);
-          gain.gain.setValueAtTime(0.25, this.ctx.currentTime + idx * 0.12);
-          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.12 + 0.4);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(this.ctx.currentTime + idx * 0.12);
-          osc.stop(this.ctx.currentTime + idx * 0.12 + 0.4);
-        });
-      }
+  const quiz = $('#questions');
+  quiz.innerHTML = '';
+  currentData.questions.forEach((q, i) => {
+    const sec = document.createElement('div');
+    sec.className = 'question';
+    
+    const line = document.createElement('div');
+    line.className = 'question-line';
+    line.onclick = () => speak(q.stem);
+    
+    const blank = document.createElement('span');
+    blank.className = 'answer-blank';
+    let letter = '　';
+    if(mode === 'reveal') { 
+      letter = String.fromCharCode(65 + q.answer); 
+      blank.classList.add('reveal'); 
     }
-    const sfx = new SoundFX();
-
-    const STORAGE_KEY = 'ADVENTURE_CLASSROOM_DB_V7';
-
-    // --- 【動態升級階梯計算核心 (40 ➔ 50 ➔ 60 ➔ 70 ➔ 75 封頂)】---
-    const TICKET_LADDER_STEPS = [40, 50, 60, 70];
-    const TICKET_LADDER_CAP = 75;
-
-    function getCostForTicket(ticketIndex) {
-      if (ticketIndex <= TICKET_LADDER_STEPS.length) {
-        return TICKET_LADDER_STEPS[ticketIndex - 1];
-      }
-      return TICKET_LADDER_CAP;
+    else if(q.locked) { 
+      letter = String.fromCharCode(65 + answers[i]); 
+      blank.classList.add('good'); 
     }
-
-    function getCumulativeThreshold(n) {
-      if (n <= 0) return 0;
-      let sum = 0;
-      for (let i = 1; i <= n; i++) {
-        sum += getCostForTicket(i);
-      }
-      return sum;
+    else if(answers[i] !== undefined) {
+      letter = String.fromCharCode(65 + answers[i]);
     }
-
-    function calculateEarnedTickets(score) {
-      if (score < 40) return 0;
-      let count = 0;
-      let cumulative = 0;
-      while (true) {
-        const nextCost = getCostForTicket(count + 1);
-        if (score >= cumulative + nextCost) {
-          cumulative += nextCost;
-          count++;
-        } else {
-          break;
-        }
-      }
-      return count;
-    }
-
-    function getNextTicketProgress(score) {
-      const earned = calculateEarnedTickets(score || 0);
-      const floorThreshold = getCumulativeThreshold(earned);
-      const nextCost = getCostForTicket(earned + 1);
-      const nextTargetThreshold = floorThreshold + nextCost;
-      const inStage = Math.max(0, (score || 0) - floorThreshold);
-      const percent = Math.min(100, Math.round((inStage / nextCost) * 100));
-      const remaining = Math.max(0, nextTargetThreshold - (score || 0));
-      return {
-        earned,
-        inStage,
-        nextCost,
-        nextTargetThreshold,
-        percent,
-        remaining,
-        nextTicketNum: earned + 1
+    blank.innerHTML = `（ ${letter} ）`;
+    
+    const title = document.createElement('span');
+    title.innerHTML = `${i+1}. ${highlightText(q.stem, false)}`;
+    line.append(blank, title);
+    sec.append(line);
+    
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((choice, j) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice';
+      btn.innerHTML = `(${String.fromCharCode(65+j)}) ${highlightText(choice, true)}`;
+      
+      if(mode === 'answer' && !q.locked && answers[i] === j) btn.classList.add('selected');
+      if(q.locked && answers[i] === j) btn.classList.add('correct');
+      if(mode === 'reveal' && j === q.answer) btn.classList.add('reveal');
+      
+      btn.disabled = mode !== 'answer' || q.locked;
+      btn.onclick = () => { 
+        if(mode === 'answer' && !q.locked) { answers[i] = j; renderUI(); } 
       };
-    }
-
-    // 依據 30 顆球兌獎單配置
-    const BALL_CONFIG = {
-      1:  { type: 'pink',   prize: '✏️ 50元文具任選' },
-      2:  { type: 'blue',   prize: '🎁 獎品櫃100點獎品任選' },
-      3:  { type: 'green',  prize: '📄 作業減半 (依老師調整)' },
-      4:  { type: 'purple', prize: '🖥️ 大屏下課使用權 (10min)' },
-      5:  { type: 'orange', prize: '🎴 下節分數抽卡加乘' },
-      6:  { type: 'pink',   prize: '✏️ 50元文具任選' },
-      7:  { type: 'blue',   prize: '🎁 獎品櫃100點獎品任選' },
-      8:  { type: 'green',  prize: '📄 作業減半 (依老師調整)' },
-      9:  { type: 'purple', prize: '🖥️ 大屏下課使用權 (10min)' },
-      10: { type: 'orange', prize: '🎴 下節分數抽卡加乘' },
-      11: { type: 'blue',   prize: '🎁 獎品櫃100點獎品任選' },
-      12: { type: 'orange', prize: '🎴 下節分數抽卡加乘' },
-      13: { type: 'purple', prize: '🖥️ 大屏下課使用權 (10min)' },
-      14: { type: 'green',  prize: '📄 作業減半 (依老師調整)' },
-      15: { type: 'purple', prize: '🖥️ 大屏下課使用權 (10min)' },
-      16: { type: 'orange', prize: '🎴 下節分數抽卡加乘' },
-      17: { type: 'blue',   prize: '🎁 獎品櫃100點獎品任選' },
-      18: { type: 'green',  prize: '📄 作業減半 (依老師調整)' },
-      19: { type: 'pink',   prize: '✏️ 50元文具任選' },
-      20: { type: 'blue',   prize: '🎁 獎品櫃100點獎品任選' },
-      21: { type: 'green',  prize: '📄 作業減半 (依老師調整)' },
-      22: { type: 'blue',   prize: '🎁 獎品櫃100點獎品任選' },
-      23: { type: 'pink',   prize: '✏️ 50元文具任選' },
-      24: { type: 'blue',   prize: '🎁 獎品櫃100點獎品任選' },
-      25: { type: 'orange', prize: '🎴 下節分數抽卡加乘' },
-      26: { type: 'green',  prize: '📄 作業減半 (依老師調整)' },
-      27: { type: 'orange', prize: '🎴 下節分數抽卡加乘' },
-      28: { type: 'purple', prize: '🖥️ 大屏下課使用權 (10min)' },
-      29: { type: 'purple', prize: '🖥️ 大屏下課使用權 (10min)' },
-      30: { type: 'orange', prize: '🎴 下節分數抽卡加乘' }
-    };
-
-    const BALL_COLOR_CLASSES = {
-      pink: 'bg-rose-100 text-rose-700 border-rose-300 hover:bg-rose-200',
-      blue: 'bg-sky-100 text-sky-700 border-sky-300 hover:bg-sky-200',
-      green: 'bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200',
-      purple: 'bg-purple-100 text-purple-700 border-purple-300 hover:bg-purple-200',
-      orange: 'bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200'
-    };
-
-    const defaultRafflePosterSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1200" viewBox="0 0 1100 1200">
-      <defs>
-        <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="%23dbeafe"/>
-          <stop offset="100%" stop-color="%23eff6ff"/>
-        </linearGradient>
-      </defs>
-      <rect width="1100" height="1200" rx="36" fill="url(%23bgGrad)"/>
-      <rect x="20" y="20" width="1060" height="1160" rx="30" fill="none" stroke="%2393c5fd" stroke-width="4"/>
-      <text x="630" y="90" font-size="34" font-weight="900" fill="%231e3a8a" text-anchor="middle" font-family="'Fredoka', 'Noto Sans TC', sans-serif">✨ 共 30 顆球，平分 5 種獎項 ✨</text>
-      <g transform="translate(50, 60)">
-        <ellipse cx="140" cy="180" rx="125" ry="125" fill="%23e0f2fe" stroke="%230284c7" stroke-width="6"/>
-        <path d="M 60 270 L 220 270 L 240 370 L 40 370 Z" fill="%23dc2626" stroke="%23991b1b" stroke-width="6"/>
-        <circle cx="140" cy="320" r="32" fill="%23cbd5e1" stroke="%23475569" stroke-width="4"/>
-        <rect x="155" y="305" width="40" height="16" rx="8" fill="%23facc15" stroke="%23b45309" stroke-width="3" transform="rotate(-25 155 305)"/>
-        <rect x="55" y="375" width="170" height="55" rx="14" fill="%23ffffff" stroke="%23ef4444" stroke-width="4"/>
-        <text x="140" y="398" font-size="15" font-weight="900" fill="%231e3a8a" text-anchor="middle" font-family="sans-serif">轉出驚喜</text>
-        <text x="140" y="420" font-size="15" font-weight="900" fill="%23dc2626" text-anchor="middle" font-family="sans-serif">好運加倍！</text>
-        <rect x="50" y="110" width="180" height="85" rx="22" fill="%23fde047" stroke="%232563eb" stroke-width="6"/>
-        <text x="140" y="145" font-size="28" font-weight="900" fill="%231e3a8a" text-anchor="middle" font-family="sans-serif">搖獎機</text>
-        <text x="140" y="180" font-size="28" font-weight="900" fill="%232563eb" text-anchor="middle" font-family="sans-serif">兌獎單</text>
-      </g>
-      <g transform="translate(340, 130)">
-        <rect width="135" height="290" rx="20" fill="%23ffe4e6" stroke="%23f43f5e" stroke-width="3"/>
-        <rect width="135" height="120" rx="18" fill="%23ffffff" opacity="0.8"/>
-        <text x="67.5" y="75" font-size="50" text-anchor="middle">✏️</text>
-        <text x="67.5" y="165" font-size="18" font-weight="900" fill="%23881337" text-anchor="middle" font-family="sans-serif">50元</text>
-        <text x="67.5" y="195" font-size="16" font-weight="900" fill="%23881337" text-anchor="middle" font-family="sans-serif">文具任選</text>
-        <rect x="15" y="235" width="105" height="38" rx="14" fill="%23f43f5e"/>
-        <text x="67.5" y="260" font-size="16" font-weight="900" fill="%23ffffff" text-anchor="middle" font-family="sans-serif">6 顆</text>
-      </g>
-      <g transform="translate(485, 130)">
-        <rect width="135" height="290" rx="20" fill="%23e0f2fe" stroke="%230284c7" stroke-width="3"/>
-        <rect width="135" height="120" rx="18" fill="%23ffffff" opacity="0.8"/>
-        <text x="67.5" y="75" font-size="50" text-anchor="middle">🎁</text>
-        <text x="67.5" y="165" font-size="17" font-weight="900" fill="%230369a1" text-anchor="middle" font-family="sans-serif">獎品櫃</text>
-        <text x="67.5" y="190" font-size="13" font-weight="900" fill="%230369a1" text-anchor="middle" font-family="sans-serif">100點獎品任選</text>
-        <rect x="15" y="235" width="105" height="38" rx="14" fill="%230284c7"/>
-        <text x="67.5" y="260" font-size="16" font-weight="900" fill="%23ffffff" text-anchor="middle" font-family="sans-serif">6 顆</text>
-      </g>
-      <g transform="translate(630, 130)">
-        <rect width="135" height="290" rx="20" fill="%23dcfce7" stroke="%2316a34a" stroke-width="3"/>
-        <rect width="135" height="120" rx="18" fill="%23ffffff" opacity="0.8"/>
-        <text x="67.5" y="75" font-size="50" text-anchor="middle">📄</text>
-        <text x="67.5" y="165" font-size="17" font-weight="900" fill="%2314532d" text-anchor="middle" font-family="sans-serif">作業減半</text>
-        <text x="67.5" y="190" font-size="12" font-weight="bold" fill="%23166534" text-anchor="middle" font-family="sans-serif">(依老師調整)</text>
-        <rect x="15" y="235" width="105" height="38" rx="14" fill="%2316a34a"/>
-        <text x="67.5" y="260" font-size="16" font-weight="900" fill="%23ffffff" text-anchor="middle" font-family="sans-serif">6 顆</text>
-      </g>
-      <g transform="translate(775, 130)">
-        <rect width="135" height="290" rx="20" fill="%23f3e8ff" stroke="%239333ea" stroke-width="3"/>
-        <rect width="135" height="120" rx="18" fill="%23ffffff" opacity="0.8"/>
-        <text x="67.5" y="75" font-size="50" text-anchor="middle">🖥️</text>
-        <text x="67.5" y="162" font-size="16" font-weight="900" fill="%23581c87" text-anchor="middle" font-family="sans-serif">大屏下課</text>
-        <text x="67.5" y="186" font-size="14" font-weight="900" fill="%23581c87" text-anchor="middle" font-family="sans-serif">使用權 (10m)</text>
-        <rect x="15" y="235" width="105" height="38" rx="14" fill="%239333ea"/>
-        <text x="67.5" y="260" font-size="16" font-weight="900" fill="%23ffffff" text-anchor="middle" font-family="sans-serif">6 顆</text>
-      </g>
-      <g transform="translate(920, 130)">
-        <rect width="135" height="290" rx="20" fill="%23ffedd5" stroke="%23ea580c" stroke-width="3"/>
-        <rect width="135" height="120" rx="18" fill="%23ffffff" opacity="0.8"/>
-        <text x="67.5" y="75" font-size="50" text-anchor="middle">🎴</text>
-        <text x="67.5" y="162" font-size="16" font-weight="900" fill="%237c2d12" text-anchor="middle" font-family="sans-serif">下節分數</text>
-        <text x="67.5" y="186" font-size="15" font-weight="900" fill="%237c2d12" text-anchor="middle" font-family="sans-serif">抽卡加乘</text>
-        <rect x="15" y="235" width="105" height="38" rx="14" fill="%23ea580c"/>
-        <text x="67.5" y="260" font-size="16" font-weight="900" fill="%23ffffff" text-anchor="middle" font-family="sans-serif">6 顆</text>
-      </g>
-      <g transform="translate(320, 440)">
-        <rect width="735" height="100" rx="22" fill="%23ffffff" stroke="%233b82f6" stroke-width="3"/>
-        <rect width="180" height="100" rx="22" fill="%231d4ed8"/>
-        <text x="90" y="60" font-size="20" font-weight="900" fill="%23fde047" text-anchor="middle" font-family="sans-serif">★ 特別規則</text>
-        <text x="205" y="47" font-size="18" font-weight="900" fill="%231e3a8a" font-family="sans-serif">若抽到不是 1-30 的球球 (神秘球)，</text>
-        <text x="205" y="77" font-size="18" font-weight="900" fill="%23dc2626" font-family="sans-serif">可任選以上五種獎項其一！</text>
-        <circle cx="680" cy="50" r="32" fill="%23c084fc" stroke="%237e22ce" stroke-width="4"/>
-        <text x="680" y="63" font-size="34" font-weight="900" fill="%23ffffff" text-anchor="middle" font-family="sans-serif">?</text>
-      </g>
-      <g transform="translate(45, 570)">
-        <rect width="1010" height="470" rx="30" fill="%23ffffff" stroke="%2393c5fd" stroke-width="4"/>
-        <text x="505" y="45" font-size="22" font-weight="900" fill="%231e40af" text-anchor="middle" font-family="sans-serif">🎱 搖獎機 1 ~ 30 號彩色球獎號配置圖 🎱</text>
-        <!-- Row 1 -->
-        <circle cx="95" cy="120" r="36" fill="%23fda4af" stroke="%23f43f5e" stroke-width="4"/><text x="95" y="132" font-size="28" font-weight="900" fill="%23881337" text-anchor="middle">1</text>
-        <circle cx="185" cy="120" r="36" fill="%237dd3fc" stroke="%230284c7" stroke-width="4"/><text x="185" y="132" font-size="28" font-weight="900" fill="%23075985" text-anchor="middle">2</text>
-        <circle cx="275" cy="120" r="36" fill="%2386efac" stroke="%2316a34a" stroke-width="4"/><text x="275" y="132" font-size="28" font-weight="900" fill="%2314532d" text-anchor="middle">3</text>
-        <circle cx="365" cy="120" r="36" fill="%23d8b4fe" stroke="%239333ea" stroke-width="4"/><text x="365" y="132" font-size="28" font-weight="900" fill="%23581c87" text-anchor="middle">4</text>
-        <circle cx="455" cy="120" r="36" fill="%23fed7aa" stroke="%23ea580c" stroke-width="4"/><text x="455" y="132" font-size="28" font-weight="900" fill="%237c2d12" text-anchor="middle">5</text>
-        <circle cx="545" cy="120" r="36" fill="%23fda4af" stroke="%23f43f5e" stroke-width="4"/><text x="545" y="132" font-size="28" font-weight="900" fill="%23881337" text-anchor="middle">6</text>
-        <circle cx="635" cy="120" r="36" fill="%237dd3fc" stroke="%230284c7" stroke-width="4"/><text x="635" y="132" font-size="28" font-weight="900" fill="%23075985" text-anchor="middle">7</text>
-        <circle cx="725" cy="120" r="36" fill="%2386efac" stroke="%2316a34a" stroke-width="4"/><text x="725" y="132" font-size="28" font-weight="900" fill="%2314532d" text-anchor="middle">8</text>
-        <circle cx="815" cy="120" r="36" fill="%23d8b4fe" stroke="%239333ea" stroke-width="4"/><text x="815" y="132" font-size="28" font-weight="900" fill="%23581c87" text-anchor="middle">9</text>
-        <circle cx="905" cy="120" r="36" fill="%23fed7aa" stroke="%23ea580c" stroke-width="4"/><text x="905" y="132" font-size="26" font-weight="900" fill="%237c2d12" text-anchor="middle">10</text>
-        <!-- Row 2 -->
-        <circle cx="95" cy="235" r="36" fill="%237dd3fc" stroke="%230284c7" stroke-width="4"/><text x="95" y="247" font-size="26" font-weight="900" fill="%23075985" text-anchor="middle">11</text>
-        <circle cx="185" cy="235" r="36" fill="%23fed7aa" stroke="%23ea580c" stroke-width="4"/><text x="185" y="247" font-size="26" font-weight="900" fill="%237c2d12" text-anchor="middle">12</text>
-        <circle cx="275" cy="235" r="36" fill="%23d8b4fe" stroke="%239333ea" stroke-width="4"/><text x="275" y="247" font-size="26" font-weight="900" fill="%23581c87" text-anchor="middle">13</text>
-        <circle cx="365" cy="235" r="36" fill="%2386efac" stroke="%2316a34a" stroke-width="4"/><text x="365" y="247" font-size="26" font-weight="900" fill="%2314532d" text-anchor="middle">14</text>
-        <circle cx="455" cy="235" r="36" fill="%23d8b4fe" stroke="%239333ea" stroke-width="4"/><text x="455" y="247" font-size="26" font-weight="900" fill="%23581c87" text-anchor="middle">15</text>
-        <circle cx="545" cy="235" r="36" fill="%23fed7aa" stroke="%23ea580c" stroke-width="4"/><text x="545" y="247" font-size="26" font-weight="900" fill="%237c2d12" text-anchor="middle">16</text>
-        <circle cx="635" cy="235" r="36" fill="%237dd3fc" stroke="%230284c7" stroke-width="4"/><text x="635" y="247" font-size="26" font-weight="900" fill="%23075985" text-anchor="middle">17</text>
-        <circle cx="725" cy="235" r="36" fill="%2386efac" stroke="%2316a34a" stroke-width="4"/><text x="725" y="247" font-size="26" font-weight="900" fill="%2314532d" text-anchor="middle">18</text>
-        <circle cx="815" cy="235" r="36" fill="%23fda4af" stroke="%23f43f5e" stroke-width="4"/><text x="815" y="247" font-size="26" font-weight="900" fill="%23881337" text-anchor="middle">19</text>
-        <circle cx="905" cy="235" r="36" fill="%237dd3fc" stroke="%230284c7" stroke-width="4"/><text x="905" y="247" font-size="26" font-weight="900" fill="%23075985" text-anchor="middle">20</text>
-        <!-- Row 3 -->
-        <circle cx="95" cy="350" r="36" fill="%2386efac" stroke="%2316a34a" stroke-width="4"/><text x="95" y="362" font-size="26" font-weight="900" fill="%2314532d" text-anchor="middle">21</text>
-        <circle cx="185" cy="350" r="36" fill="%237dd3fc" stroke="%230284c7" stroke-width="4"/><text x="185" y="362" font-size="26" font-weight="900" fill="%23075985" text-anchor="middle">22</text>
-        <circle cx="275" cy="350" r="36" fill="%23fda4af" stroke="%23f43f5e" stroke-width="4"/><text x="275" y="362" font-size="26" font-weight="900" fill="%23881337" text-anchor="middle">23</text>
-        <circle cx="365" cy="350" r="36" fill="%237dd3fc" stroke="%230284c7" stroke-width="4"/><text x="365" y="362" font-size="26" font-weight="900" fill="%23075985" text-anchor="middle">24</text>
-        <circle cx="455" cy="350" r="36" fill="%23fed7aa" stroke="%23ea580c" stroke-width="4"/><text x="455" y="362" font-size="26" font-weight="900" fill="%237c2d12" text-anchor="middle">25</text>
-        <circle cx="545" cy="350" r="36" fill="%2386efac" stroke="%2316a34a" stroke-width="4"/><text x="545" y="362" font-size="26" font-weight="900" fill="%2314532d" text-anchor="middle">26</text>
-        <circle cx="635" cy="350" r="36" fill="%23fed7aa" stroke="%23ea580c" stroke-width="4"/><text x="635" y="362" font-size="26" font-weight="900" fill="%237c2d12" text-anchor="middle">27</text>
-        <circle cx="725" cy="350" r="36" fill="%23d8b4fe" stroke="%239333ea" stroke-width="4"/><text x="725" y="362" font-size="26" font-weight="900" fill="%23581c87" text-anchor="middle">28</text>
-        <circle cx="815" cy="350" r="36" fill="%23d8b4fe" stroke="%239333ea" stroke-width="4"/><text x="815" y="362" font-size="26" font-weight="900" fill="%23581c87" text-anchor="middle">29</text>
-        <circle cx="905" cy="350" r="36" fill="%23fed7aa" stroke="%23ea580c" stroke-width="4"/><text x="905" y="362" font-size="26" font-weight="900" fill="%237c2d12" text-anchor="middle">30</text>
-        <text x="505" y="435" font-size="16" font-weight="bold" fill="%2364748b" text-anchor="middle">每種獎項各 6 顆，共 30 顆，祝你抽中好運！</text>
-      </g>
-    </svg>`;
-
-    let db = {
-      currentClassId: 'class_701',
-      prizePosterImage: '',
-      classes: {
-        'class_701': {
-          id: 'class_701',
-          name: '701 班 (七年一班)',
-          targetScore: 200,
-          milestoneStage: 1,
-          selectedReward: 'music',
-          bossScoreOffset: 0,
-          historyLogs: [],
-          students: [
-            { 
-              id: 101, no: 1, name: '林冠宇', isHelper: true, totalScore: 54, 
-              tickets: [
-                { id: 't_1', date: '2026-09-10', prize: '✏️ 50元文具任選 (抽中 1 號球)', status: 'redeemed', redeemedDate: '2026-09-11' }
-              ],
-              currentBuff: 'none', luckyDiceRoll: 0, sessionBehaviorScores: []
-            },
-            { 
-              id: 102, no: 2, name: '張雅晴', isHelper: false, totalScore: 102, 
-              tickets: [
-                { id: 't_2', date: '2026-09-12', prize: '📄 作業減半 (依老師調整) (抽中 3 號球)', status: 'held', redeemedDate: null },
-                { id: 't_3', date: '2026-09-14', prize: '🎁 獎品櫃100點獎品任選 (抽中 2 號球)', status: 'redeemed', redeemedDate: '2026-09-15' }
-              ],
-              currentBuff: 'none', luckyDiceRoll: 0, sessionBehaviorScores: []
-            },
-            { id: 103, no: 3, name: '陳韋志', isHelper: false, totalScore: 28, tickets: [], currentBuff: 'none', luckyDiceRoll: 0, sessionBehaviorScores: [] },
-            { 
-              id: 104, no: 4, name: '黃詩涵', isHelper: false, totalScore: 65, 
-              tickets: [
-                { id: 't_4', date: '2026-09-14', prize: '🖥️ 大屏下課使用權 (10min) (抽中 4 號球)', status: 'held', redeemedDate: null }
-              ],
-              currentBuff: 'none', luckyDiceRoll: 0, sessionBehaviorScores: []
-            },
-            { id: 105, no: 5, name: '周柏翰', isHelper: false, totalScore: 45, tickets: [], currentBuff: 'none', luckyDiceRoll: 0, sessionBehaviorScores: [] }
-          ]
-        }
-      }
-    };
-
-    const BUFF_CARDS = [
-      { id: 'double', name: '📜 雙倍卷軸', desc: '當日得分翻倍 (上限額外+10分)' },
-      { id: 'crit', name: '⚡ 爆擊護符', desc: '有得分時額外直接 +3 分' },
-      { id: 'safe', name: '🛡️ 保底庇護', desc: '有得分但未滿5分者，保底直升 5 分' },
-      { id: 'lucky', name: '💎 幸運爆發', desc: '投擲 D6 骰子，依點數獲得 1~6 額外加分' }
-    ];
-
-    const REWARD_POOL = [
-      { id: 'snack', name: '公會盛宴：特派能量小點心', icon: '🍗', rarityText: '★ 稀有大獎 (15%)', desc: '全班獲得老師特派的冒險者美味點心補給一份！', weight: 0.15 },
-      { id: 'music', name: '課堂派對：預留10分鐘點歌時間', icon: '🎵', rarityText: '人氣特權 (28.3%)', desc: '下堂課下課前預留 10 分鐘，播放全班喜愛的音樂或點播熱門曲目！', weight: 0.28333 },
-      { id: 'homework', name: '守護護符：全班作業減免少寫一頁券', icon: '🛡️', rarityText: '防禦神券 (28.3%)', desc: '全班獲得本次指定作業減半或少寫一頁的守護特權！', weight: 0.28333 },
-      { id: 'spotlight', name: '聚光燈舞台：分享喜歡的事物/影片', icon: '🎤', rarityText: '舞台特權 (28.3%)', desc: '課堂預留 10 分鐘，由同學向全班分享自己最熱愛的事物、嗜好或影片！', weight: 0.28333 }
-    ];
-
-    function drawWeightedBossReward() {
-      const rand = Math.random();
-      if (rand < 0.15) {
-        return REWARD_POOL[0];
-      } else if (rand < 0.15 + 0.28333) {
-        return REWARD_POOL[1];
-      } else if (rand < 0.15 + 0.28333 * 2) {
-        return REWARD_POOL[2];
-      } else {
-        return REWARD_POOL[3];
-      }
-    }
-
-    let currentPendingWonReward = null;
-    let currentDiceRollingStudentId = null;
-    let targetDeleteLogId = null;
-    let currentIssuingStudentId = null;
-    let currentViewingStudentId = null;
-
-    let timerTotalSeconds = 0;
-    let timerRemainingSeconds = 0;
-    let timerInterval = null;
-    let isTimerRunning = false;
-
-    function getStudentRank(score) {
-      if (score >= 200) return { title: '傳奇大導師 🌟', color: 'bg-amber-100 text-amber-800' };
-      if (score >= 140) return { title: '知識大魔導 🔮', color: 'bg-purple-100 text-purple-800' };
-      if (score >= 70) return { title: '筆記精靈 🏹', color: 'bg-indigo-100 text-indigo-800' };
-      return { title: '見習冒險者 🛡️', color: 'bg-slate-100 text-slate-700' };
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      loadDataFromStorage();
-      const today = new Date().toISOString().split('T')[0];
-      const dateInput = document.getElementById('scoreDate');
-      if (dateInput) dateInput.value = today;
-      
-      buildBallsGrid();
-      renderClassSelector();
-      renderPrizePoster();
-      renderAllViews();
+      opts.append(btn);
     });
-
-    function loadDataFromStorage() {
-      const candidateKeys = ['ADVENTURE_CLASSROOM_DB_V7', 'ADVENTURE_CLASSROOM_DB_V6', 'ADVENTURE_CLASSROOM_DB_V5', 'ADVENTURE_CLASSROOM_DB_V4', 'CLASS_ADVENTURE_DATA_V1'];
-      for (const k of candidateKeys) {
-        const raw = localStorage.getItem(k);
-        if (raw) {
-          try { 
-            const parsed = JSON.parse(raw);
-            if (parsed && parsed.classes && Object.keys(parsed.classes).length > 0) {
-              db = parsed;
-              if (db.prizePosterImage === undefined) db.prizePosterImage = '';
-              Object.values(db.classes).forEach(cls => {
-                if (!cls.historyLogs) cls.historyLogs = [];
-                if (!cls.targetScore) cls.targetScore = 200;
-                if (!cls.milestoneStage) cls.milestoneStage = 1;
-                if (!cls.selectedReward) cls.selectedReward = 'music';
-                if (cls.bossScoreOffset === undefined) cls.bossScoreOffset = 0;
-                if (cls.students) {
-                  cls.students.forEach(st => {
-                    if (st.isHelper === undefined) st.isHelper = false;
-                    if (st.currentBuff === undefined) st.currentBuff = 'none';
-                    if (st.luckyDiceRoll === undefined) st.luckyDiceRoll = 0;
-                    if (!st.sessionBehaviorScores) st.sessionBehaviorScores = [];
-                    if (!st.tickets) st.tickets = [];
-                  });
-                }
-              });
-              return;
-            }
-          } catch (e) { 
-            console.error('Data Load Error', e); 
-          }
-        }
-      }
-    }
-
-    function persistData() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-    }
-
-    function getCurrentClass() {
-      if (!db.classes[db.currentClassId]) {
-        const firstKey = Object.keys(db.classes)[0];
-        if (firstKey) db.currentClassId = firstKey;
-      }
-      const cur = db.classes[db.currentClassId];
-      if (cur && !cur.historyLogs) cur.historyLogs = [];
-      if (cur && !cur.selectedReward) cur.selectedReward = 'music';
-      return cur;
-    }
-
-    // --- 解題冷卻計時器邏輯 ---
-    function startCooldownTimer(seconds) {
-      clearInterval(timerInterval);
-      timerTotalSeconds = seconds;
-      timerRemainingSeconds = seconds;
-      isTimerRunning = true;
-      updateCooldownTimerUI();
-      sfx.playTally();
-
-      const btn = document.getElementById('timerToggleBtn');
-      if (btn) btn.textContent = '暫停';
-
-      timerInterval = setInterval(() => {
-        if (timerRemainingSeconds > 0) {
-          timerRemainingSeconds--;
-          updateCooldownTimerUI();
-        } else {
-          clearInterval(timerInterval);
-          isTimerRunning = false;
-          onCooldownTimerFinished();
-        }
-      }, 1000);
-    }
-
-    function toggleCooldownTimer() {
-      if (timerTotalSeconds === 0) return;
-      const btn = document.getElementById('timerToggleBtn');
-      if (isTimerRunning) {
-        clearInterval(timerInterval);
-        isTimerRunning = false;
-        if (btn) btn.textContent = '繼續';
-        document.getElementById('timerStatusBadge').textContent = '已暫停';
-      } else {
-        if (timerRemainingSeconds <= 0) return;
-        isTimerRunning = true;
-        if (btn) btn.textContent = '暫停';
-        timerInterval = setInterval(() => {
-          if (timerRemainingSeconds > 0) {
-            timerRemainingSeconds--;
-            updateCooldownTimerUI();
-          } else {
-            clearInterval(timerInterval);
-            isTimerRunning = false;
-            onCooldownTimerFinished();
-          }
-        }, 1000);
-      }
-    }
-
-    function resetCooldownTimer() {
-      clearInterval(timerInterval);
-      isTimerRunning = false;
-      timerTotalSeconds = 0;
-      timerRemainingSeconds = 0;
-      document.getElementById('timerDisplay').textContent = '00:00';
-      document.getElementById('timerDisplay').className = "font-mono font-black text-3xl md:text-4xl text-amber-400 tracking-wider bg-black/50 px-4 py-1.5 rounded-xl border border-white/10 shadow-inner";
-      document.getElementById('timerStatusBadge').textContent = '準備中';
-      document.getElementById('timerStatusBadge').className = "bg-slate-800 text-indigo-200 text-[10px] px-2 py-0.5 rounded-md font-bold border border-indigo-700";
-      document.getElementById('timerHintText').textContent = '小組合作解題期間禁止衝動搶答，冷卻結束後才開放發表！';
-      document.getElementById('timerIconBadge').textContent = '🧠';
-      const btn = document.getElementById('timerToggleBtn');
-      if (btn) btn.textContent = '暫停';
-    }
-
-    function updateCooldownTimerUI() {
-      const min = Math.floor(timerRemainingSeconds / 60);
-      const sec = timerRemainingSeconds % 60;
-      const displayStr = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-      const dispEl = document.getElementById('timerDisplay');
-      if (dispEl) dispEl.textContent = displayStr;
-
-      const badge = document.getElementById('timerStatusBadge');
-      const hint = document.getElementById('timerHintText');
-      const icon = document.getElementById('timerIconBadge');
-
-      if (timerRemainingSeconds > 0) {
-        if (badge) {
-          badge.textContent = '思考冷卻中';
-          badge.className = "bg-rose-500/20 text-rose-300 text-[10px] px-2 py-0.5 rounded-md font-bold border border-rose-400/40 animate-pulse";
-        }
-        if (hint) hint.innerHTML = '💭 <b class="text-amber-300">小組討論與鷹架引導中</b>，請先理清思路，冷卻期間請勿搶答！';
-        if (icon) icon.textContent = '⏳';
-        if (dispEl) {
-          dispEl.className = "font-mono font-black text-3xl md:text-4xl text-rose-400 tracking-wider bg-black/60 px-4 py-1.5 rounded-xl border border-rose-500/40 shadow-inner";
-        }
-      }
-    }
-
-    function onCooldownTimerFinished() {
-      const dispEl = document.getElementById('timerDisplay');
-      const badge = document.getElementById('timerStatusBadge');
-      const hint = document.getElementById('timerHintText');
-      const icon = document.getElementById('timerIconBadge');
-
-      if (dispEl) {
-        dispEl.textContent = '00:00';
-        dispEl.className = "font-mono font-black text-3xl md:text-4xl text-emerald-400 tracking-wider bg-black/60 px-4 py-1.5 rounded-xl border border-emerald-400 shadow-inner animate-bounce";
-      }
-      if (badge) {
-        badge.textContent = '🔔 冷卻結束！開放搶答';
-        badge.className = "bg-emerald-500 text-slate-950 text-xs px-2.5 py-0.5 rounded-md font-black shadow-md";
-      }
-      if (hint) {
-        hint.innerHTML = '🚀 <b class="text-emerald-300">思考冷卻結束！</b> 現在可以舉手搶答、或由各組代表輪流發表解題成果！';
-      }
-      if (icon) icon.textContent = '🔔';
-
-      sfx.playTimerEnd();
-      confetti({ particleCount: 50, spread: 50, origin: { y: 0.3 } });
-    }
-
-    // --- 同儕互助與情緒調節行為加分機制 (大按鈕支援) ---
-    function addBehaviorScore(studentId, tag, score) {
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === studentId);
-      if (!st) return;
-
-      if (!st.sessionBehaviorScores) st.sessionBehaviorScores = [];
-      st.sessionBehaviorScores.push({
-        tag: tag,
-        score: score,
-        time: new Date().toLocaleTimeString('zh-TW', { hour12: false })
-      });
-
-      sfx.playTally();
-      updateRowCalc(studentId);
-      renderScoreTable();
-      showToast(`💖 已為【${st.name}】記錄正向行為「${tag}」(+${score}分)！`, '✨');
-    }
-
-    function removeLastBehaviorScore(studentId) {
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === studentId);
-      if (!st || !st.sessionBehaviorScores || st.sessionBehaviorScores.length === 0) return;
-
-      const removed = st.sessionBehaviorScores.pop();
-      updateRowCalc(studentId);
-      renderScoreTable();
-      showToast(`已撤銷【${st.name}】的一筆「${removed.tag}」標籤`, '🧹');
-    }
-
-    function buildBallsGrid() {
-      const container = document.getElementById('ballsGridContainer');
-      if (!container) return;
-      container.innerHTML = '';
-
-      for (let i = 1; i <= 30; i++) {
-        const conf = BALL_CONFIG[i];
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `p-1 rounded-lg font-black border transition active:scale-95 ${BALL_COLOR_CLASSES[conf.type]}`;
-        btn.textContent = i;
-        btn.title = `球號 ${i}：${conf.prize}`;
-        btn.onclick = () => selectBallForIssue(i);
-        container.appendChild(btn);
-      }
-    }
-
-    function selectBallForIssue(ballNumber) {
-      const conf = BALL_CONFIG[ballNumber];
-      if (conf) {
-        document.getElementById('issuedPrizeContentInput').value = `${conf.prize} (抽中 ${ballNumber} 號球)`;
-      }
-    }
-
-    function quickFillIssuePrize(text) {
-      document.getElementById('issuedPrizeContentInput').value = text;
-    }
-
-    function renderPrizePoster() {
-      const imgEl = document.getElementById('prizePosterImage');
-      if (!imgEl) return;
-      if (db.prizePosterImage && db.prizePosterImage.trim() !== '') {
-        imgEl.src = db.prizePosterImage;
-      } else {
-        imgEl.src = defaultRafflePosterSvg;
-      }
-    }
-
-    function handlePrizePosterUpload(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        db.prizePosterImage = e.target.result;
-        persistData();
-        renderPrizePoster();
-        showToast('🖼️ 獎項展示海報已成功更新！', '✨');
-      };
-      reader.readAsDataURL(file);
-      event.target.value = '';
-    }
-
-    function promptPrizeImageUrl() {
-      const url = prompt('請輸入獎項圖片的網址 (URL)：', db.prizePosterImage || '');
-      if (url !== null) {
-        db.prizePosterImage = url.trim();
-        persistData();
-        renderPrizePoster();
-        showToast('🖼️ 獎項圖片網址已更新！', '✨');
-      }
-    }
-
-    function resetDefaultPrizePoster() {
-      db.prizePosterImage = '';
-      persistData();
-      renderPrizePoster();
-      showToast('已恢復預設的「搖獎機兌獎單」海報', '🧹');
-    }
-
-    function renderBossMilestone() {
-      const curClass = getCurrentClass();
-      if (!curClass) return;
-
-      const studentCount = curClass.students.length;
-      const targetScore = curClass.targetScore || 200;
-      const targetSelect = document.getElementById('bossTargetSelect');
-      if (targetSelect) targetSelect.value = targetScore;
-      document.getElementById('classMemberCountText').textContent = studentCount;
-
-      const classSumScore = curClass.students.reduce((sum, s) => sum + (s.totalScore || 0), 0);
-      const stageOffset = curClass.bossScoreOffset || 0;
-      const currentStageScore = Math.max(0, classSumScore - stageOffset);
-      
-      const progressPercent = Math.min(100, Math.round((currentStageScore / targetScore) * 100));
-
-      document.getElementById('bossTotalScoreText').textContent = currentStageScore;
-      document.getElementById('bossTargetScoreText').textContent = targetScore;
-      document.getElementById('bossPercentText').textContent = `${progressPercent}%`;
-      document.getElementById('bossProgressBar').style.width = `${progressPercent}%`;
-      
-      const claimBtn = document.getElementById('claimMilestoneBtn');
-      if (currentStageScore >= targetScore) {
-        document.getElementById('bossStageBadge').className = "bg-emerald-400 text-emerald-950 px-2.5 py-0.5 rounded-lg font-black animate-pulse";
-        document.getElementById('bossStageBadge').textContent = '🎉 目標已達成！點擊開箱命運大獎！';
-        if (claimBtn) {
-          claimBtn.classList.add('animate-bounce');
-        }
-      } else {
-        document.getElementById('bossStageBadge').className = "bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[11px] px-2 py-0.5 rounded-lg font-bold";
-        document.getElementById('bossStageBadge').textContent = `第 ${curClass.milestoneStage || 1} 階段討伐中`;
-        if (claimBtn) {
-          claimBtn.classList.remove('animate-bounce');
-        }
-      }
-    }
-
-    function updateBossTarget() {
-      const curClass = getCurrentClass();
-      if (!curClass) return;
-      curClass.targetScore = parseInt(document.getElementById('bossTargetSelect').value);
-      persistData();
-      renderBossMilestone();
-      showToast(`🎯 已更新討伐目標為【總分 ${curClass.targetScore} 分】！`, '⚡');
-    }
-
-    function claimMilestoneReward() {
-      const curClass = getCurrentClass();
-      if (!curClass) return;
-
-      const targetScore = curClass.targetScore || 200;
-      const classSumScore = curClass.students.reduce((sum, s) => sum + (s.totalScore || 0), 0);
-      const stageOffset = curClass.bossScoreOffset || 0;
-      const currentStageScore = Math.max(0, classSumScore - stageOffset);
-
-      if (currentStageScore < targetScore) {
-        sfx.playWarning();
-        const remain = targetScore - currentStageScore;
-        showToast(`⚠️ 尚未達到目標分數！目前累積 ${currentStageScore} 分，還差 ${remain} 分即可啟動開獎輪盤！`, '🔒');
-        return;
-      }
-
-      openBossRouletteModal();
-    }
-
-    function openBossRouletteModal() {
-      currentPendingWonReward = drawWeightedBossReward();
-
-      const spinView = document.getElementById('bossRouletteSpinView');
-      const resultView = document.getElementById('bossRouletteResultView');
-      const iconEl = document.getElementById('rouletteDisplayIcon');
-      const titleEl = document.getElementById('rouletteDisplayTitle');
-      const tagEl = document.getElementById('rouletteDisplayTag');
-
-      spinView.classList.remove('hidden');
-      resultView.classList.add('hidden');
-      openModal('bossRouletteModal');
-
-      let counter = 0;
-      const totalTicks = 24;
-      const interval = setInterval(() => {
-        const tempItem = REWARD_POOL[counter % REWARD_POOL.length];
-        iconEl.textContent = tempItem.icon;
-        titleEl.textContent = tempItem.name;
-        tagEl.textContent = tempItem.rarityText;
-        sfx.playRouletteTick();
-        counter++;
-
-        if (counter >= totalTicks) {
-          clearInterval(interval);
-          setTimeout(() => {
-            revealBossRouletteReward(currentPendingWonReward);
-          }, 350);
-        }
-      }, 80);
-    }
-
-    function revealBossRouletteReward(reward) {
-      const spinView = document.getElementById('bossRouletteSpinView');
-      const resultView = document.getElementById('bossRouletteResultView');
-
-      document.getElementById('finalRewardIcon').textContent = reward.icon;
-      document.getElementById('finalRewardBadgeIcon').textContent = reward.icon;
-      document.getElementById('finalRewardName').textContent = reward.name;
-      document.getElementById('finalRewardDesc').textContent = reward.desc;
-      document.getElementById('finalRewardRarity').textContent = reward.rarityText;
-
-      spinView.classList.add('hidden');
-      resultView.classList.remove('hidden');
-
-      sfx.playGrandFanfare();
-
-      confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 } });
-      setTimeout(() => {
-        confetti({ particleCount: 80, spread: 100, origin: { y: 0.4 }, colors: ['#fbbf24', '#f97316', '#34d399'] });
-      }, 350);
-      setTimeout(() => {
-        confetti({ particleCount: 60, spread: 120, origin: { y: 0.6 } });
-      }, 700);
-    }
-
-    function confirmAndEnterNextStage() {
-      const curClass = getCurrentClass();
-      if (!curClass) return;
-
-      const classSumScore = curClass.students.reduce((sum, s) => sum + (s.totalScore || 0), 0);
-      curClass.bossScoreOffset = classSumScore;
-      curClass.milestoneStage = (curClass.milestoneStage || 1) + 1;
-      persistData();
-
-      closeModal('bossRouletteModal');
-      renderBossMilestone();
-
-      const rewardName = currentPendingWonReward ? currentPendingWonReward.name : '全班專屬特權';
-      showToast(`🏆 全班已解鎖【${rewardName}】！正式開啟第 ${curClass.milestoneStage} 階段！`, '🎉');
-      currentPendingWonReward = null;
-    }
-
-    function renderScoreTable() {
-      const curClass = getCurrentClass();
-      const tbody = document.getElementById('scoreTableBody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      if (!curClass || curClass.students.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-slate-400">目前課堂尚無學生，請先至「學生與班級管理」匯入名單！</td></tr>`;
-        return;
-      }
-
-      curClass.students.forEach(st => {
-        const rank = getStudentRank(st.totalScore || 0);
-        const buff = st.currentBuff || 'none';
-        const diceRoll = st.luckyDiceRoll || 0;
-        const isHelper = !!st.isHelper;
-        const behaviors = st.sessionBehaviorScores || [];
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-indigo-50/40 transition border-b border-slate-100";
-        tr.innerHTML = `
-          <td class="py-3 px-3 text-center text-slate-400 font-bold text-base">#${st.no}</td>
-          <td class="py-3 px-3">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-black text-slate-800 text-lg md:text-xl tracking-wide">${st.name}</span>
-              ${isHelper ? `<span class="bg-indigo-600 text-white text-xs px-2 py-0.5 rounded-lg font-black shadow-sm" title="小老師享有當堂得分額外+1分副官津貼">🎖️ 小老師</span>` : ''}
-            </div>
-          </td>
-          <td class="py-3 px-3">
-            <div class="flex flex-col">
-              <span class="text-indigo-600 font-black text-base md:text-lg">⭐ ${st.totalScore || 0} 分</span>
-              <span class="text-xs px-2 py-0.5 rounded-lg w-fit ${rank.color} mt-0.5 font-bold">${rank.title}</span>
-            </div>
-          </td>
-          <td class="py-3 px-3">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <input type="number" min="0" value="0" id="input-raw-${st.id}" oninput="updateRowCalc(${st.id})" class="w-14 h-11 bg-slate-100 border-2 border-slate-300 rounded-xl px-2 text-center font-black text-base focus:outline-none focus:border-indigo-600 shadow-inner">
-              <button type="button" onclick="adjustTally(${st.id}, 5)" class="h-11 bg-amber-400 hover:bg-amber-300 text-amber-950 text-xs md:text-sm px-3 rounded-xl font-black border-2 border-amber-500 shadow-sm active:scale-95 transition flex items-center gap-1">
-                <span>正</span> <span class="text-[11px] bg-amber-500/30 px-1 py-0.2 rounded font-black">+5</span>
-              </button>
-              <button type="button" onclick="adjustTally(${st.id}, 1)" class="h-11 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs md:text-sm px-2.5 rounded-xl font-black border-2 border-slate-300 shadow-sm active:scale-95 transition">
-                +1
-              </button>
-              <button type="button" onclick="adjustTally(${st.id}, -1)" class="h-11 text-slate-400 hover:text-slate-600 text-xs px-2 rounded-xl hover:bg-slate-100 font-black transition">
-                -1
-              </button>
-            </div>
-          </td>
-          <!-- 放大版同儕互助與情緒調節按鈕 -->
-          <td class="py-3 px-3">
-            <div class="space-y-1.5">
-              <div class="flex flex-wrap items-center gap-1.5">
-                <button type="button" onclick="addBehaviorScore(${st.id}, '同儕鷹架', 2)" title="耐心等待同組同學或進行思考引導 (+2分)" class="h-11 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border-2 border-indigo-300 text-xs md:text-sm px-3 rounded-xl font-black transition flex items-center gap-1.5 shadow-sm active:scale-95">
-                  <span class="text-base">🤝</span> <span>引導</span> <span class="bg-indigo-200 text-indigo-900 px-1.5 py-0.5 rounded text-xs font-black">+2</span>
-                </button>
-                <button type="button" onclick="addBehaviorScore(${st.id}, '求助行為', 1)" title="主動發問、向同儕或老師勇敢求助 (+1分)" class="h-11 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-2 border-emerald-300 text-xs md:text-sm px-3 rounded-xl font-black transition flex items-center gap-1.5 shadow-sm active:scale-95">
-                  <span class="text-base">🙋</span> <span>求助</span> <span class="bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded text-xs font-black">+1</span>
-                </button>
-                <button type="button" onclick="addBehaviorScore(${st.id}, '小組分工', 1)" title="落實小組分配的角色職責與任務 (+1分)" class="h-11 bg-amber-50 hover:bg-amber-100 text-amber-900 border-2 border-amber-300 text-xs md:text-sm px-3 rounded-xl font-black transition flex items-center gap-1.5 shadow-sm active:scale-95">
-                  <span class="text-base">🛡️</span> <span>職責</span> <span class="bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded text-xs font-black">+1</span>
-                </button>
-                ${behaviors.length > 0 ? `
-                  <button type="button" onclick="removeLastBehaviorScore(${st.id})" title="復原最後一筆標籤" class="h-11 text-rose-500 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 font-black text-sm px-2.5 rounded-xl transition">✕</button>
-                ` : ''}
-              </div>
-              ${behaviors.length > 0 ? `
-                <div class="flex flex-wrap gap-1 text-[11px]">
-                  ${behaviors.map(b => `<span class="bg-indigo-100/90 text-indigo-900 px-2 py-0.5 rounded-md font-bold border border-indigo-200">${b.tag} +${b.score}</span>`).join('')}
-                </div>
-              ` : ''}
-            </div>
-          </td>
-          <td class="py-3 px-3">
-            <div class="flex items-center gap-1.5">
-              <select id="buff-select-${st.id}" onchange="handleBuffChange(${st.id})" class="h-10 bg-slate-100 border border-slate-300 rounded-xl px-2 py-0.5 text-xs font-bold text-slate-700 focus:outline-none flex-1">
-                <option value="none" ${buff === 'none' ? 'selected' : ''}>無卡片</option>
-                <option value="double" ${buff === 'double' ? 'selected' : ''}>📜 雙倍卷軸 (×2)</option>
-                <option value="crit" ${buff === 'crit' ? 'selected' : ''}>⚡ 爆擊護符 (+3)</option>
-                <option value="safe" ${buff === 'safe' ? 'selected' : ''}>🛡️ 保底庇護 (補至5)</option>
-                <option value="lucky" ${buff === 'lucky' ? 'selected' : ''}>💎 幸運爆發 (擲骰)</option>
-              </select>
-              ${buff === 'lucky' ? `
-                <button type="button" onclick="openDiceModal(${st.id})" class="h-10 bg-amber-400 hover:bg-amber-300 text-slate-900 px-2.5 rounded-xl text-xs font-black rpg-btn shadow-amber-600 flex items-center gap-0.5 whitespace-nowrap">
-                  ${diceRoll > 0 ? `🎲 +${diceRoll}` : '🎲 擲骰'}
-                </button>
-              ` : ''}
-            </div>
-          </td>
-          <td class="py-3 px-3 text-right">
-            <span id="row-gain-${st.id}" class="text-lg md:text-xl font-black text-emerald-600">+0</span>
-          </td>
-        `;
-        tbody.appendChild(tr);
-        updateRowCalc(st.id);
-      });
-    }
-
-    function adjustTally(studentId, delta) {
-      const input = document.getElementById(`input-raw-${studentId}`);
-      if (!input) return;
-      let val = parseInt(input.value || 0) + delta;
-      input.value = Math.max(0, val);
-      sfx.playTally();
-      updateRowCalc(studentId);
-    }
-
-    function handleBuffChange(studentId) {
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === studentId);
-      if (!st) return;
-
-      const selVal = document.getElementById(`buff-select-${studentId}`).value;
-      st.currentBuff = selVal;
-      if (selVal !== 'lucky') st.luckyDiceRoll = 0;
-      persistData();
-      renderScoreTable();
-      updateRowCalc(studentId);
-
-      if (selVal === 'lucky' && (!st.luckyDiceRoll || st.luckyDiceRoll === 0)) {
-        openDiceModal(studentId);
-      }
-    }
-
-    function updateRowCalc(studentId) {
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === studentId);
-      const input = document.getElementById(`input-raw-${studentId}`);
-      if (!input || !st) return 0;
-
-      const buff = st.currentBuff || 'none';
-      const raw = parseInt(input.value || 0);
-      let gain = raw;
-
-      if (raw > 0) {
-        if (buff === 'double') {
-          gain = raw + Math.min(raw, 10);
-        } else if (buff === 'crit') {
-          gain = raw + 3;
-        } else if (buff === 'safe') {
-          gain = Math.max(raw, 5);
-        } else if (buff === 'lucky') {
-          const roll = st.luckyDiceRoll || 0;
-          gain = raw + roll;
-        }
-
-        if (st.isHelper) {
-          gain += 1;
-        }
-      }
-
-      const behaviorSum = (st.sessionBehaviorScores || []).reduce((sum, b) => sum + b.score, 0);
-      gain += behaviorSum;
-
-      const gainEl = document.getElementById(`row-gain-${studentId}`);
-      if (gainEl) gainEl.textContent = `+${gain}`;
-      return gain;
-    }
-
-    function clearAllBuffs() {
-      const curClass = getCurrentClass();
-      if (!curClass) return;
-      curClass.students.forEach(st => {
-        st.currentBuff = 'none';
-        st.luckyDiceRoll = 0;
-        st.sessionBehaviorScores = [];
-      });
-      persistData();
-      renderScoreTable();
-      showToast('已重設所有學生的裝備功能卡與行為標籤', '🧹');
-    }
-
-    function batchSubmitScores() {
-      const curClass = getCurrentClass();
-      if (!curClass || curClass.students.length === 0) return;
-
-      const scoreDate = document.getElementById('scoreDate').value || new Date().toISOString().split('T')[0];
-      const lessonPeriod = document.getElementById('lessonPeriodSelect').value;
-
-      let totalAddedScore = 0;
-      let logDetails = [];
-      const timestampNow = new Date().toLocaleString('zh-TW', { hour12: false });
-
-      curClass.students.forEach(st => {
-        const input = document.getElementById(`input-raw-${st.id}`);
-        const raw = parseInt(input?.value || 0);
-        let taskScore = raw;
-        const buff = st.currentBuff || 'none';
-
-        if (raw > 0) {
-          if (buff === 'double') {
-            taskScore = raw + Math.min(raw, 10);
-          } else if (buff === 'crit') {
-            taskScore = raw + 3;
-          } else if (buff === 'safe') {
-            taskScore = Math.max(raw, 5);
-          } else if (buff === 'lucky') {
-            const roll = st.luckyDiceRoll || 0;
-            taskScore = raw + roll;
-          }
-
-          if (st.isHelper) {
-            taskScore += 1;
-          }
-        }
-
-        const behaviors = st.sessionBehaviorScores || [];
-        const behaviorSum = behaviors.reduce((sum, b) => sum + b.score, 0);
-        const finalGain = taskScore + behaviorSum;
-
-        if (finalGain > 0) {
-          st.totalScore = (st.totalScore || 0) + finalGain;
-          totalAddedScore += finalGain;
-
-          logDetails.push({
-            timestamp: timestampNow,
-            studentId: st.id,
-            name: st.name,
-            no: st.no,
-            raw: raw,
-            buff: buff,
-            isHelper: !!st.isHelper,
-            behaviors: [...behaviors],
-            behaviorScore: behaviorSum,
-            final: finalGain
-          });
-        }
-
-        if (input) input.value = 0;
-        st.currentBuff = 'none';
-        st.luckyDiceRoll = 0;
-        st.sessionBehaviorScores = [];
-      });
-
-      if (totalAddedScore > 0) {
-        if (!curClass.historyLogs) curClass.historyLogs = [];
-        curClass.historyLogs.unshift({
-          id: 'log_' + Date.now(),
-          date: scoreDate,
-          period: lessonPeriod,
-          totalGain: totalAddedScore,
-          details: logDetails
-        });
-
-        persistData();
-        renderAllViews();
-        sfx.playCheer();
-        confetti({ particleCount: 90, spread: 60, origin: { y: 0.6 } });
-        showToast(`🎉 成功結算【${lessonPeriod}】！共斬獲 +${totalAddedScore} 分！`, '⚔️');
-      } else {
-        showToast('尚未輸入任何學生的正字記號或行為加分喔！', '⚠️');
-      }
-    }
-
-    function renderHistoryLogs() {
-      const curClass = getCurrentClass();
-      const container = document.getElementById('historyLogsContainer');
-      if (!container) return;
-      container.innerHTML = '';
-
-      if (!curClass || !curClass.historyLogs || curClass.historyLogs.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-12 text-slate-400 text-xs border-2 border-dashed border-slate-200 rounded-2xl">
-            📜 尚無任何課堂加分紀錄，請在「課堂正字登記」完成結算後即可在此查看！
-          </div>
-        `;
-        return;
-      }
-
-      curClass.historyLogs.forEach(log => {
-        const div = document.createElement('div');
-        div.className = "bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 transition hover:border-indigo-300";
-        div.innerHTML = `
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2 mb-3">
-            <div class="flex items-center gap-2">
-              <span class="bg-indigo-600 text-white font-black text-xs px-2.5 py-1 rounded-lg">📅 ${log.date}</span>
-              <span class="bg-amber-400 text-slate-950 font-black text-xs px-2.5 py-1 rounded-lg">⏰ ${log.period}</span>
-              <span class="text-emerald-600 font-black text-xs bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200">全班加分：+${log.totalGain} 分</span>
-            </div>
-            <button type="button" onclick="openDeleteLogModal('${log.id}')" class="text-xs text-rose-500 hover:text-rose-700 font-black px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 flex items-center gap-1 transition">
-              <span>🗑️</span> 刪除此筆
-            </button>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-            ${log.details.map(d => `
-              <div class="bg-white p-2.5 rounded-xl border border-slate-200 text-xs flex flex-col justify-between shadow-sm">
-                <div class="flex items-center justify-between">
-                  <span class="font-black text-slate-800">#${d.no} ${d.name} ${d.isHelper ? '🎖️' : ''}</span>
-                  <span class="text-emerald-600 font-black text-sm">+${d.final} 分</span>
-                </div>
-                <div class="text-[11px] text-slate-500 mt-1">
-                  <span>正字原分: ${d.raw} ${d.buff && d.buff !== 'none' ? `[卡片:${d.buff}]` : ''}</span>
-                  ${d.behaviors && d.behaviors.length > 0 ? `
-                    <div class="flex flex-wrap gap-1 mt-1">
-                      ${d.behaviors.map(b => `<span class="bg-indigo-50 text-indigo-700 px-1 py-0.2 rounded text-[10px] font-bold border border-indigo-100">${b.tag} +${b.score}</span>`).join('')}
-                    </div>
-                  ` : ''}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function exportHistoryLogsToCSV() {
-      const curClass = getCurrentClass();
-      if (!curClass || !curClass.historyLogs || curClass.historyLogs.length === 0) {
-        showToast('目前尚無歷史加分日誌可匯出！', '⚠️');
-        return;
-      }
-
-      const rows = [
-        ['時間戳記 (Timestamp)', '班級名稱', '登記日期', '課堂節次', '座號', '學生姓名', '是否小老師', '加分項目/行為標籤', '加分數值', '備註說明']
-      ];
-
-      curClass.historyLogs.forEach(log => {
-        log.details.forEach(d => {
-          if (d.raw > 0) {
-            rows.push([
-              d.timestamp || `${log.date} ${log.period}`,
-              curClass.name,
-              log.date,
-              log.period,
-              d.no,
-              d.name,
-              d.isHelper ? '是' : '否',
-              '課堂正字答題/解題得分',
-              d.raw,
-              d.buff && d.buff !== 'none' ? `裝備卡加成: ${d.buff}` : '無卡片加成'
-            ]);
-          }
-
-          if (d.behaviors && d.behaviors.length > 0) {
-            d.behaviors.forEach(b => {
-              rows.push([
-                d.timestamp || `${log.date} ${log.period}`,
-                curClass.name,
-                log.date,
-                log.period,
-                d.no,
-                d.name,
-                d.isHelper ? '是' : '否',
-                b.tag,
-                b.score,
-                '同儕互助與情緒調節正向行為'
-              ]);
-            });
-          }
-
-          if (d.isHelper && d.raw > 0) {
-            rows.push([
-              d.timestamp || `${log.date} ${log.period}`,
-              curClass.name,
-              log.date,
-              log.period,
-              d.no,
-              d.name,
-              '是',
-              '課堂副官津貼',
-              1,
-              '小老師參與課堂津貼獎勵'
-            ]);
-          }
-        });
-      });
-
-      const csvContent = "\uFEFF" + rows.map(e => e.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      const todayStr = new Date().toISOString().split('T')[0];
-      link.setAttribute("href", url);
-      link.setAttribute("download", `數學課堂加分與同儕互助歷程紀錄_${curClass.name}_${todayStr}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      showToast(`📊 成功匯出【${curClass.name}】課堂歷程 CSV！`, '✨');
-    }
-
-    function openDeleteLogModal(logId) {
-      const curClass = getCurrentClass();
-      if (!curClass || !curClass.historyLogs) return;
-      const log = curClass.historyLogs.find(l => l.id === logId);
-      if (!log) return;
-
-      targetDeleteLogId = logId;
-      document.getElementById('deleteLogTargetInfo').innerHTML = `
-        刪除目標：<b class="text-indigo-700">${log.date} (${log.period})</b><br>
-        共 <b class="text-emerald-600">${log.details ? log.details.length : 0} 位學生</b> 結算，合計 <b class="text-amber-600">+${log.totalGain} 分</b>
-      `;
-      document.getElementById('rollbackScoresCheckbox').checked = true;
-      openModal('deleteLogModal');
-    }
-
-    function executeDeleteSingleLog() {
-      const curClass = getCurrentClass();
-      if (!curClass || !curClass.historyLogs || !targetDeleteLogId) return;
-
-      const logIndex = curClass.historyLogs.findIndex(l => l.id === targetDeleteLogId);
-      if (logIndex === -1) return;
-
-      const log = curClass.historyLogs[logIndex];
-      const shouldRollback = document.getElementById('rollbackScoresCheckbox').checked;
-
-      if (shouldRollback && log.details) {
-        log.details.forEach(d => {
-          const st = curClass.students.find(s => (d.studentId && s.id === d.studentId) || s.no === d.no || s.name === d.name);
-          if (st) {
-            st.totalScore = Math.max(0, (st.totalScore || 0) - (d.final || 0));
-          }
-        });
-      }
-
-      curClass.historyLogs.splice(logIndex, 1);
-      persistData();
-      renderAllViews();
-      closeModal('deleteLogModal');
-      targetDeleteLogId = null;
-      sfx.playTally();
-      showToast(`已刪除【${log.date} ${log.period}】紀錄${shouldRollback ? '，並已扣回當堂得分' : ''}！`, '🗑️');
-    }
-
-    function openClearAllHistoryModal() {
-      openModal('clearAllHistoryModal');
-    }
-
-    function executeClearAllHistory() {
-      const curClass = getCurrentClass();
-      if (!curClass) return;
-      curClass.historyLogs = [];
-      persistData();
-      renderHistoryLogs();
-      closeModal('clearAllHistoryModal');
-      showToast('已清空當前課堂的所有歷史加分日誌', '🧹');
-    }
-
-    function openCardDrawModal() {
-      const curClass = getCurrentClass();
-      const sel = document.getElementById('drawCardStudentSelect');
-      sel.innerHTML = '';
-
-      if (!curClass || curClass.students.length === 0) {
-        showToast('目前班級無學生，無法抽卡！請先匯入名單。', '⚠️');
-        return;
-      }
-
-      curClass.students.forEach(st => {
-        const opt = document.createElement('option');
-        opt.value = st.id;
-        const currentCard = BUFF_CARDS.find(c => c.id === st.currentBuff);
-        const cardName = currentCard ? currentCard.name : '無裝備';
-        opt.textContent = `#${st.no} ${st.name} ${st.isHelper ? '(小老師)' : ''} (目前: ${cardName})`;
-        sel.appendChild(opt);
-      });
-
-      resetDrawModalState();
-      openModal('cardDrawModal');
-    }
-
-    function resetDrawModalState() {
-      document.getElementById('cardDeckArea').classList.remove('hidden');
-      document.getElementById('cardResultArea').classList.add('hidden');
-    }
-
-    function performCardDraw() {
-      const curClass = getCurrentClass();
-      const sel = document.getElementById('drawCardStudentSelect');
-      const studentId = parseInt(sel.value);
-      const st = curClass.students.find(s => s.id === studentId);
-      if (!st) return;
-
-      const randomCard = BUFF_CARDS[Math.floor(Math.random() * BUFF_CARDS.length)];
-      st.currentBuff = randomCard.id;
-      st.luckyDiceRoll = 0;
-      persistData();
-
-      document.getElementById('cardWinnerInfo').textContent = `冒險者：#${st.no} ${st.name} 抽中裝備卡`;
-      document.getElementById('cardDrawnTitle').textContent = randomCard.name;
-      document.getElementById('cardDrawnDesc').textContent = randomCard.desc;
-
-      document.getElementById('cardDeckArea').classList.add('hidden');
-      document.getElementById('cardResultArea').classList.remove('hidden');
-
-      sfx.playCheer();
-      confetti({ particleCount: 80, spread: 60, origin: { y: 0.5 } });
-      renderScoreTable();
-
-      if (randomCard.id === 'lucky') {
-        setTimeout(() => {
-          closeModal('cardDrawModal');
-          openDiceModal(st.id);
-        }, 1300);
-      }
-    }
-
-    function drawNextStudentCard() {
-      const sel = document.getElementById('drawCardStudentSelect');
-      if (sel.selectedIndex < sel.options.length - 1) {
-        sel.selectedIndex += 1;
-      } else {
-        showToast('已是名單最後一位學生囉！', 'ℹ️');
-      }
-      resetDrawModalState();
-    }
-
-    function openDiceModal(studentId) {
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === studentId);
-      if (!st) return;
-
-      currentDiceRollingStudentId = studentId;
-      document.getElementById('diceRollStudentName').textContent = `#${st.no} ${st.name} 的幸運擲骰`;
-      document.getElementById('diceFaceDisplay').textContent = st.luckyDiceRoll > 0 ? st.luckyDiceRoll : '🎲';
-      document.getElementById('diceResultText').textContent = st.luckyDiceRoll > 0 ? `已擲出 +${st.luckyDiceRoll} 點加分！` : '點擊下方按鈕開始擲骰';
-      
-      const btn = document.getElementById('diceRollBtn');
-      btn.disabled = false;
-      btn.classList.remove('opacity-50');
-      openModal('diceRollModal');
-    }
-
-    function rollDiceAction() {
-      if (!currentDiceRollingStudentId) return;
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === currentDiceRollingStudentId);
-      if (!st) return;
-
-      const diceEl = document.getElementById('diceFaceDisplay');
-      const btn = document.getElementById('diceRollBtn');
-      btn.disabled = true;
-      btn.classList.add('opacity-50');
-
-      let counter = 0;
-      const interval = setInterval(() => {
-        const temp = Math.floor(Math.random() * 6) + 1;
-        diceEl.textContent = temp;
-        diceEl.style.transform = `rotate(${Math.sin(counter) * 20}deg) scale(1.1)`;
-        sfx.playDice();
-        counter++;
-        if (counter > 12) {
-          clearInterval(interval);
-          const finalRoll = Math.floor(Math.random() * 6) + 1;
-          diceEl.textContent = finalRoll;
-          diceEl.style.transform = 'rotate(0deg) scale(1.15)';
-          st.luckyDiceRoll = finalRoll;
-          persistData();
-          renderScoreTable();
-          updateRowCalc(st.id);
-          sfx.playCheer();
-          confetti({ particleCount: 70, spread: 50, origin: { y: 0.6 } });
-          document.getElementById('diceResultText').innerHTML = `<span class="text-emerald-600 font-black text-lg">🎉 擲出 ${finalRoll} 點！本次結算將額外 +${finalRoll} 分！</span>`;
-          btn.disabled = false;
-          btn.classList.remove('opacity-50');
-        }
-      }, 70);
-    }
-
-    // --- 實體搖獎券庫存清冊 (改為動態爬坡級距) ---
-    function renderGachaInventory() {
-      const curClass = getCurrentClass();
-      const tbody = document.getElementById('gachaInventoryTableBody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      if (!curClass) return;
-
-      let totalPendingIssue = 0;
-      let totalHeldPrizes = 0;
-      let totalRedeemedPrizes = 0;
-
-      curClass.students.forEach(st => {
-        if (!st.tickets) st.tickets = [];
-        
-        // 使用動態階梯計算
-        const prog = getNextTicketProgress(st.totalScore || 0);
-        const earnedTotal = prog.earned;
-        const issuedTotal = st.tickets.length;
-        const pendingIssue = Math.max(0, earnedTotal - issuedTotal);
-
-        const heldPrizes = st.tickets.filter(t => t.status === 'held');
-        const redeemedPrizes = st.tickets.filter(t => t.status === 'redeemed');
-
-        totalPendingIssue += pendingIssue;
-        totalHeldPrizes += heldPrizes.length;
-        totalRedeemedPrizes += redeemedPrizes.length;
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 transition";
-        tr.innerHTML = `
-          <td class="py-2.5 px-3 text-slate-400 font-bold">#${st.no}</td>
-          <td class="py-2.5 px-3">
-            <span class="font-black text-slate-800 text-base">${st.name}</span>
-            ${st.isHelper ? `<span class="text-xs text-indigo-600 ml-1">🎖️</span>` : ''}
-          </td>
-          <!-- 動態爬坡進度條 -->
-          <td class="py-2.5 px-3">
-            <div class="space-y-1">
-              <div class="flex justify-between items-center text-[11px] font-bold text-slate-500">
-                <span>總分: <b class="text-indigo-600 font-black">${st.totalScore || 0}分</b></span>
-                <span class="text-amber-700">第 ${prog.nextTicketNum} 張進度 (${prog.inStage}/${prog.nextCost})</span>
-              </div>
-              <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
-                <div class="bg-gradient-to-r from-amber-400 to-orange-500 h-full rounded-full transition-all duration-500" style="width: ${prog.percent}%"></div>
-              </div>
-              <div class="text-[10px] text-slate-400 font-bold flex justify-between">
-                <span>門檻: 累計達 ${prog.nextTargetThreshold} 分</span>
-                <span class="text-rose-500 font-black">差 ${prog.remaining} 分</span>
-              </div>
-            </div>
-          </td>
-          <td class="py-2.5 px-3 text-center">
-            ${pendingIssue > 0 
-              ? `<span class="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-xl text-xs font-black animate-pulse">可領 ${pendingIssue} 張</span>`
-              : `<span class="text-slate-300 text-xs">已全領取</span>`
-            }
-          </td>
-          <td class="py-2.5 px-3 text-center text-xs">
-            ${heldPrizes.length > 0 
-              ? `<span class="bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded-lg font-black">${heldPrizes.length} 件未核銷</span>`
-              : `<span class="text-slate-400">0 件</span>`
-            }
-          </td>
-          <td class="py-2.5 px-3 text-center text-xs">
-            <button type="button" onclick="openStudentPrizeDetailModal(${st.id})" class="text-indigo-600 hover:text-indigo-800 font-bold underline flex items-center justify-center gap-1 mx-auto">
-              <span>🎁 共 ${st.tickets.length} 張券</span>
-              <span class="text-[10px] bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200 text-indigo-600 font-black">查看/核銷</span>
-            </button>
-          </td>
-          <td class="py-2.5 px-3 text-right">
-            <div class="flex justify-end gap-1.5">
-              ${pendingIssue > 0 ? `
-                <button type="button" onclick="openIssuePrizeModal(${st.id})" class="bg-amber-400 hover:bg-amber-300 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black rpg-btn shadow-amber-600 flex items-center gap-1">
-                  <span>🎰</span> 搖獎領券並選獎
-                </button>
-              ` : `
-                <button type="button" onclick="openStudentPrizeDetailModal(${st.id})" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-xl text-xs font-bold border border-slate-300">
-                  查看明細
-                </button>
-              `}
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      document.getElementById('pendingIssueSummaryText').textContent = `${totalPendingIssue} 張`;
-      document.getElementById('heldTicketsSummaryText').textContent = `${totalHeldPrizes} 件`;
-      document.getElementById('redeemedTicketsSummaryText').textContent = `${totalRedeemedPrizes} 件`;
-      document.getElementById('unclaimedTicketsBadge').textContent = totalPendingIssue;
-    }
-
-    function openIssuePrizeModal(studentId) {
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === studentId);
-      if (!st) return;
-
-      const earnedTotal = calculateEarnedTickets(st.totalScore || 0);
-      const issuedTotal = (st.tickets || []).length;
-      const pending = Math.max(0, earnedTotal - issuedTotal);
-
-      if (pending <= 0) {
-        showToast('該學生目前沒有待發放的搖獎券額度！', '⚠️');
-        return;
-      }
-
-      currentIssuingStudentId = studentId;
-      document.getElementById('issuePrizeModalStudentInfo').innerHTML = `
-        冒險者：<b class="text-indigo-700">#${st.no} ${st.name}</b> (目前待領取實體券：<b class="text-rose-600">${pending} 張</b>)
-      `;
-      document.getElementById('issuedPrizeContentInput').value = '';
-      openModal('issuePrizeModal');
-    }
-
-    function confirmIssueTicketAndPrize() {
-      if (!currentIssuingStudentId) return;
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === currentIssuingStudentId);
-      if (!st) return;
-
-      const prizeContent = document.getElementById('issuedPrizeContentInput').value.trim() || '課堂搖獎禮物一份 (未指定)';
-      const todayStr = new Date().toISOString().split('T')[0];
-
-      if (!st.tickets) st.tickets = [];
-      st.tickets.unshift({
-        id: 't_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-        date: todayStr,
-        prize: prizeContent,
-        status: 'held',
-        redeemedDate: null
-      });
-
-      persistData();
-      renderAllViews();
-      closeModal('issuePrizeModal');
-      sfx.playCheer();
-      confetti({ particleCount: 75, spread: 60, origin: { y: 0.6 } });
-      showToast(`🎟️ 已為【${st.name}】發放實體券，並登記持有獎項：${prizeContent}！`, '✨');
-      currentIssuingStudentId = null;
-    }
-
-    function issueAllEligibleDirectly() {
-      const curClass = getCurrentClass();
-      if (!curClass) return;
-      let count = 0;
-      const todayStr = new Date().toISOString().split('T')[0];
-
-      curClass.students.forEach(st => {
-        if (!st.tickets) st.tickets = [];
-        const earnedTotal = calculateEarnedTickets(st.totalScore || 0);
-        const diff = earnedTotal - st.tickets.length;
-        if (diff > 0) {
-          for (let i = 0; i < diff; i++) {
-            st.tickets.push({
-              id: 't_' + Date.now() + '_' + i,
-              date: todayStr,
-              prize: '已發實體券 (尚未搖球/待登記獎項)',
-              status: 'held',
-              redeemedDate: null
-            });
-            count++;
-          }
-        }
-      });
-
-      if (count > 0) {
-        persistData();
-        renderAllViews();
-        confetti({ particleCount: 70, spread: 50, origin: { y: 0.6 } });
-        showToast(`🎉 成功登記發放 ${count} 張實體券！`, '🎟️');
-      } else {
-        showToast('目前沒有待發放實體券的同學喔！', 'ℹ️');
-      }
-    }
-
-    function openStudentPrizeDetailModal(studentId) {
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === studentId);
-      if (!st) return;
-
-      currentViewingStudentId = studentId;
-      document.getElementById('studentPrizeDetailTitle').textContent = `#${st.no} ${st.name} 的獎品清冊與核銷`;
-      renderStudentPrizeDetailList();
-      openModal('studentPrizeDetailModal');
-    }
-
-    function renderStudentPrizeDetailList() {
-      if (!currentViewingStudentId) return;
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === currentViewingStudentId);
-      if (!st) return;
-
-      const unredeemedListEl = document.getElementById('unredeemedPrizeList');
-      const redeemedListEl = document.getElementById('redeemedPrizeList');
-      unredeemedListEl.innerHTML = '';
-      redeemedListEl.innerHTML = '';
-
-      const tickets = st.tickets || [];
-      const heldItems = tickets.filter(t => t.status === 'held');
-      const redeemedItems = tickets.filter(t => t.status === 'redeemed');
-
-      document.getElementById('unredeemedCountBadge').textContent = `${heldItems.length} 件`;
-      document.getElementById('redeemedCountBadge').textContent = `${redeemedItems.length} 件`;
-
-      if (heldItems.length === 0) {
-        unredeemedListEl.innerHTML = `
-          <div class="text-slate-400 text-xs py-3 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
-            目前手邊沒有尚未核銷的獎項
-          </div>
-        `;
-      } else {
-        heldItems.forEach(item => {
-          const div = document.createElement('div');
-          div.className = "bg-amber-50/80 border border-amber-200 rounded-xl p-2.5 flex items-center justify-between text-xs";
-          div.innerHTML = `
-            <div class="flex-1 pr-2">
-              <span class="font-black text-slate-800 text-sm block">${item.prize}</span>
-              <span class="text-slate-400 text-[11px]">📅 領券日期：${item.date}</span>
-            </div>
-            <button type="button" onclick="redeemSpecificTicket('${item.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-3 py-1.5 rounded-lg text-xs rpg-btn shadow-emerald-800 flex items-center gap-1">
-              <span>✅</span> 核銷使用
-            </button>
-          `;
-          unredeemedListEl.appendChild(div);
-        });
-      }
-
-      if (redeemedItems.length === 0) {
-        redeemedListEl.innerHTML = `
-          <div class="text-slate-400 text-xs py-3 text-center bg-slate-50 rounded-xl">
-            尚未有已核銷紀錄
-          </div>
-        `;
-      } else {
-        redeemedItems.forEach(item => {
-          const div = document.createElement('div');
-          div.className = "bg-slate-50 border border-slate-200 rounded-xl p-2 flex items-center justify-between text-xs";
-          div.innerHTML = `
-            <div>
-              <span class="font-bold text-slate-600 line-through">${item.prize}</span>
-              <div class="text-slate-400 text-[10px]">領券: ${item.date} ➔ 核銷: ${item.redeemedDate || item.date}</div>
-            </div>
-            <span class="text-slate-400 font-bold text-[11px] bg-slate-200 px-2 py-0.5 rounded">已兌換</span>
-          `;
-          redeemedListEl.appendChild(div);
-        });
-      }
-    }
-
-    function redeemSpecificTicket(ticketId) {
-      if (!currentViewingStudentId) return;
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === currentViewingStudentId);
-      if (!st || !st.tickets) return;
-
-      const ticket = st.tickets.find(t => t.id === ticketId);
-      if (!ticket) return;
-
-      ticket.status = 'redeemed';
-      ticket.redeemedDate = new Date().toISOString().split('T')[0];
-
-      persistData();
-      renderAllViews();
-      renderStudentPrizeDetailList();
-      sfx.playCheer();
-      showToast(`✅ 已核銷【${st.name}】的獎項：${ticket.prize}！`, '🎁');
-    }
-
-    function startRandomDraw(isWeighted = false) {
-      const curClass = getCurrentClass();
-      if (!curClass || curClass.students.length === 0) {
-        showToast('目前班級內沒有學生！', '⚠️');
-        return;
-      }
-
-      const box = document.getElementById('drawWinnerBox');
-      box.className = "h-44 bg-indigo-950 text-white border-3 border-indigo-400 rounded-3xl flex flex-col items-center justify-center text-center p-4 transition-all";
-      box.innerHTML = `
-        <span class="text-4xl animate-spin mb-2">🌀</span>
-        <span class="text-xl font-black text-amber-300">${isWeighted ? '正在進行逆境機會計算...' : '命運齒輪急速轉動中...'}</span>
-      `;
-      sfx.playTally();
-
-      setTimeout(() => {
-        let winner;
-        if (!isWeighted) {
-          winner = curClass.students[Math.floor(Math.random() * curClass.students.length)];
-        } else {
-          const maxScore = Math.max(...curClass.students.map(s => s.totalScore || 0), 10);
-          let weightedPool = [];
-          curClass.students.forEach(st => {
-            const weight = Math.max(1, maxScore - (st.totalScore || 0) + 5);
-            for (let i = 0; i < weight; i++) weightedPool.push(st);
-          });
-          winner = weightedPool[Math.floor(Math.random() * weightedPool.length)];
-        }
-
-        box.className = "h-44 bg-gradient-to-r from-amber-400 to-orange-400 text-slate-900 border-3 border-amber-300 rounded-3xl flex flex-col items-center justify-center text-center p-4 transition-all shadow-xl";
-        box.innerHTML = `
-          <span class="text-xs font-black uppercase tracking-widest text-amber-950 mb-1">
-            ${isWeighted ? '⚖️ 逆境加權天選之人' : '🎯 天降幸運冒險者'}
-          </span>
-          <span class="text-3xl font-black text-slate-900">#${winner.no} ${winner.name} ${winner.isHelper ? '🎖️' : ''}</span>
-          <span class="text-xs font-bold text-amber-900 mt-1">目前總積分：${winner.totalScore || 0} 分</span>
-        `;
-        sfx.playCheer();
-        confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
-      }, 700);
-    }
-
-    function clearLotteryResult() {
-      const box = document.getElementById('drawWinnerBox');
-      box.className = "h-44 bg-gradient-to-br from-indigo-50 to-slate-100 border-3 border-dashed border-indigo-300 rounded-3xl flex flex-col items-center justify-center text-center p-4 transition-all";
-      box.innerHTML = `
-        <span class="text-4xl mb-2">🎲</span>
-        <span class="text-xl font-black text-indigo-500">準備好接受命運的召喚了嗎？</span>
-        <span class="text-xs text-slate-400 mt-1">點擊下方按鈕開始抽籤</span>
-      `;
-      showToast('已清除抽籤展示結果', '🧹');
-    }
-
-    function generateGroups() {
-      const curClass = getCurrentClass();
-      if (!curClass || curClass.students.length === 0) {
-        showToast('名單內沒有學生，無法分組！', '⚠️');
-        return;
-      }
-
-      const numGroups = parseInt(document.getElementById('groupCountSelect').value);
-      const mode = document.getElementById('groupModeSelect').value;
-      const container = document.getElementById('groupResultContainer');
-      container.innerHTML = '';
-
-      let groups = Array.from({ length: numGroups }, () => []);
-
-      if (mode === 'random') {
-        const shuffled = [...curClass.students].sort(() => Math.random() - 0.5);
-        shuffled.forEach((st, idx) => {
-          groups[idx % numGroups].push(st);
-        });
-      } else {
-        const sorted = [...curClass.students].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
-        let round = 0;
-        let index = 0;
-        while (index < sorted.length) {
-          if (round % 2 === 0) {
-            for (let g = 0; g < numGroups && index < sorted.length; g++) {
-              groups[g].push(sorted[index++]);
-            }
-          } else {
-            for (let g = numGroups - 1; g >= 0 && index < sorted.length; g--) {
-              groups[g].push(sorted[index++]);
-            }
-          }
-          round++;
-        }
-      }
-
-      groups.forEach((team, idx) => {
-        const teamTotal = team.reduce((sum, s) => sum + (s.totalScore || 0), 0);
-        const div = document.createElement('div');
-        div.className = "bg-indigo-50/70 border-2 border-indigo-200 rounded-2xl p-3";
-        div.innerHTML = `
-          <div class="flex items-center justify-between text-xs font-black text-indigo-900 mb-2 pb-1 border-b border-indigo-100">
-            <span>🛡️ 第 ${idx + 1} 冒險小隊 (${team.length}人)</span>
-            <span class="text-indigo-600">總戰力: ${teamTotal}分</span>
-          </div>
-          <div class="flex flex-wrap gap-1.5">
-            ${team.map(s => `
-              <span class="bg-white text-slate-700 px-2 py-1 rounded-xl text-xs font-bold border border-slate-200 shadow-sm flex items-center gap-1">
-                <span class="text-slate-400 text-[10px]">#${s.no}</span> ${s.name} ${s.isHelper ? '🎖️' : ''}
-              </span>
-            `).join('')}
-          </div>
-        `;
-        container.appendChild(div);
-      });
-
-      sfx.playCheer();
-      showToast(`✨ 已成功分成 ${numGroups} 組小隊！`, '🚀');
-    }
-
-    function resetGroups() {
-      const container = document.getElementById('groupResultContainer');
-      container.innerHTML = `
-        <div class="text-xs text-slate-400 col-span-2 text-center py-12 border-2 border-dashed border-slate-200 rounded-2xl">
-          尚未生成分組名單，請選擇組數後點擊「立即組隊」
-        </div>
-      `;
-      showToast('已重設分組狀態', '🧹');
-    }
-
-    function openEditClassModal() {
-      const curClass = getCurrentClass();
-      if (!curClass) return;
-      document.getElementById('editClassNameInput').value = curClass.name;
-      openModal('editClassModal');
-    }
-
-    function saveClassEdit() {
-      const curClass = getCurrentClass();
-      const newName = document.getElementById('editClassNameInput').value.trim();
-      if (!newName) return showToast('班級名稱不可為空！', '⚠️');
-
-      curClass.name = newName;
-      persistData();
-      renderClassSelector();
-      closeModal('editClassModal');
-      showToast('班級名稱已成功更新！', '✏️');
-    }
-
-    function deleteCurrentClass() {
-      const classKeys = Object.keys(db.classes);
-      if (classKeys.length <= 1) {
-        showToast('無法刪除！系統至少需要保留一個班級。', '⚠️');
-        return;
-      }
-
-      const curId = db.currentClassId;
-      delete db.classes[curId];
-      db.currentClassId = Object.keys(db.classes)[0];
-      persistData();
-      renderClassSelector();
-      renderAllViews();
-      closeModal('editClassModal');
-      showToast('班級已成功刪除！', '🗑️');
-    }
-
-    function renderClassSelector() {
-      const sel = document.getElementById('classSelector');
-      if (!sel) return;
-      sel.innerHTML = '';
-      Object.keys(db.classes).forEach(cid => {
-        const opt = document.createElement('option');
-        opt.value = cid;
-        opt.textContent = db.classes[cid].name;
-        if (cid === db.currentClassId) opt.selected = true;
-        sel.appendChild(opt);
-      });
-    }
-
-    function changeClass() {
-      db.currentClassId = document.getElementById('classSelector').value;
-      persistData();
-      renderAllViews();
-      showToast(`已切換至【${getCurrentClass().name}】`, '🏫');
-    }
-
-    function createNewClass() {
-      const input = document.getElementById('newClassNameInput');
-      const name = input.value.trim();
-      if (!name) {
-        showToast('請輸入班級名稱！', '⚠️');
-        return;
-      }
-      const newId = 'class_' + Date.now();
-      db.classes[newId] = {
-        id: newId,
-        name: name,
-        targetScore: 200,
-        milestoneStage: 1,
-        selectedReward: 'music',
-        bossScoreOffset: 0,
-        historyLogs: [],
-        students: []
-      };
-      db.currentClassId = newId;
-      persistData();
-      renderClassSelector();
-      renderAllViews();
-      closeModal('newClassModal');
-      input.value = '';
-      showToast(`🎉 成功建立新班級【${name}】！`, '✨');
-    }
-
-    function handleBatchImport() {
-      const curClass = getCurrentClass();
-      const raw = document.getElementById('batchImportArea').value.trim();
-      if (!raw) {
-        showToast('請先填寫或貼上名單內容！', '⚠️');
-        return;
-      }
-
-      const lines = raw.split('\n');
-      let currentNo = curClass.students.length;
-      let addedCount = 0;
-
-      lines.forEach(line => {
-        const trimmed = line.trim();
-        if (!trimmed) return;
-
-        const parts = trimmed.split(/\s+/);
-        let no, name;
-        if (parts.length >= 2 && !isNaN(parts[0])) {
-          no = parseInt(parts[0]);
-          name = parts.slice(1).join(' ');
-        } else {
-          currentNo += 1;
-          no = currentNo;
-          name = trimmed;
-        }
-
-        curClass.students.push({
-          id: Date.now() + Math.floor(Math.random() * 10000),
-          no: no,
-          name: name,
-          isHelper: false,
-          totalScore: 0,
-          tickets: [],
-          currentBuff: 'none',
-          luckyDiceRoll: 0,
-          sessionBehaviorScores: []
-        });
-        addedCount++;
-      });
-
-      persistData();
-      renderAllViews();
-      document.getElementById('batchImportArea').value = '';
-      showToast(`📥 成功匯入 ${addedCount} 位學生！`, '👥');
-    }
-
-    function addSingleStudent() {
-      const curClass = getCurrentClass();
-      const noInput = document.getElementById('singleNoInput');
-      const nameInput = document.getElementById('singleNameInput');
-      const name = nameInput.value.trim();
-      if (!name) return showToast('請填寫學生姓名', '⚠️');
-
-      const no = parseInt(noInput.value) || (curClass.students.length + 1);
-
-      curClass.students.push({
-        id: Date.now(),
-        no: no,
-        name: name,
-        isHelper: false,
-        totalScore: 0,
-        tickets: [],
-        currentBuff: 'none',
-        luckyDiceRoll: 0,
-        sessionBehaviorScores: []
-      });
-
-      persistData();
-      renderAllViews();
-      noInput.value = '';
-      nameInput.value = '';
-      showToast(`已新增學生 #${no} ${name}`, '➕');
-    }
-
-    function toggleStudentHelper(studentId) {
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === studentId);
-      if (!st) return;
-
-      st.isHelper = !st.isHelper;
-      persistData();
-      renderAllViews();
-      showToast(`已${st.isHelper ? '任命' : '取消'}【${st.name}】為課堂小老師 🎖️`, '✨');
-    }
-
-    function resetSingleStudentScore(studentId) {
-      const curClass = getCurrentClass();
-      const st = curClass.students.find(s => s.id === studentId);
-      if (!st) return;
-
-      st.totalScore = 0;
-      st.tickets = [];
-      st.currentBuff = 'none';
-      st.luckyDiceRoll = 0;
-      st.sessionBehaviorScores = [];
-
-      persistData();
-      renderAllViews();
-      showToast(`已重設【${st.name}】的分數與搖獎券紀錄為 0`, '🔄');
-    }
-
-    function resetAllStudentsScore() {
-      const curClass = getCurrentClass();
-      if (!curClass || curClass.students.length === 0) return;
-
-      curClass.students.forEach(st => {
-        st.totalScore = 0;
-        st.tickets = [];
-        st.currentBuff = 'none';
-        st.luckyDiceRoll = 0;
-        st.sessionBehaviorScores = [];
-      });
-
-      curClass.bossScoreOffset = 0;
-      persistData();
-      renderAllViews();
-      showToast('已重設全班所有學生的分數與紀錄！', '🔄');
-    }
-
-    function renderManageList() {
-      const curClass = getCurrentClass();
-      const list = document.getElementById('manageStudentList');
-      if (!list) return;
-      list.innerHTML = '';
-
-      if (!curClass || curClass.students.length === 0) {
-        list.innerHTML = '<div class="text-slate-400 py-8 text-center text-xs">目前尚無名單資料</div>';
-        document.getElementById('manageStudentCountText').textContent = '0';
-        return;
-      }
-
-      document.getElementById('manageStudentCountText').textContent = curClass.students.length;
-
-      curClass.students.forEach(st => {
-        const item = document.createElement('div');
-        item.className = "flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm gap-2";
-        item.innerHTML = `
-          <div class="flex items-center gap-2 flex-1 min-w-0">
-            <span class="text-slate-400 text-[11px] w-6">#${st.no}</span>
-            <span class="font-black text-slate-800 truncate">${st.name}</span>
-            <button type="button" onclick="toggleStudentHelper(${st.id})" title="切換小老師職位" class="text-xs px-1.5 py-0.5 rounded-lg border font-bold ${st.isHelper ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-slate-100 text-slate-400 border-slate-200'}">
-              🎖️ ${st.isHelper ? '小老師' : '設為小老師'}
-            </button>
-            <span class="text-[11px] text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded font-bold">${st.totalScore || 0}分</span>
-          </div>
-          <div class="flex items-center gap-1">
-            <button type="button" onclick="resetSingleStudentScore(${st.id})" title="將該生分數與票券歸零" class="text-amber-600 hover:text-amber-800 text-xs font-bold px-2 py-1 rounded hover:bg-amber-50">
-              🔄 重設
-            </button>
-            <button type="button" onclick="removeStudent(${st.id})" class="text-rose-500 hover:text-rose-700 text-xs font-bold px-2 py-1 rounded hover:bg-rose-50">
-              刪除
-            </button>
-          </div>
-        `;
-        list.appendChild(item);
-      });
-    }
-
-    function removeStudent(studentId) {
-      const curClass = getCurrentClass();
-      curClass.students = curClass.students.filter(s => s.id !== studentId);
-      persistData();
-      renderAllViews();
-      showToast('已移除該學生', '🗑️');
-    }
-
-    function clearCurrentClassData() {
-      const curClass = getCurrentClass();
-      if (!curClass) return;
-      curClass.students = [];
-      persistData();
-      renderAllViews();
-      showToast('已清空當前名單', '🗑️');
-    }
-
-    function exportDataBackup() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
-      const downloadAnchor = document.createElement('a');
-      const todayStr = new Date().toISOString().split('T')[0];
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `冒險公會_課堂資料備份_${todayStr}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      showToast('📦 備份檔已成功下載至您的電腦！', '💾');
-    }
-
-    function importDataBackup(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (imported && imported.classes) {
-            db = imported;
-            persistData();
-            renderClassSelector();
-            renderPrizePoster();
-            renderAllViews();
-            sfx.playCheer();
-            confetti({ particleCount: 90, spread: 60, origin: { y: 0.6 } });
-            showToast('🎉 備份檔已成功還原！所有班級與歷史紀錄已同步！', '✨');
-          } else {
-            showToast('檔案格式不正確，無法辨識為有效的備份檔！', '⚠️');
-          }
-        } catch (err) {
-          showToast('讀取檔案失敗，請確認檔案內容！', '⚠️');
-        }
-        event.target.value = '';
-      };
-      reader.readAsText(file);
-    }
-
-    function renderAllViews() {
-      renderBossMilestone();
-      renderScoreTable();
-      renderHistoryLogs();
-      renderGachaInventory();
-      renderManageList();
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
-        btn.classList.add('bg-slate-200', 'text-slate-600');
-      });
-
-      const activeSection = document.getElementById(tabId);
-      if (activeSection) activeSection.classList.remove('hidden');
-
-      const activeBtn = document.getElementById(`tab-${tabId}`);
-      if (activeBtn) {
-        activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
-        activeBtn.classList.remove('bg-slate-200', 'text-slate-600');
-      }
-      renderAllViews();
-    }
-
-    function openModal(modalId) {
-      const el = document.getElementById(modalId);
-      if (el) el.classList.remove('hidden');
-    }
-
-    function closeModal(modalId) {
-      const el = document.getElementById(modalId);
-      if (el) el.classList.add('hidden');
-    }
-
-    function showToast(message, icon = '✨') {
-      const toast = document.getElementById('toastNotification');
-      if (!toast) return;
-      document.getElementById('toastIcon').textContent = icon;
-      document.getElementById('toastMessage').textContent = message;
-
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      toast.classList.add('translate-y-0', 'opacity-100');
-
-      setTimeout(() => {
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3200);
-    }
-  </script>
+    
+    sec.append(opts);
+    quiz.append(sec);
+  });
+}
+
+// 初始化與綁定
+function loadRandomLevel() {
+  currentData = generateLevelData();
+  answers = {};
+  mode = 'answer';
+  hintsActive = false;
+  $('#hint').classList.remove('active');
+  $('#score').textContent = '— / 5';
+  renderUI();
+}
+
+$('#next').onclick = loadRandomLevel;
+$('#levelChoice').onchange = loadRandomLevel;
+
+$('#hint').onclick = (e) => {
+  hintsActive = !hintsActive;
+  e.target.classList.toggle('active', hintsActive);
+  renderUI();
+};
+
+// 錯題重答批改邏輯
+$('#check').onclick = () => {
+  let correct = 0;
+  currentData.questions.forEach((q, i) => {
+    if(answers[i] === q.answer) {
+      correct++;
+      q.locked = true; // 鎖定正確答案
+    } else {
+      delete answers[i]; // 清空錯誤答案
+    }
+  });
+  
+  if(correct === 5) {
+     mode = 'checked'; // 全對才切換模式
+  }
+  
+  $('#score').textContent = `${correct} / 5`;
+  renderUI();
+};
+
+$('#clear').onclick = () => { 
+  answers = {}; 
+  mode = 'answer'; 
+  currentData.questions.forEach(q => q.locked = false); // 解除鎖定
+  $('#score').textContent = '— / 5'; 
+  renderUI(); 
+};
+$('#reveal').onclick = () => { mode = 'reveal'; $('#score').textContent = '解答'; renderUI(); };
+
+// 海報邏輯
+const posterOverlay = $('#posterOverlay');
+const posterBody = $('#posterBody');
+
+function openPoster(type) {
+  if(type === 'phrases') {
+    $('#posterTitle').textContent = '💬 點餐句型 (Ordering Phrases)';
+    const phrases = [
+      { en: "I want a hamburger.", zh: "我想要一個漢堡。" },
+      { en: "I would like a pizza.", zh: "我想要一個披薩。" },
+      { en: "How much is it?", zh: "這個多少錢？" },
+      { en: "How much is the total?", zh: "總共多少錢？" },
+      { en: "I will pay today.", zh: "今天我來付錢。" }
+    ];
+    posterBody.innerHTML = `<div class="phrases-grid">` + phrases.map(p => `
+      <div class="phrase-card">
+        <div class="phrase-en" onclick="speak('${p.en}')">${p.en}</div>
+        <div class="phrase-zh">${p.zh}</div>
+      </div>
+    `).join('') + `</div>`;
+  } else {
+    $('#posterTitle').textContent = '🍟 餐點總覽 (Menu Vocabulary)';
+    posterBody.innerHTML = `<div class="poster-grid">` + FOOD_DB.map(f => `
+      <div class="poster-item" onclick="speak('${f.name}')">
+        <div class="p-icon">${f.emoji}</div>
+        <div class="p-en">${f.name}</div>
+        <div class="p-zh">${f.zh}</div>
+      </div>
+    `).join('') + `</div>`;
+  }
+  posterOverlay.hidden = false;
+}
+
+$('#btn-phrases').onclick = () => openPoster('phrases');
+$('#btn-menu').onclick = () => openPoster('menu');
+posterOverlay.querySelector('.close-modal').onclick = () => posterOverlay.hidden = true;
+posterOverlay.onclick = e => { if(e.target === posterOverlay) posterOverlay.hidden = true; };
+
+// 啟動
+loadRandomLevel();
+</script>
 </body>
 </html>
