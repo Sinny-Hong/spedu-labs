@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>異想拔河 - 英文數字與日期對決</title>
+  <title>異想拔河 - 雙人對決</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
@@ -69,6 +69,7 @@
       background: #ffffff;
       color: var(--text-main);
       outline: none;
+      cursor: pointer;
     }
     .btn-toggle-group {
       display: flex;
@@ -91,7 +92,7 @@
       border-color: #0f172a;
     }
 
-    /* 開始 / 重置大按鈕 */
+    /* 開始 / 重置按鈕 */
     .action-btn-main {
       padding: 6px 18px;
       font-size: 0.95rem;
@@ -162,7 +163,7 @@
 
     .rope-track {
       width: 100%;
-      height: 76px;
+      height: 80px;
       position: relative;
       background: #f8fafc;
       border-radius: 12px;
@@ -190,18 +191,38 @@
       z-index: 2;
       will-change: transform;
     }
-    .tugger {
-      font-size: 2.8rem;
-      line-height: 1;
+
+    /* 拔河隊伍人物 SVG */
+    .team-squad {
+      display: flex;
+      align-items: center;
+      gap: 2px;
     }
+    .puller-svg {
+      width: 36px;
+      height: 58px;
+      display: block;
+    }
+    /* 藍隊後仰向左，面朝右 */
+    .puller-blue {
+      transform: rotate(-14deg);
+      transform-origin: bottom center;
+    }
+    /* 紅隊後仰向右，面朝左 */
+    .puller-red {
+      transform: rotate(14deg);
+      transform-origin: bottom center;
+    }
+
     .rope-cable {
       width: 160px;
       height: 8px;
-      background: #78350f;
+      background: #854d0e;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
+      margin: 0 -4px;
     }
     .center-ribbon {
       width: 16px;
@@ -389,7 +410,6 @@
         padding: 12px 18px;
         gap: 16px;
       }
-      /* 計算機容器改由 grid-contents 承接，平鋪於左右兩側 */
       .calc-container {
         display: contents;
       }
@@ -415,7 +435,6 @@
         padding: 16px;
       }
 
-      /* 放大中央拔河元素 */
       .status-bar {
         font-size: 1.8rem;
       }
@@ -428,8 +447,9 @@
         border-width: 3px;
         border-radius: 16px;
       }
-      .tugger {
-        font-size: 4.8rem;
+      .puller-svg {
+        width: 60px;
+        height: 96px;
       }
       .rope-cable {
         width: 220px;
@@ -440,7 +460,6 @@
         height: 32px;
       }
 
-      /* 放大左右計算機元素 */
       .calc-head {
         font-size: 1.6rem;
       }
@@ -467,9 +486,22 @@
     <div class="ctrl-item">
       <label for="bankSel">題庫：</label>
       <select id="bankSel">
-        <option value="numbers">英文數字 (1～100)</option>
-        <option value="dates">英文日期 (月/日)</option>
-        <option value="mixed">數字＋日期混合</option>
+        <!-- 英文題庫 -->
+        <optgroup label="英文題庫">
+          <option value="eng_numbers">英文數字（1～100）</option>
+          <option value="eng_dates">英文日期（月／日）</option>
+        </optgroup>
+        <!-- 數學題庫 -->
+        <optgroup label="數學題庫">
+          <option value="math_1digit_pm">一位數加減法</option>
+          <option value="math_2digit_add_nocar">兩位數加法（不進位）</option>
+          <option value="math_2digit_add_carry">兩位數加法（含進位）</option>
+          <option value="math_2digit_sub_nobor">兩位數減法（不退位）</option>
+          <option value="math_2digit_sub_borrow">兩位數減法（含退位）</option>
+          <option value="math_99_mul">九九乘法</option>
+          <option value="math_2d_1d_mul">兩位數 × 一位數</option>
+          <option value="math_2d_1d_div">兩位數 ÷ 一位數</option>
+        </optgroup>
       </select>
     </div>
 
@@ -496,9 +528,48 @@
       <div class="rope-track" id="track">
         <div class="mid-line"></div>
         <div class="rope-team-wrapper" id="ropeBundle">
-          <div class="tugger">🤼‍♂️</div>
+          <!-- 藍隊 (兩人皆面朝右、身向左傾後仰、雙手向右拉繩) -->
+          <div class="team-squad squad-blue">
+            <svg class="puller-svg puller-blue" viewBox="0 0 60 90">
+              <circle cx="25" cy="18" r="10" fill="#f59e0b" />
+              <path d="M 23 28 L 15 54 L 28 54 Z" fill="#2563eb" />
+              <path d="M 17 54 L 10 82" stroke="#1e3a8a" stroke-width="6" stroke-linecap="round" />
+              <path d="M 24 54 L 32 82" stroke="#1e3a8a" stroke-width="6" stroke-linecap="round" />
+              <path d="M 20 36 L 46 45" stroke="#2563eb" stroke-width="6" stroke-linecap="round" />
+              <circle cx="46" cy="45" r="4" fill="#f59e0b" />
+            </svg>
+            <svg class="puller-svg puller-blue" viewBox="0 0 60 90">
+              <circle cx="25" cy="18" r="10" fill="#f59e0b" />
+              <path d="M 23 28 L 15 54 L 28 54 Z" fill="#1d4ed8" />
+              <path d="M 17 54 L 10 82" stroke="#1e3a8a" stroke-width="6" stroke-linecap="round" />
+              <path d="M 24 54 L 32 82" stroke="#1e3a8a" stroke-width="6" stroke-linecap="round" />
+              <path d="M 20 36 L 46 45" stroke="#1d4ed8" stroke-width="6" stroke-linecap="round" />
+              <circle cx="46" cy="45" r="4" fill="#f59e0b" />
+            </svg>
+          </div>
+
+          <!-- 繩索與標記 -->
           <div class="rope-cable"><div class="center-ribbon"></div></div>
-          <div class="tugger">🤼‍♀️</div>
+
+          <!-- 紅隊 (兩人皆面朝左、身向右傾後仰、雙手向左拉繩) -->
+          <div class="team-squad squad-red">
+            <svg class="puller-svg puller-red" viewBox="0 0 60 90">
+              <circle cx="35" cy="18" r="10" fill="#f59e0b" />
+              <path d="M 37 28 L 45 54 L 32 54 Z" fill="#dc2626" />
+              <path d="M 43 54 L 50 82" stroke="#991b1b" stroke-width="6" stroke-linecap="round" />
+              <path d="M 36 54 L 28 82" stroke="#991b1b" stroke-width="6" stroke-linecap="round" />
+              <path d="M 40 36 L 14 45" stroke="#dc2626" stroke-width="6" stroke-linecap="round" />
+              <circle cx="14" cy="45" r="4" fill="#f59e0b" />
+            </svg>
+            <svg class="puller-svg puller-red" viewBox="0 0 60 90">
+              <circle cx="35" cy="18" r="10" fill="#f59e0b" />
+              <path d="M 37 28 L 45 54 L 32 54 Z" fill="#b91c1c" />
+              <path d="M 43 54 L 50 82" stroke="#991b1b" stroke-width="6" stroke-linecap="round" />
+              <path d="M 36 54 L 28 82" stroke="#991b1b" stroke-width="6" stroke-linecap="round" />
+              <path d="M 40 36 L 14 45" stroke="#b91c1c" stroke-width="6" stroke-linecap="round" />
+              <circle cx="14" cy="45" r="4" fill="#f59e0b" />
+            </svg>
+          </div>
         </div>
       </div>
     </section>
@@ -563,7 +634,7 @@
 
   <script>
     /* ========================================================
-       可擴充題庫產生器 (維持函式動態生成，保留未來數學題擴充)
+       題庫生成引擎 (數學題庫與英文題庫分離設計)
        ======================================================== */
     const NUM_MAP = {
       1: "one", 2: "two", 3: "three", 4: "four", 5: "five",
@@ -611,42 +682,145 @@
       return `${NUM_MAP[tens]} ${ORD_MAP[ones]}`;
     }
 
-    // 核心抽題函式（傳回 { q: "題目", a: "答案字串" }）
-    function generateQuestionItem(bankKey) {
-      let targetBank = bankKey;
-      if (targetBank === 'mixed') {
-        targetBank = Math.random() < 0.5 ? 'numbers' : 'dates';
-      }
+    // 輔助函式：取得指定範圍整數
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
-      if (targetBank === 'numbers') {
-        const val = Math.floor(Math.random() * 100) + 1;
-        return {
-          q: numToEnglish(val),
-          a: String(val)
-        };
-      } else if (targetBank === 'dates') {
-        const mObj = MONTH_DATA[Math.floor(Math.random() * MONTH_DATA.length)];
-        const day = Math.floor(Math.random() * mObj.days) + 1;
+    // 數學題庫生成子引擎
+    const MathQuestionGenerators = {
+      // 1. 一位數加減法 (運算數 0~9，結果非負)
+      math_1digit_pm: () => {
+        const isAdd = Math.random() < 0.5;
+        if (isAdd) {
+          const a = randInt(0, 9);
+          const b = randInt(0, 9);
+          return { q: `${a} + ${b}`, a: String(a + b) };
+        } else {
+          const a = randInt(0, 9);
+          const b = randInt(0, a); // 保證 a - b >= 0
+          return { q: `${a} − ${b}`, a: String(a - b) };
+        }
+      },
+
+      // 2. 兩位數加法（不進位）：個位相加 < 10，和 <= 100
+      math_2digit_add_nocar: () => {
+        let a, b, uA, uB;
+        do {
+          uA = randInt(0, 9);
+          uB = randInt(0, 9 - uA); // 個位和 < 10
+          const tA = randInt(1, 8);
+          const tB = randInt(1, 9 - tA); // 十位和 <= 9 保證和 < 100
+          a = tA * 10 + uA;
+          b = tB * 10 + uB;
+        } while (a < 10 || b < 10 || (a + b) > 100);
+        return { q: `${a} + ${b}`, a: String(a + b) };
+      },
+
+      // 3. 兩位數加法（含進位）：個位相加 >= 10，和 <= 100
+      math_2digit_add_carry: () => {
+        let a, b, uA, uB;
+        do {
+          uA = randInt(1, 9);
+          uB = randInt(10 - uA, 9); // 個位相加 >= 10
+          const tA = randInt(1, 7);
+          const tB = randInt(1, 8 - tA); // 十位和加上進位 <= 9
+          a = tA * 10 + uA;
+          b = tB * 10 + uB;
+        } while (a < 10 || b < 10 || (a + b) > 100);
+        return { q: `${a} + ${b}`, a: String(a + b) };
+      },
+
+      // 4. 兩位數減法（不退位）：個位不需借位，被減數與減數皆兩位數
+      math_2digit_sub_nobor: () => {
+        let a, b;
+        do {
+          const uA = randInt(0, 9);
+          const uB = randInt(0, uA); // 個位 uA >= uB
+          const tA = randInt(2, 9);
+          const tB = randInt(1, tA);
+          a = tA * 10 + uA;
+          b = tB * 10 + uB;
+        } while (a < 10 || b < 10 || a <= b);
+        return { q: `${a} − ${b}`, a: String(a - b) };
+      },
+
+      // 5. 兩位數減法（含退位）：個位需借位，差不得為負數
+      math_2digit_sub_borrow: () => {
+        let a, b;
+        do {
+          const uA = randInt(0, 8);
+          const uB = randInt(uA + 1, 9); // 個位 uA < uB (必退位)
+          const tA = randInt(2, 9);
+          const tB = randInt(1, tA - 1); // 保證 a > b
+          a = tA * 10 + uA;
+          b = tB * 10 + uB;
+        } while (a < 10 || b < 10 || a <= b);
+        return { q: `${a} − ${b}`, a: String(a - b) };
+      },
+
+      // 6. 九九乘法：乘數範圍 1～9
+      math_99_mul: () => {
+        const a = randInt(1, 9);
+        const b = randInt(1, 9);
+        return { q: `${a} × ${b}`, a: String(a * b) };
+      },
+
+      // 7. 兩位數 × 一位數：第一個數 10～99，第二個數 1～9，結果 <= 100
+      math_2d_1d_mul: () => {
+        let a, b;
+        do {
+          b = randInt(2, 9);
+          const maxA = Math.floor(100 / b);
+          if (maxA < 10) continue;
+          a = randInt(10, maxA);
+        } while (a * b > 100);
+        return { q: `${a} × ${b}`, a: String(a * b) };
+      },
+
+      // 8. 兩位數 ÷ 一位數：被除數 10～99，除數 2～9，整除
+      math_2d_1d_div: () => {
+        const b = randInt(2, 9);
+        // 商 qAns，被除數 a = b * qAns，a 需在 10～99 之間
+        const minQ = Math.ceil(10 / b);
+        const maxQ = Math.floor(99 / b);
+        const qAns = randInt(minQ, maxQ);
+        const a = b * qAns;
+        return { q: `${a} ÷ ${b}`, a: String(qAns) };
+      }
+    };
+
+    // 總出題調度函式
+    function generateQuestion(bankKey) {
+      if (bankKey === 'eng_numbers') {
+        const val = randInt(1, 100);
+        return { q: numToEnglish(val), a: String(val) };
+      } else if (bankKey === 'eng_dates') {
+        const mObj = MONTH_DATA[randInt(0, MONTH_DATA.length - 1)];
+        const day = randInt(1, mObj.days);
         const dayStr = String(day).padStart(2, '0');
         return {
           q: `${mObj.name} ${dayToOrdinal(day)}`,
           a: `${mObj.m}${dayStr}` // MMDD 4 位數，字串保留前導 0
         };
+      } else if (MathQuestionGenerators[bankKey]) {
+        return MathQuestionGenerators[bankKey]();
       }
       return { q: "one", a: "1" };
     }
 
     /* ========================================================
-       遊戲狀態管理
+       遊戲狀態與變數管理
        ======================================================== */
     let totalDuration = 120;
     let remainSeconds = 120;
     let timerLoop = null;
     let isRunning = false;
 
+    // 紀錄各隊狀態與上一題防止連續重複
     const teamState = {
-      1: { score: 0, ans: "", input: "", locked: true },
-      2: { score: 0, ans: "", input: "", locked: true }
+      1: { score: 0, ans: "", input: "", locked: true, lastQ: "" },
+      2: { score: 0, ans: "", input: "", locked: true, lastQ: "" }
     };
 
     const ropeBundle = document.getElementById("ropeBundle");
@@ -655,20 +829,19 @@
     const grid1 = document.getElementById("grid-1");
     const grid2 = document.getElementById("grid-2");
 
-    // 更新拔河位置與領先 7 分判定
+    // 更新拔河位置與判定領先 7 分
     function updateTugPosition() {
-      const diff = teamState[1].score - teamState[2].score; // 藍正 (往左拉), 紅負 (往右拉)
+      const diff = teamState[1].score - teamState[2].score; // 藍正(往左), 紅負(往右)
       const clamped = Math.max(-7, Math.min(7, diff));
 
-      // 判斷當前是否為大電視寬螢幕模式
       const isTV = window.innerWidth >= 1024;
       const pxPerStep = isTV ? 30 : 18;
 
-      // 藍隊領先往左 (-X px)，紅隊領先往右 (+X px)
+      // 藍隊領先往左 (-px)，紅隊領先往右 (+px)
       const movePixels = -clamped * pxPerStep;
       ropeBundle.style.transform = `translateX(${movePixels}px)`;
 
-      // 領先 7 分勝負判定
+      // 領先 7 分獲勝判定
       if (diff >= 7) {
         stopAndFinish("🏆 藍隊獲勝！", "領先達 7 分，拔河獲勝！");
       } else if (diff <= -7) {
@@ -679,8 +852,15 @@
     function issueNewQuestion(team) {
       if (!isRunning) return;
       const bank = document.getElementById("bankSel").value;
-      const item = generateQuestionItem(bank);
+      
+      let item;
+      let tries = 0;
+      do {
+        item = generateQuestion(bank);
+        tries++;
+      } while (item.q === teamState[team].lastQ && tries < 5); // 避免同隊連續出現完全相同題目
 
+      teamState[team].lastQ = item.q;
       teamState[team].ans = item.a;
       teamState[team].input = "";
       teamState[team].locked = false;
@@ -785,8 +965,8 @@
       clearInterval(timerLoop);
       endModal.style.display = "none";
 
-      teamState[1] = { score: 0, ans: "", input: "", locked: true };
-      teamState[2] = { score: 0, ans: "", input: "", locked: true };
+      teamState[1] = { score: 0, ans: "", input: "", locked: true, lastQ: "" };
+      teamState[2] = { score: 0, ans: "", input: "", locked: true, lastQ: "" };
 
       document.getElementById("sc-1").textContent = "0";
       document.getElementById("sc-2").textContent = "0";
@@ -832,7 +1012,6 @@
     /* ========================================================
        事件監聽與觸控綁定
        ======================================================== */
-    // 開始 / 重置按鈕
     mainCtrlBtn.addEventListener("click", () => {
       if (!isRunning) {
         startGamePlay();
@@ -841,7 +1020,7 @@
       }
     });
 
-    // 虛擬鍵盤觸控（獨立多點觸控支援）
+    // 獨立多點觸控支援
     [grid1, grid2].forEach(grid => {
       const teamId = parseInt(grid.dataset.t, 10);
       grid.addEventListener("pointerdown", (e) => {
@@ -876,7 +1055,7 @@
       document.getElementById("bankSel").focus();
     });
 
-    // 視窗縮放監聽重新計算拔河位置
+    // 視窗縮放監聽
     window.addEventListener("resize", updateTugPosition);
 
     // 初始化待機
