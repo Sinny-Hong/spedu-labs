@@ -6,22 +6,21 @@
 <title>E-City｜異想課表</title>
 <style>
 :root{
-  /* 校園筆記本風 Campus Notebook */
-  --paper: #FDFDFD; /* 筆記本白 */
-  --wood: #C5A880; /* 課桌木頭色 */
-  --ink: #2C3E50; /* 原子筆深藍黑 */
-  --blue: #3498DB; /* 重點藍字 */
-  --green: #2A5944; /* 黑板綠 */
-  --red: #E74C3C; /* 批改紅 / 筆記本邊界線 */
-  --line-blue: #A9CCE3; /* 筆記本淡藍色虛線 */
+  --paper: #FDFDFD;
+  --wood: #C5A880;
+  --ink: #2C3E50;
+  --blue: #3498DB;
+  --green: #2A5944;
+  --red: #E74C3C;
+  --line-blue: #A9CCE3;
   
-  --navy: #1A252F; 
-  --soft: #F4F6F7; 
+  --navy: #1A252F;
+  --soft: #F4F6F7;
   --blue-soft: #EBF5FB;
-  --green-soft: #E8F8F5; 
-  --hint: #FEF9E7; 
+  --green-soft: #E8F8F5;
+  --hint: #FEF9E7;
   --hint-line: #F1C40F;
-  --gray-blue: #BDC3C7; 
+  --gray-blue: #BDC3C7;
 }
 *{box-sizing:border-box}
 
@@ -39,61 +38,71 @@ button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-
 h1{margin:0;font-size:clamp(20px,2vw,30px); color: var(--green);}
 .toolbar{display:flex;align-items:center;gap:6px;}
 .tool,select{background:#fff;color:var(--ink);border:1px solid var(--gray-blue);border-radius:9px;padding:6px 10px;font-weight:700;font-size:15px;}
-.tool:hover,select:hover{background:var(--soft);}
+.tool:hover,select:hover{background:#F4F6F7;}
 .tool.active{background:var(--hint); border-color:var(--hint-line);}
 
 /* 桌機整體佈局 */
 .layout{flex:1; display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px;padding:0 10px 10px; min-height:0;}
 .panel{background:white;border:1px solid var(--wood);border-radius:18px;padding:10px;display:flex;flex-direction:column;min-height:0; box-shadow: 2px 2px 8px rgba(0,0,0,0.05);}
 
-/* 左側：滿版課表 (筆記本樣式) */
+/* 左側：課表排版 */
 .left-side{display:flex;flex-direction:column; height:100%; min-height:0;}
 .schedule-box{
   border:1px solid var(--line-blue); border-radius:10px; background:var(--paper); 
   display:flex; flex-direction:column; flex:1; overflow:hidden; position: relative;
 }
-/* 筆記本紅色邊界線 */
-.schedule-box::before {
-  content: ''; position: absolute; top: 35px; bottom: 0; left: 60px;
-  width: 2px; background: var(--red); opacity: 0.5; z-index: 1;
-}
 
-.schedule-title{height:35px;display:flex;align-items:center;justify-content:center;background:var(--green);color:white;font-size:17px;font-weight:900;flex-shrink:0; letter-spacing: 1px; z-index: 2;}
-.schedule-table-wrap{flex:1; overflow-y:auto; overflow-x:auto; padding:0; z-index: 2; position: relative;}
-.schedule-table{width:100%; border-collapse:collapse; text-align:center;}
+.schedule-title{height:35px;display:flex;align-items:center;justify-content:center;background:var(--green);color:white;font-size:17px;font-weight:900;flex-shrink:0; letter-spacing: 1px;}
+.schedule-table-wrap{flex:1; display:flex; flex-direction:column; overflow:hidden;}
+.schedule-table{width:100%; height:100%; border-collapse:collapse; text-align:center; table-layout: fixed;}
 .schedule-table th, .schedule-table td {
-  padding:12px 6px; font-size:clamp(16px, 2vh, 20px); font-weight:bold; vertical-align: middle;
+  padding:8px 4px; font-size:clamp(15px, 1.8vh, 19px); font-weight:bold; vertical-align: middle;
+  word-break: break-word;
 }
-.schedule-table th {background:var(--green); color:white; white-space:nowrap; border-right: 1px solid #1E4030;}
-.schedule-table td {border-bottom: 1px dashed var(--line-blue); border-right: 1px dashed var(--line-blue);}
+.schedule-table th {background:var(--green); color:white; border-right: 1px solid #1E4030;}
+.schedule-table th:first-child { width: 15%; }
+.schedule-table th:not(:first-child) { width: 17%; }
+.schedule-table td {border-bottom: 1px dashed var(--line-blue); border-right: 1px dashed var(--line-blue); background: #FFFFFF;}
 .schedule-table td:last-child {border-right: none;}
 .schedule-table tr:hover td {background:var(--blue-soft);}
 
-.time-header {font-size: 13px; color: #E8F8F5; display: block; font-weight: normal; margin-top: 2px;}
+.time-header {font-size: 12px; color: #E8F8F5; display: block; font-weight: normal; margin-top: 2px;}
 
 /* 右側：測驗區 */
-.panel-head{display:flex;align-items:center;justify-content:space-between;min-height:40px;margin-bottom:6px;flex-shrink:0;}
+.panel-head{display:flex;align-items:center;justify-content:space-between;min-height:40px;margin-bottom:4px;flex-shrink:0;}
 h2{margin:0;font-size:22px; color:var(--green);}
 .quiztools{display:flex;align-items:center;gap:6px;}
 #score{font-size:17px;color:var(--green);font-weight:bold;margin-right:6px;}
 #check{background:var(--green);border-color:var(--green);color:white}
 #reveal{border-color:#efadb3;color:var(--red)}
 
-.questions{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-around;padding:0 5px;}
-.question{border-bottom:1px dashed var(--gray-blue);padding:8px 0;}
+/* 預設 5 題時靠上緊湊排列 */
+.questions{flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:flex-start;padding:0 5px; gap: 6px;}
+/* 當是 3 大題時，自動均分垂直空間，消除空曠感 */
+.questions.three-items{justify-content:space-around;}
+
+.question{border-bottom:1px dashed var(--gray-blue);padding:6px 0 8px;}
 .question:last-child{border-bottom:none;}
-.question-line{display:flex;align-items:baseline;gap:5px;font-size:clamp(18px, 2.2vh, 24px);font-weight:bold;cursor:pointer;border-radius:6px;line-height:1.3;}
+.question-line{display:flex;align-items:baseline;gap:5px;font-size:clamp(17px, 2vh, 22px);font-weight:bold;cursor:pointer;border-radius:6px;line-height:1.3;}
 .question-line:hover{background:var(--hint);}
 .answer-blank{color:var(--blue);white-space:nowrap;min-width:3em;text-align:right;}
 .answer-blank.good{color:var(--green)}
 .answer-blank.reveal{color:var(--red)}
 
-.options{margin-left:4.5em;display:flex;gap:12px;flex-wrap:wrap;font-size:clamp(16px, 2vh, 20px);margin-top:6px;}
-.choice{border:2px solid transparent;border-radius:8px;background:transparent;color:#4F595D;padding:4px 8px;font-weight:bold;}
-.choice:hover:not(:disabled){background:var(--blue-soft);border-color:var(--blue);}
+.options{
+  margin-left: 3.2em; 
+  display: flex; 
+  flex-wrap: wrap; 
+  font-size: clamp(15px, 1.8vh, 19px); 
+  margin-top: 3px;
+  row-gap: 2px;     
+  column-gap: 14px; 
+}
+.choice{border:2px solid transparent;border-radius:8px;background:transparent;color:#4F595D;padding:2px 6px;font-weight:bold;}
+.choice:hover:not(:disabled){background:var(--blue-soft);color:var(--navy);border-color:var(--blue);}
 .choice.selected{color:var(--ink);background:var(--blue-soft);border-color:var(--blue);}
 .choice.correct{color:var(--green);background:var(--green-soft);border-color:var(--green);}
-.choice.reveal{color:var(--red);background:#F9EBEA;}
+.choice.reveal{color:var(--red);background:#F9EBEA;border-color:var(--red);}
 .choice:disabled{cursor:default}
 
 .hint-word{padding:0 2px;border-radius:4px;background:var(--hint);box-shadow:inset 0 -2px 0 var(--hint-line);}
@@ -124,11 +133,11 @@ h2{margin:0;font-size:22px; color:var(--green);}
   .layout { display: flex; flex-direction: column; height: auto; overflow: visible; padding: 10px; gap: 16px; }
   .panel { overflow: visible; }
   .left-side { display: flex; flex-direction: column; height: auto; gap: 12px; }
-  .schedule-box::before { display: none; } /* 手機隱藏紅線避免干擾 */
-  .schedule-table-wrap { overflow-x: auto; }
-  .schedule-table th, .schedule-table td { font-size: 15px; padding: 8px; }
-  .questions { overflow: visible; height: auto; justify-content: flex-start; gap: 10px;}
-  .options { margin-left: 1.5em; font-size: 17px; gap: 8px; }
+  .schedule-table-wrap { overflow-x: auto; height: auto; }
+  .schedule-table { height: 320px; }
+  .schedule-table th, .schedule-table td { font-size: 14px; padding: 6px; }
+  .questions { overflow: visible; height: auto; justify-content: flex-start; gap: 8px;}
+  .options { margin-left: 1.5em; font-size: 17px; row-gap: 2px; column-gap: 10px; }
   .question-line { font-size: 19px; }
 }
 </style>
@@ -152,7 +161,7 @@ h2{margin:0;font-size:22px; color:var(--green);}
 </header>
 
 <main class="layout">
-  <!-- 左側 100% 滿版課表 -->
+  <!-- 左側課表 -->
   <section class="panel">
     <div class="left-side">
       <section class="schedule-box">
@@ -196,12 +205,13 @@ h2{margin:0;font-size:22px; color:var(--green);}
 'use strict';
 const $ = s => document.querySelector(s);
 
-// --- 資料庫 (文字為主，Emoji移至海報) ---
+// --- 資料庫 ---
 const SUBJECTS = [
   {name:'Chinese', zh:'國文', emoji:'📖'},
   {name:'English', zh:'英文', emoji:'🔤'},
   {name:'Math', zh:'數學', emoji:'📐'},
   {name:'Science', zh:'自然', emoji:'🔬'},
+  {name:'History', zh:'歷史', emoji:'📜'},
   {name:'PE', zh:'體育', emoji:'🏀'},
   {name:'Art', zh:'美術', emoji:'🎨'},
   {name:'Music', zh:'音樂', emoji:'🎵'},
@@ -209,7 +219,7 @@ const SUBJECTS = [
 ];
 
 const CLUBS = [
-  {name:'Basketball Club', zh:'籃球社', emoji:'⛹️'},
+  {name:'Guitar Club', zh:'吉他社', emoji:'🎸'},
   {name:'Movie Club', zh:'電影社', emoji:'🎬'},
   {name:'Cooking Club', zh:'烹飪社', emoji:'🍳'}
 ];
@@ -220,7 +230,6 @@ const TIMES = ["08:15", "09:15", "10:15", "11:15"];
 const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
 const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-// --- 狀態管理 ---
 let currentData = null;
 let answers = {};
 let mode = 'answer';
@@ -233,7 +242,6 @@ function getPrevDay(dayStr) {
   return DAYS[idx - 1];
 }
 
-// 嚴格選項去重
 function fillOptions(ans, w1, w2, fallback) {
   let opts = [...new Set([ans, w1, w2])];
   let i = 0;
@@ -249,19 +257,15 @@ function fillOptions(ans, w1, w2, fallback) {
 function generateGrid(lvl) {
   let grid = Array(5).fill().map(() => Array(4).fill(""));
   
-  // 為了確保 L3~L5 的題目絕對成立，先安插關鍵科目
-  // 1. PE 必須出現兩次 (給 L4 找下一次補課用)
-  let peDays = shuffle([0, 1, 2, 3, 4]).slice(0, 2).sort(); // 確保 D1 < D2
+  let peDays = shuffle([0, 1, 2, 3, 4]).slice(0, 2).sort();
   grid[peDays[0]][Math.floor(Math.random()*3)] = "PE";
   grid[peDays[1]][Math.floor(Math.random()*3)] = "PE";
   
-  // 2. Art, Computer, Music 各出現一次 (給 L3 情境題)
   let otherDays = shuffle([0, 1, 2, 3, 4]);
   grid[otherDays[0]][Math.floor(Math.random()*3)] = "Art";
   grid[otherDays[1]][Math.floor(Math.random()*3)] = "Computer";
   grid[otherDays[2]][Math.floor(Math.random()*3)] = "Music";
 
-  // 3. 如果是 L5，將 Class 4 的兩天換成社團
   let clubDays = shuffle([0, 1, 2, 3, 4]).slice(0, 2);
   let clubs = shuffle(CLUBS);
   if (lvl === 'L5') {
@@ -269,8 +273,7 @@ function generateGrid(lvl) {
     grid[clubDays[1]][3] = clubs[1].name;
   }
 
-  // 4. 填滿剩餘的格子 (用主科)
-  const mainSubjs = ["Chinese", "English", "Math", "Science"];
+  const mainSubjs = ["Chinese", "English", "Math", "Science", "History"];
   for(let d=0; d<5; d++){
     for(let p=0; p<4; p++){
       if(grid[d][p] === "") {
@@ -295,12 +298,9 @@ function generateLevelData() {
 
   // L1: 基本查表 (5題)
   if (lvl === 'L1') {
-    let d1 = 0, p1 = 0; // Mon Class 1
-    let q1Ans = grid[d1][p1];
-    
     let artDay = DAYS[otherDays[0]], artP = grid[otherDays[0]].indexOf("Art") + 1;
-    let sciDay = DAYS[1], sciP = grid[1].indexOf("Science");
-    if(sciP === -1) sciP = 2; // 防呆
+    let sciP = grid[1].indexOf("Science");
+    if(sciP === -1) sciP = 2;
     
     questions = [
       { stem: `What class is on Monday for Class 1?`, ans: grid[0][0], w1: grid[0][1], w2: grid[1][0] },
@@ -316,17 +316,14 @@ function generateLevelData() {
   
   // L2: 課前課後 (5題)
   else if (lvl === 'L2') {
-    // 找一個 p > 0 的課問 Before
-    let dB = 2, pB = 2; // Wed Class 3
+    let dB = 2, pB = 2;
     let subjB = grid[dB][pB];
     let prevB = grid[dB][pB-1];
     
-    // 找一個 p < 3 的課問 After
-    let dA = 1, pA = 1; // Tue Class 2
+    let dA = 1, pA = 1;
     let subjA = grid[dA][pA];
     let nextA = grid[dA][pA+1];
     
-    // 計算 Math 數量
     let mathCount = grid.flat().filter(x => x === "Math").length;
     let countWord = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven"][mathCount] || mathCount.toString();
     
@@ -365,11 +362,10 @@ function generateLevelData() {
 
   // L4: 補課與請假 (3題)
   else if (lvl === 'L4') {
-    let peD1 = peDays[0]; // 第一次 PE 的天數 index
-    let peD2 = peDays[1]; // 下一次 PE 的天數 index
+    let peD1 = peDays[0];
+    let peD2 = peDays[1];
     let peP2 = grid[peD2].indexOf("PE") + 1;
     
-    // 找一個出現兩次的科目 (通常主科一定有)
     let engDays = [];
     for(let d=0; d<5; d++) { if(grid[d].includes("English")) engDays.push(DAYS[d]); }
     let engAns = engDays.length >= 2 ? `${engDays[0]} and ${engDays[1]}` : "Every day";
@@ -448,6 +444,14 @@ function renderUI() {
 
   const quiz = $('#questions');
   quiz.innerHTML = '';
+  
+  // 根據題目數量動態增減三題專屬的 class 屬性，自動調整間距
+  if (totalQuestions === 3) {
+    quiz.classList.add('three-items');
+  } else {
+    quiz.classList.remove('three-items');
+  }
+
   currentData.questions.forEach((q, i) => {
     const sec = document.createElement('div');
     sec.className = 'question';
@@ -458,7 +462,7 @@ function renderUI() {
     
     const blank = document.createElement('span');
     blank.className = 'answer-blank';
-    let letter = '　';
+    let letter = ' ';
     if(mode === 'reveal') { letter = String.fromCharCode(65 + q.answer); blank.classList.add('reveal'); }
     else if(q.locked) { letter = String.fromCharCode(65 + answers[i]); blank.classList.add('good'); }
     else if(answers[i] !== undefined) { letter = String.fromCharCode(65 + answers[i]); }
