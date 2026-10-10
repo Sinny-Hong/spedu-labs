@@ -22,7 +22,7 @@ window.GRAMMAR_DATA = [
       { id: "19", category: "日常句型及片語", title: "If 條件句 (如果)", desc: "如果明天下雨，我就... 的日常生活假設與簡易句型", filename: "grammar_if.html", themeColor: "#2563EB" },
 
       // ==== 時態表達 ====
-      { id: "past-simple", category: "時態表達", title: "過去簡單式｜八頁互動講義", desc: "從 was / were、動詞過去式到 did＋原形，含進階練習與找過去式任務", filename: "prototype-past-simple.html", themeColor: "#F59E0B" },
+      { id: "past-simple", category: "時態表達", title: "過去簡單式｜八頁互動講義", desc: "從 was / were、動詞過去式到 did＋原形，含進階練習與找過去式任務", filename: "past-simple.html", themeColor: "#F59E0B" },
       { id: "present-simple", category: "時態表達", title: "現在簡單式｜互動講義", desc: "從使用時機、主詞判斷、第三人稱單數到 do／does，含造句與會考綜合練習", filename: "present-simple.html", themeColor: "#F59E0B" },
       { id: "22", category: "時態表達", title: "頻率副詞 (always)", desc: "習慣與動作發生頻率的表達與句中位置", filename: "grammar_always.html", themeColor: "#F59E0B" },
       { id: "27", category: "時態表達", title: "現在進行式：動詞變化", desc: "現在進行式的使用時機與動詞加 -ing 的變化規則", filename: "grammar_Ving.html", themeColor: "#F59E0B" },
@@ -73,7 +73,10 @@ window.GRAMMAR_DATA = [
       { id: "g5", category: "互動遊戲區", title: "🧩 配對板｜家人稱謂", desc: "家人稱謂與親友關係三排對照，支援發音", filename: "match-family.html", themeColor: "#F43F5E" },
       { id: "g6", category: "互動遊戲區", title: "🧩 配對板｜時間與日期", desc: "星期、月份、日期與時間的三排對照語音配對", filename: "match-time-date.html", themeColor: "#F43F5E" },
       { id: "g7", category: "互動遊戲區", title: "🧩 配對板｜人稱代名詞", desc: "限時配對、亂序、干擾卡與課堂訂正挑戰", filename: "match-pronouns.html", themeColor: "#F43F5E" },
+      { id: "english-time", category: "互動遊戲區", title: "⏰ 英文時間互動學習館", desc: "搭配大螢幕操作時鐘、英文發音、隨堂挑戰與時間表達鷹架", filename: "game-english-time.html", themeColor: "#F43F5E" },
       { id: "ecity-01", category: "互動遊戲區", title: "🏙️ E-City｜我的異想小鎮", desc: "隨機城市地圖與八種位置句型挑戰，附中英提示板、單字發音與答題音效", filename: "ecity_01_my_town.html", themeColor: "#F43F5E" },
+      { id: "fortune", category: "互動遊戲區", title: "🔮 異想命運館", desc: "抽取英文命運牌卡，透過角色、關鍵字與鼓勵句進行課堂互動", filename: "../fortune/index.html", themeColor: "#7C3AED" },
+      { id: "tug-of-war", category: "互動遊戲區", title: "🪢 異想拔河", desc: "兩隊用英文與數學題庫即時搶答，把繩索拉向己方", filename: "../games/tug-of-war.html", themeColor: "#7C3AED" },
 
       // ==== 測試網頁：五份彼此獨立的 HTML ====
       { id: "test-1", category: "測試網頁", title: "Test 1", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test1.html", themeColor: "#64748B" },
