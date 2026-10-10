@@ -8,8 +8,6 @@ const sidebar = document.getElementById("sidebar");
 const menuToggle = document.getElementById("menuToggle");
 const tabs = document.querySelectorAll(".tab");
 const pages = document.querySelectorAll(".tab-page");
-const moreBtn = document.getElementById("moreBtn");
-const moreTools = document.getElementById("moreTools");
 const sidebarOverlay = document.getElementById("sidebarOverlay");
 const qrModal = document.getElementById("qrModal");
 const qrImage = document.getElementById("qrImage");
@@ -190,11 +188,6 @@ tabs.forEach(tab => tab.addEventListener("click", () => {
   tab.classList.add("active");
   document.getElementById(tab.dataset.tab).classList.add("active");
 }));
-
-moreBtn.addEventListener("click", () => {
-  moreTools.classList.toggle("open");
-  moreBtn.textContent = moreTools.classList.contains("open") ? "收起更多功能⌃" : "顯示更多功能⌄";
-});
 
 document.addEventListener("click", event => {
   const wordButton = event.target.closest(".word-button");

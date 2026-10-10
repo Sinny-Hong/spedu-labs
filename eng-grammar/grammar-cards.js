@@ -75,8 +75,7 @@ window.GRAMMAR_DATA = [
       { id: "g7", category: "互動遊戲區", title: "🧩 配對板｜人稱代名詞", desc: "限時配對、亂序、干擾卡與課堂訂正挑戰", filename: "match-pronouns.html", themeColor: "#F43F5E" },
       { id: "english-time", category: "互動遊戲區", title: "⏰ 英文時間互動學習館", desc: "搭配大螢幕操作時鐘、英文發音、隨堂挑戰與時間表達鷹架", filename: "game-english-time.html", themeColor: "#F43F5E" },
       { id: "ecity-01", category: "互動遊戲區", title: "🏙️ E-City｜我的異想小鎮", desc: "隨機城市地圖與八種位置句型挑戰，附中英提示板、單字發音與答題音效", filename: "ecity_01_my_town.html", themeColor: "#F43F5E" },
-      { id: "fortune", category: "互動遊戲區", title: "🔮 異想命運館", desc: "抽取英文命運牌卡，透過角色、關鍵字與鼓勵句進行課堂互動", filename: "../fortune/index.html", themeColor: "#7C3AED" },
-      { id: "tug-of-war", category: "互動遊戲區", title: "🪢 異想拔河", desc: "兩隊用英文與數學題庫即時搶答，把繩索拉向己方", filename: "../games/tug-of-war.html", themeColor: "#7C3AED" },
+      { id: "ecity-tug-of-war", category: "互動遊戲區", title: "🏆 拔河錦標賽", desc: "兩隊用英文數字、日期或數學題庫即時搶答，把繩索拉向己方", filename: "../math/tug-of-war.html", themeColor: "#7C3AED" },
 
       // ==== 測試網頁：五份彼此獨立的 HTML ====
       { id: "test-1", category: "測試網頁", title: "Test 1", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test1.html", themeColor: "#64748B" },

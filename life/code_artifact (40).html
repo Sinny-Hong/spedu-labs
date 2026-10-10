@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盲盒大搜集 - 社會適應能力評估</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@300;500;700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <style>
+        :root {
+            /* 馬卡龍色系 */
+            --bg-color: #fce4ec;       
+            --card-bg: #ffffff;
+            --primary-color: #ff8a80;  
+            --secondary-color: #80deea; 
+            --accent-yellow: #fff59d;  
+            --accent-purple: #b39ddb;  /* 奇幻紫 */
+            --text-color: #5d4037;     
+            --shadow-soft: 0 8px 24px rgba(149, 157, 165, 0.2);
+            --border-radius: 24px;
+        }
+
+        * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Fredoka', 'Chiron GoRound TC', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fce4ec 0%, #e1bee7 100%);
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* 背景裝飾泡泡 */
+        .bubble {
+            position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.4);
+            animation: float 8s infinite ease-in-out; z-index: 0;
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        /* 主遊戲容器 */
+        #game-container {
+            width: 90%; max-width: 1000px; height: 85vh; 
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+            display: flex; flex-direction: row; 
+            position: relative; z-index: 10; overflow: hidden;
+            border: 8px solid white;
+        }
+
+        /* --- 左側側邊欄 --- */
+        .sidebar {
+            width: 250px; background: #fff; border-right: 2px solid #f0f0f0;
+            padding: 30px 20px; display: flex; flex-direction: column; align-items: center;
+            z-index: 20; box-shadow: 4px 0 10px rgba(0,0,0,0.02); flex-shrink: 0;
+        }
+
+        .app-title {
+            font-size: 1.5rem; color: var(--text-color); font-weight: bold;
+            margin-bottom: 25px; text-align: center; line-height: 1.2;
+        }
+
+        .status-display {
+            background: #fff3e0; color: #ff9800;
+            padding: 10px; border-radius: 15px;
+            font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 5px;
+            font-size: 1.1rem; border: 2px solid #ffe0b2;
+            width: 100%; margin-bottom: 30px;
+        }
+        .status-item { display: flex; align-items: center; gap: 8px; }
+
+        /* 導航按鈕樣式 */
+        .nav-menu { width: 100%; display: flex; flex-direction: column; gap: 15px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 15px; padding: 15px 20px;
+            border-radius: 15px; color: #9e9e9e; cursor: pointer; transition: 0.3s;
+            font-size: 1.1rem; font-weight: bold; background: transparent;
+        }
+        .nav-item:hover { background: #f5f5f5; color: #757575; }
+        .nav-item.active { 
+            background: #e3f2fd; color: #00838f;
+            box-shadow: 0 2px 8px rgba(128, 222, 234, 0.2);
+        }
+        .nav-icon { font-size: 1.5rem; }
+
+        /* --- 右側內容區域 --- */
+        .main-content {
+            flex: 1; overflow-y: auto; overflow-x: hidden;
+            padding: 20px; background: #fafafa; position: relative;
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- 1. 首頁 (抽獎機) --- */
+        .gacha-container {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; gap: 15px;
+        }
+        .gacha-machine {
+            width: 100%; max-width: 300px; height: 260px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='20' y='10' width='60' height='60' fill='%23ffccbc' rx='5'/%3E%3Ccircle cx='50' cy='40' r='20' fill='white' opacity='0.5'/%3E%3Cpath d='M30,80 L70,80 L65,95 L35,95 Z' fill='%23ef5350'/%3E%3C/svg%3E") no-repeat center;
+            background-size: contain; position: relative;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .machine-glass {
+            width: 120px; height: 120px; border-radius: 50%;
+            background: rgba(255,255,255,0.3); border: 4px solid rgba(255,255,255,0.6);
+            position: absolute; top: 40px; 
+            display: flex; justify-content: center; align-items: center; overflow: hidden;
+        }
+        .capsule { font-size: 2rem; position: absolute; }
+
+        .btn {
+            background: var(--primary-color); color: white;
+            border: none; padding: 12px 30px; font-size: 1.2rem;
+            border-radius: 50px; cursor: pointer; width: auto; min-width: 240px;
+            font-family: inherit; font-weight: 700;
+            box-shadow: 0 4px 10px rgba(255, 138, 128, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:active { transform: scale(0.96); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .btn-blue { background: var(--secondary-color); box-shadow: 0 4px 10px rgba(128, 222, 234, 0.4); }
+        .btn-purple { background: var(--accent-purple); box-shadow: 0 4px 10px rgba(179, 157, 219, 0.4); border: 2px solid #9575cd; color: #fff;}
+        .btn-purple:hover:not(:disabled) { background: #9575cd; }
+
+        /* --- 2. 答題區 --- */
+        .quiz-container {
+            max-width: 800px; margin: 0 auto;
+            height: 100%; display: flex; flex-direction: column; justify-content: center;
+        }
+        
+        /* Combo 星星區 */
+        .combo-area {
+            display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;
+            background: #fff; padding: 10px; border-radius: 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            border: 2px solid #fff59d;
+        }
+        .combo-star { font-size: 2rem; color: #e0e0e0; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .combo-star.active { color: #ffca28; filter: drop-shadow(0 0 5px rgba(255,202,40,0.6)); transform: scale(1.2); }
+
+        .quiz-card {
+            background: white; border-radius: 20px; padding: 15px 20px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 10px;
+            border: 2px solid #f0f0f0;
+        }
+        .question-text { 
+            font-size: 1.4rem; color: var(--text-color); margin: 5px 0 15px 0; 
+            font-weight: bold; line-height: 1.6; letter-spacing: 1px; 
+        }
+        
+        #options-list {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;
+        }
+
+        .option-btn {
+            background: white; border: 3px solid #eee; color: #666; width: 100%; padding: 12px 15px; 
+            border-radius: 15px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: 0.2s; 
+            text-align: left; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 0 #eee;
+        }
+        .option-text {
+            flex: 1; padding-right: 10px; word-break: break-word; line-height: 1.4;
+        }
+        .option-btn:hover { border-color: var(--secondary-color); background: #e0f7fa; color: #006064; box-shadow: 0 4px 0 #b2ebf2; transform: translateY(-2px);}
+        .option-btn:active { transform: translateY(2px); box-shadow: 0 0 0 transparent; }
+        
+        .option-btn.correct { background: #c8e6c9; border-color: #4caf50; color: #1b5e20; box-shadow: 0 4px 0 #388e3c; }
+        .option-btn.wrong { background: #ffcdd2; border-color: #ef5350; color: #b71c1c; animation: shake 0.4s; box-shadow: 0 4px 0 #d32f2f; }
+        .option-btn.locked { cursor: default; pointer-events: none; }
+        .option-btn.locked.correct { opacity: 1; } 
+        .option-btn.locked:not(.correct):not(.wrong) { opacity: 0.5; background: #f5f5f5; border-color: #ddd; box-shadow: none; }
+
+        .katex { font-size: 1.15em !important; margin: 0 4px; color: #0277bd; font-weight: bold; }
+
+        .speaker-icon {
+            font-size: 1.3rem; padding: 6px; border-radius: 50%;
+            background: #eee; cursor: pointer; color: #555; transition: 0.2s; pointer-events: auto; flex-shrink: 0;
+        }
+        .speaker-icon:hover { background: var(--accent-yellow); transform: scale(1.1); }
+
+        .quiz-nav-area { display: flex; justify-content: space-between; gap: 15px; margin-top: 15px; width: 100%; }
+        .quiz-nav-btn {
+            flex: 1; padding: 12px; border-radius: 15px;
+            background: white; border: 2px solid #ddd; color: #888; font-weight: bold; font-size: 1.1rem;
+            cursor: pointer; transition: 0.2s; box-shadow: 0 4px 0 #eee;
+        }
+        .quiz-nav-btn:hover:not(:disabled) { background: #f0f0f0; transform: translateY(-2px); box-shadow: 0 6px 0 #ddd; }
+        .quiz-nav-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 0 0 transparent; }
+        .quiz-nav-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; background: #f5f5f5;}
+        
+        .quiz-nav-btn.primary { background: var(--secondary-color); color: #006064; border: 2px solid #4dd0e1; box-shadow: 0 4px 0 #00acc1; }
+        .quiz-nav-btn.primary:hover:not(:disabled) { background: #4dd0e1; box-shadow: 0 6px 0 #00acc1; }
+        .quiz-nav-btn.primary:disabled { background: #e0e0e0; color: #9e9e9e; border-color: #ccc; box-shadow: none; cursor: not-allowed; }
+
+        /* --- 3. 搜集圖鑑 --- */
+        .collection-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 20px; padding-bottom: 20px;
+        }
+        .collection-item {
+            background: white; border-radius: 15px; aspect-ratio: 1;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05); position: relative;
+            border: 3px solid transparent; cursor: pointer; transition: transform 0.2s;
+        }
+        .collection-item:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .collection-item.locked { background: #eee; opacity: 0.6; box-shadow: none; transform: none;}
+        .collection-item.locked .item-icon { filter: grayscale(100%) brightness(50%); opacity: 0.3; }
+        
+        .item-icon { font-size: 2.5rem; margin-bottom: 5px; transition: transform 0.2s; }
+        .item-name { font-size: 0.9rem; color: #888; font-weight: bold; }
+        
+        .rarity-badge {
+            position: absolute; top: 5px; left: 5px;
+            font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; color: white;
+            font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .count-badge {
+            position: absolute; bottom: 5px; right: 5px;
+            font-size: 0.8rem; padding: 2px 6px; border-radius: 8px; background: #333; color: white;
+            font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .count-badge.max { background: #d32f2f; }
+
+        .rarity-R { background: #42a5f5; } 
+        .rarity-SR { background: #ab47bc; } 
+        .rarity-SSR { background: linear-gradient(45deg, #fbc02d, #ff6f00); } 
+
+        /* --- 開箱動畫 Modal --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 100;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(8px);
+        }
+        .box-container {
+            width: 250px; height: 250px; position: relative;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+        }
+        .blind-box {
+            font-size: 10rem; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4));
+            animation: bounce 2s infinite; cursor: pointer;
+        }
+        /* 大型盲盒外觀不同 */
+        .blind-box.giant { font-size: 14rem; filter: drop-shadow(0 20px 25px rgba(179, 157, 219, 0.8)); }
+        
+        .blind-box.shaking { animation: shake-box 0.5s infinite; }
+        .blind-box.opening { animation: pop-open 0.5s forwards; }
+
+        .prize-display {
+            background: white; padding: 40px; border-radius: 40px;
+            text-align: center; animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 90%; max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); position: relative; z-index: 101;
+        }
+        .prize-icon { font-size: 8rem; display: block; margin: 10px 0; filter: drop-shadow(0 8px 8px rgba(0,0,0,0.2)); }
+        .prize-title { font-size: 2rem; color: var(--primary-color); font-weight: bold; margin-bottom: 5px;}
+        .prize-rarity { font-size: 1.1rem; color: #888; margin-bottom: 5px; display: inline-block; padding: 6px 16px; background: #eee; border-radius: 15px;}
+        .prize-count-info { font-size: 1.1rem; color: #00838f; font-weight: bold; margin-bottom: 25px; }
+
+        .rays {
+            position: absolute; width: 600px; height: 600px;
+            background: repeating-conic-gradient(rgba(255,255,255,0.4) 0 15deg, transparent 15deg 30deg);
+            animation: rotate 10s linear infinite; z-index: -1;
+        }
+
+        /* 手機版適配 */
+        @media (max-width: 768px) {
+            #game-container { flex-direction: column; height: 95vh; width: 95%; max-width: 450px;}
+            .sidebar { display: none; }
+             #game-container { flex-direction: column; }
+             .sidebar { 
+                 order: 2; width: 100%; border-top: 2px solid #f0f0f0; border-right: none;
+                 flex-direction: row; padding: 10px; justify-content: space-around; display: flex;
+             }
+             .app-title, .status-display { display: none; } 
+             .nav-menu { flex-direction: row; gap: 0; justify-content: space-around; width: 100%; }
+             .nav-item { flex-direction: column; gap: 5px; font-size: 0.8rem; padding: 5px; border-radius: 10px; }
+             .nav-icon { font-size: 1.4rem; }
+             .nav-item span { display: block; }
+             
+             .mobile-top-bar { display: flex; }
+             .main-content { padding: 10px 15px; } 
+             .quiz-card { padding: 10px; margin-bottom: 5px; }
+             .question-text { font-size: 1.2rem; margin: 5px 0; line-height: 1.5;}
+             #options-list { grid-template-columns: 1fr; gap: 10px; } /* 手機版改單行顯示比較適合長文字 */
+             .option-btn { padding: 10px 12px; font-size: 1rem; }
+             #feedback-msg { margin-top: 5px !important; font-size: 1rem; height: 20px !important; line-height: 20px !important;}
+             .gacha-machine { height: 200px; }
+        }
+        
+        .mobile-top-bar {
+            display: none; width: 100%; padding: 10px 20px; justify-content: space-between; align-items: center;
+            background: white; border-bottom: 1px solid #eee; flex-shrink: 0;
+        }
+
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+        @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-10px);} }
+        @keyframes shake-box { 0% {transform: rotate(0deg);} 25% {transform: rotate(-10deg);} 75% {transform: rotate(10deg);} }
+        @keyframes pop-open { 0% {transform: scale(1);} 50% {transform: scale(1.2);} 100% {transform: scale(0); opacity: 0;} }
+        @keyframes zoomIn { from {transform: scale(0);} to {transform: scale(1);} }
+        @keyframes rotate { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }
+        @keyframes starPop { 0% {transform: scale(0);} 80% {transform: scale(1.5);} 100% {transform: scale(1);} }
+
+    </style>
+</head>
+<body>
+
+    <div class="bubble" style="width: 100px; height: 100px; top: 10%; left: -20px;"></div>
+    <div class="bubble" style="width: 60px; height: 60px; bottom: 20%; right: -10px; animation-delay: 2s;"></div>
+    <div class="bubble" style="width: 80px; height: 80px; top: 40%; right: 20%; animation-delay: 4s;"></div>
+
+    <div id="game-container">
+        
+        <div class="mobile-top-bar" id="mobile-header">
+            <div style="font-weight: bold; color: var(--text-color); display:flex; flex-direction:column; font-size:1.1rem; line-height:1.2;">
+                社會適應大搜集
+                <span style="font-size:0.7rem; color:#aaa; font-weight:normal;">製作者 異想教室</span>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <div class="status-display" style="width: auto; margin:0; padding: 5px 10px; font-size: 1rem; flex-direction:row;">
+                    <span>🪙</span> <span id="mobile-coins">0</span>
+                </div>
+                <div class="status-display" style="width: auto; margin:0; padding: 5px 10px; font-size: 1rem; flex-direction:row; background:#ede7f6; color:#7e57c2; border-color:#d1c4e9;">
+                    <span>🎫</span> <span id="mobile-tokens">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="app-title">社會適應大搜集<br><span style="font-size:1.2rem; color: #aaa;">🐾 魔法動物園</span>
+                <div style="font-size: 0.8rem; color: #ccc; margin-top: 10px; font-weight: normal; line-height:1.4;">製作者 異想教室</div>
+            </div>
+            
+            <div id="player-display" style="font-weight: bold; color: var(--secondary-color); margin-bottom: 10px; font-size: 1.1rem; display: none;">👤 <span id="player-name-label"></span></div>
+
+            <div class="status-display">
+                <div class="status-item"><span>🪙 金幣:</span> <span id="user-coins">0</span></div>
+                <div class="status-item" style="color: #7e57c2;"><span>🎫 特殊代幣:</span> <span id="user-tokens">0</span></div>
+            </div>
+
+            <div class="nav-menu">
+                <div class="nav-item" onclick="switchTab('home')" id="nav-home">
+                    <div class="nav-icon">🏪</div>
+                    <span>盲盒商店</span>
+                </div>
+                <div class="nav-item active" onclick="switchTab('quiz')" id="nav-quiz">
+                    <div class="nav-icon">📝</div>
+                    <span>社會挑戰</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('collection')" id="nav-collection">
+                    <div class="nav-icon">📒</div>
+                    <span>我的圖鑑</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            
+            <div id="screen-home" class="content-area hidden">
+                <div class="gacha-container">
+                    <h2 style="color: var(--primary-color); margin-bottom: 0px; font-size: 2rem;">盲盒商店</h2>
+                    <p style="color: #888; font-size: 1.1rem; margin-bottom: 15px;">快來收集奇妙的魔法動物！(最多可重複3隻)</p>
+                    
+                    <div class="gacha-machine">
+                        <div class="machine-glass">
+                            <div class="capsule" style="color: #ef5350; top: 20px; left: 30px; transform: rotate(-20deg);">🐾</div>
+                            <div class="capsule" style="color: #42a5f5; top: 50px; left: 50px; transform: rotate(45deg);">🐾</div>
+                            <div class="capsule" style="color: #ffca28; top: 30px; left: 70px; transform: rotate(10deg);">🐾</div>
+                        </div>
+                    </div>
+
+                    <button class="btn" onclick="tryOpenBox('normal')" id="draw-btn">
+                        普通盲盒 (100 🪙)
+                    </button>
+                    <button class="btn btn-purple" onclick="tryOpenBox('special')" id="special-draw-btn">
+                        ✨ 大型奇幻盲盒 (需 1 🎫)
+                    </button>
+                    
+                    <div style="margin-top: 10px; font-size: 0.9rem; color: #aaa; text-align:center;">
+                        連對3題可獲取大型盲盒代幣🎫<br>內含稀有幻獸！
+                    </div>
+                </div>
+            </div>
+
+            <div id="screen-quiz" class="content-area">
+                <div class="quiz-container">
+                    
+                    <div class="combo-area" id="combo-display">
+                        <span style="font-weight:bold; color:#795548;">連對挑戰：</span>
+                        <div id="star-1" class="combo-star">☆</div>
+                        <div id="star-2" class="combo-star">☆</div>
+                        <div id="star-3" class="combo-star">☆</div>
+                    </div>
+
+                    <div class="quiz-card">
+                        <div style="color: #aaa; font-size: 1rem; margin-bottom: 10px; font-weight: bold; letter-spacing: 1px;">
+                            QUESTION <span id="q-index">1</span>
+                        </div>
+                        <div class="question-text" id="q-text">Apple</div>
+                        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;">
+                            <div class="speaker-icon" onclick="playQuestionAudio()" title="播放題目" style="font-size: 2rem; padding: 15px;">🔊</div>
+                        </div>
+                    </div>
+                    
+                    <div id="options-list"></div>
+                    <div id="feedback-msg" style="text-align: center; height: 30px; line-height: 30px; font-weight: bold; color: var(--primary-color); font-size: 1.2rem; margin-top: 15px;"></div>
+                    
+                    <div class="quiz-nav-area">
+                        <button class="quiz-nav-btn" id="prev-btn" onclick="prevQuestion()">◀ 上一題</button>
+                        <button class="quiz-nav-btn primary" id="next-btn" onclick="nextQuestion()" disabled>下一題 ▶</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="screen-collection" class="content-area hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2 style="color: var(--text-color); margin: 0; font-size: 1.8rem;">我的動物園</h2>
+                    <div style="background: white; padding: 5px 15px; border-radius: 15px; color: #888; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        進度: <span id="collected-count" style="color: var(--primary-color);">0</span> / <span id="total-count">0</span>
+                    </div>
+                </div>
+                <h3 style="color:#888; border-bottom: 2px dashed #eee; padding-bottom:5px;">一般魔法動物</h3>
+                <div class="collection-grid" id="collection-grid-normal"></div>
+                <h3 style="color:#9575cd; border-bottom: 2px dashed #eee; padding-bottom:5px; margin-top:20px;">史詩奇幻生物</h3>
+                <div class="collection-grid" id="collection-grid-special"></div>
+            </div>
+
+        </div>
+
+        <div id="unbox-modal" class="modal-overlay hidden">
+            <div class="rays hidden" id="rays"></div>
+            <div id="box-stage" class="box-container" onclick="openBoxAnimation()">
+                <div class="blind-box" id="blind-box-el">🎁</div>
+                <div style="position: absolute; bottom: -60px; color: white; font-weight: bold; width: 100%; text-align: center; font-size: 1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">點擊打開!</div>
+            </div>
+            <div id="prize-stage" class="prize-display hidden">
+                <div class="prize-rarity" id="prize-rarity-badge">RARE</div>
+                <div class="prize-icon" id="prize-icon">🦄</div>
+                <div class="prize-title" id="prize-name">獨角獸</div>
+                <div class="prize-count-info" id="prize-count-info">第 1 隻！</div>
+                <button class="btn btn-blue" onclick="closeModal()">太棒了！</button>
+            </div>
+        </div>
+
+        <div id="login-modal" class="modal-overlay" style="z-index: 300;">
+            <div style="background: white; padding: 40px; border-radius: 20px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                <div style="font-size: 3rem; margin-bottom: 10px;">🐾</div>
+                <h2 style="color: var(--primary-color); margin-top: 0;">歡迎來到魔法動物園</h2>
+                <p style="color: #666; margin-bottom: 20px;">輸入名字以連接雲端，保留你的金幣、代幣和可愛動物！</p>
+                <input type="text" id="player-name-input" placeholder="請輸入名字" style="width: 100%; padding: 15px; border-radius: 10px; border: 2px solid #eee; font-size: 1.2rem; margin-bottom: 20px; text-align: center; font-family: inherit;">
+                <button id="login-btn" class="btn btn-blue" onclick="loginAndLoad()" disabled style="width: 100%;">系統連線中...</button>
+            </div>
+        </div>
+
+        <div id="loading-overlay" class="modal-overlay hidden" style="z-index: 300;">
+            <div style="color: white; font-size: 1.5rem; font-weight: bold; animation: bounce 1s infinite;">
+                雲端資料存取中... ☁️
+            </div>
+        </div>
+
+        <div id="custom-alert-modal" class="modal-overlay hidden" style="z-index: 400;">
+            <div style="background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 300px;">
+                <p id="custom-alert-text" style="font-size: 1.2rem; color: var(--text-color); margin-bottom: 20px; font-weight: bold; line-height:1.5;"></p>
+                <button class="btn" onclick="closeCustomAlert()" style="min-width: 120px; padding: 10px 20px;">確定</button>
+            </div>
+        </div>
+
+        <div id="custom-confirm-modal" class="modal-overlay hidden" style="z-index: 400;">
+            <div style="background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 300px;">
+                <p id="custom-confirm-text" style="font-size: 1.2rem; color: var(--text-color); margin-bottom: 20px; font-weight: bold;"></p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn" style="background: #ccc; box-shadow: 0 4px 0 #999; min-width: 100px; padding: 10px;" onclick="closeCustomConfirm(false)">取消</button>
+                    <button class="btn btn-blue" style="min-width: 100px; padding: 10px;" onclick="closeCustomConfirm(true)">確定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase 初始化
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        const rawAppId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const safeAppId = rawAppId.split('/')[0];
+
+        let currentUser = null;
+        let playerName = "";
+
+        // --- 1. 遊戲數據 ---
+        const questions = [
+            { q: "小新收到簡訊要求點擊連結「驗證」銀行帳戶,最恰當的做法是?", ans: "不予理會,並打電話給官方客服確認", options: ["立刻點擊連結並輸入帳號密碼", "不予理會,並打電話給官方客服確認", "截圖分享到社群媒體請朋友判斷", "回覆簡訊告知對方自己的個資"] },
+            { q: "求職廣告寫「日薪3000元」,但要求先交 5000元保證金,這極可能是?", ans: "典型的求職陷阱", options: ["體貼員工的好公司", "高薪但專業的要求", "合理的行政費用", "典型的求職陷阱"] },
+            { q: "ATM 領錢卡片被機器「吃掉」了,螢幕顯示「請洽服務人員」,應如何處理?", ans: "記住機台編號,立即聯絡銀行客服協助", options: ["馬上離開,去別台試試看", "打電話報案說提款機壞了", "記住機台編號,立即聯絡銀行客服協助", "等明天銀行開門再說"] },
+            { q: "在圖書館使用公用電腦後準備離開,為了保護隱私應做什麼?", ans: "執行登出並刪除個人瀏覽紀錄", options: ["把滑鼠藏起來", "將電腦螢幕關掉就好", "執行登出並刪除個人瀏覽紀錄", "把主機電源直接拔掉"] },
+            { q: "接到自稱客服電話要求操作ATM「解除重複扣款」,這通常是?", ans: "詐騙集團的常用手段", options: ["購物網站的優惠活動", "詐騙集團的常用手段", "銀行員的貼心提醒", "電腦系統自動升級"] },
+            { q: "關於設定網路帳號密碼,下列哪種做法最安全?", ans: "設定包含大小寫英文字母與數字的組合", options: ["使用身分證字號或生日當密碼", "所有的網站都用同一組密碼", "設定包含大小寫英文字母與數字的組合", "把密碼寫在貼紙上並黏在螢幕邊框"] },
+            { q: "陌生網友突然傳訊息說要送點數,要求你提供「手機驗證碼」,應該?", ans: "拒絕提供並封鎖該帳號", options: ["趕快提供以免錯過機會", "詢問對方需不需要身分證字號", "拒絕提供並封鎖該帳號", "轉傳給所有好朋友一起領取"] },
+            { q: "使用網路銀行或金融App時,下列哪項習慣是錯誤的?", ans: "使用公共免費Wi-Fi 進行大額轉帳", options: ["隨時檢查帳戶餘額是否異常", "使用公共免費Wi-Fi 進行大額轉帳", "離開 App 前確認已經登出", "開啟兩步驟驗證功能"] },
+            { q: "辦理手機門號時,將「雙證件正本」交給陌生人獨自處理,可能導致?", ans: "身分被冒用而成為詐騙共犯", options: ["獲得更多贈品", "身分被冒用而成為詐騙共犯", "信用額度自動提升", "辦事速度變快"] },
+            { q: "到銀行櫃檯存款後,離開前應該先確認什麼?", ans: "存摺或收據上的金額是否正確", options: ["櫃檯人員的名字", "存摺或收據上的金額是否正確", "銀行今天有沒有開冷氣", "後面還有多少人在排隊"] },
+            { q: "網購時賣家要求「私下匯款」不透過平台交易,這可能是?", ans: "網路購物詐騙", options: ["誠信交易", "省下手續費的好辦法", "網路購物詐騙", "賣家是好心人"] },
+            { q: "遺失金融卡(提款卡)時,第一時間該怎麼辦?", ans: "打電話給銀行辦理「掛失」停卡", options: ["去警察局報案後就回家睡覺", "打電話給銀行辦理「掛失」停卡", "找找看有沒有同學撿到", "重新辦一張卡,舊的不管它"] },
+            { q: "下列哪一項資料屬於「個人隱私」,不應隨意告知網友?", ans: "身分證字號與住家地址", options: ["喜歡吃的食物", "身分證字號與住家地址", "喜歡的電影", "偶像歌手的名字"] },
+            { q: "接到電話說「帳戶涉及洗錢,請把錢匯到安全帳戶備查」。這是?", ans: "假冒公務機關詐騙", options: ["司法程序", "假冒公務機關詐騙", "警察在幫你保護錢", "銀行系統故障"] },
+            { q: "下列哪種方式最能幫助控制預算,避免錢不夠花?", ans: "養成記帳習慣,了解開支", options: ["隨便刷卡下個月再說", "養成記帳習慣,了解開支", "看到喜歡的東西就買", "把錢放在口袋隨手拿"] },
+            { q: "面試時老闆要求「存摺正本與提款卡密碼」,你該怎麼辦?", ans: "堅定拒絕,這是不合理的要求", options: ["乖乖交出", "堅定拒絕,這是不合理的要求", "密碼給錯的就好", "先回家問朋友要不要一起交"] },
+            { q: "收到中獎通知要求先繳納「稅金」才能領獎,這可能是?", ans: "中獎詐騙", options: ["幸運降臨", "中獎詐騙", "政府規定", "銀行手續"] },
+            { q: "在LINE 收到朋友借錢的訊息,最安全的做法是?", ans: "親自打電話或見面確認本人身分", options: ["既然是朋友馬上匯款", "親自打電話或見面確認本人身分", "直接回傳信用卡號碼", "假裝沒看到"] },
+            { q: "刷卡消費後,簽名前應該確認什麼?", ans: "簽帳單上的金額是否正確", options: ["簽名筆好不好寫", "店員長得好不好看", "簽帳單上的金額是否正確", "信用卡背面的花紋"] },
+            { q: "買東西退貨店家要求操作 ATM 進行「退款」,這一定是?", ans: "詐騙陷阱,ATM 只有轉出功能", options: ["正常流程", "詐騙陷阱,ATM 只有轉出功能", "高科技退款", "節省時間"] },
+            { q: "對於網路上來路不明的App,下列哪一項敘述才是正確的?", ans: "可能含有病毒會盜取個資", options: ["功能越多越好全部下載", "可能含有病毒會盜取個資", "網友推薦的都安全", "不付費就沒有危險"] },
+            { q: "看到廣告說「只要提供帳戶供公司節稅就能月領2萬」,這屬於什麼行為?", ans: "洗錢詐騙共犯(人頭帳戶)", options: ["合法節稅", "投資理財", "洗錢詐騙共犯(人頭帳戶)", "額外收入"] },
+            { q: "在捷運站等公共場所使用手機時,我應該注意什麼來保護資訊安全?", ans: "不要在大聲說出密碼或重要個資", options: ["不要在大聲說出密碼或重要個資", "讓旁邊的人幫你看螢幕", "隨便連接沒密碼的 Wi-Fi", "手機借給陌生人玩"] },
+            { q: "關於詐騙常見的「一頁式廣告」,下列敘述何者正確?", ans: "常見的詐騙網頁,貨不對盤", options: ["只有一頁的優惠廣告", "常見的詐騙網頁,貨不對盤", "著名的官方網頁", "適合手機閱讀"] },
+            { q: "如果遇到疑似詐騙的情況,我應該撥打哪一支政府反詐騙專線?", ans: "165", options: ["104", "113", "165", "117"] },
+            { q: "當行人綠燈亮起時,我準備過馬路時應該注意什麼?", ans: "先看左右來車停下再走", options: ["低頭快走", "先看左右來車停下再走", "衝過去", "閉上眼睛走"] },
+            { q: "發生火災產生濃煙時,下列哪一種逃生行為是最危險的?", ans: "搭乘電梯", options: ["採低姿勢", "捂住口鼻", "搭乘電梯", "大聲呼救"] },
+            { q: "為了預防家中電線走火,我平時應該養成什麼樣的好習慣?", ans: "長時間不使用應拔插頭", options: ["插座插滿", "長時間不使用應拔插頭", "電線破損用膠帶黏", "電線上疊重物"] },
+            { q: "當我身體不舒服需要吃藥時,正確的用藥原則是什麼?", ans: "依照藥袋標示用量", options: ["隨便吃", "好一點就停藥", "依照藥袋標示用量", "一次吃兩倍量"] },
+            { q: "為了預防登革熱,我們在生活中最有效的清潔行動是?", ans: "清除積水容器", options: ["多吹冷氣", "清除積水容器", "穿深色衣服", "關窗不出門"] },
+            { q: "如果廚房的油鍋不小心起火了,最正確的處理方式是?", ans: "關瓦斯並用鍋蓋側蓋滅火", options: ["用水澆熄", "關瓦斯並用鍋蓋側蓋滅火", "用嘴吹熄", "用抹布拍打"] },
+            { q: "當遇到地震發生時,下列哪一個避難動作是錯誤的?", ans: "衝向陽台求救", options: ["趴下、掩護、穩住", "躲在堅固桌下", "衝向陽台求救", "遠離大型家具"] },
+            { q: "為了預防一氧化碳中毒,在室內使用瓦斯熱水器時應注意什麼?", ans: "保持空氣流通", options: ["門窗緊閉", "保持空氣流通", "噴灑化學藥劑", "不需要注意"] },
+            { q: "到達百貨公司或電影院等公共場所時,我應該優先注意什麼?", ans: "緊急出口與逃生動線", options: ["廁所位置", "緊急出口與逃生動線", "最近的餐廳", "免費充電處"] },
+            { q: "搭乘捷運或公車時,下列哪一項安全守則才是正確的?", ans: "緊握扶手站穩", options: ["衝入即將關閉的門", "擋住車門", "緊握扶手站穩", "車廂內嬉戲"] },
+            { q: "發現家中的家人發燒了,我應該優先採取什麼行動?", ans: "就醫治療遵醫囑", options: ["跑步流汗", "喝冰水降溫", "就醫治療遵醫囑", "蓋厚被子悶汗"] },
+            { q: "關於預防流感的傳染,下列哪一項做法是錯誤的?", ans: "咳嗽遮口鼻後不洗手摸人", options: ["勤洗手戴口罩", "咳嗽遮口鼻後不洗手摸人", "減少出入公共場所", "接種疫苗"] },
+            { q: "當發生燙傷意外時,正確的急救步驟順序應該是?", ans: "沖脫泡蓋送", options: ["脫泡蓋沖送", "沖脫泡蓋送", "泡蓋沖脫送", "塗抹牙膏"] },
+            { q: "關於日常的飲食衛生,下列哪一項觀念才是正確的?", ans: "飯前必肥皂洗手", options: ["地上食物3秒內可吃", "飯前必肥皂洗手", "過期罐頭沒味可吃", "生水直接喝"] },
+            { q: "在路邊看到有人受傷時,最恰當的協助方式是什麼?", ans: "撥打119 在安全處等待", options: ["把人搬到路邊", "撥打119 在安全處等待", "拍下來發網路上", "直接離開"] },
+            { q: "在郊外看到不知名的漂亮菇類,我應該怎麼做?", ans: "不可採食防中毒", options: ["鮮豔的就採來吃", "帶回家煮", "不可採食防中毒", "餵給流浪貓吃"] },
+            { q: "如果手濕濕的去操作電器開關,可能會發生什麼危險?", ans: "極易觸電應擦乾", options: ["比較快", "極易觸電應擦乾", "比較省電", "沒關係"] },
+            { q: "關於居家清潔劑(如漂白水、洗廁劑)的使用,下列何者正確?", ans: "閱讀包裝說明", options: ["隨意混合效果好", "閱讀包裝說明", "裝進汽水瓶方便", "徒手刷洗"] },
+            { q: "在游泳池游泳時,下列哪一項行為才是正確且安全的?", ans: "做暖身操並淋浴", options: ["飯後立刻下水", "池邊奔跑", "做暖身操並淋浴", "身體不適堅持游"] },
+            { q: "下列哪一個標章代表該電器符合政府的安全規範?", ans: "商品安全標章(CNS)", options: ["回收標誌", "節能標章", "商品安全標章(CNS)", "綠色標章"] },
+            { q: "在車廂內如果看到有人持刀脅迫,我應該如何應對比較安全?", ans: "遠離並按對講機報警", options: ["奪下刀子", "遠離並按對講機報警", "錄影記錄", "大哭"] },
+            { q: "關於過期食品的辨識,下列哪一項觀念才是正確的?", ans: "有效日期是指安全期限", options: ["有效日期是指安全期限", "過期一年沒破可吃", "沒酸就沒過期", "看外觀"] },
+            { q: "當我在家裡聞到濃重的瓦斯味時,最正確的動作是?", ans: "禁止火源輕開窗", options: ["開電風扇", "禁止火源輕開窗", "開抽油煙機", "點火檢查"] },
+            { q: "打雷下大雨時,如果我正在公園,應該如何防雷擊?", ans: "進入建築物內避難", options: ["躲在大樹下", "進入建築物內避難", "撐金屬傘", "打手機"] },
+            { q: "當有人發生異物哽塞且呼吸困難時,我應該施予什麼急救法?", ans: "哈姆立克法", options: ["喝大量水", "拍背", "哈姆立克法", "用手挖"] },
+            { q: "在職場遇到影印機不會使用時,我應該怎麼做比較好?", ans: "禮貌向同事請教", options: ["隨便按", "放棄不做", "禮貌向同事請教", "偷偷哭"] },
+            { q: "如果我不小心答應老師的事情卻忘記做了,我應該怎麼辦?", ans: "主動認錯並補做", options: ["當沒這回事", "怪同學沒提醒", "主動認錯並補做", "逃跑"] },
+            { q: "當同事經常不打招呼就拿走我的文具時,我應該怎麼回應?", ans: "清楚告訴他先告知再借", options: ["報復他", "羞辱他", "清楚告訴他先告知再借", "丟掉文具"] },
+            { q: "去參加文書工作的面試時,我穿著哪一種服裝比較適合?", ans: "素色有領上衣長褲", options: ["迷你裙", "素色有領上衣長褲", "睡衣拖鞋", "運動裝"] },
+            { q: "當主管交代的工作我聽不懂時,最正確的做法是什麼?", ans: "禮貌請主管再說一次", options: ["先點頭說好", "禮貌請主管再說一次", "問別人", "期限到才說"] },
+            { q: "關於在公司接聽電話的禮儀,下列哪一項敘述才是正確的?", ans: "先自報單位問候", options: ["喂找誰啦", "鈴響不接", "先自報單位問候", "直接掛掉"] },
+            { q: "如果我有急事會導致上班遲到,我應該如何處理?", ans: "提早打電話交代並請假", options: ["偷偷溜進去", "提早打電話交代並請假", "不上班", "下班再解釋"] },
+            { q: "當我與同事意見不合時,哪一種方式最能有效地解決問題?", ans: "冷靜說想法並聆聽對方", options: ["冷戰", "威脅對方", "冷靜說想法並聆聽對方", "背後說壞話"] },
+            { q: "領到人生第一份薪水時,我應該具備什麼樣的理財觀念?", ans: "規劃存入銀行與支出", options: ["一次花光", "規劃存入銀行與支出", "借給網友", "買點數"] },
+            { q: "在公共場合使用手機通話或看影片時,我應該注意什麼?", ans: "降低音量不影響人", options: ["大聲放音樂", "降低音量不影響人", "大聲叫喊", "坐別人桌上"] },
+            { q: "如果我不小心弄壞了公司的設備,我應該怎麼做比較誠實?", ans: "誠實向主管報告", options: ["藏起來", "推給同事", "誠實向主管報告", "離職"] },
+            { q: "同事因為愛滑手機導致工作落後要我幫忙,我該如何應對?", ans: "禮貌拒絕完成自己部分", options: ["默默幫他", "禮貌拒絕完成自己部分", "到處說他壞話", "一起滑"] },
+            { q: "下列哪一種行為,屬於職場中不專業、不負責任的表現?", ans: "隨意請假不交代", options: ["準時上班", "衣著整潔", "隨意請假不交代", "主動解決問題"] },
+            { q: "當同事請喝飲料但我剛好不喜歡那種口味時,我該怎麼說?", ans: "禮貌謝謝不渴", options: ["擺臉色", "收下後丟掉", "禮貌謝謝不渴", "勉強喝完"] },
+            { q: "在職場中,下列哪一種人際互動行為是比較適當的?", ans: "主動打招呼", options: ["翻看同事手機", "主管背後鬼臉", "主動打招呼", "打探薪水"] },
+            { q: "當我完成手邊工作且準備下班之前,我應該先做什麼?", ans: "詢問主管需否協助", options: ["馬上離開", "睡午覺", "詢問主管需否協助", "看電影"] },
+            { q: "在辦公室內,下列哪一項行為代表我是個負責任的人?", ans: "下班整理整齊區域", options: ["髒便當盒放三天", "下班整理整齊區域", "帶走公司文具", "不關冷氣"] },
+            { q: "當主管指出我的工作中有錯誤時,我應該怎麼做比較恰當?", ans: "認真傾聽改進", options: ["氣憤", "認真傾聽改進", "找媽媽", "頂嘴"] },
+            { q: "在進入主管或其他人的辦公室之前,我應該先做什麼動作?", ans: "先敲門", options: ["先敲門", "直接衝進去", "等半小時", "嚇別人"] },
+            { q: "知道同事家中有喪事,在公司見到面時我應該如何表達?", ans: "簡單關心節哀", options: ["問遺產", "避開他", "簡單關心節哀", "追問細節"] },
+            { q: "所謂的職場「團隊合作」,真正的意思是指什麼?", ans: "各揮所長互相配合", options: ["一起偷懶", "各揮所長互相配合", "推工作給強者", "只管自己"] },
+            { q: "如果發現有人背後說我壞話,我應該如何冷靜地處理?", ans: "做好本分請教主管", options: ["決鬥", "罵回去", "做好本分請教主管", "臉書大罵"] },
+            { q: "參加公司聚餐時,下列哪一種行為是不合禮儀、不合適的?", ans: "端走喜歡的菜", options: ["保持禮貌", "端走喜歡的菜", "互動聊天", "整理桌面"] },
+            { q: "關於職場上的性別平等觀念,下列哪一項敘述才是正確的?", ans: "每個人享平等尊重", options: ["粗重只能男生做", "文書只能女生做", "每個人享平等尊重", "男生薪水應多"] },
+            { q: "想要在職場建立良好的個人信用,我應該怎麼做?", ans: "說到做到準時交付", options: ["說到做到準時交付", "開空頭支票", "答應不做了", "只會說"] },
+            { q: "家中有過期的藥品時,正確的處理方式是什麼?", ans: "拿至回收箱處理", options: ["丟垃圾桶", "沖馬桶", "拿至回收箱處理", "餵豬"] },
+            { q: "在搭乘手扶梯時,通常大家會遵守什麼樣的搭乘習慣?", ans: "靠右站立空出左側", options: ["亂站", "靠右站立空出左側", "包包佔位", "跑跳"] },
+            { q: "如果我在網路上遭到別人語言霸凌,我應該怎麼做?", ans: "截圖存證並求助", options: ["罵回去", "忍受", "截圖存證並求助", "找大哥"] },
+            { q: "當我在學校看到同學突然昏倒時,第一時間該怎麼辦?", ans: "呼救並撥打 119", options: ["給水喝", "看熱鬧", "呼救並撥打 119", "搖晃他"] },
+            { q: "下列關於「性騷擾」的觀念,哪一項才是正確的?", ans: "不舒服就拒絕求助", options: ["只有女生會", "熟人沒關係", "不舒服就拒絕求助", "忍耐"] },
+            { q: "發現鄰居或身邊的人疑似有家暴情況,可撥打哪支保護專線?", ans: "113", options: ["165", "113", "104", "105"] },
+            { q: "想要幫助視障者過馬路或引導方向,最恰當的做法是?", ans: "詢問後再引導", options: ["大喊方向", "直接抓住帶走", "詢問後再引導", "不理"] },
+            { q: "在圖書館、電影院等安靜場所,我應該注意什麼行為?", ans: "手機靜音", options: ["手機靜音", "吃雞排", "大聲討論", "擋路"] },
+            { q: "關於垃圾分類,下列哪一項物品應該丟入「資源回收桶」?", ans: "洗過的寶特瓶", options: ["雞骨頭", "洗過的寶特瓶", "衛生紙", "油汙餐盒"] },
+            { q: "在台灣,國民要滿幾歲才具備投票選總統的權利?", ans: "20歲", options: ["12歲", "15歲", "18歲", "20歲"] },
+            { q: "關於公車或捷運上的博愛座,哪一種觀念才是正確的?", ans: "有需要主動讓位", options: ["殘障限定", "有需要主動讓位", "絕不讓位", "佔位"] },
+            { q: "帶狗狗去公園散步(遛狗)時,主人應該負責做什麼?", ans: "繫繩清理糞便", options: ["不理大便", "繫繩清理糞便", "追小孩", "亂叫"] },
+            { q: "遇到消費糾紛需要申訴時,應撥打哪一支全國消費者保護專線?", ans: "1950", options: ["1950", "119", "104", "165"] },
+            { q: "關於法律的基本常識,下列哪一項敘述才是正確的?", ans: "保障安全公平", options: ["不懂就不用罰", "只有警察遵守", "保障安全公平", "有錢不用守"] },
+            { q: "下列哪一項物品不能直接丟入一般垃圾袋,必須單獨回收?", ans: "廢電池日光燈", options: ["包裝紙", "廢電池日光燈", "破布偶", "果皮"] },
+            { q: "如果在室內禁菸區看到有人吸菸,我應該怎麼反應比較好?", ans: "向店家反映", options: ["一起吸", "向店家反映", "潑水", "忍受"] },
+            { q: "關於性隱私權的保護,下列哪一種行為是違法且不可做的?", ans: "未經同意傳隱私照", options: ["拒絕觸碰", "穿喜歡的衣", "未經同意傳隱私照", "看電影"] },
+            { q: "哪一項法律主要是提供交通意外受傷時的基本補償?", ans: "強制汽車責任保險法", options: ["強制汽車責任保險法", "消保法", "環境教育", "森林法"] },
+            { q: "哪一項法律是專門為了保護身心障礙者的權益而制定的?", ans: "身心障礙者權益保障法", options: ["公平交易", "身心障礙者權益保障法", "土地法", "著作權"] },
+            { q: "在路邊撿到錢或皮夾時,我應該怎麼做比較恰當?", ans: "送交警局", options: ["帶回家", "請朋友吃", "送交警局", "丟掉"] },
+            { q: "如果在深夜大聲吵鬧影響鄰居,可能會違反哪一項法律?", ans: "社會秩序維護法", options: ["海關緝私", "社會秩序維護法", "商業登記", "專利"] },
+            { q: "下列哪一種做法,才是正確的「節能減碳」環保行動?", ans: "隨手關燈", options: ["冷氣最強蓋厚被", "隨手關燈", "多取塑膠袋", "水不關"] },
+            { q: "在馬路上聽到救護車鳴笛開過來,行人與車輛應該怎麼做?", ans: "靠邊禮讓優先通行", options: ["擋車", "賽跑", "靠邊禮讓優先通行", "不理"] },
+            { q: "法律規定「著作權」的主要目的是為了保護什麼?", ans: "創作者作品不被盜用", options: ["寫作業", "創作者作品不被盜用", "隨便畫", "盜版"] },
+            { q: "身為公民,我們享有的基本人權中不包括哪一項自由?", ans: "傷害他人自由", options: ["言論自由", "受教育", "傷害他人自由", "安全保障"] }
+        ];
+
+        // 魔法動物園圖鑑 (區分一般池與特殊池)
+        const collectionDB = [
+            // Normal Pool (一般盲盒)
+            { id: 1, name: "魔法小狗", icon: "🐶", rarity: 1, pool: "normal" }, 
+            { id: 2, name: "星光小貓", icon: "🐱", rarity: 1, pool: "normal" },
+            { id: 3, name: "幸運小兔", icon: "🐰", rarity: 1, pool: "normal" }, 
+            { id: 4, name: "火花小鼠", icon: "🐭", rarity: 1, pool: "normal" },
+            { id: 5, name: "赤炎小狐", icon: "🦊", rarity: 2, pool: "normal" }, 
+            { id: 6, name: "大地幼熊", icon: "🐻", rarity: 2, pool: "normal" },
+            { id: 7, name: "竹林熊貓", icon: "🐼", rarity: 2, pool: "normal" }, 
+            { id: 8, name: "貪睡無尾熊", icon: "🐨", rarity: 2, pool: "normal" },
+            { id: 9, name: "小飛豬", icon: "🐷", rarity: 1, pool: "normal" }, 
+            { id: 10, name: "呱呱水怪", icon: "🐸", rarity: 1, pool: "normal" },
+
+            // Special Pool (大型盲盒限定)
+            { id: 101, name: "彩虹獨角獸", icon: "🦄", rarity: 3, pool: "special" }, 
+            { id: 102, name: "霸王機甲龍", icon: "🦖", rarity: 3, pool: "special" },
+            { id: 103, name: "遠古神龍", icon: "🐉", rarity: 3, pool: "special" }, 
+            { id: 104, name: "深海大章魚", icon: "🐙", rarity: 3, pool: "special" },
+            { id: 105, name: "星際訪客", icon: "👽", rarity: 3, pool: "special" }, 
+            { id: 106, name: "智庫機器人", icon: "🤖", rarity: 3, pool: "special" }
+        ];
+
+        const MAX_COPIES = 3; // 每個公仔最多重複抽到3次
+
+        // --- 2. 狀態變數 ---
+        let coins = 0;
+        let specialTokens = 0; // 大型奇幻盲盒代幣
+        let unlockedItems = []; // 裡面存放獲得的 ID, 可以重複 例如 [1, 1, 2, 101]
+        let currentQIndex = 0;
+        let qList = []; 
+        let questionStates = []; 
+        let comboCount = 0; // 連對計數器
+
+        const BOX_COST = 100;
+        const REWARD_COINS = 50; 
+
+        // --- 3. Firebase Auth 與初始化 ---
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth error:", error);
+                try {
+                    await signInAnonymously(auth);
+                } catch (anonErr) {
+                    window.showCustomAlert("驗證系統發生錯誤，請重新整理網頁。");
+                }
+            }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            const btn = document.getElementById('login-btn');
+            if (user) {
+                btn.disabled = false;
+                btn.innerText = "進入遊戲";
+            }
+        });
+
+        initAuth();
+
+        // --- 4. 遊戲邏輯：導航與 UI ---
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.content-area').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`screen-${tabId}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabId}`).classList.add('active');
+            if (tabId === 'collection') renderCollection();
+            if (tabId === 'home') updateStoreBtn();
+        }
+
+        function updateUI() {
+            document.getElementById('user-coins').innerText = coins;
+            document.getElementById('mobile-coins').innerText = coins;
+            document.getElementById('user-tokens').innerText = specialTokens;
+            document.getElementById('mobile-tokens').innerText = specialTokens;
+            updateStoreBtn();
+            updateComboUI();
+        }
+
+        function updateComboUI() {
+            for(let i = 1; i <= 3; i++) {
+                const star = document.getElementById(`star-${i}`);
+                if(i <= comboCount) {
+                    star.classList.add('active');
+                    star.innerText = "★";
+                    star.style.animation = "starPop 0.3s ease-out";
+                } else {
+                    star.classList.remove('active');
+                    star.innerText = "☆";
+                    star.style.animation = "none";
+                }
+            }
+        }
+
+        function updateStoreBtn() {
+            // 普通盲盒按鈕
+            const btnNormal = document.getElementById('draw-btn');
+            if (coins < BOX_COST) {
+                btnNormal.style.background = "#e0e0e0"; btnNormal.style.color = "#aaa";
+                btnNormal.innerText = `金幣不足 (${coins}/${BOX_COST})`;
+                btnNormal.disabled = true; btnNormal.style.boxShadow = "none"; btnNormal.style.cursor = "not-allowed";
+            } else {
+                btnNormal.style.background = "var(--primary-color)"; btnNormal.style.color = "white";
+                btnNormal.innerText = `普通盲盒 (100 🪙)`;
+                btnNormal.disabled = false; btnNormal.style.boxShadow = "0 4px 10px rgba(255, 138, 128, 0.4)"; btnNormal.style.cursor = "pointer";
+            }
+
+            // 特殊盲盒按鈕
+            const btnSpecial = document.getElementById('special-draw-btn');
+            if (specialTokens < 1) {
+                btnSpecial.style.background = "#e0e0e0"; btnSpecial.style.color = "#aaa"; btnSpecial.style.borderColor = "#ccc";
+                btnSpecial.innerText = `大型奇幻盲盒 (需 1 🎫)`;
+                btnSpecial.disabled = true; btnSpecial.style.boxShadow = "none"; btnSpecial.style.cursor = "not-allowed";
+            } else {
+                btnSpecial.style.background = "var(--accent-purple)"; btnSpecial.style.color = "white"; btnSpecial.style.borderColor = "#9575cd";
+                btnSpecial.innerText = `✨ 大型奇幻盲盒 (擁有: ${specialTokens})`;
+                btnSpecial.disabled = false; btnSpecial.style.boxShadow = "0 4px 10px rgba(179, 157, 219, 0.4)"; btnSpecial.style.cursor = "pointer";
+            }
+        }
+
+        window.showCustomAlert = function(text) {
+            document.getElementById('custom-alert-text').innerHTML = text;
+            document.getElementById('custom-alert-modal').classList.remove('hidden');
+        }
+        window.closeCustomAlert = function() { document.getElementById('custom-alert-modal').classList.add('hidden'); }
+
+        let confirmCallback = null;
+        window.showCustomConfirm = function(text, callback) {
+            document.getElementById('custom-confirm-text').innerText = text;
+            document.getElementById('custom-confirm-modal').classList.remove('hidden');
+            confirmCallback = callback;
+        }
+        window.closeCustomConfirm = function(result) {
+            document.getElementById('custom-confirm-modal').classList.add('hidden');
+            if (confirmCallback) confirmCallback(result);
+            confirmCallback = null;
+        }
+
+        // --- 登入與雲端存取邏輯 ---
+        window.loginAndLoad = async function() {
+            const nameInput = document.getElementById('player-name-input').value.trim();
+            if (!nameInput) { window.showCustomAlert("輸入名字才能幫你記錄喔！"); return; }
+            if (!currentUser) { window.showCustomAlert("系統連線中，請稍候再試。"); return; }
+
+            const safePlayerName = nameInput.replace(/[\/\.]/g, '_'); 
+            playerName = safePlayerName; 
+
+            document.getElementById('player-name-label').innerText = nameInput;
+            document.getElementById('player-display').style.display = 'block';
+            document.getElementById('login-modal').classList.add('hidden');
+            document.getElementById('loading-overlay').classList.remove('hidden');
+
+            try {
+                const docRef = doc(db, 'artifacts', safeAppId, 'users', currentUser.uid, 'blind_box_saves', playerName);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    coins = data.coins || 0;
+                    specialTokens = data.specialTokens || 0;
+                    unlockedItems = data.unlockedItems || [];
+                    window.showCustomAlert(`歡迎回來，${nameInput}！已經載入你的雲端紀錄囉。`);
+                } else {
+                    coins = 0; specialTokens = 0; unlockedItems = [];
+                    await saveProgress(); 
+                    window.showCustomAlert(`歡迎加入，${nameInput}！連對三題可以拿到特殊盲盒代幣喔！`);
+                }
+                initQuiz();
+                updateUI();
+                window.switchTab('quiz');
+            } catch (e) {
+                console.error("雲端載入失敗", e);
+                window.showCustomAlert("雲端連線不穩，將以新遊戲開始。進度會嘗試稍後儲存。");
+                coins = 0; specialTokens = 0; unlockedItems = [];
+                initQuiz(); updateUI(); window.switchTab('quiz');
+            } finally {
+                document.getElementById('loading-overlay').classList.add('hidden');
+            }
+        }
+
+        async function saveProgress() {
+            if (!currentUser || !playerName) return;
+            const docRef = doc(db, 'artifacts', safeAppId, 'users', currentUser.uid, 'blind_box_saves', playerName);
+            try {
+                await setDoc(docRef, {
+                    coins: coins,
+                    specialTokens: specialTokens,
+                    unlockedItems: unlockedItems,
+                    lastUpdated: new Date().toISOString()
+                });
+            } catch(e) {}
+        }
+
+        // --- 5. 遊戲邏輯：測驗 ---
+        function formatMathText(text) {
+            if (!window.katex) return text; 
+            return text.replace(/\$(.*?)\$/g, (match, math) => {
+                try { return katex.renderToString(math.trim(), { throwOnError: false, displayMode: false }); } 
+                catch (e) { return match; }
+            });
+        }
+
+        function formatSpokenText(text) {
+            let res = text.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, "$2分之$1");
+            res = res.replace(/\$/g, "").replace(/:/g, "比").replace(/=/g, "等於");
+            return res;
+        }
+
+        function initQuiz() {
+            const tempQList = [...questions].sort(() => Math.random() - 0.5);
+            qList = tempQList.map(q => {
+                const shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+                return { ...q, displayOptions: shuffledOptions };
+            });
+            questionStates = new Array(qList.length).fill(null); 
+            currentQIndex = 0;
+            comboCount = 0; 
+            updateComboUI();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = qList[currentQIndex];
+            const state = questionStates[currentQIndex];
+
+            document.getElementById('q-index').innerText = currentQIndex + 1;
+            document.getElementById('q-text').innerHTML = formatMathText(q.q);
+            
+            const feedbackEl = document.getElementById('feedback-msg');
+            if (state && state.isCorrect) {
+                feedbackEl.innerText = "本題已完成！";
+            } else if (state && !state.isCorrect) {
+                feedbackEl.innerHTML = `上次選錯囉，正確答案是：${formatMathText(q.ans)}`;
+            } else {
+                feedbackEl.innerText = "";
+            }
+
+            const listEl = document.getElementById('options-list');
+            listEl.innerHTML = '';
+
+            q.displayOptions.forEach(opt => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                btn.dataset.value = opt;
+                
+                const txt = document.createElement('span');
+                txt.className = 'option-text';
+                txt.innerHTML = formatMathText(opt);
+                
+                const spk = document.createElement('span');
+                spk.className = 'speaker-icon'; spk.innerText = '🔊';
+                spk.onclick = (e) => { e.stopPropagation(); speak(formatSpokenText(opt), 'zh-TW'); };
+
+                btn.appendChild(txt); btn.appendChild(spk);
+
+                if (state) {
+                    btn.classList.add('locked');
+                    if (opt === q.ans) btn.classList.add('correct');
+                    else if (opt === state.selectedOpt && !state.isCorrect) btn.classList.add('wrong');
+                } else {
+                    btn.onclick = () => checkAnswer(opt, q.ans, btn);
+                }
+                listEl.appendChild(btn);
+            });
+
+            document.getElementById('prev-btn').disabled = (currentQIndex === 0);
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.innerText = (currentQIndex === qList.length - 1) ? "重新開始 ↻" : "下一題 ▶";
+            nextBtn.disabled = !state; 
+        }
+
+        function checkAnswer(selected, correct, btnEl) {
+            if (questionStates[currentQIndex]) return;
+
+            const isCorrect = (selected === correct);
+            questionStates[currentQIndex] = { isCorrect: isCorrect, selectedOpt: selected };
+
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.classList.add('locked'));
+            document.getElementById('next-btn').disabled = false;
+
+            if (isCorrect) {
+                btnEl.classList.add('correct');
+                playSound('correct');
+                coins += REWARD_COINS;
+                
+                // Combo 邏輯處理
+                comboCount++;
+                updateComboUI();
+                
+                if(comboCount === 3) {
+                    specialTokens += 1;
+                    playSound('win');
+                    setTimeout(()=> {
+                        window.showCustomAlert(`🎉 太棒了！連續答對 3 題！<br><br>獲得 <b style="color:var(--accent-purple)">1 個大型奇幻盲盒代幣🎫</b><br>快去商店抽大盲盒吧！`);
+                        comboCount = 0; // 重置 combo
+                        updateComboUI();
+                        saveProgress();
+                        updateUI();
+                    }, 500);
+                    document.getElementById('feedback-msg').innerText = `連擊達成！獲得 ${REWARD_COINS} 金幣與 1 個代幣🎫！`;
+                } else {
+                    document.getElementById('feedback-msg').innerText = `答對了！獲得 ${REWARD_COINS} 金幣！`;
+                }
+
+                saveProgress();
+                updateUI();
+            } else {
+                btnEl.classList.add('wrong');
+                playSound('wrong');
+                comboCount = 0; // 答錯重置連擊
+                updateComboUI();
+
+                document.getElementById('feedback-msg').innerHTML = `哎呀！正確答案是：${formatMathText(correct)}`;
+                allBtns.forEach(b => { if (b.dataset.value === correct) b.classList.add('correct'); });
+            }
+        }
+
+        window.prevQuestion = function() {
+            if (currentQIndex > 0) { currentQIndex--; loadQuestion(); }
+        }
+
+        window.nextQuestion = function() {
+            if (currentQIndex < qList.length - 1) {
+                currentQIndex++; loadQuestion();
+            } else {
+                window.showCustomConfirm("恭喜完成一輪！要重新開始挑戰嗎？", (res) => {
+                    if(res) initQuiz();
+                });
+            }
+        }
+
+        window.playQuestionAudio = function() {
+            speak(formatSpokenText(qList[currentQIndex].q), 'zh-TW');
+        }
+
+        // --- 6. 遊戲邏輯：抽獎與搜集 ---
+        function getItemCount(id) {
+            return unlockedItems.filter(itemId => itemId === id).length;
+        }
+
+        window.tryOpenBox = function(boxType) {
+            // normal 或 special
+            if(boxType === 'normal') {
+                if (coins >= BOX_COST) {
+                    const newItem = drawRandomItem('normal');
+                    if(newItem === null) {
+                        window.showCustomAlert("太厲害了！你已經把「一般魔法動物」收集到滿檔啦！"); return;
+                    }
+                    coins -= BOX_COST;
+                    processDrawResult(newItem, false);
+                }
+            } else if (boxType === 'special') {
+                if (specialTokens >= 1) {
+                    const newItem = drawRandomItem('special');
+                    if(newItem === null) {
+                        window.showCustomAlert("哇塞！你已經把傳說中的「史詩奇幻生物」全部收集完了！"); return;
+                    }
+                    specialTokens -= 1;
+                    processDrawResult(newItem, true);
+                }
+            }
+        }
+
+        function processDrawResult(newItem, isGiantBox) {
+            unlockedItems.push(newItem.id); // 直接放入 ID，允許重複
+            saveProgress();
+            updateUI();
+            showUnboxModal(newItem, isGiantBox);
+        }
+
+        function drawRandomItem(poolType) {
+            // 過濾出這個卡池裡，還沒有達到 3 隻上限的動物
+            const availableItems = collectionDB.filter(item => item.pool === poolType && getItemCount(item.id) < MAX_COPIES);
+            
+            if (availableItems.length === 0) return null; 
+
+            // 在可抽取的清單中依照稀有度權重隨機抽取
+            return availableItems[Math.floor(Math.random() * availableItems.length)];
+        }
+
+        function showUnboxModal(item, isGiantBox) {
+            const modal = document.getElementById('unbox-modal');
+            const boxStage = document.getElementById('box-stage');
+            const prizeStage = document.getElementById('prize-stage');
+            const rays = document.getElementById('rays');
+            const boxEl = document.getElementById('blind-box-el');
+
+            modal.classList.remove('hidden');
+            boxStage.classList.remove('hidden');
+            prizeStage.classList.add('hidden');
+            rays.classList.add('hidden');
+            
+            boxEl.className = 'blind-box';
+            if(isGiantBox) {
+                boxEl.classList.add('giant');
+                boxEl.innerText = "🌟🎁🌟"; // 特殊外觀
+            } else {
+                boxEl.innerText = "🎁";
+            }
+
+            let rarityText = "COMMON"; let rarityClass = "";
+            if(item.rarity === 2) { rarityText = "RARE"; rarityClass = "rarity-R"; }
+            if(item.rarity === 3) { rarityText = "SSR LEGEND"; rarityClass = "rarity-SSR"; }
+
+            document.getElementById('prize-icon').innerText = item.icon;
+            document.getElementById('prize-name').innerText = item.name;
+            const badge = document.getElementById('prize-rarity-badge');
+            badge.innerText = rarityText; badge.className = `prize-rarity ${rarityClass}`;
+            
+            // 計算目前抽到了第幾隻
+            const currentCount = getItemCount(item.id);
+            const countInfo = document.getElementById('prize-count-info');
+            if(currentCount >= MAX_COPIES) {
+                countInfo.innerText = `太幸運了！這隻已達最高等級 (滿星)！`;
+            } else {
+                countInfo.innerText = `目前擁有: ${currentCount} 隻！`;
+            }
+
+            window.currentPrizeItem = item;
+            window.isGiantBoxAnimation = isGiantBox;
+        }
+
+        window.openBoxAnimation = function() {
+            const boxEl = document.getElementById('blind-box-el');
+            boxEl.classList.add('shaking');
+            playSound('shake');
+
+            setTimeout(() => {
+                boxEl.classList.remove('shaking');
+                boxEl.classList.add('opening');
+                playSound('open');
+
+                setTimeout(() => {
+                    document.getElementById('box-stage').classList.add('hidden');
+                    document.getElementById('prize-stage').classList.remove('hidden');
+                    if (window.currentPrizeItem.rarity >= 2 || window.isGiantBoxAnimation) {
+                        document.getElementById('rays').classList.remove('hidden');
+                    }
+                    playSound('win');
+                }, 400);
+            }, 800);
+        }
+
+        window.closeModal = function() {
+            document.getElementById('unbox-modal').classList.add('hidden');
+            updateUI();
+        }
+
+        function renderCollection() {
+            const gridNormal = document.getElementById('collection-grid-normal');
+            const gridSpecial = document.getElementById('collection-grid-special');
+            gridNormal.innerHTML = ''; gridSpecial.innerHTML = '';
+            
+            // 計算不重複的已解鎖數量
+            const uniqueUnlockedIds = new Set(unlockedItems);
+            
+            collectionDB.forEach(item => {
+                const count = getItemCount(item.id);
+                const isUnlocked = count > 0;
+                
+                const el = document.createElement('div');
+                el.className = `collection-item ${isUnlocked ? '' : 'locked'}`;
+                
+                let rarityClass = ""; let rarityLabel = "N";
+                if(item.rarity === 2) { rarityClass = "rarity-R"; rarityLabel = "R"; }
+                if(item.rarity === 3) { rarityClass = "rarity-SSR"; rarityLabel = "SSR"; }
+
+                let countHtml = "";
+                if (isUnlocked) {
+                    if (count >= MAX_COPIES) {
+                        countHtml = `<div class="count-badge max">MAX</div>`;
+                    } else {
+                        countHtml = `<div class="count-badge">x${count}</div>`;
+                    }
+                }
+
+                el.innerHTML = `
+                    <div class="rarity-badge ${rarityClass}">${rarityLabel}</div>
+                    <div class="item-icon">${item.icon}</div>
+                    <div class="item-name">${isUnlocked ? item.name : "???"}</div>
+                    ${countHtml}
+                `;
+                
+                if(!isUnlocked) el.onclick = () => window.showCustomAlert(item.pool === 'normal' ? "快去抽普通盲盒解鎖吧！" : "連對3題獲得特殊盲盒代幣來解鎖吧！");
+                
+                if(item.pool === 'normal') gridNormal.appendChild(el);
+                else gridSpecial.appendChild(el);
+            });
+
+            document.getElementById('collected-count').innerText = uniqueUnlockedIds.size;
+            document.getElementById('total-count').innerText = collectionDB.length;
+        }
+
+        // --- 7. 工具函式 ---
+        function speak(text, lang) {
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text); u.lang = lang;
+            window.speechSynthesis.speak(u);
+        }
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+            
+            if (type === 'correct') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(500, now); osc.frequency.exponentialRampToValueAtTime(1000, now + 0.1);
+                gain.gain.setValueAtTime(0.3, now); gain.gain.linearRampToValueAtTime(0, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now); osc.frequency.linearRampToValueAtTime(100, now + 0.3);
+                gain.gain.setValueAtTime(0.3, now); gain.gain.linearRampToValueAtTime(0, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            } else if (type === 'shake') {
+                osc.type = 'square'; osc.frequency.setValueAtTime(100, now); gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if (type === 'open') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(200, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+                gain.gain.setValueAtTime(0.5, now); gain.gain.linearRampToValueAtTime(0, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
+            } else if (type === 'win') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.setValueAtTime(600, now + 0.1); osc.frequency.setValueAtTime(800, now + 0.2);
+                gain.gain.setValueAtTime(0.3, now); gain.gain.linearRampToValueAtTime(0, now + 0.6);
+                osc.start(now); osc.stop(now + 0.6);
+            }
+        }
+    </script>
+</body>
+</html>
