@@ -1,0 +1,545 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>舊版文法講義庫｜Sinny's Spedu Labs</title>
+
+<style>
+:root {
+  --navy:#263954;
+  --blue:#2863dc;
+  --orange:#f59e0b;
+  --bg:#edf1f6;
+  --line:#d6deea;
+}
+
+* { box-sizing:border-box; }
+
+html,body {
+  margin:0;
+  min-height:100%;
+  font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;
+  color:var(--navy);
+  background:var(--bg);
+}
+
+.toolbar {
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  padding:14px 24px;
+  display:flex;
+  align-items:end;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+.brand {
+  margin-right:auto;
+  min-width:210px;
+}
+
+.brand h1 {
+  margin:0;
+  font-size:23px;
+}
+
+.brand small {
+  color:#718096;
+  font-size:13px;
+}
+
+.field {
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.field label {
+  font-size:13px;
+  font-weight:bold;
+  color:#637188;
+}
+
+select {
+  height:45px;
+  min-width:170px;
+  padding:0 12px;
+  border:1px solid #aabbd2;
+  border-radius:9px;
+  background:white;
+  color:#172b49;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#topicSelect {
+  min-width:260px;
+  max-width:360px;
+}
+
+.actions {
+  display:flex;
+  gap:8px;
+}
+
+button {
+  height:45px;
+  padding:0 17px;
+  border:1px solid #bdcadb;
+  border-radius:9px;
+  background:white;
+  color:var(--navy);
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button.primary {
+  background:var(--blue);
+  color:white;
+  border-color:var(--blue);
+}
+
+button:hover {
+  filter:brightness(.96);
+}
+
+.info {
+  max-width:1200px;
+  margin:15px auto 10px;
+  padding:0 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.info strong {
+  font-size:18px;
+}
+
+.info span {
+  color:#68788d;
+  font-size:13px;
+}
+
+.paper {
+  width:min(1200px,calc(100% - 36px));
+  margin:0 auto 30px;
+  background:white;
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 5px 22px #26395412;
+}
+
+iframe {
+  display:block;
+  width:100%;
+  height:calc(100vh - 205px);
+  min-height:650px;
+  border:0;
+  background:white;
+}
+
+.notice {
+  max-width:1200px;
+  margin:0 auto 20px;
+  padding:0 18px;
+  color:#758399;
+  font-size:12px;
+}
+
+@media(max-width:750px) {
+  .toolbar {
+    padding:12px;
+    gap:10px;
+  }
+
+  .brand {
+    width:100%;
+  }
+
+  .brand h1 {
+    font-size:20px;
+  }
+
+  .field {
+    flex:1 1 140px;
+    min-width:0;
+  }
+
+  select,#topicSelect {
+    width:100%;
+    min-width:0;
+    max-width:none;
+    font-size:14px;
+  }
+
+  .actions {
+    width:100%;
+  }
+
+  .actions button {
+    flex:1;
+    padding:0 8px;
+    font-size:14px;
+  }
+
+  .info {
+    margin:12px auto;
+  }
+
+  .paper {
+    width:100%;
+    border-radius:0;
+    border-left:0;
+    border-right:0;
+  }
+
+  iframe {
+    height:75vh;
+    min-height:550px;
+  }
+}
+
+@media print {
+  .toolbar,.info,.notice {
+    display:none;
+  }
+
+  body {
+    background:white;
+  }
+
+  .paper {
+    width:100%;
+    margin:0;
+    border:0;
+    box-shadow:none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="toolbar">
+
+  <div class="brand">
+    <h1>📚 舊版文法講義庫</h1>
+    <small>單頁三階段教材｜共 37 份</small>
+  </div>
+
+  <div class="field">
+    <label for="categorySelect">文法分類</label>
+    <select id="categorySelect"></select>
+  </div>
+
+  <div class="field">
+    <label for="topicSelect">選擇講義</label>
+    <select id="topicSelect"></select>
+  </div>
+
+  <div class="actions">
+    <button onclick="changeTopic(-1)">❮ 上一份</button>
+    <button onclick="changeTopic(1)">下一份 ❯</button>
+    <button class="primary" onclick="openOriginal()">
+      ↗ 獨立開啟／列印
+    </button>
+  </div>
+
+</header>
+
+<div class="info">
+  <strong id="currentTitle">載入中……</strong>
+  <span id="counter"></span>
+</div>
+
+<main class="paper">
+  <iframe
+    id="viewer"
+    title="文法講義內容"
+    loading="eager">
+  </iframe>
+</main>
+
+<div class="notice">
+  ※ 本頁僅提供講義切換功能，原有三階段、語音及列印功能皆由各份講義自行控制。
+</div>
+
+<script>
+/*
+  舊版文法講義資料庫
+  路徑以 grammar-library.html 為基準。
+  所有講義位於 old_level3/。
+*/
+
+const BASE = "./old_level3/";
+
+const LIBRARY = [
+
+  {
+    category:"01｜數字",
+    lessons:[
+      ["數字 1–10","grammar_1_10.html"],
+      ["數字 11–19","grammar_11_19.html"],
+      ["數字 21–99","grammar_21_99.html"],
+      ["整十數字與百位數","grammar_10_20_100.html"],
+      ["大數字：1～1,000,000","grammar_1_1000000.html"]
+    ]
+  },
+
+  {
+    category:"02｜日期與時間",
+    lessons:[
+      ["星期一到星期日","grammar_week.html"],
+      ["十二月份","grammar_months.html"],
+      ["西元年份與日期順序","grammar_year.html"],
+      ["時間與鐘點表達","grammar_clock.html"],
+      ["past／to 時間表達","grammar_time.html"]
+    ]
+  },
+
+  {
+    category:"03｜名詞與數量",
+    lessons:[
+      ["名詞複數基本規則","grammar_apples.html"],
+      ["可數與不可數名詞","grammar_n_countable.html"],
+      ["數量詞：some、many","grammar_some_many.html"]
+    ]
+  },
+
+  {
+    category:"04｜代名詞與所有格",
+    lessons:[
+      ["所有格與複數所有格","grammar_boys_.html"],
+      ["this／that／these／those","grammar_this_that_these_those.html"],
+      ["所有格代名詞","grammar_mine.html"],
+      ["反身代名詞：單數","grammar_myself.html"],
+      ["反身代名詞：單複數","grammar_ourselves.html"]
+    ]
+  },
+
+  {
+    category:"05｜動詞與時態",
+    lessons:[
+      ["現在進行式：動詞變化","grammar_Ving.html"],
+      ["現在進行式：句型結構","grammar_are_Ving.html"],
+      ["花錢與花時間：spend／cost／take","grammar_spend_cost_take.html"]
+    ]
+  },
+
+  {
+    category:"06｜句型與助動詞",
+    lessons:[
+      ["can／can't 能力表達","grammar_can_can_t.html"],
+      ["祈使句：please","grammar_please.html"],
+      ["There is／There are","grammar_there_is_there_are.html"]
+    ]
+  },
+
+  {
+    category:"07｜形容詞與副詞",
+    lessons:[
+      ["形容詞比較級","grammar_adj_er.html"],
+      ["形容詞最高級","grammar_adj_est.html"],
+      ["形容詞三級分辨","grammar_adj_er_est.html"],
+      ["頻率副詞：always","grammar_always.html"]
+    ]
+  },
+
+  {
+    category:"08｜介系詞與位置",
+    lessons:[
+      ["空間介系詞：in／on／at","grammar_in_on_at_space.html"],
+      ["方位介系詞：under／next to","grammar_under_place.html"],
+      ["時間介系詞：in／on／at","grammar_in_on_at_time.html"]
+    ]
+  },
+
+  {
+    category:"09｜連接詞與複句",
+    lessons:[
+      ["and／but／or","grammar_and_but_or.html"],
+      ["because／so","grammar_because_so.html"],
+      ["before／after","grammar_before_after.html"],
+      ["If 條件句","grammar_if.html"]
+    ]
+  },
+
+  {
+    category:"10｜生活字彙",
+    lessons:[
+      ["家人稱謂與關係","grammar_family.html"],
+      ["Mr.／Miss／Mrs.","grammar_mr_miss.html"]
+    ]
+  }
+
+];
+
+const categorySelect =
+  document.getElementById("categorySelect");
+
+const topicSelect =
+  document.getElementById("topicSelect");
+
+const viewer =
+  document.getElementById("viewer");
+
+const currentTitle =
+  document.getElementById("currentTitle");
+
+const counter =
+  document.getElementById("counter");
+
+let currentCategory = 0;
+let currentLesson = 0;
+
+/* 建立分類選單 */
+
+function init() {
+
+  categorySelect.innerHTML = "";
+
+  LIBRARY.forEach((group,index) => {
+
+    const option = document.createElement("option");
+
+    option.value = index;
+    option.textContent = group.category;
+
+    categorySelect.appendChild(option);
+
+  });
+
+  categorySelect.addEventListener("change",() => {
+
+    currentCategory = Number(categorySelect.value);
+    currentLesson = 0;
+
+    buildTopics();
+    loadLesson();
+
+  });
+
+  topicSelect.addEventListener("change",() => {
+
+    currentLesson = Number(topicSelect.value);
+    loadLesson();
+
+  });
+
+  buildTopics();
+  loadLesson();
+
+}
+
+/* 建立講義選單 */
+
+function buildTopics() {
+
+  topicSelect.innerHTML = "";
+
+  const lessons = LIBRARY[currentCategory].lessons;
+
+  lessons.forEach((lesson,index) => {
+
+    const option = document.createElement("option");
+
+    option.value = index;
+    option.textContent =
+      String(index + 1).padStart(2,"0") +
+      "｜" + lesson[0];
+
+    topicSelect.appendChild(option);
+
+  });
+
+  topicSelect.value = currentLesson;
+
+}
+
+/* 取得目前講義 */
+
+function getLesson() {
+
+  return LIBRARY[currentCategory].lessons[currentLesson];
+
+}
+
+/* 載入原始 HTML */
+
+function loadLesson() {
+
+  const lesson = getLesson();
+
+  if (!lesson) return;
+
+  categorySelect.value = currentCategory;
+  topicSelect.value = currentLesson;
+
+  currentTitle.textContent = lesson[0];
+
+  const total = LIBRARY[currentCategory].lessons.length;
+
+  counter.textContent =
+    `本分類第 ${currentLesson + 1}／${total} 份`;
+
+  viewer.src = BASE + lesson[1];
+
+  document.title =
+    lesson[0] + "｜舊版文法講義庫";
+
+}
+
+/* 上一份／下一份 */
+
+function changeTopic(direction) {
+
+  const lessons = LIBRARY[currentCategory].lessons;
+
+  let next = currentLesson + direction;
+
+  if (next < 0 || next >= lessons.length) {
+    return;
+  }
+
+  currentLesson = next;
+
+  loadLesson();
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+/* 獨立開啟原始講義 */
+
+function openOriginal() {
+
+  const lesson = getLesson();
+
+  if (!lesson) return;
+
+  window.open(
+    BASE + lesson[1],
+    "_blank",
+    "noopener"
+  );
+
+}
+
+init();
+
+</script>
+
+</body>
+</html>
