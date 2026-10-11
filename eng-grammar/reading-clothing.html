@@ -228,6 +228,19 @@ button{font:inherit}
 .option.correct{color:var(--green);background:var(--green-soft);border-color:#8BC4A3;font-weight:900;}
 
 /* =========================================================
+   提示效果 (HINT STYLES)
+========================================================= */
+.hint-word{
+  border-radius:3px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+.hint-on .hint-word{
+  background: var(--hint) !important;
+  box-shadow: inset 0 -2px 0 var(--hint-line) !important;
+  color: #875100;
+}
+
+/* =========================================================
    FOOTER
 ========================================================= */
 .footer{
@@ -476,9 +489,29 @@ function generateAll16Levels() {
         };
       });
 
+      // 精準提示關鍵字收集：僅動態收集右側題幹中實際出現的品項、人名與折扣關鍵字
+      const allStemText = newQuestions.map(q => q.stem).join(" ");
+      let hints = [];
+
+      lvl.menu.forEach(item => {
+        if (new RegExp(`\\b${escapeRegExp(item[1])}\\b`, 'i').test(allStemText)) {
+          hints.push(item[1]);
+        }
+        if (allStemText.includes(`NT$${item[2]}`)) {
+          hints.push(`NT$${item[2]}`);
+        }
+      });
+
+      ["Amy", "Ben", "Mia", "Ken", "20% off", "Buy 1 Get 1 Free", "BOGO", "weekend sale", "jacket", "dress", "T-shirt", "T-shirts", "pants", "sale"].forEach(w => {
+        if (new RegExp(`\\b${escapeRegExp(w)}\\b`, 'i').test(allStemText)) {
+          hints.push(w);
+        }
+      });
+
       allLevels.push({
         ...lvl,
         code: actualCode,
+        hints: hints,
         questions: newQuestions
       });
     });
@@ -521,10 +554,11 @@ function escapeRegExp(text){
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 function highlightText(text, words){
+  if (!words || !words.length) return text;
   let result = String(text);
   const sorted = [...words].sort((a,b) => b.length-a.length);
   sorted.forEach(word => {
-    const regex = new RegExp(`(${escapeRegExp(word)})`, "gi");
+    const regex = new RegExp(`\\b(${escapeRegExp(word)})\\b`, "gi");
     result = result.replace(regex, `<span class="hint-word">$1</span>`);
   });
   return result;
@@ -560,14 +594,14 @@ function createLevel(data, levelIndex){
     <div class="menu-item ${item[3] ? "has-promo" : ""}">
       ${promoHTML(item[3])}
       <div class="menu-icon">${item[0]}</div>
-      <div class="menu-name">${item[1]}</div>
+      <div class="menu-name">${highlightText(item[1], data.hints)}</div>
       <div class="menu-price">NT$${item[2]}</div>
     </div>
   `).join("");
 
   const dialogueHTML = data.dialogue.map(line => `
     <div class="dialogue-line">
-      <div class="speaker">${line[0]}:</div>
+      <div class="speaker">${highlightText(line[0], data.hints)}:</div>
       <div class="speech">${highlightText(line[1], data.hints)}</div>
     </div>
   `).join("");
@@ -589,7 +623,7 @@ function createLevel(data, levelIndex){
             <div class="option" data-level="${levelIndex}" data-q="${qIndex}" data-opt="${optIndex}"
                  onclick="chooseAnswer(${levelIndex}, ${qIndex},${optIndex}, this)">
               <span class="option-inner">
-                (${String.fromCharCode(65+optIndex)})${highlightText(option, data.hints)}
+                (${String.fromCharCode(65+optIndex)})${option}
               </span>
             </div>
           `).join("")}

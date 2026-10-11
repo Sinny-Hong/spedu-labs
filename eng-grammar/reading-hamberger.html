@@ -212,6 +212,19 @@ button{font:inherit}
 .option.correct{color:var(--green);background:var(--green-soft);border-color:#8BC4A3;font-weight:900;}
 
 /* =========================================================
+   提示效果 (HINT STYLES)
+========================================================= */
+.hint-word{
+  border-radius:3px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+.hint-on .hint-word{
+  background: var(--hint) !important;
+  box-shadow: inset 0 -2px 0 var(--hint-line) !important;
+  color: #875100;
+}
+
+/* =========================================================
    FOOTER
 ========================================================= */
 .footer{
@@ -309,7 +322,6 @@ const baseLevels = [
   code:"A1",
   menu:[["🥩","Steak",280],["🥗","Salad",90],["🍟","Fries",60],["🥣","Soup",70],["🍗","Chicken",150],["🍕","Pizza",220],["🍔","Burger",95],["🍵","Tea",50]],
   dialogue:[["Tom","I am hungry. I want a plate of Steak."],["Lily","I want a bowl of Salad."],["Tom","Do you want a drink?"],["Lily","Yes, I want a cup of Tea."],["Tom","OK! Let's order."]],
-  hints:["Steak","Salad","Tea","how much","total"],
   questions:[
     {stem:"What does Tom want to eat?",options:["A bowl of Salad","A plate of Steak","A Burger","A Ham Sandwich"],answer:1},
     {stem:"How much is Lily's Salad?",options:["NT$60","NT$70","NT$90","NT$100"],answer:2},
@@ -322,7 +334,6 @@ const baseLevels = [
   code:"A2",
   menu:[["🍔","Burger",95],["🌭","Hot Dog",70],["🥪","Sandwich",80],["🍕","Pizza",220],["🍟","Fries",60],["🥗","Salad",90],["☕","Coffee",60],["🍵","Tea",50]],
   dialogue:[["Sam","What do you want for lunch?"],["Amy","I want a Burger."],["Sam","I want a Sandwich."],["Amy","I am thirsty. I want a cup of Tea."],["Sam","OK. One Burger, one Sandwich, and one Tea."]],
-  hints:["Burger","Sandwich","Tea","how much","who"],
   questions:[
     {stem:"What does Sam order?",options:["A Burger","A Sandwich","A Hot Dog","A Pizza"],answer:1},
     {stem:"Who wants to drink Tea?",options:["Sam","Amy","Tom","Lily"],answer:1},
@@ -335,7 +346,6 @@ const baseLevels = [
   code:"A3",
   menu:[["🍗","Chicken",150],["🍔","Burger",95],["🥣","Soup",70],["🍟","Fries",60],["☕","Coffee",60],["🍵","Tea",50],["🍪","Cookies",45],["🍨","Ice Cream",60]],
   dialogue:[["Ben","I want Fried Chicken and Soup."],["Kevin","I want a Burger."],["Amy","I am not hungry. I only want a cup of Coffee."],["Ben","Kevin, do you want a drink?"],["Kevin","Yes, I want a cup of Tea."],["Amy","Let's also have some Cookies."],["Ben","Good idea!"]],
-  hints:["Chicken","Soup","Burger","Coffee","Tea","Cookies","how much","how many"],
   questions:[
     {stem:"What does Ben want to eat?",options:["Burger and Tea","Chicken and Soup","Cookies and Coffee","Fries and Soup"],answer:1},
     {stem:"How many people order a drink?",options:["One","Two","Three","Four"],answer:1},
@@ -348,7 +358,6 @@ const baseLevels = [
   code:"A4",
   menu:[["🍔","Burger",95],["🍕","Pizza",220],["🍟","Fries",60],["🥣","Soup",70],["🍵","Tea",50],["☕","Coffee",60]],
   dialogue:[["Dad","It is your birthday. I will pay today!"],["Son","Wow! I want a Burger and a cup of Tea."],["Daughter","I want a Pizza and Fries."],["Dad","I only want a bowl of Vegetable Soup."],["Son","Thank you, Dad!"],["Dad","You are welcome."]],
-  hints:["pay","Burger","Tea","Pizza","Fries","Soup","how much","total"],
   questions:[
     {stem:"Who pays for the food today?",options:["Dad","Son","Daughter","The clerk"],answer:0},
     {stem:"How much is the Burger?",options:["NT$60","NT$70","NT$95","NT$220"],answer:2},
@@ -404,9 +413,29 @@ function generateAll16Levels() {
         };
       });
 
+      // 精準提示關鍵字收集：僅動態收集右側題幹中實際出現的餐點、人名與價格
+      const allStemText = newQuestions.map(q => q.stem).join(" ");
+      let hints = [];
+
+      lvl.menu.forEach(item => {
+        if (new RegExp(`\\b${escapeRegExp(item[1])}\\b`, 'i').test(allStemText)) {
+          hints.push(item[1]);
+        }
+        if (allStemText.includes(`NT$${item[2]}`)) {
+          hints.push(`NT$${item[2]}`);
+        }
+      });
+
+      ["Tom", "Lily", "Sam", "Amy", "Ben", "Kevin", "Dad", "Son", "Daughter", "pay", "drink", "order", "total"].forEach(w => {
+        if (new RegExp(`\\b${escapeRegExp(w)}\\b`, 'i').test(allStemText)) {
+          hints.push(w);
+        }
+      });
+
       allLevels.push({
         ...lvl,
         code: actualCode,
+        hints: hints,
         questions: newQuestions
       });
     });
@@ -449,10 +478,11 @@ function escapeRegExp(text){
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 function highlightText(text, words){
+  if (!words || !words.length) return text;
   let result = String(text);
   const sorted = [...words].sort((a,b) => b.length-a.length);
   sorted.forEach(word => {
-    const regex = new RegExp(`(${escapeRegExp(word)})`, "gi");
+    const regex = new RegExp(`\\b(${escapeRegExp(word)})\\b`, "gi");
     result = result.replace(regex, `<span class="hint-word">$1</span>`);
   });
   return result;
@@ -467,14 +497,14 @@ function createLevel(data, levelIndex){
   const menuHTML = data.menu.map(item => `
     <div class="menu-item">
       <div class="menu-icon">${item[0]}</div>
-      <div class="menu-name">${item[1]}</div>
+      <div class="menu-name">${highlightText(item[1], data.hints)}</div>
       <div class="menu-price">NT$${item[2]}</div>
     </div>
   `).join("");
 
   const dialogueHTML = data.dialogue.map(line => `
     <div class="dialogue-line">
-      <div class="speaker">${line[0]}:</div>
+      <div class="speaker">${highlightText(line[0], data.hints)}:</div>
       <div class="speech">${highlightText(line[1], data.hints)}</div>
     </div>
   `).join("");
@@ -496,7 +526,7 @@ function createLevel(data, levelIndex){
             <div class="option" data-level="${levelIndex}" data-q="${qIndex}" data-opt="${optIndex}"
                  onclick="chooseAnswer(${levelIndex}, ${qIndex},${optIndex}, this)">
               <span class="option-inner">
-                (${String.fromCharCode(65+optIndex)})${highlightText(option, data.hints)}
+                (${String.fromCharCode(65+optIndex)})${option}
               </span>
             </div>
           `).join("")}
