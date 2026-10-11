@@ -8,7 +8,7 @@ window.GRAMMAR_DATA = [
   { id: "grammar-library", category: "互動式電子講義", title: "舊版三階段文法講義庫", desc: "集中瀏覽 37 份舊版單頁三階段文法講義，依主題分類快速開啟", filename: "grammar-library.html", themeColor: "#3B82F6" },
 
   // ==== 閱讀理解與測驗 ====
-  { id: "reading-hub", category: "閱讀理解與測驗", tag: "閱讀總入口", title: "閱讀測驗｜主題教材總覽", desc: "集中切換服飾店、飲料、家庭樹、速食店、電影院、小鎮地圖、行事曆與課表；保留各教材的提示、批改、解答與列印功能", filename: "reading/reading-shell-test.html", themeColor: "#EC4899" },
+  { id: "reading-hub", category: "閱讀理解與測驗", tag: "閱讀總入口", title: "閱讀測驗｜主題教材總覽", desc: "集中切換服飾店、飲料、家庭樹、速食店、電影院、小鎮地圖、我的異想小鎮、行事曆與課表；保留各教材的提示、批改、解答與列印功能", filename: "reading/index.html", themeColor: "#EC4899" },
   { id: "r1", category: "閱讀理解與測驗", title: "閱讀｜電影時刻表", desc: "生活實境：學會看懂電影場次表、級別與時間規劃", filename: "reading-movie.html", themeColor: "#EC4899" },
   { id: "r2", category: "閱讀理解與測驗", title: "閱讀｜生活日曆", desc: "生活實境：看懂月曆格式、特定星期與重要假日標記", filename: "reading-calender.html", themeColor: "#EC4899" },
   { id: "r3", category: "閱讀理解與測驗", title: "閱讀｜飲料選單", desc: "生活實境：讀懂手搖飲冷熱、糖度、冰量與價格計算", filename: "reading-drink.html", themeColor: "#EC4899" },

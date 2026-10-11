@@ -4,11 +4,7 @@ param()
 $ErrorActionPreference = 'Stop'
 $readingDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 $outputPath = Join-Path $readingDirectory 'reading-manifest.js'
-$excludedNames = @(
-    'reading-shell-test.html'
-)
-
-function ConvertTo-DisplayTitle {
+function Get-HtmlTitle {
     param(
         [Parameter(Mandatory)]
         [string]$Html,
@@ -23,7 +19,6 @@ function ConvertTo-DisplayTitle {
 
     $title = [System.Net.WebUtility]::HtmlDecode($match.Groups[1].Value)
     $title = ($title -replace '\s+', ' ').Trim()
-    $title = ($title -replace '\s*\([^)]*(?:母版|規格|提示|選項)[^)]*\)\s*$', '').Trim()
 
     if ([string]::IsNullOrWhiteSpace($title)) {
         return $Fallback
@@ -32,14 +27,14 @@ function ConvertTo-DisplayTitle {
     return $title
 }
 
+# 正式教材一律使用 reading-*.html；外框 index.html 與子資料夾中的測試檔不會進入清單。
 $items = Get-ChildItem -LiteralPath $readingDirectory -Filter 'reading-*.html' -File |
-    Where-Object { $_.Name -notin $excludedNames } |
     Sort-Object Name |
     ForEach-Object {
         $html = Get-Content -LiteralPath $_.FullName -Raw
         [ordered]@{
             file = $_.Name
-            title = ConvertTo-DisplayTitle -Html $html -Fallback $_.BaseName
+            title = Get-HtmlTitle -Html $html -Fallback $_.BaseName
         }
     }
 
