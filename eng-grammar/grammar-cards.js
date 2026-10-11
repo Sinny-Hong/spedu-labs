@@ -5,17 +5,10 @@ window.GRAMMAR_DATA = [
   { id: "pronouns-basic", category: "互動式電子講義", title: "人稱代名詞｜互動講義", desc: "主格、Be 動詞、所有格與家人稱謂，從配對、是非、圈選到排列造句與閱讀練習", filename: "pronouns.html", themeColor: "#3B82F6" },
   { id: "present-simple", category: "互動式電子講義", title: "現在簡單式｜互動講義", desc: "從使用時機、主詞判斷、第三人稱單數到 do／does，含造句與會考綜合練習", filename: "present-simple.html", themeColor: "#3B82F6" },
   { id: "past-simple", category: "互動式電子講義", title: "過去簡單式｜八頁互動講義", desc: "從 was／were、動詞過去式到 did＋原形，含進階練習與找過去式任務", filename: "past-simple.html", themeColor: "#3B82F6" },
-  { id: "grammar-library", category: "互動式電子講義", title: "舊版三階段文法講義庫", desc: "集中瀏覽 37 份舊版單頁三階段文法講義，依主題分類快速開啟", filename: "grammar-library.html", themeColor: "#3B82F6" },
+  { id: "grammar-library", category: "互動式電子講義", tag: "Library（Level 3）", title: "Level 3 文法講義庫", desc: "集中瀏覽 37 份單頁三階段文法講義，依主題分類快速切換與獨立開啟", filename: "library-level3.html", themeColor: "#3B82F6" },
 
   // ==== 閱讀理解與測驗 ====
-  { id: "reading-hub", category: "閱讀理解與測驗", tag: "閱讀總入口", title: "閱讀測驗｜主題教材總覽", desc: "集中切換服飾店、飲料、家庭樹、速食店、電影院、小鎮地圖、我的異想小鎮、行事曆與課表；保留各教材的提示、批改、解答與列印功能", filename: "reading/index.html", themeColor: "#EC4899" },
-  { id: "r1", category: "閱讀理解與測驗", title: "閱讀｜電影時刻表", desc: "生活實境：學會看懂電影場次表、級別與時間規劃", filename: "reading-movie.html", themeColor: "#EC4899" },
-  { id: "r2", category: "閱讀理解與測驗", title: "閱讀｜生活日曆", desc: "生活實境：看懂月曆格式、特定星期與重要假日標記", filename: "reading-calender.html", themeColor: "#EC4899" },
-  { id: "r3", category: "閱讀理解與測驗", title: "閱讀｜飲料選單", desc: "生活實境：讀懂手搖飲冷熱、糖度、冰量與價格計算", filename: "reading-drink.html", themeColor: "#EC4899" },
-  { id: "r4", category: "閱讀理解與測驗", title: "閱讀｜漢堡店菜單", desc: "生活實境：速食店菜單、套餐選配與口語點餐對答", filename: "reading-hamberger.html", themeColor: "#EC4899" },
-  { id: "r5", category: "閱讀理解與測驗", title: "閱讀｜學校課表", desc: "生活實境：看懂校園作息課表、星期與學科課堂名稱", filename: "reading-suject.html", themeColor: "#EC4899" },
-  { id: "r6", category: "閱讀理解與測驗", title: "閱讀｜服飾店", desc: "生活實境：閱讀服飾店商品、尺寸、價格與購物情境", filename: "reading-clothing-store.html", themeColor: "#EC4899" },
-  { id: "r7", category: "閱讀理解與測驗", title: "閱讀｜異想小鎮地圖", desc: "使用 E-City 異想小鎮地圖判讀位置關係，支援原始版、隨機出題、線上批改與雙面列印", filename: "reading-my-town.html", themeColor: "#EC4899" },
+  { id: "reading-hub", category: "閱讀理解與測驗", tag: "Library（Reading）", title: "閱讀測驗 Library", desc: "集中切換分類資料夾內的閱讀教材；保留各教材的提示、批改、解答、語音與列印功能", filename: "library-reading.html", themeColor: "#EC4899" },
   // ==== 互動遊戲 ====
   { id: "g1", category: "互動遊戲", title: "🎮 遊戲｜地心探險數字挑戰", desc: "挑戰大考驗！熟悉英文數字 1～100000 聽力、大小與發音", filename: "game-corenum.html", themeColor: "#F43F5E" },
   { id: "g3", category: "互動遊戲", title: "🎮 遊戲｜小啾的時光農場", desc: "解鎖時光任務！訓練年月日、星期、小時、分鐘及秒針判讀", filename: "game-timefarm.html", themeColor: "#F43F5E" },

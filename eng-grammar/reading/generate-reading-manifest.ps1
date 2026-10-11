@@ -9,32 +9,39 @@ function Get-HtmlTitle {
         [Parameter(Mandatory)]
         [string]$Html,
         [Parameter(Mandatory)]
-        [string]$Fallback
+        [string]$FileName
     )
 
     $match = [regex]::Match($Html, '(?is)<title\b[^>]*>(.*?)</title>')
     if (-not $match.Success) {
-        return $Fallback
+        throw "找不到 <title>：$FileName"
     }
 
     $title = [System.Net.WebUtility]::HtmlDecode($match.Groups[1].Value)
     $title = ($title -replace '\s+', ' ').Trim()
 
     if ([string]::IsNullOrWhiteSpace($title)) {
-        return $Fallback
+        throw "<title> 不可為空白：$FileName"
     }
 
     return $title
 }
 
-# 正式教材一律使用 reading-*.html；外框 index.html 與子資料夾中的測試檔不會進入清單。
-$items = Get-ChildItem -LiteralPath $readingDirectory -Filter 'reading-*.html' -File |
-    Sort-Object Name |
+function Get-NaturalSortKey {
+    param([Parameter(Mandatory)] [string]$Name)
+    return [regex]::Replace($Name.ToLowerInvariant(), '\d+', { param($match) $match.Value.PadLeft(20, '0') })
+}
+
+# 掃描本資料夾第一層正式教材；入口、備份、測試與暫存檔不列入。
+$excludedPattern = '(?i)(^index\.html$|library|backup|bak|copy|test|temp|tmp|備份|測試)'
+$items = Get-ChildItem -LiteralPath $readingDirectory -Filter '*.html' -File |
+    Where-Object { $_.Name -notmatch $excludedPattern -and $_.Name -notmatch '^[._~]' } |
+    Sort-Object { Get-NaturalSortKey $_.Name } |
     ForEach-Object {
         $html = Get-Content -LiteralPath $_.FullName -Raw
         [ordered]@{
             file = $_.Name
-            title = Get-HtmlTitle -Html $html -Fallback $_.BaseName
+            title = Get-HtmlTitle -Html $html -FileName $_.Name
         }
     }
 

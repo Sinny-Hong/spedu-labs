@@ -34,6 +34,19 @@ html,body {
   align-items:end;
   gap:14px;
   flex-wrap:wrap;
+  max-height:240px;
+  overflow:hidden;
+  transition:transform .2s ease, opacity .16s ease, max-height .2s ease, padding .2s ease, border-width .2s ease;
+}
+
+body.shell-collapsed .toolbar {
+  max-height:0;
+  padding-top:0;
+  padding-bottom:0;
+  border-bottom-width:0;
+  transform:translateY(-100%);
+  opacity:0;
+  pointer-events:none;
 }
 
 .brand {
@@ -247,6 +260,7 @@ iframe {
   </div>
 
   <div class="actions">
+    <button onclick="location.href='index.html'">⌂ 返回首頁</button>
     <button onclick="changeTopic(-1)">❮ 上一份</button>
     <button onclick="changeTopic(1)">下一份 ❯</button>
     <button class="primary" onclick="openOriginal()">
@@ -276,7 +290,7 @@ iframe {
 <script>
 /*
   舊版文法講義資料庫
-  路徑以 grammar-library.html 為基準。
+  路徑以 library-level3.html 為基準。
   所有講義位於 old_level3/。
 */
 
@@ -497,6 +511,33 @@ function loadLesson() {
     lesson[0] + "｜舊版文法講義庫";
 
 }
+
+/* 教材往下捲動時收起外框，回到頂端時重新顯示。 */
+viewer.addEventListener("load",() => {
+
+  try {
+
+    const frameWindow = viewer.contentWindow;
+
+    const syncToolbar = () => {
+
+      const scrollTop = frameWindow.scrollY
+        || frameWindow.document.documentElement.scrollTop
+        || frameWindow.document.body.scrollTop
+        || 0;
+
+      document.body.classList.toggle("shell-collapsed",scrollTop > 12);
+
+    };
+
+    frameWindow.addEventListener("scroll",syncToolbar,{ passive:true });
+    syncToolbar();
+
+  } catch (_) {
+    /* 同來源教材可正常監聽；若瀏覽器限制存取則維持外框顯示。 */
+  }
+
+});
 
 /* 上一份／下一份 */
 

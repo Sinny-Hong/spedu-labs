@@ -98,6 +98,7 @@
       .shell-actions { grid-column: 2; grid-row: 1 / 3; align-self: end; }
       .shell-action { width: 40px; padding: 0; font-size: 0; }
       .shell-action::before { font-size: 18px; }
+      .shell-action[data-action="home"]::before { content: "⌂"; }
       .shell-action[data-action="reload"]::before { content: "↻"; }
       .shell-action[data-action="open"]::before { content: "↗"; }
       .shell-action[data-action="print"]::before { content: "⎙"; }
@@ -133,6 +134,7 @@
     </div>
     <div class="current-title" id="current-title" aria-live="polite"><small>目前教材</small><span>載入中</span></div>
     <nav class="shell-actions" aria-label="頁面操作">
+      <button class="shell-action" type="button" data-action="home" title="返回課本講義首頁">返回首頁</button>
       <button class="shell-action" type="button" data-action="reload" title="重新載入目前教材">重新載入</button>
       <button class="shell-action" type="button" data-action="open" title="在新視窗開啟原始教材">另開原頁</button>
       <button class="shell-action primary" type="button" data-action="print" title="列印目前教材">列印目前版</button>
@@ -143,7 +145,7 @@
     <div class="status-card" id="error-card" hidden><h1>教材載入失敗</h1><p>請確認教材檔案仍在相同資料夾，或用「另開原頁」檢查檔案。</p></div>
     <iframe id="text-frame" title="課文教材內容" allow="fullscreen"></iframe>
   </main>
-  <script src="text-manifest.js"></script>
+  <script src="text/text-manifest.js"></script>
   <script>
     (() => {
       "use strict";
@@ -153,17 +155,12 @@
       const currentTitle = document.querySelector("#current-title span");
       const loadingCard = document.getElementById("loading-card");
       const errorCard = document.getElementById("error-card");
+      const BASE = "text/";
 
       const findItem = file => items.find(item => item.file === file) || items[0] || null;
       const currentItem = () => findItem(picker.value);
 
-      function setQuery(file) {
-        const next = new URL(location.href);
-        next.searchParams.set("page", file);
-        history.replaceState({ page: file }, "", next);
-      }
-
-      function loadItem(item, updateUrl = true) {
+      function loadItem(item) {
         if (!item) {
           loadingCard.hidden = true; errorCard.hidden = false;
           currentTitle.textContent = "找不到可載入的課文教材";
@@ -172,8 +169,7 @@
         document.body.classList.remove("shell-collapsed");
         loadingCard.hidden = false; errorCard.hidden = true;
         currentTitle.textContent = item.title; picker.value = item.file;
-        frame.title = item.title; frame.src = item.file;
-        if (updateUrl) setQuery(item.file);
+        frame.title = item.title; frame.src = BASE + item.file;
       }
 
       items.forEach(item => {
@@ -200,20 +196,20 @@
 
       document.querySelector('[data-action="reload"]').addEventListener("click", () => {
         loadingCard.hidden = false;
-        try { frame.contentWindow.location.reload(); } catch (_) { frame.src = currentItem().file; }
+        try { frame.contentWindow.location.reload(); } catch (_) { frame.src = BASE + currentItem().file; }
+      });
+      document.querySelector('[data-action="home"]').addEventListener("click", () => {
+        location.href = "index.html";
       });
       document.querySelector('[data-action="open"]').addEventListener("click", () => {
-        const item = currentItem(); if (item) window.open(item.file, "_blank", "noopener");
+        const item = currentItem(); if (item) window.open(BASE + item.file, "_blank", "noopener");
       });
       document.querySelector('[data-action="print"]').addEventListener("click", () => {
         try { frame.contentWindow.focus(); frame.contentWindow.print(); }
-        catch (_) { const item = currentItem(); if (item) window.open(item.file, "_blank", "noopener"); }
-      });
-      window.addEventListener("popstate", () => {
-        loadItem(findItem(new URLSearchParams(location.search).get("page")), false);
+        catch (_) { const item = currentItem(); if (item) window.open(BASE + item.file, "_blank", "noopener"); }
       });
 
-      loadItem(findItem(new URLSearchParams(location.search).get("page")));
+      loadItem(items[0] || null);
     })();
   </script>
 </body>

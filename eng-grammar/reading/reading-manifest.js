@@ -1,7 +1,6 @@
 // 此檔由 generate-reading-manifest.ps1 產生；請勿手動維護教材清單。
 window.READING_MANIFEST = [
   {"file":"reading-clothing.html","title":"閱讀測驗｜異想服飾店"},
-  {"file":"reading-drink.html","title":"閱讀測驗｜點餐學習單"},
   {"file":"reading-familytree.html","title":"閱讀測驗｜異想家庭樹"},
   {"file":"reading-fastfood.html","title":"閱讀測驗｜異想速食店"},
   {"file":"reading-movie.html","title":"閱讀測驗｜異想電影院"},

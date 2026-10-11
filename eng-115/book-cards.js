@@ -1,18 +1,11 @@
 window.BOOK_CATEGORIES = ["單字", "課文", "電子書", "測試網頁"];
 
 window.BOOK_DATA = [
-  { id: "text_hub", category: "課文", tag: "課文總入口", title: "課文教材｜主題總覽", desc: "集中切換七、八、九年級的課文翻譯、關鍵字與句型教材；保留各頁課次導覽、互動與列印功能", filename: "text/index.html", themeColor: "#0f766e" },
+  { id: "text_hub", category: "課文", tag: "Library（Text）", title: "課文教材 Library", desc: "集中切換七、八、九年級的課文翻譯、關鍵字與句型教材；保留各頁課次導覽、互動與列印功能", filename: "library-text.html", themeColor: "#0f766e" },
   { id: "text_match", category: "課文", tag: "中英配對", title: "課文翻譯配對｜七至九年級", desc: "七上、八上、九上 L1～L6 中英文配對講義，支援提示、批改、解答與 A4 列印", filename: "text-translation-match.html", themeColor: "#0f766e" },
 
   { id: "vocab_all", category: "單字", tag: "新版整合", title: "115-1 單字學習講義", desc: "同一入口切換七、八、九年級的單字聽力、配對與聽寫，並支援學生版及教師版列印", filename: "vocab.html", themeColor: "#0f766e" },
   { id: "voc_1200", category: "單字", tag: "朗讀", title: "1200 單字選擇題朗讀", desc: "依題本頁面練習單字發音，支援語速、停頓與題號朗讀設定", filename: "1200voc.html", themeColor: "#336c5a" },
-
-  { id: "g7_keyword", category: "課文", tag: "關鍵字", title: "七上 課文關鍵字解碼卷", desc: "課文重點字詞與閱讀線索練習", filename: "115-1G7readword.html", themeColor: "#f59e0b" },
-  { id: "g7_trans", category: "課文", tag: "翻譯", title: "七上 課文翻譯卷", desc: "課文翻譯與閱讀理解練習", filename: "115-1G7reading.html", themeColor: "#f43f5e" },
-  { id: "g8_keyword", category: "課文", tag: "關鍵字", title: "八上 課文關鍵字解碼卷", desc: "課文重點字詞與閱讀線索練習", filename: "115-1G8readword.html", themeColor: "#f59e0b" },
-  { id: "g8_trans", category: "課文", tag: "翻譯", title: "八上 課文翻譯卷", desc: "課文翻譯與閱讀理解練習", filename: "115-1G8reading.html", themeColor: "#f43f5e" },
-  { id: "g9_keyword", category: "課文", tag: "關鍵字", title: "九上 課文關鍵字解碼卷", desc: "課文重點字詞與閱讀線索練習", filename: "115-1G9readword.html", themeColor: "#f59e0b" },
-  { id: "g9_trans", category: "課文", tag: "翻譯", title: "九上 課文翻譯卷", desc: "課文翻譯與閱讀理解練習", filename: "115-1G9reading.html", themeColor: "#f43f5e" },
 
   { id: "ebook_hle", category: "電子書", tag: "翰林", title: "翰林國中英語電子書", desc: "開啟 115 學年度上學期翰林國中英語電子書", filename: "https://edisc3.hle.com.tw/edisc_v3/ebook_v2023.html#degree=%E5%9C%8B%E4%B8%AD&cat=%E8%8B%B1%E8%AA%9E&prd=JEN&year=115%E4%B8%8A&grade=%E5%85%A8%E5%B9%B4%E7%B4%9A&tab=tab2", external: true, themeColor: "#f59e0b" },
   { id: "ebook_knsh", category: "電子書", tag: "康軒", title: "康軒國中英語電子書", desc: "開啟 115 學年度第一學期康軒國中英語電子書", filename: "https://digitalmaster.knsh.com.tw/v3/pages/j/index.html#year=1151&field=en&grade=all&item=ebook&bookcase=online", external: true, themeColor: "#0ea5e9" },
