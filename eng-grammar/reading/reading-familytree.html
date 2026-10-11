@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-City｜異想家庭樹閱讀測驗 (16單元母版)</title>
+
+<style>
+:root{
+  --navy:#0B3768;
+  --gold:#F5B942;
+  --page-bg:#EAF1F7;
+  --soft:#F3F7FB;
+  --line:#D6E2EC;
+  --text:#173552;
+  --blue:#2879BA;
+  --blue-soft:#EAF4FC;
+  --green:#218653;
+  --green-soft:#E7F5ED;
+  --red:#C62828;
+  --hint:#FFF0A6;
+  --hint-line:#F1C44A;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--page-bg);color:var(--text);
+  font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;
+  padding:18px 0 40px;
+}
+button,select{font:inherit;cursor:pointer;user-select:none;}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* =========================================================
+   FLOATING NAV & PRINT WIDGET (右上角浮動收折導覽與列印選單)
+========================================================= */
+.floating-widget{
+  position:fixed;right:16px;top:16px;z-index:1000;
+  background:white;border:1px solid #C8D5E0;border-radius:14px;
+  box-shadow:0 4px 20px rgba(0,0,0,.15);overflow:hidden;
+  font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+}
+.widget-header{
+  background:var(--navy);color:white;padding:10px 14px;font-weight:900;
+  display:flex;align-items:center;justify-content:space-between;cursor:pointer;
+  font-size:14px;user-select:none;gap:10px;
+}
+.widget-body{
+  padding:12px;display:flex;flex-direction:column;gap:10px;background:white;
+  max-height:80vh;overflow-y:auto;
+}
+.widget-body.collapsed{display:none;}
+.nav-section-title{
+  font-size:12px;font-weight:900;color:#647789;margin-bottom:4px;border-bottom:1px solid var(--line);padding-bottom:2px;
+}
+.nav-grid{display:grid;grid-template-columns:repeat(4, 1fr);gap:4px;}
+.nav-grid button{
+  padding:6px 4px;border:1px solid #C8D5E0;border-radius:6px;background:white;
+  color:var(--navy);font-size:12px;font-weight:900;cursor:pointer;text-align:center;
+}
+.nav-grid button:hover{background:var(--blue-soft);border-color:var(--blue);}
+.print-select-wrap{display:flex;flex-direction:column;gap:6px;margin-top:4px;}
+.print-select-wrap select{
+  padding:8px;border:1px solid #C8D5E0;border-radius:8px;font-weight:900;color:var(--navy);background:white;cursor:pointer;
+}
+.print-action-btn{
+  background:var(--gold);color:var(--navy);border:0;border-radius:8px;padding:9px;font-weight:900;cursor:pointer;text-align:center;
+}
+.print-action-btn:hover{background:#e5aa32;}
+
+/* =========================================================
+   A4 PORTRAIT SHEETS
+========================================================= */
+.sheet{
+  width:210mm;height:297mm;margin:0 auto 18px;padding:7mm 8mm;
+  background:#fff;box-shadow:0 5px 18px rgba(0,0,0,.12);
+  overflow:hidden;display:grid;grid-template-rows:1fr 1fr;gap:5mm;
+  page-break-after:always;
+}
+.sheet:last-child{page-break-after:auto;}
+
+.level-block{
+  min-height:0;display:flex;flex-direction:column;overflow:hidden;
+}
+.level-block:first-child{
+  padding-bottom:2.5mm;border-bottom:1.5px dashed #D5E0E9;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+.level-header{
+  min-height:12mm;display:flex;align-items:center;justify-content:space-between;
+  gap:5mm;margin-bottom:2mm;
+}
+.level-title{margin:0;color:var(--navy);font-size:16.5pt;line-height:1;font-weight:900;white-space:nowrap;}
+.student-info{display:flex;align-items:center;gap:3mm;color:#273E52;font-size:14pt;font-weight:700;white-space:nowrap;}
+.info-line{display:inline-block;min-width:25mm;height:5mm;border-bottom:1.4px solid #647789;}
+.name-line{min-width:36mm;}
+
+/* =========================================================
+   CONTENT LAYOUT (50:50)
+========================================================= */
+.level-content{
+  flex:1;min-height:0;display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:4mm;
+}
+.left-side,.right-side{min-width:0;min-height:0;}
+.left-side{display:flex;flex-direction:column;height:100%;min-height:0;}
+
+/* 左側：家庭樹排版 */
+.tree-box{
+  border:1.5px solid var(--navy);border-radius:3mm;background:#FCFDFE;
+  display:flex;flex-direction:column;flex:1;overflow:hidden;position:relative;
+}
+.tree-title{
+  height:7mm;display:flex;align-items:center;justify-content:center;
+  background:var(--navy);color:white;font-size:10.5pt;font-weight:900;flex-shrink:0;letter-spacing:1px;
+}
+.tree-svg-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;padding:2mm;overflow:hidden;
+}
+.family-svg{width:100%;height:100%;max-width:100%;max-height:100%;display:block;}
+
+.person-card{fill:#FFFFFF;stroke:var(--gold);stroke-width:5;transition:fill 0.2s, stroke 0.2s;}
+.person-card.active{fill:#E7F2FF;stroke:var(--blue);stroke-width:8;}
+.person-label{font-family:"Comic Sans MS","Comic Sans","Noto Sans TC",sans-serif;font-weight:bold;fill:var(--text);}
+.person-card.hint-active{fill:var(--hint) !important;stroke:var(--hint-line) !important;}
+
+/* 右側：測驗區 */
+.right-side{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;}
+.question-head{
+  min-height:9mm;display:flex;align-items:center;justify-content:space-between;
+  gap:2mm;padding:1.2mm 2mm;margin-bottom:1.5mm;background:var(--soft);
+  border:1px solid var(--line);border-radius:2.5mm;width:100%;
+}
+.question-title-wrap{display:flex;align-items:center;gap:2mm;min-width:0;}
+.question-title{margin:0;color:var(--navy);font-size:12pt;font-weight:900;}
+.score{min-width:11mm;color:var(--green);font-size:10.5pt;font-weight:900;text-align:center;}
+
+.tools{display:flex;align-items:center;gap:.8mm;flex-shrink:0;}
+.tools button{
+  padding:1mm 1.6mm;border:1px solid #BFCFDE;border-radius:6px;
+  background:white;color:var(--navy);font-size:8pt;font-weight:900;cursor:pointer;
+}
+.tools button.active{color:#875100;background:#FFF2D7;border-color:var(--hint-line);}
+
+.questions{
+  flex:1;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-around;padding:0 3px;
+  font-family:"Comic Sans MS","Comic Sans","Comic Neue",cursive;
+}
+.question{border-bottom:1px dashed #BDC3C7;padding:3px 0 4px;}
+.question:last-child{border-bottom:none;}
+.q-row{
+  display:grid;grid-template-columns:10mm minmax(0,1fr);column-gap:1mm;
+  align-items:start;min-width:0;font-size:11pt;line-height:1.22;font-weight:800;
+}
+.answer-slot{white-space:nowrap;text-align:right;}
+.answer-letter{display:inline-block;min-width:3.5mm;color:var(--blue);font-weight:900;}
+.answer-letter.correct{color:var(--green);}
+.answer-letter.solution{color:var(--red);}
+.q-text{min-width:0;overflow-wrap:anywhere;}
+
+/* 選項排版 (雙欄自適應) */
+.options{
+  display:flex;flex-wrap:wrap;gap:1mm 4mm;margin-left:11mm;margin-top:2px;
+}
+.choice{
+  border:1px solid transparent;border-radius:5px;background:transparent;
+  color:#334E68;padding:1px 5px;font-size:9.8pt;font-weight:bold;cursor:pointer;
+}
+.choice:hover{background:var(--blue-soft);}
+.choice.selected{color:var(--navy);background:var(--blue-soft);border-color:#6CA6D3;}
+.choice.correct{color:var(--green);background:var(--green-soft);border-color:#8BC4A3;}
+.choice.reveal{color:var(--red);background:#F9EBEA;border-color:var(--red);}
+
+/* =========================================================
+   提示效果 (HINT STYLES)
+========================================================= */
+.hint-word{
+  border-radius:3px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+.hint-on .hint-word{
+  background: var(--hint) !important;
+  box-shadow: inset 0 -2px 0 var(--hint-line) !important;
+  color: #875100 !important;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+.footer{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:8pt;color:#788896;padding-top:1.5mm;margin-top:auto;
+}
+.footer .credit{
+  margin-left:auto;text-align:right;font-size:7.5pt;letter-spacing:.2px;
+}
+
+/* =========================================================
+   TEACHER ANSWER MODE (教師解答模式顯影)
+========================================================= */
+body.teacher-mode .answer-letter{
+  color: var(--red) !important;
+  font-weight: 900 !important;
+}
+body.teacher-mode .answer-letter::after{
+  content: attr(data-ans);
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+@page{size:A4 portrait;margin:0;}
+@media print{
+  html,body{width:210mm;margin:0;padding:0;background:white;}
+  .floating-widget{display:none !important;}
+  .sheet{width:210mm;height:297mm;margin:0;box-shadow:none;}
+  .tools,.score{display:none !important;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- 右上角浮動收折導覽與列印選單 -->
+<div class="floating-widget" id="floatingWidget">
+  <div class="widget-header" onclick="toggleWidget()">
+    <span>📍 快速導覽與列印選單</span>
+    <span id="widgetToggleIcon">▼</span>
+  </div>
+  <div class="widget-body" id="widgetBody">
+    <div class="nav-section-title">A 卷 (A1 - A4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-0')">A1</button>
+      <button onclick="scrollToId('level-1')">A2</button>
+      <button onclick="scrollToId('level-2')">A3</button>
+      <button onclick="scrollToId('level-3')">A4</button>
+    </div>
+    
+    <div class="nav-section-title">B 卷 (B1 - B4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-4')">B1</button>
+      <button onclick="scrollToId('level-5')">B2</button>
+      <button onclick="scrollToId('level-6')">B3</button>
+      <button onclick="scrollToId('level-7')">B4</button>
+    </div>
+
+    <div class="nav-section-title">C 卷 (C1 - C4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-8')">C1</button>
+      <button onclick="scrollToId('level-9')">C2</button>
+      <button onclick="scrollToId('level-10')">C3</button>
+      <button onclick="scrollToId('level-11')">C4</button>
+    </div>
+
+    <div class="nav-section-title">D 卷 (D1 - D4)</div>
+    <div class="nav-grid">
+      <button onclick="scrollToId('level-12')">D1</button>
+      <button onclick="scrollToId('level-13')">D2</button>
+      <button onclick="scrollToId('level-14')">D3</button>
+      <button onclick="scrollToId('level-15')">D4</button>
+    </div>
+
+    <div class="nav-section-title">列印模式設定</div>
+    <div class="print-select-wrap">
+      <select id="printModeSelect">
+        <option value="student">📄 列印學生作答卷</option>
+        <option value="teacher">🔑 列印教師解答卷</option>
+      </select>
+      <button class="print-action-btn" onclick="executePrint()">開始列印 / 存為 PDF</button>
+    </div>
+  </div>
+</div>
+
+<div id="pages"></div>
+
+<script>
+'use strict';
+
+const NS = 'http://www.w3.org/2000/svg';
+
+// --- 家庭資料原型庫 ---
+const baseFamilies = {
+  small: [
+    { father:'Tom', mother:'Mary', me:'Alex', brother:'Jack', sister:'Lucy' },
+    { father:'David', mother:'Anna', me:'Ben', brother:'Eric', sister:'Emma' }
+  ],
+  three: [
+    { grandpa:'John', grandma:'Helen', father:'Tom', mother:'Mary', me:'Alex', brother:'Jack', sister:'Lucy' },
+    { grandpa:'Peter', grandma:'Susan', father:'David', mother:'Anna', me:'Ben', brother:'Eric', sister:'Emma' }
+  ],
+  large: [
+    { grandpa:'John', grandma:'Helen', uncle:'Peter', aunt:'Linda', father:'Tom', mother:'Mary', cousin1:'Jenny', cousin2:'Eric', me:'Alex', brother:'Jack' },
+    { grandpa:'George', grandma:'Susan', uncle:'David', aunt:'Kate', father:'Ben', mother:'Lisa', cousin1:'Amy', cousin2:'Sam', me:'Kevin', brother:'Ryan' }
+  ]
+};
+
+const rolesEmoji = {
+  grandpa:'👴', grandma:'👵', father:'👨', mother:'👩',
+  uncle:'👨', aunt:'👩', me:'👦', brother:'👦', sister:'👧',
+  cousin1:'👧', cousin2:'👦'
+};
+
+const treePositions = {
+  small: { father:[280,110], mother:[520,110], me:[80,550], sister:[390,550], brother:[700,550] },
+  three: { grandpa:[280,25], grandma:[520,25], father:[280,310], mother:[520,310], me:[80,630], sister:[390,630], brother:[700,630] },
+  large: { grandpa:[280,25], grandma:[520,25], uncle:[60,330], aunt:[280,330], father:[520,330], mother:[740,330], cousin1:[60,650], cousin2:[280,650], me:[520,650], brother:[740,650] }
+};
+
+const treePaths = {
+  small: ['M460 215 H520', 'M490 215 V470', 'M170 470 H790', 'M170 470 V550', 'M480 470 V550', 'M790 470 V550'],
+  three: ['M460 130 H520', 'M490 130 V255', 'M370 255 H490', 'M370 255 V310', 'M460 415 H520', 'M490 415 V550', 'M170 550 H790', 'M170 550 V630', 'M480 550 V630', 'M790 550 V630'],
+  large: ['M460 130 H520', 'M490 130 V260', 'M150 260 H610', 'M150 260 V330', 'M610 260 V330', 'M240 435 H280', 'M260 435 V570', 'M150 570 H370', 'M150 570 V650', 'M370 570 V650', 'M700 435 H740', 'M720 435 V570', 'M610 570 H830', 'M610 570 V650', 'M830 570 V650']
+};
+
+const motivationalQuotes = [
+  "Believe in yourself, every step you take makes you stronger and wiser!",
+  "Family gives you the roots to stand tall and strong every day.",
+  "Keep trying your best today, success belongs to those who never give up!",
+  "Great job! Small progress every day leads to big achievements."
+];
+
+function seededRandom(seed) {
+  let x = Math.sin(seed++) * 10000;
+  return x - Math.floor(x);
+}
+
+function shuffleWithSeed(array, seed) {
+  let arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(seededRandom(seed + i) * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function escapeRegExp(text){
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlightText(text, words){
+  if (!words || !words.length) return text;
+  let result = String(text);
+  const sorted = [...new Set(words)].sort((a,b) => b.length - a.length);
+  sorted.forEach(word => {
+    const regex = new RegExp(`\\b(${escapeRegExp(word)})\\b`, "gi");
+    result = result.replace(regex, `<span class="hint-word">$1</span>`);
+  });
+  return result;
+}
+
+// 建立各單元題庫
+function buildQuestionBank(fam, type) {
+  const f = fam;
+  const list = [
+    { stem: `Who is ${f.me}'s father?`, ans: f.father, w1: f.brother || 'Jack', w2: f.uncle || 'Peter' },
+    { stem: `Who is ${f.me}'s mother?`, ans: f.mother, w1: f.sister || 'Lucy', w2: f.aunt || 'Linda' },
+    { stem: `Who is ${f.mother}'s husband?`, ans: f.father, w1: f.brother || 'Jack', w2: f.me },
+    { stem: `Who is ${f.father}'s wife?`, ans: f.mother, w1: f.sister || 'Lucy', w2: f.aunt || 'Kate' },
+    { stem: `${f.father} is ${f.me}'s ____.`, ans: 'father', w1: 'brother', w2: 'uncle' },
+    { stem: `${f.mother} is ${f.me}'s ____.`, ans: 'mother', w1: 'aunt', w2: 'sister' },
+    { stem: `${f.me} is ${f.father}'s ____.`, ans: 'son', w1: 'brother', w2: 'father' }
+  ];
+
+  if (f.brother) {
+    list.push({ stem: `Who is ${f.me}'s brother?`, ans: f.brother, w1: f.father, w2: f.uncle || 'David' });
+    list.push({ stem: `${f.brother} is ${f.me}'s ____.`, ans: 'brother', w1: 'father', w2: 'cousin' });
+  }
+  if (f.sister) {
+    list.push({ stem: `Who is ${f.me}'s sister?`, ans: f.sister, w1: f.mother, w2: 'Jenny' });
+    list.push({ stem: `${f.sister} is ${f.me}'s ____.`, ans: 'sister', w1: 'mother', w2: 'aunt' });
+  }
+  if (f.grandpa) {
+    list.push({ stem: `Who is ${f.father}'s father?`, ans: f.grandpa, w1: f.father, w2: f.uncle || 'Peter' });
+    list.push({ stem: `${f.grandpa} is ${f.me}'s ____.`, ans: 'grandfather', w1: 'father', w2: 'brother' });
+  }
+  if (f.grandma) {
+    list.push({ stem: `Who is ${f.father}'s mother?`, ans: f.grandma, w1: f.mother, w2: f.aunt || 'Linda' });
+    list.push({ stem: `${f.grandma} is ${f.me}'s ____.`, ans: 'grandmother', w1: 'mother', w2: 'sister' });
+  }
+  if (f.uncle) {
+    list.push({ stem: `Who is ${f.father}'s brother?`, ans: f.uncle, w1: f.father, w2: f.brother || 'Jack' });
+    list.push({ stem: `${f.uncle} is ${f.me}'s ____.`, ans: 'uncle', w1: 'father', w2: 'brother' });
+  }
+  if (f.aunt) {
+    list.push({ stem: `${f.aunt} is ${f.me}'s ____.`, ans: 'aunt', w1: 'mother', w2: 'sister' });
+  }
+  if (f.cousin1) {
+    list.push({ stem: `${f.cousin1} is ${f.me}'s ____.`, ans: 'cousin', w1: 'sister', w2: 'mother' });
+  }
+  return list;
+}
+
+// 產生 16 個單元資料
+function generateAll16Levels() {
+  const versions = ['A', 'B', 'C', 'D'];
+  // 各卷 4 單元依序為：兩代、兩代B、三代、大家庭
+  const configs = [
+    { type: 'small', famIdx: 0 },
+    { type: 'small', famIdx: 1 },
+    { type: 'three', famIdx: 0 },
+    { type: 'large', famIdx: 0 }
+  ];
+
+  let levels = [];
+  versions.forEach((ver, vIdx) => {
+    configs.forEach((cfg, cIdx) => {
+      const code = `${ver}${cIdx + 1}`;
+      const seed = 500 + vIdx * 80 + cIdx * 20;
+      const fam = baseFamilies[cfg.type][cfg.famIdx];
+      const bank = buildQuestionBank(fam, cfg.type);
+      const shuffledBank = shuffleWithSeed(bank, seed);
+      const selected = shuffledBank.slice(0, 5);
+
+      const questions = selected.map((q, qIdx) => {
+        const opts = shuffleWithSeed([q.ans, q.w1, q.w2], seed + qIdx);
+        return {
+          stem: q.stem,
+          options: opts,
+          answer: opts.indexOf(q.ans)
+        };
+      });
+
+      // 收集提示關鍵字：家庭人名 + 親屬稱謂
+      const hints = [];
+      Object.values(fam).forEach(name => hints.push(name));
+      ['father', 'mother', 'husband', 'wife', 'brother', 'sister', 'grandfather', 'grandmother', 'grandpa', 'grandma', 'uncle', 'aunt', 'cousin', 'son'].forEach(w => {
+        hints.push(w);
+      });
+
+      levels.push({
+        code,
+        type: cfg.type,
+        family: fam,
+        questions,
+        hints
+      });
+    });
+  });
+  return levels;
+}
+
+const all16Levels = generateAll16Levels();
+let selections = all16Levels.map(lvl => Array(lvl.questions.length).fill(null));
+let hintStates = all16Levels.map(() => false);
+
+// 產生左側 Family Tree SVG 內容
+function renderFamilyTreeSVG(data, levelIndex) {
+  const type = data.type;
+  const fam = data.family;
+  const pos = treePositions[type];
+  const paths = treePaths[type];
+
+  let svgContent = `<svg class="family-svg" viewBox="0 0 960 880" preserveAspectRatio="xMidYMid meet">`;
+  
+  // 連接線
+  svgContent += `<g fill="none" stroke="#E7655D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">`;
+  paths.forEach(d => {
+    svgContent += `<path d="${d}" />`;
+  });
+  svgContent += `</g>`;
+
+  // 人物卡片節點
+  Object.entries(pos).forEach(([role, [x, y]]) => {
+    const name = fam[role];
+    if (!name) return;
+    const emoji = rolesEmoji[role] || '👤';
+
+    svgContent += `
+      <g class="person-node" data-role="${role}" data-name="${name}" transform="translate(${x},${y})">
+        <rect class="person-card card-${levelIndex}-${name}" x="0" y="0" width="180" height="200" rx="20" />
+        <line x1="0" y1="135" x2="180" y2="135" stroke="#F5B942" stroke-width="4" />
+        <text class="person-label" x="90" y="100" text-anchor="middle" font-size="75">${emoji}</text>
+        <text class="person-label text-${levelIndex}-${name}" x="90" y="175" text-anchor="middle" font-size="${name.length > 6 ? 26 : 32}">${name}</text>
+      </g>
+    `;
+  });
+
+  svgContent += `</svg>`;
+  return svgContent;
+}
+
+// 渲染單個 Level
+function createLevel(data, levelIndex) {
+  const treeSVG = renderFamilyTreeSVG(data, levelIndex);
+
+  const questionsHTML = data.questions.map((q, qIndex) => {
+    const ansLetter = String.fromCharCode(65 + q.answer);
+    return `
+      <div class="question">
+        <div class="q-row">
+          <div class="answer-slot">
+            （<span class="answer-letter" id="answer-${levelIndex}-${qIndex}" data-ans="${ansLetter}"></span>）
+          </div>
+          <div class="q-text">
+            ${qIndex + 1}. ${highlightText(q.stem, data.hints)}
+          </div>
+        </div>
+        <div class="options">
+          ${q.options.map((choice, j) => `
+            <button class="choice" data-level="${levelIndex}" data-q="${qIndex}" data-opt="${j}"
+                    onclick="chooseAnswer(${levelIndex}, ${qIndex},${j}, this)">
+              (${String.fromCharCode(65 + j)})${choice}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const quote = motivationalQuotes[levelIndex % motivationalQuotes.length];
+
+  return `
+    <section class="level-block" id="level-${levelIndex}">
+      <div class="level-header">
+        <h1 class="level-title">🌳 E-City｜異想家庭樹 ${data.code}</h1>
+        <div class="student-info">
+          <span>班級：</span><span class="info-line"></span>
+          <span>姓名：</span><span class="info-line name-line"></span>
+        </div>
+      </div>
+
+      <div class="level-content">
+        <!-- 左側家庭樹視覺區 -->
+        <div class="left-side">
+          <section class="tree-box">
+            <div class="tree-title">FAMILY TREE (家庭樹)</div>
+            <div class="tree-svg-wrap">
+              ${treeSVG}
+            </div>
+          </section>
+        </div>
+
+        <!-- 右側測驗區 -->
+        <div class="right-side">
+          <div class="question-head">
+            <div class="question-title-wrap">
+              <h2 class="question-title">Questions</h2>
+              <div class="score" id="score-${levelIndex}"></div>
+            </div>
+            <div class="tools">
+              <button onclick="toggleHint(${levelIndex}, this)">提示</button>
+              <button onclick="gradeLevel(${levelIndex})">批改</button>
+              <button onclick="clearLevel(${levelIndex})">清除</button>
+              <button onclick="showAnswers(${levelIndex})">解答</button>
+            </div>
+          </div>
+          <div class="questions">${questionsHTML}</div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <span>⭐ ${quote}</span>
+        <span class="credit">© SINNY SPEDU LABS &nbsp;&nbsp; ${data.code}</span>
+      </div>
+    </section>
+  `;
+}
+
+function renderAll() {
+  const pageRoot = document.getElementById("pages");
+  pageRoot.innerHTML = "";
+
+  for (let i = 0; i < all16Levels.length; i += 2) {
+    const first = createLevel(all16Levels[i], i);
+    const second = createLevel(all16Levels[i + 1], i + 1);
+    pageRoot.insertAdjacentHTML("beforeend", `
+      <section class="sheet">
+        ${first}
+        ${second}
+      </section>
+    `);
+  }
+}
+
+// 導覽面板控制
+function toggleWidget() {
+  const body = document.getElementById('widgetBody');
+  const icon = document.getElementById('widgetToggleIcon');
+  body.classList.toggle('collapsed');
+  icon.textContent = body.classList.contains('collapsed') ? '▲' : '▼';
+}
+
+function scrollToId(elementId) {
+  const el = document.getElementById(elementId);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function executePrint() {
+  const mode = document.getElementById('printModeSelect').value;
+  if (mode === 'teacher') {
+    document.body.classList.add('teacher-mode');
+  } else {
+    document.body.classList.remove('teacher-mode');
+  }
+  window.print();
+}
+
+// 作答互動邏輯
+function getOptions(levelIndex, qIndex) {
+  return document.querySelectorAll(`.choice[data-level="${levelIndex}"][data-q="${qIndex}"]`);
+}
+function getAnswerSlot(levelIndex, qIndex) {
+  return document.getElementById(`answer-${levelIndex}-${qIndex}`);
+}
+
+function chooseAnswer(levelIndex, qIndex, optIndex, element) {
+  const options = getOptions(levelIndex, qIndex);
+  options.forEach(el => el.classList.remove("selected", "correct"));
+
+  selections[levelIndex][qIndex] = optIndex;
+  element.classList.add("selected");
+
+  const slot = getAnswerSlot(levelIndex, qIndex);
+  slot.textContent = String.fromCharCode(65 + optIndex);
+  slot.className = "answer-letter";
+  document.getElementById(`score-${levelIndex}`).textContent = "";
+}
+
+function gradeLevel(levelIndex) {
+  let correctCount = 0;
+  all16Levels[levelIndex].questions.forEach((q, qIndex) => {
+    const chosen = selections[levelIndex][qIndex];
+    const options = getOptions(levelIndex, qIndex);
+    const slot = getAnswerSlot(levelIndex, qIndex);
+
+    options.forEach(el => el.classList.remove("correct"));
+    if (chosen === null) return;
+
+    if (chosen === q.answer) {
+      correctCount++;
+      options[chosen].classList.remove("selected");
+      options[chosen].classList.add("correct");
+      slot.textContent = String.fromCharCode(65 + chosen);
+      slot.className = "answer-letter correct";
+    } else {
+      options[chosen].classList.remove("selected", "correct");
+      selections[levelIndex][qIndex] = null;
+      slot.textContent = "";
+      slot.className = "answer-letter";
+    }
+  });
+  document.getElementById(`score-${levelIndex}`).textContent = `${correctCount} / 5`;
+}
+
+function clearLevel(levelIndex) {
+  selections[levelIndex].fill(null);
+  all16Levels[levelIndex].questions.forEach((_, qIndex) => {
+    const options = getOptions(levelIndex, qIndex);
+    options.forEach(el => el.classList.remove("selected", "correct"));
+    const slot = getAnswerSlot(levelIndex, qIndex);
+    slot.textContent = "";
+    slot.className = "answer-letter";
+  });
+  document.getElementById(`score-${levelIndex}`).textContent = "";
+}
+
+function showAnswers(levelIndex) {
+  all16Levels[levelIndex].questions.forEach((q, qIndex) => {
+    const options = getOptions(levelIndex, qIndex);
+    options.forEach(el => el.classList.remove("selected", "correct"));
+    const slot = getAnswerSlot(levelIndex, qIndex);
+    slot.textContent = String.fromCharCode(65 + q.answer);
+    slot.className = "answer-letter solution";
+  });
+  document.getElementById(`score-${levelIndex}`).textContent = "解答";
+}
+
+function toggleHint(levelIndex, button) {
+  hintStates[levelIndex] = !hintStates[levelIndex];
+  const block = document.getElementById(`level-${levelIndex}`);
+  block.classList.toggle("hint-on", hintStates[levelIndex]);
+  button.classList.toggle("active", hintStates[levelIndex]);
+
+  // 同步高亮左側家庭樹卡片
+  const data = all16Levels[levelIndex];
+  const cards = block.querySelectorAll('.person-card');
+  cards.forEach(card => card.classList.toggle('hint-active', hintStates[levelIndex]));
+}
+
+renderAll();
+</script>
+
+<script src="../shared/js/public-footer.js"></script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>閱讀教材共用外框｜測試版</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --shell-navy: #17324d;
+      --shell-blue: #236a93;
+      --shell-blue-dark: #174e70;
+      --shell-gold: #f0a426;
+      --shell-paper: #f4f7f9;
+      --shell-line: #ccd8e1;
+      --shell-text: #20374d;
+      --shell-muted: #607386;
+      --shell-height: 68px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--shell-paper);
+      color: var(--shell-text);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+    }
+
+    body { display: grid; grid-template-rows: var(--shell-height) minmax(0, 1fr); }
+
+    .shell-bar {
+      position: relative;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: minmax(230px, 360px) minmax(180px, 1fr) auto;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+      padding: 10px 16px;
+      border-bottom: 1px solid #0d263a;
+      background: linear-gradient(135deg, var(--shell-navy), #214d70);
+      box-shadow: 0 3px 14px rgba(17, 37, 55, .24);
+    }
+
+    .picker-wrap { position: relative; min-width: 0; }
+
+    .picker-label {
+      position: absolute;
+      top: -7px;
+      left: 11px;
+      z-index: 1;
+      padding: 0 5px;
+      background: var(--shell-navy);
+      color: #c9d9e6;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    #reading-picker {
+      width: 100%;
+      height: 44px;
+      min-width: 0;
+      padding: 0 38px 0 13px;
+      border: 1px solid #8fb1c8;
+      border-radius: 10px;
+      background: #fff;
+      color: #17324d;
+      font: 800 15px/1.2 inherit;
+      cursor: pointer;
+    }
+
+    #reading-picker:focus-visible,
+    .shell-action:focus-visible {
+      outline: 3px solid #ffd27a;
+      outline-offset: 2px;
+    }
+
+    .current-title {
+      min-width: 0;
+      overflow: hidden;
+      color: #fff;
+      font-size: clamp(15px, 1.45vw, 21px);
+      font-weight: 900;
+      line-height: 1.25;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .current-title small {
+      display: block;
+      margin-bottom: 2px;
+      color: #bcd0df;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+    }
+
+    .shell-actions { display: flex; align-items: center; gap: 8px; }
+
+    .shell-action {
+      height: 42px;
+      padding: 0 13px;
+      border: 1px solid rgba(255, 255, 255, .3);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .11);
+      color: #fff;
+      font: 800 14px/1 inherit;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .shell-action:hover { background: rgba(255, 255, 255, .2); }
+    .shell-action.primary { border-color: #ffc35d; background: var(--shell-gold); color: #302009; }
+    .shell-action.primary:hover { background: #ffb936; }
+
+    .viewer {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(255, 255, 255, .9), rgba(231, 237, 242, .75)),
+        var(--shell-paper);
+    }
+
+    #reading-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+
+    .loading-card,
+    .error-card {
+      position: absolute;
+      inset: 50% auto auto 50%;
+      width: min(520px, calc(100% - 32px));
+      transform: translate(-50%, -50%);
+      padding: 24px;
+      border: 1px solid var(--shell-line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: 0 12px 35px rgba(31, 55, 75, .15);
+      text-align: center;
+    }
+
+    .loading-card[hidden],
+    .error-card[hidden] { display: none; }
+
+    .loading-card { color: var(--shell-muted); font-weight: 800; }
+    .error-card h1 { margin: 0 0 8px; font-size: 20px; }
+    .error-card p { margin: 0; color: var(--shell-muted); line-height: 1.6; }
+
+    @media (max-width: 900px) {
+      :root { --shell-height: 118px; }
+      .shell-bar {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: 46px 42px;
+        gap: 8px 10px;
+        padding: 9px 10px;
+      }
+      .picker-wrap { grid-column: 1; grid-row: 1; }
+      .current-title { grid-column: 1 / -1; grid-row: 2; padding-right: 285px; }
+      .current-title small { display: none; }
+      .shell-actions { grid-column: 2; grid-row: 1 / 3; align-self: end; }
+      .shell-action { width: 44px; padding: 0; font-size: 0; }
+      .shell-action::before { font-size: 19px; }
+      .shell-action[data-action="reload"]::before { content: "↻"; }
+      .shell-action[data-action="open"]::before { content: "↗"; }
+      .shell-action[data-action="print"]::before { content: "⎙"; }
+    }
+
+    @media (max-width: 560px) {
+      :root { --shell-height: 116px; }
+      .shell-bar { grid-template-columns: minmax(0, 1fr) auto; }
+      .current-title { padding-right: 0; font-size: 14px; }
+      .shell-actions { gap: 5px; }
+      .shell-action { width: 39px; height: 39px; }
+    }
+
+    @media (min-width: 1500px) {
+      :root { --shell-height: 78px; }
+      .shell-bar { padding: 13px 22px; gap: 20px; }
+      #reading-picker { height: 48px; font-size: 17px; }
+      .shell-action { height: 46px; padding-inline: 17px; font-size: 16px; }
+    }
+
+    @media print {
+      .shell-bar { display: none !important; }
+      body { display: block; height: auto; overflow: visible; background: #fff; }
+      .viewer { height: auto; overflow: visible; }
+      #reading-frame { width: 100%; height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell-bar" aria-label="閱讀教材共用工具列">
+    <div class="picker-wrap">
+      <label class="picker-label" for="reading-picker">切換閱讀教材</label>
+      <select id="reading-picker" aria-label="切換閱讀教材"></select>
+    </div>
+    <div class="current-title" id="current-title" aria-live="polite">
+      <small>目前教材</small>
+      <span>載入中</span>
+    </div>
+    <nav class="shell-actions" aria-label="頁面操作">
+      <button class="shell-action" type="button" data-action="reload" title="重新載入目前教材">重新載入</button>
+      <button class="shell-action" type="button" data-action="open" title="在新視窗開啟原始教材">另開原頁</button>
+      <button class="shell-action primary" type="button" data-action="print" title="列印目前教材；教師版請先在教材內選擇">列印目前版</button>
+    </nav>
+  </header>
+
+  <main class="viewer">
+    <div class="loading-card" id="loading-card">正在載入閱讀教材……</div>
+    <div class="error-card" id="error-card" hidden>
+      <h1>教材載入失敗</h1>
+      <p>請確認教材檔案仍在相同資料夾，或用「另開原頁」檢查檔案。</p>
+    </div>
+    <iframe id="reading-frame" title="閱讀教材內容" allow="fullscreen"></iframe>
+  </main>
+
+  <script src="reading-manifest.js"></script>
+  <script>
+    (() => {
+      "use strict";
+
+      const items = Array.isArray(window.READING_MANIFEST) ? window.READING_MANIFEST : [];
+      const picker = document.getElementById("reading-picker");
+      const frame = document.getElementById("reading-frame");
+      const currentTitle = document.querySelector("#current-title span");
+      const loadingCard = document.getElementById("loading-card");
+      const errorCard = document.getElementById("error-card");
+      const params = new URLSearchParams(location.search);
+
+      function safeItemByFile(file) {
+        return items.find((item) => item.file === file) || items[0] || null;
+      }
+
+      function setQuery(file) {
+        const next = new URL(location.href);
+        next.searchParams.set("page", file);
+        history.replaceState({ page: file }, "", next);
+      }
+
+      function loadItem(item, updateUrl = true) {
+        if (!item) {
+          loadingCard.hidden = true;
+          errorCard.hidden = false;
+          currentTitle.textContent = "找不到可載入的閱讀教材";
+          return;
+        }
+
+        loadingCard.hidden = false;
+        errorCard.hidden = true;
+        currentTitle.textContent = item.title;
+        picker.value = item.file;
+        frame.title = item.title;
+        frame.src = item.file;
+        document.title = `${item.title}｜閱讀外框測試版`;
+        if (updateUrl) setQuery(item.file);
+      }
+
+      function currentItem() {
+        return safeItemByFile(picker.value);
+      }
+
+      items.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.file;
+        option.textContent = item.title;
+        picker.append(option);
+      });
+
+      picker.addEventListener("change", () => loadItem(currentItem()));
+
+      frame.addEventListener("load", () => {
+        loadingCard.hidden = true;
+        errorCard.hidden = true;
+        try { frame.contentWindow.focus(); } catch (_) { /* Same-origin access may be unavailable. */ }
+      });
+
+      frame.addEventListener("error", () => {
+        loadingCard.hidden = true;
+        errorCard.hidden = false;
+      });
+
+      document.querySelector('[data-action="reload"]').addEventListener("click", () => {
+        loadingCard.hidden = false;
+        try {
+          frame.contentWindow.location.reload();
+        } catch (_) {
+          frame.src = currentItem().file;
+        }
+      });
+
+      document.querySelector('[data-action="open"]').addEventListener("click", () => {
+        const item = currentItem();
+        if (item) window.open(item.file, "_blank", "noopener");
+      });
+
+      document.querySelector('[data-action="print"]').addEventListener("click", () => {
+        try {
+          frame.contentWindow.focus();
+          frame.contentWindow.print();
+        } catch (_) {
+          const item = currentItem();
+          if (item) window.open(item.file, "_blank", "noopener");
+        }
+      });
+
+      window.addEventListener("popstate", () => {
+        const nextParams = new URLSearchParams(location.search);
+        loadItem(safeItemByFile(nextParams.get("page")), false);
+      });
+
+      loadItem(safeItemByFile(params.get("page")));
+    })();
+  </script>
+</body>
+</html>

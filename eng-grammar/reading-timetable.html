@@ -18,8 +18,8 @@
   --soft: #F4F6F7;
   --blue-soft: #EBF5FB;
   --green-soft: #E8F8F5;
-  --hint: #FEF9E7;
-  --hint-line: #F1C40F;
+  --hint: #FFF0A6;
+  --hint-line: #F1C44A;
   --gray-blue: #BDC3C7;
 }
 *{box-sizing:border-box}
@@ -178,7 +178,18 @@ button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-
 .choice.correct{color:var(--green);background:var(--green-soft);border-color:var(--green);}
 .choice.reveal{color:var(--red);background:#F9EBEA;border-color:var(--red);}
 
-.hint-word{padding:0 2px;border-radius:4px;background:var(--hint);box-shadow:inset 0 -2px 0 var(--hint-line);}
+/* =========================================================
+   提示效果 (HINT STYLES)
+========================================================= */
+.hint-word{
+  border-radius:3px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+.hint-on .hint-word{
+  background: var(--hint) !important;
+  box-shadow: inset 0 -2px 0 var(--hint-line) !important;
+  color: #875100 !important;
+}
 
 /* =========================================================
    FOOTER
@@ -321,6 +332,22 @@ function shuffleWithSeed(array, seed) {
   return arr;
 }
 
+function escapeRegExp(text){
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlightText(text, words){
+  if (!words || !words.length) return text;
+  let result = String(text);
+  const sorted = [...words].sort((a,b) => b.length - a.length);
+  sorted.forEach(word => {
+    // 支援純文字或包含標籤的精準邊界替換
+    const regex = new RegExp(`\\b(${escapeRegExp(word)})\\b`, "gi");
+    result = result.replace(regex, `<span class="hint-word">$1</span>`);
+  });
+  return result;
+}
+
 function getPrevDay(dayStr) {
   let idx = DAYS.indexOf(dayStr);
   if (idx === 0) return "Sunday";
@@ -449,7 +476,25 @@ function generateLevelData(lvlType, seed) {
     });
   }
 
-  return { grid, questions };
+  // 提示關鍵字收集：從題幹、星期、科目與常用邏輯詞中抽取
+  const allStems = questions.map(q => q.stem).join(" ");
+  let hints = [];
+
+  DAYS.forEach(d => {
+    if (new RegExp(`\\b${d}\\b`, 'i').test(allStems)) hints.push(d);
+  });
+
+  SUBJECTS.forEach(s => {
+    if (new RegExp(`\\b${s.name}\\b`, 'i').test(allStems)) hints.push(s.name);
+  });
+
+  ["before", "after", "next", "tomorrow", "today", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Class 1", "Class 2", "Class 3", "Class 4"].forEach(w => {
+    if (new RegExp(`\\b${escapeRegExp(w)}\\b`, 'i').test(allStems)) {
+      hints.push(w);
+    }
+  });
+
+  return { grid, questions, hints: [...new Set(hints)] };
 }
 
 // ================= 產生 16 個單元大禮包 =================
@@ -477,7 +522,8 @@ function generateAll16Levels() {
       allLevels.push({
         code: actualCode,
         grid: data.grid,
-        questions: data.questions
+        questions: data.questions,
+        hints: data.hints
       });
     });
   });
@@ -491,17 +537,20 @@ let hintStates = all16Levels.map(() => false);
 
 // ================= UI 渲染 =================
 function createLevel(data, levelIndex){
+  const dayAbbr = ["Mon (一)", "Tue (二)", "Wed (三)", "Thu (四)", "Fri (五)"];
+
   let tableHTML = `
     <tr>
       <th></th>
-      <th>Mon (一)</th><th>Tue (二)</th><th>Wed (三)</th><th>Thu (四)</th><th>Fri (五)</th>
+      ${DAYS.map((d, dIdx) => `<th>${highlightText(dayAbbr[dIdx], data.hints)}</th>`).join('')}
     </tr>
   `;
   for(let p=0; p<4; p++) {
     tableHTML += `<tr>`;
     tableHTML += `<th>${p+1}<span class="time-header">${TIMES[p]}</span></th>`;
     for(let d=0; d<5; d++) {
-       tableHTML += `<td>${data.grid[d][p]}</td>`;
+       const cellText = data.grid[d][p];
+       tableHTML += `<td>${highlightText(cellText, data.hints)}</td>`;
     }
     tableHTML += `</tr>`;
   }
@@ -512,7 +561,7 @@ function createLevel(data, levelIndex){
       <div class="question">
         <div class="question-line">
           <span class="answer-blank" id="answer-${levelIndex}-${qIndex}" data-ans="${ansLetter}">（ ）</span>
-          <span>${qIndex+1}. ${q.stem}</span>
+          <span>${qIndex+1}. ${highlightText(q.stem, data.hints)}</span>
         </div>
         <div class="options">
           ${q.options.map((choice, j) => `
@@ -559,6 +608,7 @@ function createLevel(data, levelIndex){
               <div class="score" id="score-${levelIndex}"></div>
             </div>
             <div class="tools">
+              <button onclick="toggleHint(${levelIndex}, this)">提示</button>
               <button onclick="gradeLevel(${levelIndex})">批改</button>
               <button onclick="clearLevel(${levelIndex})">清除</button>
               <button onclick="showAnswers(${levelIndex})">解答</button>
@@ -657,7 +707,7 @@ function gradeLevel(levelIndex){
       getAnswerSlot(levelIndex, qIndex).textContent = "（ ）";
     }
   });
-  document.getElementById(`score-${levelIndex}`).textContent = `${correctCount} / 3`;
+  document.getElementById(`score-${levelIndex}`).textContent = `${correctCount} / ${all16Levels[levelIndex].questions.length}`;
 }
 
 function clearLevel(levelIndex){
@@ -679,6 +729,13 @@ function showAnswers(levelIndex){
     slot.className = "answer-blank reveal";
   });
   document.getElementById(`score-${levelIndex}`).textContent = "解答";
+}
+
+function toggleHint(levelIndex, button){
+  hintStates[levelIndex] = !hintStates[levelIndex];
+  const block = document.getElementById(`level-${levelIndex}`);
+  block.classList.toggle("hint-on", hintStates[levelIndex]);
+  button.classList.toggle("active", hintStates[levelIndex]);
 }
 
 renderAll();
