@@ -15,7 +15,7 @@
       --shell-line: #ccd8e1;
       --shell-text: #20374d;
       --shell-muted: #607386;
-      --shell-height: 68px;
+      --shell-height: 54px;
     }
 
     * { box-sizing: border-box; }
@@ -31,7 +31,13 @@
       font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
     }
 
-    body { display: grid; grid-template-rows: var(--shell-height) minmax(0, 1fr); }
+    body {
+      display: grid;
+      grid-template-rows: var(--shell-height) minmax(0, 1fr);
+      transition: grid-template-rows .2s ease;
+    }
+
+    body.shell-collapsed { grid-template-rows: 0 minmax(0, 1fr); }
 
     .shell-bar {
       position: relative;
@@ -41,10 +47,19 @@
       align-items: center;
       gap: 14px;
       min-width: 0;
-      padding: 10px 16px;
+      min-height: 0;
+      overflow: hidden;
+      padding: 6px 12px;
       border-bottom: 1px solid #0d263a;
       background: linear-gradient(135deg, var(--shell-navy), #214d70);
       box-shadow: 0 3px 14px rgba(17, 37, 55, .24);
+      transition: transform .2s ease, opacity .16s ease;
+    }
+
+    body.shell-collapsed .shell-bar {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
     }
 
     .picker-wrap { position: relative; min-width: 0; }
@@ -64,7 +79,7 @@
 
     #reading-picker {
       width: 100%;
-      height: 44px;
+      height: 38px;
       min-width: 0;
       padding: 0 38px 0 13px;
       border: 1px solid #8fb1c8;
@@ -104,8 +119,8 @@
     .shell-actions { display: flex; align-items: center; gap: 8px; }
 
     .shell-action {
-      height: 42px;
-      padding: 0 13px;
+      height: 36px;
+      padding: 0 11px;
       border: 1px solid rgba(255, 255, 255, .3);
       border-radius: 10px;
       background: rgba(255, 255, 255, .11);
@@ -159,12 +174,12 @@
     .error-card p { margin: 0; color: var(--shell-muted); line-height: 1.6; }
 
     @media (max-width: 900px) {
-      :root { --shell-height: 118px; }
+      :root { --shell-height: 92px; }
       .shell-bar {
         grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-rows: 46px 42px;
-        gap: 8px 10px;
-        padding: 9px 10px;
+        grid-template-rows: 40px 34px;
+        gap: 5px 8px;
+        padding: 6px 8px;
       }
       .picker-wrap { grid-column: 1; grid-row: 1; }
       .current-title { grid-column: 1 / -1; grid-row: 2; padding-right: 285px; }
@@ -178,18 +193,18 @@
     }
 
     @media (max-width: 560px) {
-      :root { --shell-height: 116px; }
+      :root { --shell-height: 88px; }
       .shell-bar { grid-template-columns: minmax(0, 1fr) auto; }
       .current-title { padding-right: 0; font-size: 14px; }
       .shell-actions { gap: 5px; }
-      .shell-action { width: 39px; height: 39px; }
+      .shell-action { width: 36px; height: 34px; }
     }
 
     @media (min-width: 1500px) {
-      :root { --shell-height: 78px; }
-      .shell-bar { padding: 13px 22px; gap: 20px; }
-      #reading-picker { height: 48px; font-size: 17px; }
-      .shell-action { height: 46px; padding-inline: 17px; font-size: 16px; }
+      :root { --shell-height: 60px; }
+      .shell-bar { padding: 7px 18px; gap: 18px; }
+      #reading-picker { height: 42px; font-size: 17px; }
+      .shell-action { height: 40px; padding-inline: 15px; font-size: 16px; }
     }
 
     @media print {
@@ -257,6 +272,7 @@
           return;
         }
 
+        document.body.classList.remove("shell-collapsed");
         loadingCard.hidden = false;
         errorCard.hidden = true;
         currentTitle.textContent = item.title;
@@ -282,7 +298,19 @@
       frame.addEventListener("load", () => {
         loadingCard.hidden = true;
         errorCard.hidden = true;
-        try { frame.contentWindow.focus(); } catch (_) { /* Same-origin access may be unavailable. */ }
+        try {
+          const frameWindow = frame.contentWindow;
+          const syncShellVisibility = () => {
+            const scrollTop = frameWindow.scrollY
+              || frameWindow.document.documentElement.scrollTop
+              || frameWindow.document.body.scrollTop
+              || 0;
+            document.body.classList.toggle("shell-collapsed", scrollTop > 12);
+          };
+          frameWindow.addEventListener("scroll", syncShellVisibility, { passive: true });
+          syncShellVisibility();
+          frameWindow.focus();
+        } catch (_) { /* Same-origin access may be unavailable. */ }
       });
 
       frame.addEventListener("error", () => {
