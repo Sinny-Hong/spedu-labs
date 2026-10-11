@@ -1,90 +1,80 @@
 (() => {
-  const cards = [...document.querySelectorAll('.resource-card')];
-  const buttons = [...document.querySelectorAll('.category-btn')];
-  const search = document.querySelector('#resourceSearch');
-  const count = document.querySelector('#resultCount');
-  const empty = document.querySelector('#emptyState');
-  const sidebar = document.querySelector('#sidebar');
-  const toggle = document.querySelector('#mobileToggle');
-  let category = 'all';
+  "use strict";
 
-  function isFavorite(card) {
-    return card.querySelector('.favorite')?.classList.contains('active') || false;
+  const sidebar = document.querySelector("#sidebar");
+  const toggle = document.querySelector("#mobileToggle");
+  const jumpButtons = [...document.querySelectorAll("[data-jump-category]")];
+  const sections = [...document.querySelectorAll("[data-category-section]")];
+
+  function setSidebar(open) {
+    sidebar?.classList.toggle("open", open);
+    toggle?.setAttribute("aria-expanded", String(open));
+    toggle?.setAttribute("aria-label", open ? "關閉分類選單" : "開啟分類選單");
   }
 
-  function updateFavoriteCount() {
-    const favoriteCount = cards.filter(isFavorite).length;
-    document.querySelectorAll('[data-favorite-count]').forEach((item) => {
-      item.textContent = favoriteCount;
+  function setActiveCategory(category) {
+    jumpButtons.forEach((button) => {
+      const active = button.dataset.jumpCategory === category;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-current", active ? "true" : "false");
     });
   }
 
-  function filterCards() {
-    const query = (search?.value || '').trim().toLocaleLowerCase('zh-Hant');
-    let visible = 0;
-    cards.forEach((card) => {
-      const categoryMatch = category === 'all'
-        || (category === 'favorites' && isFavorite(card))
-        || (card.dataset.category || '').split(/\s+/).includes(category);
-      const textMatch = !query || card.textContent.toLocaleLowerCase('zh-Hant').includes(query);
-      card.hidden = !(categoryMatch && textMatch);
-      if (!card.hidden) visible += 1;
-    });
-    if (count) count.textContent = `${visible} 項資源`;
-    empty?.classList.toggle('show', visible === 0);
-  }
+  jumpButtons.forEach((button) => {
+    const category = button.dataset.jumpCategory;
+    const section = sections.find((item) => item.dataset.categorySection === category);
+    if (!section) return;
 
-  buttons.forEach((button) => button.addEventListener('click', () => {
-    category = button.dataset.filter;
-    buttons.forEach((item) => item.classList.toggle('active', item === button));
-    filterCards();
-    if (window.innerWidth <= 720) sidebar?.classList.remove('open');
-  }));
-  search?.addEventListener('input', filterCards);
-  toggle?.addEventListener('click', () => sidebar?.classList.toggle('open'));
+    const itemCount = section.querySelectorAll(".resource-card, .game-card").length;
+    const count = button.querySelector(".category-count");
+    if (count) count.textContent = itemCount;
 
-  document.querySelectorAll('.favorite').forEach((button) => {
-    const key = `spedu-favorite:${location.pathname}:${button.dataset.id}`;
-    button.classList.toggle('active', localStorage.getItem(key) === '1');
-    button.setAttribute('aria-pressed', button.classList.contains('active'));
-    button.addEventListener('click', (event) => {
-      event.stopPropagation();
-      const active = button.classList.toggle('active');
-      button.setAttribute('aria-pressed', active);
-      localStorage.setItem(key, active ? '1' : '0');
-      updateFavoriteCount();
-      if (category === 'favorites') filterCards();
+    button.addEventListener("click", () => {
+      setActiveCategory(category);
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (window.innerWidth <= 720) setSidebar(false);
     });
   });
 
-  cards.forEach((card) => {
-    const link = card.querySelector('.card-link[href]');
+  if (sections.length && "IntersectionObserver" in window) {
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (visible[0]) setActiveCategory(visible[0].target.dataset.categorySection);
+    }, { rootMargin: "-12% 0px -72% 0px", threshold: 0 });
+    sections.forEach((section) => observer.observe(section));
+  }
+
+  toggle?.addEventListener("click", () => setSidebar(!sidebar?.classList.contains("open")));
+
+  document.querySelectorAll(".resource-card").forEach((card) => {
+    const link = card.querySelector(".card-link[href]");
     if (link && !card.dataset.href) {
-      card.dataset.href = link.getAttribute('href');
-      if (link.target === '_blank') card.dataset.target = '_blank';
+      card.dataset.href = link.getAttribute("href");
+      if (link.target === "_blank") card.dataset.target = "_blank";
       link.remove();
     }
-    if (!card.dataset.href || card.classList.contains('is-placeholder')) return;
+    if (!card.dataset.href || card.classList.contains("is-placeholder")) return;
 
-    const title = card.querySelector('h2')?.textContent.trim() || '教材';
+    const title = card.querySelector("h2")?.textContent.trim() || "教材";
     card.tabIndex = 0;
-    card.setAttribute('role', 'link');
-    card.setAttribute('aria-label', `開啟${title}`);
+    card.setAttribute("role", "link");
+    card.setAttribute("aria-label", `開啟${title}`);
 
     const openResource = () => {
-      if (card.dataset.target === '_blank') window.open(card.dataset.href, '_blank', 'noopener');
+      if (card.dataset.target === "_blank") window.open(card.dataset.href, "_blank", "noopener");
       else window.location.href = card.dataset.href;
     };
-    card.addEventListener('click', (event) => {
-      if (!event.target.closest('button, a, input, select, textarea')) openResource();
+    card.addEventListener("click", (event) => {
+      if (!event.target.closest("a, input, select, textarea")) openResource();
     });
-    card.addEventListener('keydown', (event) => {
-      if (event.target !== card || (event.key !== 'Enter' && event.key !== ' ')) return;
+    card.addEventListener("keydown", (event) => {
+      if (event.target !== card || (event.key !== "Enter" && event.key !== " ")) return;
       event.preventDefault();
       openResource();
     });
   });
 
-  updateFavoriteCount();
-  filterCards();
+  if (jumpButtons[0]) setActiveCategory(jumpButtons[0].dataset.jumpCategory);
 })();

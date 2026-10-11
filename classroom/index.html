@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="../shared/css/workspace.css?v=3.1">
   <style>
     .classroom-sections { display: grid; gap: 30px; }
-    .classroom-section[hidden] { display: none; }
     .classroom-section-heading {
       display: flex;
       align-items: center;
@@ -32,8 +31,6 @@
       <a class="brand-home" href="../index.html" aria-label="回到異想教室首頁"><img src="../assets/logo-banner.png" alt="Sinny Spedu Labs"></a>
       <div class="workspace-name"><small>CLASSROOM WORKSPACE</small><strong>課表與班務</strong></div>
       <nav class="category-nav" id="categoryList" aria-label="功能分類">
-        <button class="category-btn active" data-filter="all"><span>全部功能</span><span class="category-count" data-total-count></span></button>
-        <button class="category-btn" data-filter="favorites"><span>我的收藏</span><span class="category-count" data-favorite-count>0</span></button>
         <p class="category-label">課務分類</p>
       </nav>
       <p class="sidebar-note">課表工具與一般快速工具分開管理；點選 Logo 可回首頁。</p>
@@ -44,12 +41,7 @@
         <div class="title-block"><p>SINNY SPEDU LABS</p><h1>課表與班務工作區</h1></div>
         <a class="home-link" href="../index.html">回到首頁</a>
       </header>
-      <div class="search-row">
-        <input class="search-box" id="resourceSearch" type="search" placeholder="搜尋學生、班級、教師、教室、日誌或點名…" aria-label="搜尋課表與班務功能">
-        <div class="count-badge" id="resultCount"></div>
-      </div>
       <div class="classroom-sections" id="classroomSections"></div>
-      <div class="empty-state" id="emptyState">目前沒有符合條件的功能。</div>
     </main>
   </div>
 
@@ -60,10 +52,9 @@
       .replaceAll(">", "&gt;").replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
 
-    document.querySelector("[data-total-count]").textContent = window.CLASSROOM_DATA.length;
     document.getElementById("categoryList").insertAdjacentHTML("beforeend",
       window.CLASSROOM_CATEGORIES.map(category =>
-        `<button class="category-btn" data-filter="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${window.CLASSROOM_DATA.filter(item => item.category === category).length}</span></button>`
+        `<button class="category-btn" type="button" data-jump-category="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${window.CLASSROOM_DATA.filter(item => item.category === category).length}</span></button>`
       ).join("")
     );
 
@@ -72,7 +63,7 @@
       const action = unavailable ? '<span class="card-link">功能準備中</span>' : '';
       const href = unavailable ? '' : ` data-href="${escapeHtml(item.filename)}"${item.external ? ' data-target="_blank"' : ''}`;
       return `<article class="resource-card${unavailable ? ' is-placeholder' : ''}" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}"${href}>
-        <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
+        <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span></div>
         <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>${action}
       </article>`;
     };
@@ -85,20 +76,6 @@
       </section>`;
     }).join("");
   </script>
-  <script src="../shared/js/workspace.js?v=3.0"></script>
-  <script>
-    const updateVisibleSections = () => {
-      document.querySelectorAll("[data-category-section]").forEach(section => {
-        const shouldHide = ![...section.querySelectorAll(".resource-card")].some(card => !card.hidden);
-        if (section.hidden !== shouldHide) section.hidden = shouldHide;
-      });
-    };
-    new MutationObserver(updateVisibleSections).observe(document.getElementById("classroomSections"), {
-      subtree: true,
-      attributes: true,
-      attributeFilter: ["hidden"]
-    });
-    updateVisibleSections();
-  </script>
+  <script src="../shared/js/workspace.js?v=4.0"></script>
 </body>
 </html>

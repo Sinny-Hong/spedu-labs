@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>升學輔導工作區｜Sinny Spedu Labs</title>
   <link rel="stylesheet" href="../shared/css/workspace.css?v=3.1">
-  <style>.resource-section{margin-bottom:26px}.resource-section:not(:has(.resource-card:not([hidden]))){display:none}</style>
+  <style>.resource-section{margin-bottom:26px;scroll-margin-top:18px}</style>
 </head>
 <body class="grammar-page info-page">
   <button class="mobile-toggle" id="mobileToggle" aria-label="開啟選單">☰</button>
@@ -14,8 +14,6 @@
       <a class="brand-home" href="../index.html" aria-label="回到異想教室首頁"><img src="../assets/logo-banner.png" alt="Sinny Spedu Labs"></a>
       <div class="workspace-name"><small>GUIDANCE WORKSPACE</small><strong>升學輔導</strong></div>
       <nav class="category-nav" id="categoryList" aria-label="資源分類">
-        <button class="category-btn active" data-filter="all"><span>全部資源</span><span class="category-count" data-total-count></span></button>
-        <button class="category-btn" data-filter="favorites"><span>我的收藏</span><span class="category-count" data-favorite-count>0</span></button>
         <p class="category-label">輔導分類</p>
       </nav>
       <p class="sidebar-note">點選上方 Logo 可隨時回到異想教室首頁。</p>
@@ -25,12 +23,7 @@
       <header class="topbar">
         <div class="title-block"><p>SINNY SPEDU LABS</p><h1>升學輔導工作區</h1></div>
       </header>
-      <div class="search-row">
-        <input class="search-box" id="resourceSearch" type="search" placeholder="搜尋升學、就業或綜合職能科資源…" aria-label="搜尋升學輔導資源">
-        <div class="count-badge" id="resultCount"></div>
-      </div>
       <div id="infoSections"></div>
-      <div class="empty-state" id="emptyState">目前沒有符合條件的資源。</div>
     </main>
   </div>
 
@@ -41,23 +34,22 @@
       .replaceAll(">", "&gt;").replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
 
-    document.querySelector("[data-total-count]").textContent = window.INFO_DATA.length;
     document.getElementById("categoryList").insertAdjacentHTML("beforeend",
       window.INFO_CATEGORIES.map(category =>
-        `<button class="category-btn" data-filter="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${window.INFO_DATA.filter(item => item.category === category).length}</span></button>`
+        `<button class="category-btn" type="button" data-jump-category="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${window.INFO_DATA.filter(item => item.category === category).length}</span></button>`
       ).join("")
     );
 
     const renderCard = item =>
       `<article class="resource-card" data-category="${escapeHtml(item.category)}" data-href="${escapeHtml(item.filename)}" style="border-top-color:${escapeHtml(item.themeColor)}">
-        <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
+        <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span></div>
         <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>
       </article>`;
 
     document.getElementById("infoSections").innerHTML = window.INFO_CATEGORIES.map(category =>
-      `<section class="resource-section"><h2 class="section-heading">${escapeHtml(category)}</h2><div class="card-grid">${window.INFO_DATA.filter(item => item.category === category).map(renderCard).join("")}</div></section>`
+      `<section class="resource-section" data-category-section="${escapeHtml(category)}"><h2 class="section-heading">${escapeHtml(category)}</h2><div class="card-grid">${window.INFO_DATA.filter(item => item.category === category).map(renderCard).join("")}</div></section>`
     ).join("");
   </script>
-  <script src="../shared/js/workspace.js?v=3.0"></script>
+  <script src="../shared/js/workspace.js?v=4.0"></script>
 </body>
 </html>

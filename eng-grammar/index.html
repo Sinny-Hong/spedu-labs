@@ -65,13 +65,8 @@
         <div class="title-block"><p>SINNY SPEDU LABS</p><h1>生活英文與文法工作區</h1></div>
         <a class="home-link" href="../index.html">回到首頁</a>
       </header>
-      <div class="search-row">
-        <input class="search-box" id="resourceSearch" type="search" placeholder="搜尋文法、閱讀、遊戲或能力評估…" aria-label="搜尋生活英文與文法教材">
-        <div class="count-badge" id="resultCount"></div>
-      </div>
       <h2 class="section-heading">教材、閱讀與能力挑戰</h2>
       <section class="card-grid" id="grammarCards"></section>
-      <div class="empty-state" id="emptyState">目前沒有符合條件的教材。</div>
     </main>
   </div>
 
@@ -104,53 +99,6 @@
       </section>`;
     }).join("");
   </script>
-  <script>
-    (() => {
-      const cards = [...document.querySelectorAll(".resource-card")];
-      const sections = [...document.querySelectorAll(".category-section")];
-      const jumpButtons = [...document.querySelectorAll("[data-jump-category]")];
-      const search = document.getElementById("resourceSearch");
-      const count = document.getElementById("resultCount");
-      const empty = document.getElementById("emptyState");
-      const sidebar = document.getElementById("sidebar");
-      const toggle = document.getElementById("mobileToggle");
-
-      const updateSearch = () => {
-        const query = (search.value || "").trim().toLocaleLowerCase("zh-Hant");
-        let visible = 0;
-        cards.forEach(card => {
-          card.hidden = Boolean(query) && !card.textContent.toLocaleLowerCase("zh-Hant").includes(query);
-          if (!card.hidden) visible += 1;
-        });
-        count.textContent = `${visible} 項資源`;
-        empty.classList.toggle("show", visible === 0);
-      };
-
-      jumpButtons.forEach(button => button.addEventListener("click", () => {
-        const target = sections.find(section => section.dataset.categorySection === button.dataset.jumpCategory);
-        if (!target) return;
-        jumpButtons.forEach(item => item.classList.toggle("active", item === button));
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-        if (window.innerWidth <= 720) sidebar.classList.remove("open");
-      }));
-
-      search.addEventListener("input", updateSearch);
-      toggle.addEventListener("click", () => sidebar.classList.toggle("open"));
-      cards.forEach(card => {
-        if (!card.dataset.href) return;
-        const openResource = () => { window.location.href = card.dataset.href; };
-        card.setAttribute("aria-label", `開啟${card.querySelector("h2")?.textContent.trim() || "教材"}`);
-        card.addEventListener("click", event => {
-          if (!event.target.closest("button, a, input, select, textarea")) openResource();
-        });
-        card.addEventListener("keydown", event => {
-          if (event.target !== card || (event.key !== "Enter" && event.key !== " ")) return;
-          event.preventDefault();
-          openResource();
-        });
-      });
-      updateSearch();
-    })();
-  </script>
+  <script src="../shared/js/workspace.js?v=4.0"></script>
 </body>
 </html>

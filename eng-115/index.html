@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>課本講義工作區｜Sinny Spedu Labs</title>
   <link rel="stylesheet" href="../shared/css/workspace.css?v=3.1">
-  <style>.resource-section{margin-bottom:26px}.resource-section:not(:has(.resource-card:not([hidden]))){display:none}</style>
+  <style>.resource-section{margin-bottom:26px;scroll-margin-top:18px}</style>
 </head>
 <body class="grammar-page book-page">
   <button class="mobile-toggle" id="mobileToggle" aria-label="開啟選單">☰</button>
@@ -14,8 +14,6 @@
       <a class="brand-home" href="../index.html" aria-label="回到異想教室首頁"><img src="../assets/logo-banner.png" alt="Sinny Spedu Labs"></a>
       <div class="workspace-name"><small>BOOK WORKSPACE</small><strong>課本講義</strong></div>
       <nav class="category-nav" id="categoryList" aria-label="教材分類">
-        <button class="category-btn active" data-filter="all"><span>全部教材</span><span class="category-count" data-total-count></span></button>
-        <button class="category-btn" data-filter="favorites"><span>我的收藏</span><span class="category-count" data-favorite-count>0</span></button>
         <p class="category-label">教材區段</p>
       </nav>
       <p class="sidebar-note">點選上方 Logo 可隨時回到異想教室首頁。</p>
@@ -26,12 +24,7 @@
         <div class="title-block"><p>SINNY SPEDU LABS</p><h1>課本講義工作區</h1></div>
         <a class="home-link" href="../index.html">回到首頁</a>
       </header>
-      <div class="search-row">
-        <input class="search-box" id="resourceSearch" type="search" placeholder="搜尋單字、課文、配對板或電子書…" aria-label="搜尋課本講義">
-        <div class="count-badge" id="resultCount"></div>
-      </div>
       <div id="bookSections"></div>
-      <div class="empty-state" id="emptyState">目前沒有符合條件的教材。</div>
     </main>
   </div>
 
@@ -46,10 +39,9 @@
       .replaceAll(">", "&gt;").replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
 
-    document.querySelector("[data-total-count]").textContent = window.BOOK_DATA.length;
     document.getElementById("categoryList").insertAdjacentHTML("beforeend",
       window.BOOK_CATEGORIES.map(category =>
-        `<button class="category-btn" data-filter="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${window.BOOK_DATA.filter(item => item.category === category).length}</span></button>`
+        `<button class="category-btn" type="button" data-jump-category="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${window.BOOK_DATA.filter(item => item.category === category).length}</span></button>`
       ).join("")
     );
 
@@ -58,19 +50,14 @@
       const action = unavailable ? `<span class="card-link">教材準備中</span>` : "";
       const href = unavailable ? "" : ` data-href="${escapeHtml(item.filename)}"${item.external ? ' data-target="_blank"' : ""}`;
       return `<article class="resource-card${unavailable ? " is-placeholder" : ""}" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}"${href}>
-        <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span><button class="favorite" data-id="${escapeHtml(item.id)}" aria-label="收藏 ${escapeHtml(item.title)}">★</button></div>
+        <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span></div>
         <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>${action}
       </article>`;
     };
     document.getElementById("bookSections").innerHTML = window.BOOK_CATEGORIES.map(category =>
-      `<section class="resource-section"><h2 class="section-heading">${escapeHtml(category)}</h2><div class="card-grid">${window.BOOK_DATA.filter(item => item.category === category).map(renderCard).join("")}</div></section>`
+      `<section class="resource-section" data-category-section="${escapeHtml(category)}"><h2 class="section-heading">${escapeHtml(category)}</h2><div class="card-grid">${window.BOOK_DATA.filter(item => item.category === category).map(renderCard).join("")}</div></section>`
     ).join("");
-
-    try {
-      const legacyFavorites = JSON.parse(localStorage.getItem("book_favs") || "[]");
-      legacyFavorites.forEach(id => localStorage.setItem(`spedu-favorite:${location.pathname}:${id}`, "1"));
-    } catch (error) { /* 舊收藏格式無效時不影響頁面 */ }
   </script>
-  <script src="../shared/js/workspace.js?v=3.0"></script>
+  <script src="../shared/js/workspace.js?v=4.0"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 // Spedu Labs 文法目錄卡片資料
-// 本檔只保存卡片與分類資訊；搜尋、篩選、收藏功能仍由 index.html 負責。
+// 本檔只保存卡片與分類資訊；分類捲動與卡片開啟由 index.html 及共用程式負責。
 window.GRAMMAR_DATA = [
   // ==== 互動式電子講義 ====
   { id: "pronouns-basic", category: "互動式電子講義", title: "人稱代名詞｜互動講義", desc: "主格、Be 動詞、所有格與家人稱謂，從配對、是非、圈選到排列造句與閱讀練習", filename: "pronouns.html", themeColor: "#3B82F6" },
