@@ -1,13 +1,771 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Test 1｜測試檔案</title>
-  <style>
-    body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;background:#f5f7fb;color:#17365d}
-    main{text-align:center;padding:32px}h1{margin:0 0 12px;font-size:clamp(2rem,6vw,4rem)}p{margin:0;color:#64748b;font-size:clamp(1.1rem,3vw,1.5rem)}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>社會適應能力 - 左右分欄互動測驗系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            touch-action: manipulation;
+        }
+        @keyframes correct-pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        .correct-animate {
+            animation: correct-pop 0.3s ease-in-out;
+        }
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            top: 0;
+            opacity: 0;
+            animation: fall 2.5s infinite ease-out;
+        }
+        @keyframes fall {
+            0% { top: -10px; transform: translateX(0) rotate(0deg); opacity: 1; }
+            100% { top: 100%; transform: translateX(80px) rotate(360deg); opacity: 0; }
+        }
+    </style>
 </head>
-<body><main><h1>Test 1</h1><p>測試檔案</p></main></body>
+<body class="h-[100dvh] w-screen overflow-hidden bg-slate-900 text-slate-800 flex flex-col justify-center items-center p-0 md:p-3">
+
+    <!-- 主容器：精確填滿全螢幕，防止垂直滑動 -->
+    <div id="app-container" class="w-full h-full max-w-7xl bg-white md:rounded-2xl shadow-2xl flex flex-col overflow-hidden relative">
+        
+        <!-- 1. 頂部導覽列：精簡乾淨，只保留標題、模式切換與大顆設定選單按鈕 -->
+        <header class="flex-none bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-3 py-2 sm:px-6 sm:py-3 flex items-center justify-between shadow-md z-20">
+            <div class="flex items-center gap-2">
+                <span class="bg-blue-500/40 border border-blue-300/30 text-white text-xs px-2 py-0.5 rounded-full font-bold hidden sm:inline">能力評估</span>
+                <h1 class="text-base sm:text-lg md:text-xl font-black tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-yellow-300"></i> 社會適應能力
+                </h1>
+            </div>
+
+            <!-- 右側功能切換：學習/測驗 + 大顆選單開關按鈕 -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div class="flex bg-blue-900/50 p-1 rounded-xl border border-blue-400/30 text-xs sm:text-sm">
+                    <button id="mode-study-btn" onclick="switchMode('study')" class="px-2.5 sm:px-3 py-1 rounded-lg font-black transition-all bg-white text-blue-700 shadow-sm">
+                        學習
+                    </button>
+                    <button id="mode-test-btn" onclick="switchMode('test')" class="px-2.5 sm:px-3 py-1 rounded-lg font-black transition-all text-blue-100 hover:text-white">
+                        測驗
+                    </button>
+                </div>
+
+                <!-- 大顆明顯的收折選單按鈕 (齒輪+設定提示) -->
+                <button onclick="toggleTopMenu()" class="h-9 sm:h-10 px-2.5 sm:px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-xs sm:text-sm shadow-md flex items-center gap-1.5 transition-all active:scale-95" title="點擊展開/收折設定選單">
+                    <i class="fa-solid fa-sliders text-sm"></i>
+                    <span>選單</span>
+                    <i id="menu-chevron" class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- 頂部可收折下拉選單面板 (抽屜式展開，避免擋住手機與畫面) -->
+        <div id="top-dropdown-menu" class="hidden absolute top-[52px] sm:top-[60px] left-0 right-0 bg-slate-800/95 backdrop-blur-md text-white border-b border-slate-700 p-4 shadow-2xl z-30 transition-all">
+            <div class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+                <!-- 語音角色 -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1"><i class="fa-solid fa-microphone mr-1"></i>朗讀聲音:</label>
+                    <select id="voice-select" onchange="updateVoice()" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-xs font-bold text-white focus:outline-none"></select>
+                </div>
+                <!-- 語速調整 -->
+                <div>
+                    <div class="flex justify-between text-xs font-bold text-slate-300 mb-1">
+                        <span><i class="fa-solid fa-gauge-high mr-1"></i>朗讀語速:</span>
+                        <span id="speed-value" class="text-amber-400">0.9x</span>
+                    </div>
+                    <input id="speed-control" type="range" min="0.5" max="1.5" step="0.1" value="0.9" oninput="updateSpeed(this.value)" class="w-full accent-amber-400">
+                </div>
+                <!-- 切換下一題是否自動朗讀 (預設關閉/靜音) -->
+                <div class="flex items-center justify-between sm:justify-center gap-3 pt-2 sm:pt-4 border-t sm:border-t-0 border-slate-700">
+                    <span class="text-xs font-bold text-slate-300">自動報讀題目:</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="auto-read-toggle" class="sr-only peer">
+                        <div class="w-10 h-5 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 主作答區：左側資訊+題幹+解析，右側選項清單 -->
+        <main class="flex-1 overflow-hidden p-3 sm:p-5 md:p-6 lg:p-8 flex flex-col lg:flex-row gap-3 sm:gap-4 lg:gap-8">
+            
+            <!-- 【左半部】：單元下拉選單、第幾題、得分、題幹與報讀、解析 -->
+            <section class="flex-none lg:flex-1 lg:max-w-[46%] flex flex-col justify-between bg-slate-50/70 p-3 sm:p-4 rounded-2xl border border-slate-200">
+                
+                <div>
+                    <!-- 單元選擇 + 進度 + 得分整合欄 -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-200">
+                        <!-- 單元 1~10 下拉選單 -->
+                        <div class="flex items-center gap-1.5">
+                            <label for="unit-select" class="text-xs sm:text-sm font-black text-slate-600 hidden sm:inline">單元:</label>
+                            <select id="unit-select" onchange="changeUnit(this.value)" class="bg-white border-2 border-indigo-200 text-indigo-900 rounded-xl px-2.5 py-1 text-xs sm:text-sm font-black focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
+                                <!-- JS 動態生成 -->
+                            </select>
+                        </div>
+
+                        <!-- 題號進度與得分 -->
+                        <div class="flex items-center gap-2">
+                            <span id="progress-text" class="text-xs sm:text-sm font-bold bg-slate-200/80 text-slate-700 px-2.5 py-1 rounded-lg">
+                                第 1 / 10 題
+                            </span>
+                            <div class="flex items-center gap-1 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">
+                                <span class="text-xs font-bold text-emerald-700">得分:</span>
+                                <span id="current-score-display" class="text-xs sm:text-sm font-black text-emerald-700">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 進度小圓點指標 -->
+                    <div class="flex items-center justify-center gap-1 sm:gap-1.5 mb-3" id="progress-dots-container"></div>
+
+                    <!-- 前言 (若有) -->
+                    <div id="preamble-text" class="hidden mb-2 p-2 bg-amber-50 border-l-4 border-amber-400 text-amber-900 rounded-r text-xs sm:text-sm font-bold"></div>
+
+                    <!-- 題幹與報讀按鈕 (預設安靜，點擊才朗讀) -->
+                    <div class="flex items-start gap-2.5 sm:gap-3.5">
+                        <button id="replay-btn" onclick="speakCurrentQuestion()" class="flex-none bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-2xl shadow-md flex items-center justify-center transition-all mt-0.5" title="點擊朗讀題目與選項">
+                            <i class="fa-solid fa-volume-high text-lg sm:text-xl md:text-2xl"></i>
+                        </button>
+                        <!-- 字體放大清晰，電視與手機皆易讀 -->
+                        <h2 id="question-text" class="text-base sm:text-lg md:text-xl 2xl:text-2xl font-black text-slate-800 leading-snug tracking-normal">
+                            載入中...
+                        </h2>
+                    </div>
+                </div>
+
+                <!-- 回饋解析區 (學習模式下回答後顯示，大螢幕常駐左側下方) -->
+                <div id="feedback-alert" class="mt-3 p-3 rounded-xl border flex items-center gap-2.5 hidden">
+                    <div id="feedback-icon-container" class="text-lg sm:text-xl flex-none"></div>
+                    <div class="flex-1 text-xs sm:text-sm font-extrabold leading-tight" id="feedback-desc"></div>
+                </div>
+            </section>
+
+            <!-- 【右半部】：選項 1~4，垂直單列排列，觸控區域大 -->
+            <section class="flex-1 flex flex-col justify-center">
+                <div id="options-list" class="grid grid-cols-1 gap-2 sm:gap-2.5 md:gap-3 2xl:gap-4 w-full">
+                    <!-- JS 生成選項 -->
+                </div>
+            </section>
+        </main>
+
+        <!-- 3. 底部控制按鈕 -->
+        <nav class="flex-none bg-slate-50 border-t border-slate-200 px-3 py-2 sm:px-6 sm:py-3 flex justify-between items-center gap-3">
+            <button id="prev-btn" onclick="prevQuestion()" class="px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl font-black text-xs sm:text-sm md:text-base text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 disabled:opacity-30 disabled:pointer-events-none transition-all">
+                <i class="fa-solid fa-arrow-left mr-1"></i> 上一題
+            </button>
+
+            <!-- 大螢幕專用全螢幕切換按鈕 -->
+            <button onclick="toggleFullScreen()" class="hidden md:flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg bg-slate-200/70">
+                <i class="fa-solid fa-expand"></i> 全螢幕
+            </button>
+
+            <!-- 測驗提交按鈕 -->
+            <button id="submit-quiz-btn" onclick="calculateAndShowReport(true)" class="hidden px-5 py-2 sm:px-7 sm:py-2.5 rounded-xl font-black text-xs sm:text-sm md:text-base text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition-all animate-pulse">
+                <i class="fa-solid fa-paper-plane mr-1"></i> 提交測驗
+            </button>
+
+            <!-- 下一題按鈕 -->
+            <button id="next-btn" onclick="nextQuestion()" class="px-5 py-2 sm:px-7 sm:py-2.5 rounded-xl font-black text-xs sm:text-sm md:text-base text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-30 disabled:pointer-events-none transition-all">
+                下一題 <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </nav>
+    </div>
+
+    <!-- 學習成果報告 Modal -->
+    <div id="report-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden relative">
+            <div id="modal-confetti" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+            <div class="p-5 text-center">
+                <div class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl shadow-inner animate-bounce">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                
+                <h3 class="text-xl font-black text-slate-800" id="report-title">學習成果報告</h3>
+                
+                <div class="my-3 bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col items-center">
+                    <span class="text-xs font-bold text-slate-400">總得分</span>
+                    <span class="text-5xl font-black text-indigo-600 my-1" id="report-score">0 <span class="text-xl font-bold text-slate-400">分</span></span>
+                    
+                    <div class="grid grid-cols-2 gap-3 w-full mt-3 pt-3 border-t border-slate-200 text-xs">
+                        <div class="bg-emerald-50 p-2 rounded-lg text-emerald-800 font-bold">
+                            答對: <span id="report-correct-count" class="text-base font-black">0</span>
+                        </div>
+                        <div class="bg-rose-50 p-2 rounded-lg text-rose-800 font-bold">
+                            答錯: <span id="report-wrong-count" class="text-base font-black">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <p id="report-comment" class="text-sm font-bold text-indigo-900 mb-4 px-3 py-1.5 bg-indigo-50 rounded-lg inline-block"></p>
+
+                <div class="flex flex-col gap-2">
+                    <button id="next-unit-btn" onclick="goToNextUnit()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2.5 px-3 rounded-xl text-sm shadow">
+                        進入下一單元 <i class="fa-solid fa-circle-arrow-right ml-1"></i>
+                    </button>
+                    <button onclick="retryCurrentUnit()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-3 rounded-xl text-xs">
+                        重新挑戰本單元
+                    </button>
+                    <button onclick="closeReportModal()" class="w-full text-slate-400 hover:text-slate-600 font-bold text-xs py-1">
+                        關閉
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { section: "社會適應選擇題", displayId: "1", question: "1. 小新收到簡訊要求點擊連結「驗證」銀行帳戶,最恰當的做法是?", options: ["(1)立刻點擊連結並輸入帳號密碼", "(2)不予理會,並打電話給官方客服確認", "(3)截圖分享到社群媒體請朋友判斷", "(4)回覆簡訊告知對方自己的個資"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "2", question: "2. 求職廣告寫「日薪3000元」,但要求先交 5000元保證金,這極可能是?", options: ["(1)體貼員工的好公司", "(2)高薪但專業的要求", "(3)合理的行政費用", "(4)典型的求職陷阱"], answer: 3 },
+            { section: "社會適應選擇題", displayId: "3", question: "3. ATM 領錢卡片被機器「吃掉」了,螢幕顯示「請洽服務人員」,應如何處理?", options: ["(1)馬上離開,去別台試試看", "(2)打電話報案說提款機壞了", "(3)記住機台編號,立即聯絡銀行客服協助", "(4)等明天銀行開門再說"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "4", question: "4. 在圖書館使用公用電腦後準備離開,為了保護隱私應做什麼?", options: ["(1)把滑鼠藏起來", "(2)將電腦螢幕關掉就好", "(3)執行登出並刪除個人瀏覽紀錄", "(4)把主機電源直接拔掉"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "5", question: "5. 接到自稱客服電話要求操作ATM「解除重複扣款」,這通常是?", options: ["(1)購物網站的優惠活動", "(2)詐騙集團的常用手段", "(3)銀行員的貼心提醒", "(4)電腦系統自動升級"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "6", question: "6. 關於設定網路帳號密碼,下列哪種做法最安全?", options: ["(1)使用身分證字號或生日當密碼", "(2)所有的網站都用同一組密碼", "(3)設定包含大小寫英文字母與數字的組合", "(4)把密碼寫在貼紙上並黏在螢幕邊框"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "7", question: "7. 陌生網友突然傳訊息說要送點數,要求你提供「手機驗證碼」,應該?", options: ["(1)趕快提供以免錯過機會", "(2)詢問對方需不需要身分證字號", "(3)拒絕提供並封鎖該帳號", "(4)轉傳給所有好朋友一起領取"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "8", question: "8. 使用網路銀行或金融App時,下列哪項習慣是錯誤的?", options: ["(1)隨時檢查帳戶餘額是否異常", "(2)使用公共免費Wi-Fi 進行大額轉帳", "(3)離開 App 前確認已經登出", "(4)開啟兩步驟驗證功能"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "9", question: "9. 辦理手機門號時,將「雙證件正本」交給陌生人獨自處理,可能導致?", options: ["(1)獲得更多贈品", "(2)身分被冒用而成為詐騙共犯", "(3)信用額度自動提升", "(4)辦事速度變快"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "10", question: "10. 到銀行櫃檯存款後,離開前應該先確認什麼?", options: ["(1)櫃檯人員的名字", "(2)存摺 or 收據上的金額是否正確", "(3)銀行今天有沒有開冷氣", "(4)後面還有多少人在排隊"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "11", question: "11. 網購時賣家要求「私下匯款」不透過平台交易,這可能是?", options: ["(1)誠信交易", "(2)省下手續費的好辦法", "(3)網路購物詐騙", "(4)賣家是好心人"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "12", question: "12. 遺失金融卡(提款卡)時,第一時間該怎麼辦?", options: ["(1)去警察局報案後就回家睡覺", "(2)打電話給銀行辦理「掛失」停卡", "(3)找找看有沒有同學撿到", "(4)重新辦一張卡,舊的不管它"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "13", question: "13. 下列哪一項資料屬於「個人隱私」,不應隨意告知網友?", options: ["(1)喜歡吃的食物", "(2)身分證字號與住家地址", "(3)喜歡的電影", "(4)偶像歌手的名字"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "14", question: "14. 接到電話說「帳戶涉及洗錢,請把錢匯到安全帳戶備查」。這是?", options: ["(1)司法程序", "(2)假冒公務機關詐騙", "(3)警察在幫你保護錢", "(4)銀行系統故障"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "15", question: "15. 下列哪種方式最能幫助控制預算,避免錢不夠花?", options: ["(1)隨便刷卡下個月再說", "(2)養成記帳習慣,了解開支", "(3)看到喜歡的東西就買", "(4)把錢放在口袋隨手拿"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "16", question: "16. 面試時老闆要求「存摺正本與提款卡密碼」,你該怎麼辦?", options: ["(1)乖乖交出", "(2)堅定拒絕,這是不合理的要求", "(3)密碼給錯的就好", "(4)先回家問朋友要不要一起交"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "17", question: "17. 收到中獎通知要求先繳納「稅金」才能領獎,這可能是?", options: ["(1)幸運降臨", "(2)中獎詐騙", "(3)政府規定", "(4)銀行手續"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "18", question: "18. 在LINE 收到朋友借錢的訊息,最安全的做法是?", options: ["(1)既然是朋友馬上匯款", "(2)親自打電話或見面確認本人身分", "(3)直接回傳信用卡號碼", "(4)假裝沒看到"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "19", question: "19. 刷卡消費後,簽名前應該確認什麼?", options: ["(1)簽名筆好不好寫", "(2)店員長得好不好看", "(3)簽帳單上的金額是否正確", "(4)信用卡背面的花紋"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "20", question: "20. 買東西退貨店家要求操作 ATM 進行「退款」,這一定是?", options: ["(1)正常流程", "(2)詐騙陷阱,ATM 只有轉出功能", "(3)高科技退款", "(4)節省時間"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "21", question: "21. 對於網路上來路不明的App,下列哪一項敘述才是正確的?", options: ["(1)功能越多越好全部下載", "(2)可能含有病毒會盜取個資", "(3)網友推薦的都安全", "(4)不付費就沒有危險"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "22", question: "22. 看到廣告說「只要提供帳戶供公司節稅就能月領2萬」,這屬於什麼行為?", options: ["(1)合法節稅", "(2)投資理財", "(3)洗錢詐騙共犯(人頭帳戶)", "(4)額外收入"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "23", question: "23. 在捷運站等公共場所使用手機時,我應該注意什麼來保護資訊安全?", options: ["(1)不要在大聲說出密碼或重要個資", "(2)讓旁邊的人幫你看螢幕", "(3)隨便連接沒密碼的 Wi-Fi", "(4)手機借給陌生人玩"], answer: 0 },
+            { section: "社會適應選擇題", displayId: "24", question: "24. 關於詐騙常見的「一頁式廣告」,下列敘述何者正確?", options: ["(1)只有一頁的優惠廣告", "(2)常見的詐騙網頁,貨不對盤", "(3)著名的官方網頁", "(4)適合手機閱讀"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "25", question: "25. 如果遇到疑似詐騙的情況,我應該撥打哪一支政府反詐騙專線?", options: ["(1)104", "(2)113", "(3)165", "(4)117"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "26", question: "26. 當行人綠燈亮起時,我準備過馬路時應該注意什麼?", options: ["(1)低頭快走", "(2)先看左右來車停下再走", "(3)衝過去", "(4)閉上眼睛走"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "27", question: "27. 發生火災產生濃煙時,下列哪一種逃生行為是最危險的?", options: ["(1)採低姿勢", "(2)捂住口鼻", "(3)搭乘電梯", "(4)大聲呼救"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "28", question: "28. 為了預防家中電線走火,我平時應該養成什麼樣的好習慣?", options: ["(1)插座插滿", "(2)長時間不使用應拔插頭", "(3)電線破損用膠帶黏", "(4)電線上疊重物"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "29", question: "29. 當我身體不舒服需要吃藥時,正確的用藥原則是什麼?", options: ["(1)隨便吃", "(2)好一點就停藥", "(3)依照藥袋標示用量", "(4)一次吃兩倍量"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "30", question: "30. 為了預防登革熱,我們在生活中最有效的清潔行動是?", options: ["(1)多吹冷氣", "(2)清除積水容器", "(3)穿深色衣服", "(4)關窗不出門"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "31", question: "31. 如果廚房的油鍋不小心起火了,最正確的處理方式是?", options: ["(1)用水澆熄", "(2)關瓦斯並用鍋蓋側蓋滅火", "(3)用嘴吹熄", "(4)用抹布拍打"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "32", question: "32. 當遇到地震發生時,下列哪一個避難動作是錯誤的?", options: ["(1)趴下、掩護、穩住", "(2)躲在堅固桌下", "(3)衝向陽台求救", "(4)遠離大型家具"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "33", question: "33. 為了預防一氧化碳中毒,在室內使用瓦斯熱水器時應注意什麼?", options: ["(1)門窗緊閉", "(2)保持空氣流通", "(3)噴灑化學藥劑", "(4)不需要注意"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "34", question: "34. 到達百貨公司或電影院等公共場所時,我應該優先注意什麼?", options: ["(1)廁所位置", "(2)緊急出口與逃生動線", "(3)最近的餐廳", "(4)免費充電處"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "35", question: "35. 搭乘捷運或公車時,下列哪一項安全守則才是正確的?", options: ["(1)衝入即將關閉的門", "(2)擋住車門", "(3)緊握扶手站穩", "(4)車廂內嬉戲"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "36", question: "36. 發現家中的家人發燒了,我應該優先採取什麼行動?", options: ["(1)跑步流汗", "(2)喝冰水降溫", "(3)就醫治療遵醫囑", "(4)蓋厚被子悶汗"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "37", question: "37. 關於預防流感的傳染,下列哪一項做法是錯誤的?", options: ["(1)勤洗手戴口罩", "(2)咳嗽遮口鼻後不洗手摸人", "(3)減少出入公共場所", "(4)接種疫苗"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "38", question: "38. 當發生燙傷意外時,正確的急救步驟順序應該是?", options: ["(1)脫泡蓋沖送", "(2)沖脫泡蓋送", "(3)泡蓋沖脫送", "(4)塗抹牙膏"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "39", question: "39. 關於日常的飲食衛生,下列哪一項觀念才是正確的?", options: ["(1)地上食物3秒內可吃", "(2)飯前必肥皂洗手", "(3)過期罐頭沒味可吃", "(4)生水直接喝"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "40", question: "40. 在路邊看到有人受傷時,最恰當的協助方式是什麼?", options: ["(1)把人搬到路邊", "(2)撥打119 在安全處等待", "(3)拍下來發網路上", "(4)直接離開"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "41", question: "41. 在郊外看到不知名的漂亮菇類,我應該怎麼做?", options: ["(1)鮮豔的就採來吃", "(2)帶回家煮", "(3)不可採食防中毒", "(4)餵給流浪貓吃"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "42", question: "42. 如果手濕濕的去操作電器開關,可能會發生什麼危險?", options: ["(1)比較快", "(2)極易觸電應擦乾", "(3)比較省電", "(4)沒關係"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "43", question: "43. 關於居家清潔劑(如漂白水、洗廁劑)的使用,下列何者正確?", options: ["(1)隨意混合效果好", "(2)閱讀包裝說明", "(3)裝進汽水瓶方便", "(4)徒手刷洗"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "44", question: "44. 在游泳池游泳時,下列哪一項行為才是正確且安全的?", options: ["(1)飯後立刻下水", "(2)池邊奔跑", "(3)做暖身操並淋浴", "(4)身體不適堅持游"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "45", question: "45. 下列哪一個標章代表該電器符合政府的安全規範?", options: ["(1)回收標誌", "(2)節能標章", "(3)商品安全標章(CNS)", "(4)綠色標章"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "46", question: "46. 在車廂內如果看到有人持刀脅迫,我應該如何應對比較安全?", options: ["(1)奪下刀子", "(2)遠離並按對講機報警", "(3)錄影記錄", "(4)大哭"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "47", question: "47. 關於過期食品的辨識,下列哪一項觀念才是正確的?", options: ["(1)有效日期是指安全期限", "(2)過期一年沒破可吃", "(3)沒酸就沒過期", "(4)看外觀"], answer: 0 },
+            { section: "社會適應選擇題", displayId: "48", question: "48. 當我在家裡聞到濃重的瓦斯味時,最正確的動作是?", options: ["(1)開電風扇", "(2)禁止火源輕開窗", "(3)開抽油煙機", "(4)點火檢查"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "49", question: "49. 打雷下大雨時,如果我正在公園,應該如何防雷擊?", options: ["(1)躲在大樹下", "(2)進入建築物內避難", "(3)撐金屬傘", "(4)打手機"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "50", question: "50. 當有人發生異物哽塞且呼吸困難時,我應該施予什麼急救法?", options: ["(1)喝大量水", "(2)拍背", "(3)哈姆立克法", "(4)用手挖"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "51", question: "51. 在職場遇到影印機不會使用時,我應該怎麼做比較好?", options: ["(1)隨便按", "(2)放棄不做", "(3)禮貌向同事請教", "(4)偷偷哭"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "52", question: "52. 如果我不小心答應老師的事情卻忘記做了,我應該怎麼辦?", options: ["(1)當沒這回事", "(2)怪同學沒提醒", "(3)主動認錯並補做", "(4)逃跑"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "53", question: "53. 當同事經常不打招呼就拿走我的文具時,我應該怎麼回應?", options: ["(1)報復他", "(2)羞辱他", "(3)清楚告訴他先告知再借", "(4)丟掉文具"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "54", question: "54. 去參加文書工作的面試時,我穿著哪一種服裝比較適合?", options: ["(1)迷你裙", "(2)素色有領上衣長褲", "(3)睡衣拖鞋", "(4)運動裝"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "55", question: "55. 當主管交代的工作我聽不懂時,最正確的做法是什麼?", options: ["(1)先點頭說好", "(2)禮貌請主管再說一次", "(3)問別人", "(4)期限到才說"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "56", question: "56. 關於在公司接聽電話的禮儀,下列哪一項敘述才是正確的?", options: ["(1)喂找誰啦", "(2)鈴響不接", "(3)先自報單位問候", "(4)直接掛掉"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "57", question: "57. 如果我有急事會導致上班遲到,我應該如何處理?", options: ["(1)偷偷溜進去", "(2)提早打電話交代並請假", "(3)不上班", "(4)下班再解釋"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "58", question: "58. 當我與同事意見不合時,哪一種方式最能有效地解決問題?", options: ["(1)冷戰", "(2)威脅對方", "(3)冷靜說想法並聆聽對方", "(4)背後說壞話"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "59", question: "59. 領到人生第一份薪水時,我應該具備什麼樣的理財觀念?", options: ["(1)一次花光", "(2)規劃存入銀行與支出", "(3)借給網友", "(4)買點數"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "60", question: "60. 在公共場合使用手機通話或看影片時,我應該注意什麼?", options: ["(1)大聲放音樂", "(2)降低音量不影響人", "(3)大聲叫喊", "(4)坐別人桌上"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "61", question: "61. 如果我不小心弄壞了公司的設備,我應該怎麼做比較誠實?", options: ["(1)藏起來", "(2)推給同事", "(3)誠實向主管報告", "(4)離職"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "62", question: "62. 同事因為愛滑手機導致工作落後要我幫忙,我該如何應對?", options: ["(1)默默幫他", "(2)禮貌拒絕完成自己部分", "(3)到處說他壞話", "(4)一起滑"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "63", question: "63. 下列哪一種行為,屬於職場中不專業、不負責任的表現?", options: ["(1)準時上班", "(2)衣著整潔", "(3)隨意請假不交代", "(4)主動解決問題"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "64", question: "64. 當同事請喝飲料但我剛好不喜歡那種口味時,我該怎麼說?", options: ["(1)擺臉色", "(2)收下後丟掉", "(3)禮貌謝謝不渴", "(4)勉強喝完"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "65", question: "65. 在職場中,下列哪一種人際互動行為是比較適當的?", options: ["(1)翻看同事手機", "(2)主管背後鬼臉", "(3)主動打招呼", "(4)打探薪水"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "66", question: "66. 當我完成手邊工作且準備下班之前,我應該先做什麼?", options: ["(1)馬上離開", "(2)睡午覺", "(3)詢問主管需否協助", "(4)看電影"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "67", question: "67. 在辦公室內,下列哪一項行為代表我是個負責任的人?", options: ["(1)髒便當盒放三天", "(2)下班整理整齊區域", "(3)帶走公司文具", "(4)不關冷氣"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "68", question: "68. 當主管指出我的工作中有錯誤時,我應該怎麼做比較恰當?", options: ["(1)氣憤", "(2)認真傾聽改進", "(3)找媽媽", "(4)頂嘴"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "69", question: "69. 在進入主管或其他人的辦公室之前,我應該先做什麼動作?", options: ["(1)先敲門", "(2)直接衝進去", "(3)等半小時", "(4)嚇別人"], answer: 0 },
+            { section: "社會適應選擇題", displayId: "70", question: "70. 知道同事家中有喪事,在公司見到面時我應該如何表達?", options: ["(1)問遺產", "(2)避開他", "(3)簡單關心節哀", "(4)追問細節"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "71", question: "71. 所謂的職場「團隊合作」,真正的意思是指什麼?", options: ["(1)一起偷懶", "(2)各揮所長互相配合", "(3)推工作給強者", "(4)只管自己"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "72", question: "72. 如果發現有人背後說我壞話,我應該如何冷靜地處理?", options: ["(1)決鬥", "(2)罵回去", "(3)做好本分請教主管", "(4)臉書大罵"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "73", question: "73. 參加公司聚餐時,下列哪一種行為是不合禮儀、不合適的?", options: ["(1)保持禮貌", "(2)端走喜歡的菜", "(3)互動聊天", "(4)整理桌面"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "74", question: "74. 關於職場上的性別平等觀念,下列哪一項敘述才是正確的?", options: ["(1)粗重只能男生做", "(2)文書只能女生做", "(3)每個人享平等尊重", "(4)男生薪水應多"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "75", question: "75. 想要在職場建立良好的個人信用,我應該怎麼做?", options: ["(1)說到做到準時交付", "(2)開空頭支票", "(3)答應不做了", "(4)只會說"], answer: 0 },
+            { section: "社會適應選擇題", displayId: "76", question: "76. 家中有過期的藥品時,正確的處理方式是什麼?", options: ["(1)丟垃圾桶", "(2)沖馬桶", "(3)拿至回收箱處理", "(4)餵豬"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "77", question: "77. 在搭乘手扶梯時,通常大家會遵守什麼樣的搭乘習慣?", options: ["(1)亂站", "(2)靠右站立空出左側", "(3)包包佔位", "(4)跑跳"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "78", question: "78. 如果我在網路上遭到別人語言霸凌,我應該怎麼做?", options: ["(1)罵回去", "(2)忍受", "(3)截圖存證並求助", "(4)找大哥"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "79", question: "79. 當我在學校看到同學突然昏倒時,第一時間該怎麼辦?", options: ["(1)給水喝", "(2)看熱鬧", "(3)呼救並撥打 119", "(4)搖晃他"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "80", question: "80. 下列關於「性騷擾」的觀念,哪一項才是正確的?", options: ["(1)只有女生會", "(2)熟人沒關係", "(3)不舒服就拒絕求助", "(4)忍耐"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "81", question: "81. 發現鄰居或身邊的人疑似有家暴情況,可撥打哪支保護專線?", options: ["(1)165", "(2)113", "(3)104", "(4)105"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "82", question: "82. 想要幫助視障者過馬路或引導方向,最恰當的做法是?", options: ["(1)大喊方向", "(2)直接抓住帶走", "(3)詢問後再引導", "(4)不理"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "83", question: "83. 在圖書館、電影院等安靜場所,我應該注意什麼行為?", options: ["(1)手機靜音", "(2)吃雞排", "(3)大聲討論", "(4)擋路"], answer: 0 },
+            { section: "社會適應選擇題", displayId: "84", question: "84. 關於垃圾分類,下列哪一項物品應該丟入「資源回收桶」?", options: ["(1)雞骨頭", "(2)洗過的寶特瓶", "(3)衛生紙", "(4)油汙餐盒"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "85", question: "85. 在台灣,國民要滿幾歲才具備投票選總統的權利?", options: ["(1)12歲", "(2)15歲", "(3)18歲", "(4)20歲"], answer: 3 },
+            { section: "社會適應選擇題", displayId: "86", question: "86. 關於公車或捷運上的博愛座,哪一種觀念才是正確的?", options: ["(1)殘障限定", "(2)有需要主動讓位", "(3)絕不讓位", "(4)佔位"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "87", question: "87. 帶狗狗去公園散步(遛狗)時,主人應該負責做什麼?", options: ["(1)不理大便", "(2)繫繩清理糞便", "(3)追小孩", "(4)亂叫"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "88", question: "88. 遇到消費糾紛需要申訴時,應撥打哪一支全國消費者保護專線?", options: ["(1)1950", "(2)119", "(3)104", "(4)165"], answer: 0 },
+            { section: "社會適應選擇題", displayId: "89", question: "89. 關於法律的基本常識,下列哪一項敘述才是正確的?", options: ["(1)不懂就不用罰", "(2)只有警察遵守", "(3)保障安全公平", "(4)有錢不用守"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "90", question: "90. 下列哪一項物品不能直接丟入一般垃圾袋,必須單獨回收?", options: ["(1)包裝紙", "(2)廢電池日光燈", "(3)破布偶", "(4)果皮"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "91", question: "91. 如果在室內禁菸區看到有人吸菸,我應該怎麼反應比較好?", options: ["(1)一起吸", "(2)向店家反映", "(3)潑水", "(4)忍受"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "92", question: "92. 關於性隱私權的保護,下列哪一種行為是違法且不可做的?", options: ["(1)拒絕觸碰", "(2)穿喜歡的衣", "(3)未經同意傳隱私照", "(4)看電影"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "93", question: "93. 哪一項法律主要是提供交通意外受傷時的基本補償?", options: ["(1)強制汽車責任保險法", "(2)消保法", "(3)環境教育", "(4)森林法"], answer: 0 },
+            { section: "社會適應選擇題", displayId: "94", question: "94. 哪一項法律是專門為了保護身心障礙者的權益而制定的?", options: ["(1)公平交易", "(2)身心障礙者權益保障法", "(3)土地法", "(4)著作權"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "95", question: "95. 在路邊撿到錢 or 皮夾時,我應該怎麼做比較恰當?", options: ["(1)帶回家", "(2)請朋友吃", "(3)送交警局", "(4)丟掉"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "96", question: "96. 如果在深夜大聲吵鬧影響鄰居,可能會違反哪一項法律?", options: ["(1)海關緝私", "(2)社會秩序維護法", "(3)商業登記", "(4)專利"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "97", question: "97. 下列哪一種做法,才是正確的「節能減碳」環保行動?", options: ["(1)冷氣最強蓋厚被", "(2)隨手關燈", "(3)多取塑膠袋", "(4)水不關"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "98", question: "98. 在馬路上聽到救護車鳴笛開過來,行人與車輛應該怎麼做?", options: ["(1)擋車", "(2)賽跑", "(3)靠邊禮讓優先通行", "(4)不理"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "99", question: "99. 法律規定「著作權」的主要目的是為了保護什麼?", options: ["(1)寫作業", "(2)創作者作品不被盜用", "(3)隨便畫", "(4)盜版"], answer: 1 },
+            { section: "社會適應選擇題", displayId: "100", question: "100. 身為公民,我們享有的基本人權中不包括哪一項自由?", options: ["(1)言論自由", "(2)受教育", "(3)傷害他人自由", "(4)安全保障"], answer: 2 }
+        ];
+
+        let currentUnitIndex = 0;
+        let currentQuestionInUnit = 0;
+        let quizMode = 'study';
+        let userAnswers = Array(10).fill(null);
+        let hasCheckedAnswer = Array(10).fill(false);
+
+        const synth = window.speechSynthesis;
+        let utterance = new SpeechSynthesisUtterance();
+        utterance.lang = 'zh-TW';
+        utterance.rate = 0.9;
+        let voices = [];
+
+        const preambleEl = document.getElementById('preamble-text');
+        const questionEl = document.getElementById('question-text');
+        const optionsEl = document.getElementById('options-list');
+        const unitSelectEl = document.getElementById('unit-select');
+        const voiceSelectEl = document.getElementById('voice-select');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitQuizBtn = document.getElementById('submit-quiz-btn');
+        const speedControl = document.getElementById('speed-control');
+        const speedValue = document.getElementById('speed-value');
+        const autoReadToggle = document.getElementById('auto-read-toggle');
+        const feedbackAlertEl = document.getElementById('feedback-alert');
+        const feedbackDescEl = document.getElementById('feedback-desc');
+        const feedbackIconContainer = document.getElementById('feedback-icon-container');
+        const currentScoreDisplay = document.getElementById('current-score-display');
+        const progressTextEl = document.getElementById('progress-text');
+        const progressDotsContainer = document.getElementById('progress-dots-container');
+
+        // 展開/收合頂部選單
+        function toggleTopMenu() {
+            const menu = document.getElementById('top-dropdown-menu');
+            const chevron = document.getElementById('menu-chevron');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                menu.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        function populateVoiceList() {
+            voices = synth.getVoices().filter(v => v.lang.startsWith('zh'));
+            voiceSelectEl.innerHTML = '';
+            if (!voices.length) {
+                voiceSelectEl.appendChild(new Option('預設中文語音', ''));
+                return;
+            }
+            voices.forEach((v, i) => {
+                const opt = new Option(v.name, i);
+                voiceSelectEl.appendChild(opt);
+            });
+            let defaultVoiceIdx = voices.findIndex(v => v.name.includes('Yating') && v.lang === 'zh-TW');
+            if (defaultVoiceIdx === -1) defaultVoiceIdx = voices.findIndex(v => v.name.includes('Google') && v.name.includes('國語'));
+            if (defaultVoiceIdx === -1) defaultVoiceIdx = voices.findIndex(v => v.lang === 'zh-TW' || v.lang === 'zh_TW');
+            if (defaultVoiceIdx === -1) defaultVoiceIdx = 0;
+
+            if (voices[defaultVoiceIdx]) {
+                utterance.voice = voices[defaultVoiceIdx];
+                voiceSelectEl.selectedIndex = defaultVoiceIdx;
+            }
+        }
+
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = populateVoiceList;
+        }
+
+        function updateSpeed(val) {
+            const s = parseFloat(val);
+            utterance.rate = s;
+            speedValue.textContent = `${s.toFixed(1)}x`;
+        }
+
+        function updateVoice() {
+            const idx = voiceSelectEl.value;
+            if (voices[idx]) {
+                utterance.voice = voices[idx];
+            }
+        }
+
+        function initUnits() {
+            unitSelectEl.innerHTML = '';
+            for (let i = 0; i < 10; i++) {
+                const opt = new Option(`單元 ${i + 1} (${i * 10 + 1}~${(i + 1) * 10}題)`, i);
+                unitSelectEl.appendChild(opt);
+            }
+            populateVoiceList();
+            loadUnit(0);
+        }
+
+        function loadUnit(unitIdx) {
+            synth.cancel();
+            currentUnitIndex = parseInt(unitIdx, 10);
+            currentQuestionInUnit = 0;
+            userAnswers = Array(10).fill(null);
+            hasCheckedAnswer = Array(10).fill(false);
+            
+            unitSelectEl.value = currentUnitIndex;
+            renderQuestion();
+            updateScoreBoard();
+        }
+
+        function changeUnit(val) {
+            loadUnit(val);
+        }
+
+        function switchMode(mode) {
+            quizMode = mode;
+            synth.cancel();
+            
+            const studyBtn = document.getElementById('mode-study-btn');
+            const testBtn = document.getElementById('mode-test-btn');
+            
+            if (mode === 'study') {
+                studyBtn.className = "px-2.5 sm:px-3 py-1 rounded-lg font-black transition-all bg-white text-blue-700 shadow-sm";
+                testBtn.className = "px-2.5 sm:px-3 py-1 rounded-lg font-black transition-all text-blue-100 hover:text-white";
+            } else {
+                testBtn.className = "px-2.5 sm:px-3 py-1 rounded-lg font-black transition-all bg-white text-indigo-700 shadow-sm";
+                studyBtn.className = "px-2.5 sm:px-3 py-1 rounded-lg font-black transition-all text-blue-100 hover:text-white";
+            }
+            loadUnit(currentUnitIndex);
+        }
+
+        function getGlobalIndex() {
+            return currentUnitIndex * 10 + currentQuestionInUnit;
+        }
+
+        function renderQuestion() {
+            const globalIdx = getGlobalIndex();
+            const q = questions[globalIdx];
+            
+            if (q.preamble) {
+                preambleEl.textContent = q.preamble;
+                preambleEl.style.display = 'block';
+            } else {
+                preambleEl.style.display = 'none';
+            }
+
+            questionEl.textContent = q.question;
+            
+            optionsEl.innerHTML = '';
+            q.options.forEach((optText, optIdx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3 sm:p-3.5 md:p-4 lg:p-4.5 2xl:p-6 rounded-2xl border-2 border-slate-200 bg-white hover:bg-blue-50/70 hover:border-blue-400 font-bold text-base sm:text-lg md:text-xl 2xl:text-2xl transition-all flex items-center justify-between shadow-sm active:scale-[0.99]";
+                
+                const textSpan = document.createElement('span');
+                textSpan.textContent = optText;
+                textSpan.className = "flex-grow pr-2 leading-snug";
+                btn.appendChild(textSpan);
+
+                const iconContainer = document.createElement('span');
+                iconContainer.className = "flex-shrink-0 text-lg md:text-2xl w-7 h-7 flex items-center justify-center rounded-full ml-1";
+                btn.appendChild(iconContainer);
+
+                btn.onclick = () => selectOption(optIdx);
+                applyStyleToOption(btn, optIdx, iconContainer);
+
+                optionsEl.appendChild(btn);
+            });
+
+            prevBtn.disabled = currentQuestionInUnit === 0;
+            
+            if (quizMode === 'test' && currentQuestionInUnit === 9) {
+                nextBtn.classList.add('hidden');
+                submitQuizBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitQuizBtn.classList.add('hidden');
+                nextBtn.disabled = (currentQuestionInUnit === 9 && quizMode === 'study');
+            }
+
+            updateProgressIndicators();
+            renderFeedbackPanel();
+
+            // 預設關閉自動報讀，只有勾選時切換才會朗讀
+            if (autoReadToggle.checked) {
+                speakCurrentQuestion();
+            }
+        }
+
+        function applyStyleToOption(btn, optIdx, iconContainer) {
+            const globalIdx = getGlobalIndex();
+            const q = questions[globalIdx];
+            const chosen = userAnswers[currentQuestionInUnit];
+            const checked = hasCheckedAnswer[currentQuestionInUnit];
+            const correctIdx = q.answer;
+
+            if (quizMode === 'study') {
+                if (checked) {
+                    btn.disabled = true;
+                    if (optIdx === correctIdx) {
+                        btn.className = "w-full text-left p-3 sm:p-3.5 md:p-4 lg:p-4.5 2xl:p-6 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-black text-base sm:text-lg md:text-xl 2xl:text-2xl flex items-center justify-between shadow-sm correct-animate";
+                        iconContainer.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i>`;
+                    } else if (optIdx === chosen) {
+                        btn.className = "w-full text-left p-3 sm:p-3.5 md:p-4 lg:p-4.5 2xl:p-6 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-950 font-black text-base sm:text-lg md:text-xl 2xl:text-2xl flex items-center justify-between shadow-sm";
+                        iconContainer.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+                    } else {
+                        btn.className = "w-full text-left p-3 sm:p-3.5 md:p-4 lg:p-4.5 2xl:p-6 rounded-2xl border border-slate-200 bg-white font-medium text-base sm:text-lg md:text-xl 2xl:text-2xl opacity-40 flex items-center justify-between";
+                    }
+                } else if (chosen === optIdx) {
+                    btn.className = "w-full text-left p-3 sm:p-3.5 md:p-4 lg:p-4.5 2xl:p-6 rounded-2xl border-2 border-blue-500 bg-blue-50/60 font-black text-base sm:text-lg md:text-xl 2xl:text-2xl flex items-center justify-between shadow-inner";
+                }
+            } else {
+                if (chosen === optIdx) {
+                    btn.className = "w-full text-left p-3 sm:p-3.5 md:p-4 lg:p-4.5 2xl:p-6 rounded-2xl border-2 border-indigo-600 bg-indigo-50/60 text-indigo-950 font-black text-base sm:text-lg md:text-xl 2xl:text-2xl flex items-center justify-between shadow-inner";
+                    iconContainer.innerHTML = `<i class="fa-solid fa-circle text-indigo-600 text-xs"></i>`;
+                }
+            }
+        }
+
+        function selectOption(optIdx) {
+            synth.cancel();
+            const globalIdx = getGlobalIndex();
+            const q = questions[globalIdx];
+            
+            userAnswers[currentQuestionInUnit] = optIdx;
+
+            if (quizMode === 'study') {
+                if (!hasCheckedAnswer[currentQuestionInUnit]) {
+                    hasCheckedAnswer[currentQuestionInUnit] = true;
+                    const isCorrect = (optIdx === q.answer);
+                    
+                    renderQuestion();
+                    updateScoreBoard();
+                    
+                    // 點選答案時即時給予對錯語音回饋
+                    let feedbackSpeech = isCorrect ? "答對了！" : `答錯囉，正確是：${q.options[q.answer].replace(/^\(\d+\)/, '')}`;
+                    speakText(feedbackSpeech);
+                }
+            } else {
+                renderQuestion();
+            }
+        }
+
+        function updateProgressIndicators() {
+            progressTextEl.textContent = `第 ${currentQuestionInUnit + 1} / 10 題`;
+            progressDotsContainer.innerHTML = '';
+            
+            for (let i = 0; i < 10; i++) {
+                const dot = document.createElement('div');
+                dot.className = "w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border transition-all cursor-pointer ";
+                
+                if (i === currentQuestionInUnit) {
+                    dot.className += "bg-blue-500 border-blue-700 scale-125 shadow-sm";
+                } else if (userAnswers[i] === null) {
+                    dot.className += "bg-slate-200 border-slate-300";
+                } else {
+                    if (quizMode === 'study') {
+                        const isCorrect = (userAnswers[i] === questions[currentUnitIndex * 10 + i].answer);
+                        dot.className += isCorrect ? "bg-emerald-500 border-emerald-600" : "bg-rose-500 border-rose-600";
+                    } else {
+                        dot.className += "bg-indigo-500 border-indigo-600";
+                    }
+                }
+                
+                dot.onclick = () => {
+                    synth.cancel();
+                    currentQuestionInUnit = i;
+                    renderQuestion();
+                };
+                progressDotsContainer.appendChild(dot);
+            }
+        }
+
+        function updateScoreBoard() {
+            let score = 0;
+            for (let i = 0; i < 10; i++) {
+                if (userAnswers[i] !== null) {
+                    if (userAnswers[i] === questions[currentUnitIndex * 10 + i].answer) {
+                        score += 10;
+                    }
+                }
+            }
+            currentScoreDisplay.textContent = score;
+        }
+
+        function renderFeedbackPanel() {
+            const checked = hasCheckedAnswer[currentQuestionInUnit];
+            const chosen = userAnswers[currentQuestionInUnit];
+            
+            if (quizMode === 'study' && checked) {
+                const globalIdx = getGlobalIndex();
+                const q = questions[globalIdx];
+                const isCorrect = (chosen === q.answer);
+
+                feedbackAlertEl.classList.remove('hidden');
+                if (isCorrect) {
+                    feedbackAlertEl.className = "mt-3 p-2.5 sm:p-3 rounded-xl border border-emerald-200 bg-emerald-50 flex items-center gap-2.5 text-emerald-900";
+                    feedbackIconContainer.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i>`;
+                    feedbackDescEl.textContent = "答對了！非常有生活安全觀念！";
+                } else {
+                    feedbackAlertEl.className = "mt-3 p-2.5 sm:p-3 rounded-xl border border-rose-200 bg-rose-50 flex items-center gap-2.5 text-rose-900";
+                    feedbackIconContainer.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600"></i>`;
+                    feedbackDescEl.textContent = `正解：${q.options[q.answer]}`;
+                }
+            } else {
+                feedbackAlertEl.classList.add('hidden');
+            }
+        }
+
+        function prevQuestion() {
+            synth.cancel();
+            if (currentQuestionInUnit > 0) {
+                currentQuestionInUnit--;
+                renderQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            synth.cancel();
+            if (currentQuestionInUnit < 9) {
+                currentQuestionInUnit++;
+                renderQuestion();
+            } else if (currentQuestionInUnit === 9 && quizMode === 'study') {
+                calculateAndShowReport(false);
+            }
+        }
+
+        function speakText(text) {
+            synth.cancel();
+            utterance.text = text;
+            utterance.rate = parseFloat(speedControl.value);
+            const selectedVoiceIdx = voiceSelectEl.value;
+            if (voices[selectedVoiceIdx]) {
+                utterance.voice = voices[selectedVoiceIdx];
+            }
+            synth.speak(utterance);
+        }
+
+        function speakCurrentQuestion() {
+            const globalIdx = getGlobalIndex();
+            const q = questions[globalIdx];
+            let textToSpeak = "";
+            if (q.preamble) textToSpeak += `${q.preamble}。`;
+            textToSpeak += `${q.question}。選項有：`;
+            q.options.forEach(opt => { textToSpeak += `${opt}。`; });
+            speakText(textToSpeak);
+        }
+
+        function calculateAndShowReport(isManualSubmit = false) {
+            synth.cancel();
+            if (quizMode === 'test') {
+                const unansweredCount = userAnswers.filter(ans => ans === null).length;
+                if (unansweredCount > 0 && isManualSubmit) {
+                    if (!confirm(`尚有 ${unansweredCount} 題未作答，確定要交卷嗎？`)) return;
+                }
+            }
+
+            let correctCount = 0;
+            let wrongCount = 0;
+            for (let i = 0; i < 10; i++) {
+                if (userAnswers[i] === questions[currentUnitIndex * 10 + i].answer) {
+                    correctCount++;
+                } else {
+                    wrongCount++;
+                }
+            }
+
+            const finalScore = correctCount * 10;
+            document.getElementById('report-score').innerHTML = `${finalScore} <span class="text-xl font-bold text-slate-400">分</span>`;
+            document.getElementById('report-correct-count').textContent = `${correctCount} 題`;
+            document.getElementById('report-wrong-count').textContent = `${wrongCount} 題`;
+            document.getElementById('report-title').textContent = `單元 ${currentUnitIndex + 1} 學習成果`;
+
+            let comment = "";
+            let speechAward = "";
+            if (finalScore === 100) {
+                comment = "🎉 太神了！滿分 100 分！完全掌握生活適應技能！";
+                speechAward = "恭喜你！獲得滿分一百分！太厲害了！";
+                startConfettiEffect();
+            } else if (finalScore >= 80) {
+                comment = "🌟 超級優秀！觀念非常清楚！";
+                speechAward = `恭喜你得到 ${finalScore} 分！做得好棒！`;
+                startConfettiEffect();
+            } else if (finalScore >= 60) {
+                comment = "👍 及格了！基本觀念很棒，繼續加油！";
+                speechAward = `得到 ${finalScore} 分，及格囉！`;
+            } else {
+                comment = "💪 沒關係！多看幾次一定會更進步！";
+                speechAward = `得到 ${finalScore} 分，再挑戰一次吧！`;
+            }
+
+            document.getElementById('report-comment').textContent = comment;
+            const nextUnitBtn = document.getElementById('next-unit-btn');
+            if (currentUnitIndex === 9) nextUnitBtn.classList.add('hidden');
+            else nextUnitBtn.classList.remove('hidden');
+
+            document.getElementById('report-modal').classList.remove('hidden');
+            setTimeout(() => { speakText(speechAward); }, 300);
+        }
+
+        function closeReportModal() {
+            document.getElementById('report-modal').classList.add('hidden');
+            stopConfettiEffect();
+        }
+
+        function retryCurrentUnit() {
+            closeReportModal();
+            loadUnit(currentUnitIndex);
+        }
+
+        function goToNextUnit() {
+            closeReportModal();
+            if (currentUnitIndex < 9) loadUnit(currentUnitIndex + 1);
+        }
+
+        function startConfettiEffect() {
+            const container = document.getElementById('modal-confetti');
+            container.innerHTML = '';
+            const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6'];
+            for (let i = 0; i < 30; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = `${Math.random() * 100}%`;
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = `${Math.random() * 2}s`;
+                piece.style.animationDuration = `${1.5 + Math.random() * 1.5}s`;
+                container.appendChild(piece);
+            }
+        }
+
+        function stopConfettiEffect() {
+            document.getElementById('modal-confetti').innerHTML = '';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initUnits();
+        });
+    </script>
+</body>
 </html>
