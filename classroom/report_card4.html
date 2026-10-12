@@ -126,10 +126,10 @@
     .empty { padding:60mm 10mm; color:#64748b; text-align:center; font:16px "Microsoft JhengHei",sans-serif; }
     @page { size:A4 portrait; margin:16mm 12mm; }
     @media print {
-      html,body { width:210mm; background:#fff; }
+      html,body { width:auto; max-width:100%; background:#fff; }
       .no-print { display:none !important; }
       .layout { display:block; width:auto; margin:0; padding:0; }
-      .paper { width:auto; min-height:0; margin:0; padding:0; box-shadow:none; }
+      .paper { width:100%; max-width:100%; min-height:0; margin:0; padding:0 0.7mm; box-shadow:none; }
       .notice-unit,.mismatch-notice,.table-block { break-inside:avoid-page !important; page-break-inside:avoid !important; }
       .notice-unit + .notice-unit,.notice-unit + .mismatch-notice,.mismatch-notice + .mismatch-notice { margin-top:10mm; }
       .ratio-house,.ratio-corner,.composition-note,.highlight-mark { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }

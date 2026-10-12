@@ -246,11 +246,11 @@
     }
     @page { size: A4 portrait; margin: 16mm 12mm; }
     @media print {
-      html, body { width: 210mm; min-height: auto; background: #fff; }
+      html, body { width: auto; max-width: 100%; min-height: auto; background: #fff; }
       .no-print { display: none !important; }
       .layout { display: block; width: auto; margin: 0; padding: 0; }
       .preview { overflow: visible; }
-      .paper { width: auto; min-height: 0; margin: 0; padding: 0; box-shadow: none; }
+      .paper { width: 100%; max-width: 100%; min-height: 0; margin: 0; padding: 0 0.7mm; box-shadow: none; }
       .notice { break-inside: avoid-page !important; page-break-inside: avoid !important; }
       .notice + .notice { margin-top: 12mm; }
     }
