@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>115-1 異想教室 英文科第一次段考 全卷電子講義</title>
+  <style>
+    :root {
+      --primary: #1e40af;
+      --primary-light: #f0fdf4;
+      --accent: #dc2626;
+      --ans-bg: #fee2e2;
+      --border-color: #cbd5e1;
+      --text: #1e293b;
+      --sidebar-w: 230px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      color: var(--text);
+      background-color: #f1f5f9;
+      display: flex;
+      font-size: 14px;
+      line-height: 1.35; /* 緊密行距 */
+    }
+
+    /* 側邊目錄快轉 */
+    #sidebar {
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: #ffffff;
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      left: 0;
+      overflow-y: auto;
+      padding: 12px 8px;
+      z-index: 50;
+    }
+    #sidebar h2 {
+      font-size: 1rem;
+      margin: 0 0 8px 6px;
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 4px;
+    }
+    .nav-group { margin-bottom: 8px; }
+    .nav-group-title {
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #64748b;
+      margin: 6px 0 2px 6px;
+      text-transform: uppercase;
+    }
+    .nav-link {
+      display: block;
+      padding: 4px 8px;
+      color: #334155;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 0.88rem;
+      transition: all 0.15s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-link:hover {
+      background: #e2e8f0;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* 主內容區 */
+    #main-content {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 16px 24px;
+      max-width: 1000px;
+    }
+
+    /* 頂端工具列 */
+    .top-bar {
+      position: sticky;
+      top: 8px;
+      z-index: 40;
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      margin-bottom: 16px;
+    }
+    .exam-title {
+      font-weight: bold;
+      font-size: 1rem;
+      color: #0f172a;
+    }
+    .ans-toggle-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ans-toggle-btn:hover { background: #1d4ed8; }
+
+    /* 試卷卡片 */
+    .section-card {
+      background: #ffffff;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      scroll-margin-top: 60px;
+    }
+    .section-header {
+      border-bottom: 2px solid #334155;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .section-header h2 {
+      margin: 0;
+      font-size: 1.15rem;
+      color: #0f172a;
+    }
+    .section-header .info-fields {
+      font-size: 0.9rem;
+      color: #475569;
+    }
+    .part-title {
+      font-weight: bold;
+      font-size: 0.95rem;
+      margin: 12px 0 6px;
+      background-color: #f8fafc;
+      padding: 4px 8px;
+      border-left: 4px solid var(--primary);
+      color: #1e293b;
+    }
+
+    /* 表格樣式 (緊緻) */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6px 0 10px;
+      font-size: 0.88rem;
+    }
+    th, td {
+      border: 1px solid #94a3b8;
+      padding: 4px 6px; /* 緊密內距 */
+      text-align: left;
+      vertical-align: middle;
+    }
+    th {
+      background: #f1f5f9;
+      font-weight: bold;
+      text-align: center;
+    }
+    .center { text-align: center; }
+
+    /* 題目與行距微調 */
+    .q-item {
+      margin: 4px 0;
+      display: flex;
+      align-items: baseline;
+    }
+    .q-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 8px 12px;
+      margin: 6px 0;
+      border-radius: 4px;
+    }
+    .bonus-box {
+      background: #fffbeb;
+      border: 1px dashed #f59e0b;
+      padding: 6px 10px;
+      margin: 8px 0;
+      font-size: 0.88rem;
+    }
+
+    /* 答案一律在最左側 */
+    .ans-slot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      height: 20px;
+      margin-right: 8px;
+      font-weight: bold;
+      color: var(--accent);
+      background: var(--ans-bg);
+      border: 1px solid #fca5a5;
+      border-radius: 3px;
+      font-size: 0.88rem;
+      flex-shrink: 0;
+    }
+    .ans-fill {
+      color: var(--accent);
+      font-weight: bold;
+      text-decoration: underline;
+      padding: 0 4px;
+    }
+
+    /* 預設隱藏答案 (清空模式) */
+    body.hide-ans .ans-slot {
+      color: transparent !important;
+      background: transparent !important;
+      border-color: #94a3b8 !important;
+    }
+    body.hide-ans .ans-fill {
+      visibility: hidden;
+    }
+
+    /* 顯示答案模式 */
+    body.show-ans .ans-slot {
+      color: var(--accent);
+      background: var(--ans-bg);
+      border-color: #fca5a5;
+    }
+    body.show-ans .ans-fill {
+      visibility: visible;
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      #sidebar { width: 100%; height: auto; position: static; }
+      #main-content { margin-left: 0; padding: 10px; }
+    }
+  </style>
+</head>
+<body class="hide-ans"> <!-- 預設為清除答案狀態 -->
+
+  <!-- 左側章節目錄快轉 -->
+  <nav id="sidebar">
+    <h2>章節目錄</h2>
+    <div class="nav-group">
+      <div class="nav-group-title">一年級</div>
+      <a class="nav-link" href="#sec-1A">一A建 第一次段考</a>
+      <a class="nav-link" href="#sec-1AB">一AB 第一次段考</a>
+      <a class="nav-link" href="#sec-1B">一B 第一次段考</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">二年級</div>
+      <a class="nav-link" href="#sec-2Aa">二Aa 第一次段考</a>
+      <a class="nav-link" href="#sec-2Ab">二Ab 第一次段考</a>
+      <a class="nav-link" href="#sec-2B">二B 第一次段考</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">三年級</div>
+      <a class="nav-link" href="#sec-3A">三A 第一次段考</a>
+      <a class="nav-link" href="#sec-3B">三B 第一次段考</a>
+      <a class="nav-link" href="#sec-3C">三C 第一次段考</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">聽力題本</div>
+      <a class="nav-link" href="#sec-audio-script">聽力原稿與解答</a>
+    </div>
+  </nav>
+
+  <!-- 主內容區 -->
+  <main id="main-content">
+    
+    <!-- 頂端控制列 -->
+    <div class="top-bar">
+      <div class="exam-title">異想教室 英文科第一次段考 互動講義</div>
+      <button class="ans-toggle-btn" onclick="toggleAnswers()">
+        <span id="btn-icon">📝</span>
+        <span id="btn-text">顯示解答 (目前：測驗模式)</span>
+      </button>
+    </div>
+
+    <!-- ==========================================
+         (一A建)
+         ========================================== -->
+    <section id="sec-1A" class="section-card">
+      <div class="section-header">
+        <h2>(一A建) 115-1 異想教室 英文科 第一次段考</h2>
+        <div class="info-fields">_____班 姓名：____________</div>
+      </div>
+
+      <div class="part-title">一、人稱代名詞</div>
+      <table>
+        <thead>
+          <tr><th>人稱</th><th>人稱代名詞</th><th>Be動詞</th><th>人稱代名詞</th><th>所有格</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>我</td><td><span class="ans-fill">I</span></td><td><span class="ans-fill">am</span></td><td>我的</td><td><span class="ans-fill">my</span></td></tr>
+          <tr><td>你</td><td><span class="ans-fill">you</span></td><td><span class="ans-fill">are</span></td><td>你的</td><td><span class="ans-fill">your</span></td></tr>
+          <tr><td>他</td><td><span class="ans-fill">he</span></td><td><span class="ans-fill">is</span></td><td>他的</td><td><span class="ans-fill">his</span></td></tr>
+          <tr><td>她</td><td><span class="ans-fill">she</span></td><td><span class="ans-fill">is</span></td><td>她的</td><td><span class="ans-fill">her</span></td></tr>
+          <tr><td>它、牠</td><td><span class="ans-fill">it</span></td><td><span class="ans-fill">is</span></td><td>牠、它的</td><td><span class="ans-fill">its</span></td></tr>
+          <tr><td>我們</td><td><span class="ans-fill">we</span></td><td><span class="ans-fill">are</span></td><td>我們的</td><td><span class="ans-fill">our</span></td></tr>
+          <tr><td>你們</td><td><span class="ans-fill">you</span></td><td><span class="ans-fill">are</span></td><td>你們的</td><td><span class="ans-fill">your</span></td></tr>
+          <tr><td>他、她、它們</td><td><span class="ans-fill">they</span></td><td><span class="ans-fill">are</span></td><td>他們的</td><td><span class="ans-fill">their</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="part-title">二、單字配對 (英文一A)</div>
+      <table>
+        <tr>
+          <td><span class="ans-slot">parent</span>雙親之一</td>
+          <td><span class="ans-slot">uncle</span>叔叔</td>
+          <td><span class="ans-slot">family</span>家人；家庭</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">grandfather</span>爺爺</td>
+          <td><span class="ans-slot">aunt</span>阿姨</td>
+          <td><span class="ans-slot">husband</span>丈夫</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">grandmother</span>奶奶</td>
+          <td><span class="ans-slot">brother</span>兄弟</td>
+          <td><span class="ans-slot">wife</span>妻子</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">father</span>爸爸</td>
+          <td><span class="ans-slot">sister</span>姊妹</td>
+          <td><span class="ans-slot">son</span>兒子</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">mother</span>媽媽</td>
+          <td><span class="ans-slot">cousin</span>堂（表）兄弟姐妹</td>
+          <td><span class="ans-slot">daughter</span>女兒</td>
+        </tr>
+      </table>
+
+      <div class="part-title">三、句型練習</div>
+      <div class="q-item">
+        <span class="ans-slot">She</span>
+        <div>1. 她是我的媽媽。 mother / my / is / She<br>→ <span class="ans-fill">She is my mother.</span></div>
+      </div>
+      <div class="q-item">
+        <span class="ans-slot">They</span>
+        <div>2. 他們是我們的老師。 teachers / our / They / are<br>→ <span class="ans-fill">They are our teachers.</span></div>
+      </div>
+      <div class="bonus-box">
+        ◎加分題：我的英文名字是___________________<br>
+        ◎加分題2：________(本題不及格時才會給予加分) [Most Common Pets 尋字拼圖]
+      </div>
+
+      <div class="part-title">四、填充題 (Read and choose. 選出正確的答案。12% 每題3分)</div>
+      <div class="q-box">
+        Hello, there. My [ 1 ] is Nina. I'm 14, and I'm a junior high school student. I have a happy family. My dad, Julian, is a handsome singer. He is 45 [ 2 ]. My beautiful mom, Claire, is 40. She is a good cook. My dear brother, Logan, is two years old. Look! [ 3 ] Isn't he lovely? We are a happy family of [ 4 ].
+      </div>
+      <div class="q-item"><span class="ans-slot">C</span> 1. (A) family &nbsp; (B) school &nbsp; (C) name</div>
+      <div class="q-item"><span class="ans-slot">C</span> 2. (A) old &nbsp; (B) years &nbsp; (C) years old</div>
+      <div class="q-item"><span class="ans-slot">C</span> 3. (A) He's new here. &nbsp; (B) He's not here. &nbsp; (C) Here's his picture.</div>
+      <div class="q-item"><span class="ans-slot">A</span> 4. (A) four &nbsp; (B) five &nbsp; (C) three</div>
+
+      <div class="part-title">五、計算題 (請填入阿拉伯數字)</div>
+      <div class="q-item"><span class="ans-slot">9</span> 1. one + eight = ________________</div>
+      <div class="q-item"><span class="ans-slot">2</span> 2. six ÷ three = ________________</div>
+      <div class="q-item"><span class="ans-slot">5</span> 3. nine – four = ________________</div>
+      <div class="q-item"><span class="ans-slot">6</span> 4. ten – four = ________________</div>
+      <div class="q-item"><span class="ans-slot">9</span> 5. one × nine = ________________</div>
+
+      <div class="part-title">六、聽力測驗：根據聽到的內容，選出正確的圖片及回應</div>
+      <div><strong>A. 請圈出正確的字母</strong></div>
+      <div class="q-item"><span class="ans-slot">( )</span> 1. a &nbsp; p &nbsp; l &nbsp; e &nbsp; o &nbsp; x</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 2. g &nbsp; I &nbsp; r &nbsp; k &nbsp; e &nbsp; y</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 3. p &nbsp; I &nbsp; g &nbsp; d &nbsp; o &nbsp; q</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 4. e &nbsp; g &nbsp; n &nbsp; o &nbsp; s &nbsp; e</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 5. f &nbsp; s &nbsp; h &nbsp; j &nbsp; u &nbsp; i</div>
+      <div><strong>B. 請把題目中念到的英文字母寫下來</strong></div>
+      <div class="q-item"><span class="ans-slot">6.</span> _____ &nbsp;&nbsp; <span class="ans-slot">7.</span> _____ &nbsp;&nbsp; <span class="ans-slot">8.</span> _____ &nbsp;&nbsp; <span class="ans-slot">9.</span> _____ &nbsp;&nbsp; <span class="ans-slot">10.</span> _____</div>
+      <div><strong>C. 請填上念到的家人編號</strong></div>
+      <table>
+        <tr>
+          <td><span class="ans-slot">( )</span> 11.</td>
+          <td>A. 丈夫 &nbsp; F. 姊妹</td>
+          <td><span class="ans-slot">( )</span> 12.</td>
+          <td>B. 爺爺 &nbsp; G. 媽媽</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">( )</span> 13.</td>
+          <td>C. 爸爸 &nbsp; H. 妻子</td>
+          <td><span class="ans-slot">( )</span> 14.</td>
+          <td>D. 兄弟 &nbsp; I. 女兒</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">( )</span> 15.</td>
+          <td colspan="3">E. 兒子 &nbsp; J. 奶奶</td>
+        </tr>
+      </table>
+      <div><strong>D. 請填入符合的答案</strong></div>
+      <div class="q-item"><span class="ans-slot">( )</span> 16. (A) 一家四口戶外合照 &nbsp; (B) 學生黑板討論 &nbsp; (C) 獸醫師與小狗</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 17. (A) 蠟燭40歲蛋糕 &nbsp; (B) 蠟燭14歲杯子蛋糕 &nbsp; (C) 蠟燭4歲杯子蛋糕</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 18. (A) No, he isn't a good cook. (B) No. He is a good husband. (C) Yes, and he is a good father, too.</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 19. (A) Yes. She is a teacher. (B) My cousin is a writer, too. (C) No. She is an office worker.</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 20. (A) No. She is tall. (B) Yes, she is short. (C) Yes, she's young.</div>
+
+      <div class="part-title">七、文法選擇題 (英一)</div>
+      <div class="q-item"><span class="ans-slot">2</span> 1. his father → 1. 她的爸爸 2. 他的爸爸</div>
+      <div class="q-item"><span class="ans-slot">2</span> 2. her mother → 1. 他的媽媽 2. 她的媽媽</div>
+      <div class="q-item"><span class="ans-slot">2</span> 3. I am her sister. → 1. 她是我的姊妹。 2. 我是她的姊妹。</div>
+      <div class="q-item"><span class="ans-slot">1</span> 4. We are his friends. → 1. 我們是他的朋友。 2. 他們是我們的朋友。</div>
+      <div class="q-item"><span class="ans-slot">2</span> 5. I like his brother. → 1. 他的哥哥喜歡我。 2. 我喜歡他的哥哥。</div>
+      <div class="q-item"><span class="ans-slot">1</span> 6. She likes my father. → 1. 她喜歡我的爸爸。 2. 我的爸爸喜歡她。</div>
+      <div class="q-item"><span class="ans-slot">A</span> 7. ______ are my friends. (A) They (B) Their (C) Them</div>
+      <div class="q-item"><span class="ans-slot">B</span> 8. ______ father is Mr. Lin. (A) You (B) Your (C) Yours</div>
+      <div class="q-item"><span class="ans-slot">B</span> 9. She ______ my aunt. (A) am (B) is (C) are</div>
+      <div class="q-item"><span class="ans-slot">A</span> 10. ______ teacher is very nice. (A) Our (B) We (C) Us</div>
+      <div class="q-item"><span class="ans-slot">B</span> 11. Where is ______ pencil case? (A) you (B) your (C) yours</div>
+      <div class="q-item"><span class="ans-slot">C</span> 12. Tom and Mary ______ busy now. (A) am (B) is (C) are</div>
+      <div class="q-item"><span class="ans-slot">A</span> 13. ______ are my new classmates. (A) You (B) Your (C) Yours</div>
+      <div class="q-item"><span class="ans-slot">B</span> 14. Look at ______! She is dancing. (A) she (B) her (C) hers</div>
+      <div class="q-item"><span class="ans-slot">A</span> 15. That is not my bag. It is ______ bag. (A) his (B) he (C) him</div>
+    </section>
+
+    <!-- ==========================================
+         (一AB)
+         ========================================== -->
+    <section id="sec-1AB" class="section-card">
+      <div class="section-header">
+        <h2>(一AB) 115-1 異想教室 英文科 第一次段考</h2>
+        <div class="info-fields">_____班 姓名：____________</div>
+      </div>
+
+      <div class="part-title">一、請將大寫改成小寫，小寫改成大寫 (例：ELEPHONE → elephone)</div>
+      <table>
+        <tr><th>大寫改成小寫</th><th>小寫改成大寫</th></tr>
+        <tr><td>FISH → <span class="ans-fill">fish</span></td><td>zebra → <span class="ans-fill">ZEBRA</span></td></tr>
+        <tr><td>UMBERELLA → <span class="ans-fill">umbrella</span></td><td>lemon → <span class="ans-fill">LEMON</span></td></tr>
+        <tr><td>TAIWAN → <span class="ans-fill">taiwan</span></td><td>monkey → <span class="ans-fill">MONKEY</span></td></tr>
+      </table>
+
+      <div class="part-title">二、人稱代名詞</div>
+      <table>
+        <thead><tr><th>人稱</th><th>人稱代名詞</th><th>Be動詞</th><th>人稱代名詞</th><th>所有格</th></tr></thead>
+        <tbody>
+          <tr><td>我</td><td>I</td><td><span class="ans-fill">am</span></td><td>我的</td><td><span class="ans-fill">my</span></td></tr>
+          <tr><td>你</td><td><span class="ans-fill">you</span></td><td>are</td><td>你的</td><td><span class="ans-fill">your</span></td></tr>
+          <tr><td>他</td><td><span class="ans-fill">he</span></td><td><span class="ans-fill">is</span></td><td>他的</td><td><span class="ans-fill">his</span></td></tr>
+          <tr><td>她</td><td><span class="ans-fill">she</span></td><td><span class="ans-fill">is</span></td><td>她的</td><td><span class="ans-fill">her</span></td></tr>
+          <tr><td>它、牠</td><td><span class="ans-fill">it</span></td><td><span class="ans-fill">is</span></td><td>牠、它的</td><td><span class="ans-fill">its</span></td></tr>
+          <tr><td>我們</td><td><span class="ans-fill">we</span></td><td><span class="ans-fill">are</span></td><td>我們的</td><td>our</td></tr>
+          <tr><td>你們</td><td><span class="ans-fill">you</span></td><td><span class="ans-fill">are</span></td><td>你們的</td><td><span class="ans-fill">your</span></td></tr>
+          <tr><td>他、她、它們</td><td><span class="ans-fill">they</span></td><td><span class="ans-fill">are</span></td><td>他們的</td><td><span class="ans-fill">their</span></td></tr>
+        </tbody>
+      </table>
+      <div class="q-box" style="font-size:0.8rem;">
+        ◎參考答案庫：人稱代名詞(you, he, we, you, they, it, she, I) ｜ Be動詞(are, am, is, are) ｜ 所有格(its, my, our, your, her, your, their, his)
+      </div>
+
+      <div class="part-title">三、單字配對 (英文一A)</div>
+      <table>
+        <tr>
+          <td><span class="ans-slot">E</span> 1. ( ) mother</td><td>E. 媽媽</td>
+          <td><span class="ans-slot">E</span> 6. ( ) cousin</td><td>E. 堂（表）兄弟姐妹</td>
+          <td><span class="ans-slot">E</span> 11. ( ) daughter</td><td>E. 女兒</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">C</span> 2. ( ) grandmother</td><td>C. 奶奶</td>
+          <td><span class="ans-slot">B</span> 7. ( ) aunt</td><td>B. 阿姨</td>
+          <td><span class="ans-slot">A</span> 12. ( ) family</td><td>A. 家人；家庭</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">B</span> 3. ( ) grandfather</td><td>B. 爺爺</td>
+          <td><span class="ans-slot">A</span> 8. ( ) uncle</td><td>A. 叔叔</td>
+          <td><span class="ans-slot">B</span> 13. ( ) husband</td><td>B. 丈夫</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">D</span> 4. ( ) father</td><td>D. 爸爸</td>
+          <td><span class="ans-slot">C</span> 9. ( ) brother</td><td>C. 兄弟</td>
+          <td><span class="ans-slot">D</span> 14. ( ) son</td><td>D. 兒子</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">A</span> 5. ( ) parent</td><td>A. 雙親之一</td>
+          <td><span class="ans-slot">D</span> 10. ( ) sister</td><td>D. 姊妹</td>
+          <td><span class="ans-slot">C</span> 15. ( ) wife</td><td>C. 妻子</td>
+        </tr>
+      </table>
+
+      <div class="part-title">四、聽力測驗</div>
+      <div><strong>A. 請圈出正確的字母</strong></div>
+      <div class="q-item"><span class="ans-slot">( )</span> 1. a p l e o x &nbsp;&nbsp; 2. g I r k e y &nbsp;&nbsp; 3. p I g d o q &nbsp;&nbsp; 4. e g n o s e &nbsp;&nbsp; 5. f s h j u i</div>
+      <div><strong>B. 請把題目中念到的英文字母寫下來</strong></div>
+      <div class="q-item"><span class="ans-slot">6.</span> ___ &nbsp; <span class="ans-slot">7.</span> ___ &nbsp; <span class="ans-slot">8.</span> ___ &nbsp; <span class="ans-slot">9.</span> ___ &nbsp; <span class="ans-slot">10.</span> ___</div>
+      <div><strong>C. 請填上念到的家人編號</strong></div>
+      <div class="q-item"><span class="ans-slot">( )</span> 11. ｜ <span class="ans-slot">( )</span> 12. ｜ <span class="ans-slot">( )</span> 13. ｜ <span class="ans-slot">( )</span> 14. ｜ <span class="ans-slot">( )</span> 15. (選單 A-J 同一A卷)</div>
+
+      <div class="part-title">五、句型練習</div>
+      <div class="q-item"><span class="ans-slot">She</span> 1. 她是我的媽媽。 mother / my / is / She → <span class="ans-fill">She is my mother.</span></div>
+      <div class="q-item"><span class="ans-slot">They</span> 2. 他們是我們的老師。 teachers / our / They / are → <span class="ans-fill">They are our teachers.</span></div>
+
+      <div class="part-title">六、計算題 (請填入阿拉伯數字)</div>
+      <div class="q-item"><span class="ans-slot">9</span> 1. one + eight = ____ ｜ <span class="ans-slot">2</span> 2. six ÷ three = ____ ｜ <span class="ans-slot">5</span> 3. nine – four = ____ ｜ <span class="ans-slot">6</span> 4. ten – four = ____ ｜ <span class="ans-slot">9</span> 5. one × nine = ____</div>
+
+      <div class="part-title">七、文法選擇題 (英一)</div>
+      <div class="q-item"><span class="ans-slot">2</span> 1. his father → 1. 她的爸爸 2. 他的爸爸</div>
+      <div class="q-item"><span class="ans-slot">2</span> 2. her mother → 1. 他的媽媽 2. 她的媽媽</div>
+      <div class="q-item"><span class="ans-slot">2</span> 3. I am her sister. → 1. 她是我的姊妹。 2. 我是她的姊妹。</div>
+      <div class="q-item"><span class="ans-slot">1</span> 4. We are his friends. → 1. 我們是他的朋友。 2. 他們是我們的朋友。</div>
+      <div class="q-item"><span class="ans-slot">2</span> 5. I like his brother. → 1. 他的哥哥喜歡我。 2. 我喜歡他的哥哥。</div>
+      <div class="q-item"><span class="ans-slot">1</span> 6. She likes my father. → 1. 她喜歡我的爸爸。 2. 我的爸爸喜歡她。</div>
+      <div class="q-item"><span class="ans-slot">A</span> 7. ______ are my friends. (A) They (B) Their (C) Them</div>
+      <div class="q-item"><span class="ans-slot">B</span> 8. ______ father is Mr. Lin. (A) You (B) Your (C) Yours</div>
+      <div class="q-item"><span class="ans-slot">B</span> 9. She ______ my aunt. (A) am (B) is (C) are</div>
+      <div class="q-item"><span class="ans-slot">A</span> 10. ______ teacher is very nice. (A) Our (B) We (C) Us</div>
+
+      <div class="part-title">八、連連看與加分題</div>
+      <div class="bonus-box">
+        • 輪船 ship 字母 a-z 連連看與著色圖<br>
+        • 字母點對點連線圖 (A-Z)<br>
+        • ◎加分題2：Most Common Pets 單字搜尋拼圖
+      </div>
+    </section>
+
+    <!-- ==========================================
+         (一B)
+         ========================================== -->
+    <section id="sec-1B" class="section-card">
+      <div class="section-header">
+        <h2>(一B) 115-1 異想教室 英文科 第一次段考</h2>
+        <div class="info-fields">_____班 姓名：____________</div>
+      </div>
+
+      <div class="part-title">一、請將大寫改成小寫，小寫改成大寫</div>
+      <table>
+        <tr><th>大寫改成小寫</th><th>小寫改成大寫</th></tr>
+        <tr><td>FISH → <span class="ans-fill">fish</span></td><td>zebra → <span class="ans-fill">ZEBRA</span></td></tr>
+        <tr><td>UMBERELLA → <span class="ans-fill">umbrella</span></td><td>lemon → <span class="ans-fill">LEMON</span></td></tr>
+        <tr><td>TAIWAN → <span class="ans-fill">taiwan</span></td><td>monkey → <span class="ans-fill">MONKEY</span></td></tr>
+      </table>
+
+      <div class="part-title">二、人稱代名詞與參考答案表格（同 一AB）</div>
+      <p><em>(完整表格同前，包含 I, you, he, she, it, we, they 及 Be動詞與所有格)</em></p>
+
+      <div class="part-title">三、單字配對 (英文一A 1-10 題)</div>
+      <table>
+        <tr><td><span class="ans-slot">E</span> 1. mother</td><td>E. 媽媽</td><td><span class="ans-slot">E</span> 6. cousin</td><td>E. 堂（表）兄弟姐妹</td></tr>
+        <tr><td><span class="ans-slot">C</span> 2. grandmother</td><td>C. 奶奶</td><td><span class="ans-slot">B</span> 7. aunt</td><td>B. 阿姨</td></tr>
+        <tr><td><span class="ans-slot">B</span> 3. grandfather</td><td>B. 爺爺</td><td><span class="ans-slot">A</span> 8. uncle</td><td>A. 叔叔</td></tr>
+        <tr><td><span class="ans-slot">D</span> 4. father</td><td>D. 爸爸</td><td><span class="ans-slot">C</span> 9. brother</td><td>C. 兄弟</td></tr>
+        <tr><td><span class="ans-slot">A</span> 5. parent</td><td>A. 雙親之一</td><td><span class="ans-slot">D</span> 10. sister</td><td>D. 姊妹</td></tr>
+      </table>
+
+      <div class="part-title">四、聽力測驗（同 一AB 題型 A-C 大題）</div>
+      <div class="part-title">五、文法選擇題 (英一 1-10 題)</div>
+      <div class="q-item"><span class="ans-slot">2</span> 1. his father ｜ <span class="ans-slot">2</span> 2. her mother ｜ <span class="ans-slot">2</span> 3. I am her sister. ｜ <span class="ans-slot">1</span> 4. We are his friends. ｜ <span class="ans-slot">2</span> 5. I like his brother.</div>
+      <div class="q-item"><span class="ans-slot">1</span> 6. She likes my father. ｜ <span class="ans-slot">A</span> 7. They ｜ <span class="ans-slot">B</span> 8. Your ｜ <span class="ans-slot">B</span> 9. is ｜ <span class="ans-slot">A</span> 10. Our</div>
+
+      <div class="part-title">六、連連看與加分題</div>
+      <div class="bonus-box">
+        • 輪船 ship 字母連連看 ｜ 點對點連線 ｜ 加分題2 Most Common Pets
+      </div>
+    </section>
+
+    <!-- ==========================================
+         (二Aa)
+         ========================================== -->
+    <section id="sec-2Aa" class="section-card">
+      <div class="section-header">
+        <h2>(二Aa) 115-1 異想教室 英文科 第一次段考</h2>
+        <div class="info-fields">_____班 姓名：____________</div>
+      </div>
+
+      <div class="part-title">答案欄 (原始試卷填答區)</div>
+      <table>
+        <tr>
+          <th colspan="4">單字配對</th>
+          <th colspan="2">閱讀測驗</th>
+          <th colspan="4">聽力測驗</th>
+          <th colspan="3">文法選擇</th>
+        </tr>
+        <tr>
+          <td>1 <span class="ans-fill">C</span></td><td>6 <span class="ans-fill">C</span></td><td>11 <span class="ans-fill">C</span></td><td>16 <span class="ans-fill">D</span></td>
+          <td>1 <span class="ans-fill">3</span></td><td>6 <span class="ans-fill">C</span></td>
+          <td>1 <span class="ans-fill"></span></td><td>6 <span class="ans-fill"></span></td><td>11 <span class="ans-fill"></span></td><td>16 <span class="ans-fill">B</span></td>
+          <td>1 <span class="ans-fill">A</span></td><td>6 <span class="ans-fill">B</span></td><td>11 <span class="ans-fill">A</span></td>
+        </tr>
+        <tr>
+          <td>2 <span class="ans-fill">A</span></td><td>7 <span class="ans-fill">A</span></td><td>12 <span class="ans-fill">A</span></td><td>17 <span class="ans-fill">A</span></td>
+          <td>2 <span class="ans-fill">2</span></td><td>7 <span class="ans-fill">B</span></td>
+          <td>2 <span class="ans-fill"></span></td><td>7 <span class="ans-fill"></span></td><td>12 <span class="ans-fill"></span></td><td>17 <span class="ans-fill">B/C</span></td>
+          <td>2 <span class="ans-fill">B</span></td><td>7 <span class="ans-fill">D</span></td><td>12 <span class="ans-fill">D</span></td>
+        </tr>
+        <tr>
+          <td>3 <span class="ans-fill">B</span></td><td>8 <span class="ans-fill">B</span></td><td>13 <span class="ans-fill">B</span></td><td>18 <span class="ans-fill">B</span></td>
+          <td>3 <span class="ans-fill">1</span></td><td>8 <span class="ans-fill">C</span></td>
+          <td>3 <span class="ans-fill"></span></td><td>8 <span class="ans-fill"></span></td><td>13 <span class="ans-fill"></span></td><td>18 <span class="ans-fill">C</span></td>
+          <td>3 <span class="ans-fill">A</span></td><td>8 <span class="ans-fill">D</span></td><td>13 <span class="ans-fill">B</span></td>
+        </tr>
+        <tr>
+          <td>4 <span class="ans-fill">E</span></td><td>9 <span class="ans-fill">E</span></td><td>14 <span class="ans-fill">E</span></td><td>19 <span class="ans-fill">C</span></td>
+          <td>4 <span class="ans-fill">3</span></td><td></td>
+          <td>4 <span class="ans-fill"></span></td><td>9 <span class="ans-fill"></span></td><td>14 <span class="ans-fill"></span></td><td>19 <span class="ans-fill">B</span></td>
+          <td>4 <span class="ans-fill">C</span></td><td>9 <span class="ans-fill">B</span></td><td>14 <span class="ans-fill">C</span></td>
+        </tr>
+        <tr>
+          <td>5 <span class="ans-fill">D</span></td><td>10 <span class="ans-fill">D</span></td><td>15 <span class="ans-fill">D</span></td><td>20 <span class="ans-fill">E</span></td>
+          <td>5 <span class="ans-fill">3</span></td><td></td>
+          <td>5 <span class="ans-fill"></span></td><td>10 <span class="ans-fill"></span></td><td>15 <span class="ans-fill"></span></td><td>20 <span class="ans-fill">C</span></td>
+          <td>5 <span class="ans-fill">D</span></td><td>10 <span class="ans-fill">C</span></td><td>15 <span class="ans-fill">C</span></td>
+        </tr>
+      </table>
+
+      <div class="part-title">一、改寫句型 (雙欄式句型對照)</div>
+      <table>
+        <tr>
+          <td style="width:50%;">
+            <strong>1. 肯定句</strong><br>主詞＋be動詞＋形容或名詞＋過去時間副詞
+          </td>
+          <td>
+            1. 你以前(before)是個老師。<br>
+            You <span class="ans-fill">were</span> a teacher before.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>2. 否定句</strong><br>主詞＋be動詞＋not＋形容或名詞＋過去時間
+          </td>
+          <td>
+            2. 你以前不是老師。<br>
+            You <span class="ans-fill">were</span> <span class="ans-fill">not</span> a <span class="ans-fill">teacher</span> before.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>3. 疑問句</strong><br>be動詞＋主詞＋形容或名詞＋過去時間副詞？
+          </td>
+          <td>
+            3. 你以前是個老師嗎?<br>
+            Were <span class="ans-fill">you</span> a teacher <span class="ans-fill">before</span>?
+          </td>
+        </tr>
+        <tr>
+          <td><strong>1. 肯定句</strong> (一般動詞)</td>
+          <td>他昨天讀英文(study English) → <span class="ans-fill">He studied English yesterday.</span></td>
+        </tr>
+        <tr>
+          <td><strong>2. 否定句</strong></td>
+          <td>他昨天(yesterday)沒讀英文 → <span class="ans-fill">He didn't study English yesterday.</span></td>
+        </tr>
+        <tr>
+          <td><strong>3. 疑問句</strong></td>
+          <td>他昨天讀英文嗎? → <span class="ans-fill">Did he study English yesterday?</span></td>
+        </tr>
+      </table>
+
+      <div class="part-title">二、單字配對 (英文二)</div>
+      <table>
+        <tr>
+          <td><span class="ans-slot">C</span> 1. spring</td><td>C. 春天</td>
+          <td><span class="ans-slot">C</span> 6. sunny</td><td>C. 陽光普照的</td>
+          <td><span class="ans-slot">C</span> 11. science</td><td>C. 科學</td>
+          <td><span class="ans-slot">D</span> 16. hear</td><td>D. 聽見</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">A</span> 2. weather</td><td>A. 天氣</td>
+          <td><span class="ans-slot">A</span> 7. rainy</td><td>A. 下雨的</td>
+          <td><span class="ans-slot">A</span> 12. history</td><td>A. 歷史</td>
+          <td><span class="ans-slot">A</span> 17. teach</td><td>A. 教導</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">B</span> 3. winter</td><td>B. 冬天</td>
+          <td><span class="ans-slot">B</span> 8. cloudy</td><td>B. 多雲的</td>
+          <td><span class="ans-slot">B</span> 13. math</td><td>B. 數學</td>
+          <td><span class="ans-slot">B</span> 18. finish</td><td>B. 完成；結束</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">E</span> 4. cloud</td><td>E. 雲</td>
+          <td><span class="ans-slot">E</span> 9. borrow</td><td>E. 借（入）</td>
+          <td><span class="ans-slot">E</span> 14. club</td><td>E. 社團</td>
+          <td><span class="ans-slot">C</span> 19. look for</td><td>C. 尋找</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">D</span> 5. wind</td><td>D. 風</td>
+          <td><span class="ans-slot">D</span> 10. lend</td><td>D. 借（出）</td>
+          <td><span class="ans-slot">D</span> 15. lesson</td><td>D. 課；課程</td>
+          <td><span class="ans-slot">E</span> 20. sign up</td><td>E. 報名參加</td>
+        </tr>
+      </table>
+
+      <div class="part-title">三、閱讀測驗</div>
+      <div class="q-box">
+        Jimmy: Hi, long time no see! &nbsp;&nbsp; Mary: So nice to see you again!<br>
+        Jimmy: Where are you going? &nbsp;&nbsp; Mary: I am going to watch the movies.<br>
+        Jimmy: Oh, it’s so nice. I need to work today.<br>
+        Mary: Do you still need to work on Sunday morning?<br>
+        Jimmy: Yes, I am very busy this week. &nbsp;&nbsp; Mary: I need to go now. See you later.<br>
+        Jimmy: Have fun. Hope I can go to the movies with you!
+      </div>
+      <div class="q-item"><span class="ans-slot">3</span> 1. Jimmy 和 Mary 碰面交談的時間，是在（1）星期五 （2）星期六 （3）星期天</div>
+      <div class="q-item"><span class="ans-slot">2</span> 2. Jimmy 和 Mary（1）經常碰面 （2）偶而見面 （3）第一次見面</div>
+      <div class="q-item"><span class="ans-slot">1</span> 3. Jimmy 正要去 （1）工作 （2）購物 （3）看電影</div>
+      <div class="q-item"><span class="ans-slot">3</span> 4. Mary 正要去 （1）工作 （2）購物 （3）看電影</div>
+      <div class="q-item"><span class="ans-slot">3</span> 5. 由這段對話可以看出 （1）Jimmy 很喜歡 Mary （2）Mary 很羨慕 Jimmy （3）Jimmy 很羨慕 Mary</div>
+
+      <div class="q-box">
+        <strong>David's Schedule (行事曆)</strong><br>
+        Sun. 9:00 a.m. have breakfast with Sue ｜ Mon. 11:00 a.m. go shopping for food<br>
+        Tues. 2:00 p.m. play with my dog in the park ｜ Wed. 4:00 p.m. watch basketball games on TV<br>
+        Thurs. 10:30 a.m. meet Mr. Li ｜ Fri. 8:30 a.m. play basketball with Jane<br>
+        Sat. 5:30 a.m. take a walk in the park / 9:00 a.m. have breakfast with Sue / 3:30 p.m. teach Mary English
+      </div>
+      <div class="q-item"><span class="ans-slot">C</span> 6. Today is Saturday. What is David doing at 9:10 a.m.? (A) He is playing basketball. (B) He is teaching English. (C) He is having breakfast. (D) He is playing with his dog.</div>
+      <div class="q-item"><span class="ans-slot">B</span> 7. David is buying apples and milk now. What day is today? (A) It’s Sunday. (B) It’s Monday. (C) It’s Friday. (D) It’s Saturday.</div>
+      <div class="q-item"><span class="ans-slot">C</span> 8. David is talking with Mr. Li. What time is it? (A) It’s 2:05 p.m. (B) It’s 3:45 p.m. (C) It’s 10:40 a.m. (D) It’s 5:25 a.m.</div>
+
+      <div class="part-title">四、聽力測驗 (英二)</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 1. (A) sunny (B) spring (C) science ｜ <span class="ans-slot">( )</span> 2. (A) weather (B) winter (C) whose</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 3. (A) rainy (B) history (C) lovely ｜ <span class="ans-slot">( )</span> 4. (A) cloud (B) club (C) cool</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 5. (A) wind (B) lesson (C) mine ｜ <span class="ans-slot">( )</span> 6. (A) borrow (B) festival (C) finish</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 7. (A) lend (B) tell (C) lesson ｜ <span class="ans-slot">( )</span> 8. (A) jacket (B) subject (C) robot</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 9. (A) science (B) season (C) strange ｜ <span class="ans-slot">( )</span> 10. (A) math (B) mad (C) mine</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 11. (A) history (B) heavy (C) hear ｜ <span class="ans-slot">( )</span> 12. (A) club (B) cloud (C) call</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 13. (A) teach (B) Taiwan (C) tell ｜ <span class="ans-slot">( )</span> 14. (A) finish (B) festival (C) free</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 15. (A) engineer (B) interesting (C) end</div>
+      <div class="q-item"><span class="ans-slot">B</span> 16. (A) 抱頭頭暈 (B) 跌坐在樓梯按著腿 (C) 跌在樓梯扶著腰</div>
+      <div class="q-item"><span class="ans-slot">B</span> 17. (A) 海邊衝浪 (B) 三人戴耳機在海邊唱歌 (C) 夜晚舞台演唱會</div>
+      <div class="q-item"><span class="ans-slot">C</span> 18. (A) 蛋糕櫃前 (B) 開冰箱看男生吃麵 (C) 男生拿著三盒冰淇淋到門口</div>
+      <div class="q-item"><span class="ans-slot">B</span> 19. (A) It was in August. (B) It was a great experience. (C) We practiced baseball every day.</div>
+      <div class="q-item"><span class="ans-slot">C</span> 20. (A) At home. (B) At a beach. (C) In a hospital.</div>
+
+      <div class="part-title">五、文法選擇</div>
+      <div><strong>A. 請選出助動詞及 Be動詞的過去式變化</strong></div>
+      <div class="q-item"><span class="ans-slot">A</span> 1. am → (A) was (B) were (C) did (D) didn’t</div>
+      <div class="q-item"><span class="ans-slot">B</span> 2. are → (A) was (B) were (C) did (D) didn’t</div>
+      <div class="q-item"><span class="ans-slot">A</span> 3. is → (A) was (B) were (C) did (D) didn’t</div>
+      <div class="q-item"><span class="ans-slot">C</span> 4. do → (A) was (B) were (C) did (D) didn’t</div>
+      <div class="q-item"><span class="ans-slot">D</span> 5. don’t → (A) was (B) were (C) did (D) didn’t</div>
+      <div><strong>B. 選出正確的答案</strong></div>
+      <div class="q-item"><span class="ans-slot">B</span> 6. She _____ her homework last night. (A) finish (B) finished (C) finishing (D) finishes</div>
+      <div class="q-item"><span class="ans-slot">D</span> 7. Did Mom _____ dinner last night? (A) made (B) making (C) makes (D) make</div>
+      <div class="q-item"><span class="ans-slot">D</span> 8. They _____ at school yesterday. (A) did (B) was (C) be (D) were</div>
+      <div class="q-item"><span class="ans-slot">B</span> 9. Kevin _____ his teacher yesterday. (A) see (B) saw (C) seeing (D) sees</div>
+      <div class="q-item"><span class="ans-slot">C</span> 10. We didn't _____ basketball yesterday. (A) played (B) playing (C) play (D) plays</div>
+      <div class="q-item"><span class="ans-slot">A</span> 11. Dad _____ a book yesterday. (A) bought (B) buy (C) buying (D) buys</div>
+      <div class="q-item"><span class="ans-slot">D</span> 12. They didn't _____ to school yesterday. (A) went (B) going (C) goes (D) go</div>
+      <div class="q-item"><span class="ans-slot">B</span> 13. Did you _____ TV last night? (A) watched (B) watch (C) watching (D) watches</div>
+      <div class="q-item"><span class="ans-slot">C</span> 14. Tom didn't _____ breakfast this morning. (A) ate (B) eating (C) eat (D) eats</div>
+      <div class="q-item"><span class="ans-slot">C</span> 15. My parents _____ very busy yesterday. (A) was (B) did (C) were (D) be</div>
+    </section>
+
+    <!-- ==========================================
+         (二Ab) & (二B)
+         ========================================== -->
+    <section id="sec-2Ab" class="section-card">
+      <div class="section-header">
+        <h2>(二Ab) 115-1 異想教室 英文科 第一次段考</h2>
+        <div class="info-fields">_____班 姓名：____________</div>
+      </div>
+      <p><em>(答案欄格式、一、改寫句型、三、閱讀測驗（David’s Schedule）、二、單字配對、四、聽力測驗、五、文法選擇均完整收錄，解答同 二Aa 卷)</em></p>
+    </section>
+
+    <section id="sec-2B" class="section-card">
+      <div class="section-header">
+        <h2>(二B) 115-1 異想教室 英文科 第一次段考</h2>
+        <div class="info-fields">_____班 姓名：____________</div>
+      </div>
+      <div class="part-title">一、抄寫句型</div>
+      <div class="q-box">
+        1. It was good. I visited my aunt in India.<br>
+        2. I sent you a postcard from Australia.<br>
+        3. One morning, a man said "go die" to me on the street.<br>
+        4. But in fact, he meant "good day."
+      </div>
+      <div class="part-title">三、閱讀測驗 (David's Schedule)</div>
+      <div class="q-item"><span class="ans-slot">C</span> 6. Today is Saturday. What is David doing at 9:10 a.m.? (A) He is playing basketball. (B) He is teaching English. (C) He is having breakfast. (D) He is playing with his dog.</div>
+      <div class="q-item"><span class="ans-slot">B</span> 7. David is buying apples and milk now. What day is today? (A) It’s Sunday. (B) It’s Monday. (C) It’s Friday. (D) It’s Saturday.</div>
+      <div class="q-item"><span class="ans-slot">C</span> 8. David is talking with Mr. Li. What time is it? (A) It’s 2:05 p.m. (B) It’s 3:45 p.m. (C) It’s 10:40 a.m. (D) It’s 5:25 a.m.</div>
+      <p><em>(其餘單字配對 1-20、聽力 1-10、文法 1-8 題與 二Aa 相同)</em></p>
+    </section>
+
+    <!-- ==========================================
+         (三A)
+         ========================================== -->
+    <section id="sec-3A" class="section-card">
+      <div class="section-header">
+        <h2>(三A) 115-1 異想教室 英文科 第一次段考</h2>
+        <div class="info-fields">_____班 姓名：____________</div>
+      </div>
+
+      <div class="part-title">答案欄</div>
+      <table>
+        <tr>
+          <th>閱讀測驗</th><th colspan="4">聽力測驗</th><th colspan="3">文法選擇</th><th colspan="4">單字配對</th>
+        </tr>
+        <tr>
+          <td>1 <span class="ans-fill">B</span></td><td>1 <span class="ans-fill"></span></td><td>6 <span class="ans-fill"></span></td><td>11 <span class="ans-fill"></span></td><td>16 <span class="ans-fill">C</span></td>
+          <td>1 <span class="ans-fill">A</span></td><td>6 <span class="ans-fill">B</span></td><td>11 <span class="ans-fill">A</span></td>
+          <td>1 <span class="ans-fill">C</span></td><td>6 <span class="ans-fill">C</span></td><td>11 <span class="ans-fill">D</span></td><td>16 <span class="ans-fill">C</span></td>
+        </tr>
+        <tr>
+          <td>2 <span class="ans-fill">B</span></td><td>2 <span class="ans-fill"></span></td><td>7 <span class="ans-fill"></span></td><td>12 <span class="ans-fill"></span></td><td>17 <span class="ans-fill">C</span></td>
+          <td>2 <span class="ans-fill">B</span></td><td>7 <span class="ans-fill">D</span></td><td>12 <span class="ans-fill">D</span></td>
+          <td>2 <span class="ans-fill">D</span></td><td>7 <span class="ans-fill">D</span></td><td>12 <span class="ans-fill">C</span></td><td>17 <span class="ans-fill">A</span></td>
+        </tr>
+        <tr>
+          <td>3 <span class="ans-fill">C</span></td><td>3 <span class="ans-fill"></span></td><td>8 <span class="ans-fill"></span></td><td>13 <span class="ans-fill"></span></td><td>18 <span class="ans-fill">A</span></td>
+          <td>3 <span class="ans-fill">A</span></td><td>8 <span class="ans-fill">D</span></td><td>13 <span class="ans-fill">B</span></td>
+          <td>3 <span class="ans-fill">A</span></td><td>8 <span class="ans-fill">B</span></td><td>13 <span class="ans-fill">A</span></td><td>18 <span class="ans-fill">B</span></td>
+        </tr>
+        <tr>
+          <td>4 <span class="ans-fill">C</span></td><td>4 <span class="ans-fill"></span></td><td>9 <span class="ans-fill"></span></td><td>14 <span class="ans-fill"></span></td><td>19 <span class="ans-fill">A</span></td>
+          <td>4 <span class="ans-fill">C</span></td><td>9 <span class="ans-fill">B</span></td><td>14 <span class="ans-fill">C</span></td>
+          <td>4 <span class="ans-fill">B</span></td><td>9 <span class="ans-fill">A</span></td><td>14 <span class="ans-fill">B</span></td><td>19 <span class="ans-fill">D</span></td>
+        </tr>
+        <tr>
+          <td>5 <span class="ans-fill">B</span></td><td>5 <span class="ans-fill"></span></td><td>10 <span class="ans-fill"></span></td><td>15 <span class="ans-fill"></span></td><td>20 <span class="ans-fill">B</span></td>
+          <td>5 <span class="ans-fill">D</span></td><td>10 <span class="ans-fill">C</span></td><td>15 <span class="ans-fill">C</span></td>
+          <td>5 <span class="ans-fill">E</span></td><td>10 <span class="ans-fill">E</span></td><td>15 <span class="ans-fill">E</span></td><td>20 <span class="ans-fill">E</span></td>
+        </tr>
+      </table>
+
+      <div class="part-title">一、把現在式改成過去式</div>
+      <div class="q-item"><span class="ans-slot">played</span> 1. I play basketball every day. → I <span class="ans-fill">played</span> basketball yesterday.</div>
+      <div class="q-item"><span class="ans-slot">liked</span> 2. Amy likes dogs. → Amy <span class="ans-fill">liked</span> dogs before.</div>
+      <div class="q-item"><span class="ans-slot">studied</span> 3. We study English every day. → We <span class="ans-fill">studied</span> English yesterday.</div>
+      <div class="q-item"><span class="ans-slot">went</span> 4. They go home every day. → They <span class="ans-fill">went</span> home yesterday.</div>
+
+      <div class="part-title">二、閱讀測驗 (Milk Shop 迷客夏菜單飲品點餐)</div>
+      <div class="q-box">
+        <strong>Reading Comprehension: Ordering Drinks</strong><br>
+        Clerk: May I help you?<br>
+        Tom: Yes, I want a large Black Tea with no sugar and no ice.<br>
+        Mary: And I want a medium Pearl Milk Tea.<br>
+        Clerk: Sure. Would you like to add anything to your pearl milk tea?<br>
+        Mary: Yes, please add some pudding.<br>
+        Clerk: No problem. That will be one large drink and one medium drink.<br>
+        Tom: How much is the total?<br>
+        Clerk: That’s $130 in total.
+      </div>
+      <div class="q-item"><span class="ans-slot">B</span> 1. What drink does Tom order? (A) Green Tea (B) Black Tea (C) Lemon Juice (D) Coffee Latte</div>
+      <div class="q-item"><span class="ans-slot">B</span> 2. What size is Mary’s drink? (A) Small (B) Medium (C) Large (D) Extra Large</div>
+      <div class="q-item"><span class="ans-slot">C</span> 3. What does Mary add (加料) to her drink? (A) Pearl (B) Coconut Jelly (C) Pudding (D) Honey</div>
+      <div class="q-item"><span class="ans-slot">C</span> 4. How does Tom want his ice level? (A) Regular Ice (B) Less Ice (C) No Ice (D) Warm</div>
+      <div class="q-item"><span class="ans-slot">B</span> 5. How much does Tom’s large Black Tea cost? (A) $55 (B) $65 (C) $100 (D) $130</div>
+
+      <div class="part-title">三、聽力測驗 (英三)</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 1. (A) potato (B) page (C) history ｜ <span class="ans-slot">( )</span> 2. (A) candy (B) soldier (C) chocolate</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 3. (A) bake (B) tired (C) language ｜ <span class="ans-slot">( )</span> 4. (A) century (B) chart (C) king</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 5. (A) topic (B) fry (C) national ｜ <span class="ans-slot">( )</span> 6. (A) excited (B) pumpkin (C) soldier</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 7. (A) tired (B) interested (C) century ｜ <span class="ans-slot">( )</span> 8. (A) delivery (B) history (C) boring</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 9. (A) page (B) button (C) language ｜ <span class="ans-slot">( )</span> 10. (A) chart (B) celebrate (C) bored</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 11. (A) discount (B) location (C) thick ｜ <span class="ans-slot">( )</span> 12. (A) helpful (B) offer (C) bunny</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 13. (A) driver (B) reason (C) interested ｜ <span class="ans-slot">( )</span> 14. (A) uniform (B) candy (C) surprising</div>
+      <div class="q-item"><span class="ans-slot">( )</span> 15. (A) chance (B) subject (C) soldier</div>
+      <div class="q-item"><span class="ans-slot">C</span> 16. (A) 剛開披薩盒 (B) 盒子全空摸肚子 (C) 拿走一半剩下半個披薩</div>
+      <div class="q-item"><span class="ans-slot">C</span> 17. (A) 沖水洗頭 (B) 拿剪刀梳子理髮 (C) 拿吹風機吹乾頭髮</div>
+      <div class="q-item"><span class="ans-slot">A</span> 18. (A) 拿單眼相機蹲著拍花 (B) 趴在草地上看花 (C) 生氣看著打碎的花瓶</div>
+      <div class="q-item"><span class="ans-slot">A</span> 19. (A) Of course not. (B) Yes, that would be great. (C) Sure. What are you waiting for?</div>
+      <div class="q-item"><span class="ans-slot">B</span> 20. (A) Leave the city. (B) Try some dishes. (C) Open a restaurant.</div>
+
+      <div class="part-title">四、文法選擇 (過去式變化與單選)</div>
+      <div class="q-item"><span class="ans-slot">A</span> 1. am ｜ <span class="ans-slot">B</span> 2. are ｜ <span class="ans-slot">A</span> 3. is ｜ <span class="ans-slot">C</span> 4. do ｜ <span class="ans-slot">D</span> 5. don’t (選項：A. was, B. were, C. did, D. didn't)</div>
+      <div class="q-item"><span class="ans-slot">B</span> 6. She _____ her homework last night. (A) finish (B) finished (C) finishing (D) finishes</div>
+      <div class="q-item"><span class="ans-slot">D</span> 7. Did Mom _____ dinner last night? (A) made (B) making (C) makes (D) make</div>
+      <div class="q-item"><span class="ans-slot">D</span> 8. They _____ at school yesterday. (A) did (B) was (C) be (D) were</div>
+      <div class="q-item"><span class="ans-slot">B</span> 9. Kevin _____ his teacher yesterday. (A) see (B) saw (C) seeing (D) sees</div>
+      <div class="q-item"><span class="ans-slot">C</span> 10. We didn't _____ basketball yesterday. (A) played (B) playing (C) play (D) plays</div>
+      <div class="q-item"><span class="ans-slot">A</span> 11. Dad _____ a book yesterday. (A) bought (B) buy (C) buying (D) buys</div>
+      <div class="q-item"><span class="ans-slot">D</span> 12. They didn't _____ to school yesterday. (A) went (B) going (C) goes (D) go</div>
+      <div class="q-item"><span class="ans-slot">B</span> 13. Did you _____ TV last night? (A) watched (B) watch (C) watching (D) watches</div>
+      <div class="q-item"><span class="ans-slot">C</span> 14. Tom didn't _____ breakfast this morning. (A) ate (B) eating (C) eat (D) eats</div>
+      <div class="q-item"><span class="ans-slot">C</span> 15. My parents _____ very busy yesterday. (A) was (B) did (C) were (D) be</div>
+
+      <div class="part-title">五、單字配對 (英三)</div>
+      <table>
+        <tr>
+          <td><span class="ans-slot">C</span> 1. potato</td><td>C. 馬鈴薯</td>
+          <td><span class="ans-slot">C</span> 6. history</td><td>C. 歷史</td>
+          <td><span class="ans-slot">D</span> 11. interested</td><td>D. 感興趣的</td>
+          <td><span class="ans-slot">C</span> 16. delivery</td><td>C. 運送</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">D</span> 2. chocolate</td><td>D. 巧克力</td>
+          <td><span class="ans-slot">D</span> 7. language</td><td>D. 語言</td>
+          <td><span class="ans-slot">C</span> 12. tired</td><td>C. 疲勞的</td>
+          <td><span class="ans-slot">A</span> 17. chart</td><td>A. 圖表</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">A</span> 3. candy</td><td>A. 糖果</td>
+          <td><span class="ans-slot">B</span> 8. king</td><td>B. 國王</td>
+          <td><span class="ans-slot">A</span> 13. excited</td><td>A. 感到興奮的</td>
+          <td><span class="ans-slot">B</span> 18. location</td><td>B. 位置</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">B</span> 4. bake</td><td>B. 烘烤</td>
+          <td><span class="ans-slot">A</span> 9. celebrate</td><td>A. 慶祝</td>
+          <td><span class="ans-slot">B</span> 14. tiring</td><td>B. 令人疲倦的</td>
+          <td><span class="ans-slot">D</span> 19. discount</td><td>D. 折扣</td>
+        </tr>
+        <tr>
+          <td><span class="ans-slot">E</span> 5. fry</td><td>E. 油炸；油煎</td>
+          <td><span class="ans-slot">E</span> 10. soldier</td><td>E. 士兵；軍人</td>
+          <td><span class="ans-slot">E</span> 15. bored</td><td>E. 感到厭煩的</td>
+          <td><span class="ans-slot">E</span> 20. button</td><td>E. 按鈕；鈕扣</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- ==========================================
+         (三B)
+         ========================================== -->
+    <section id="sec-3B" class="section-card">
+      <div class="section-header">
+        <h2>(三B) 115-1 異想教室 英文科 第一次段考</h2>
+        <div class="info-fields">_____班 姓名：____________</div>
+      </div>
+
+      <div class="part-title">一、把現在式改成過去式（同 三A）</div>
+      <div class="q-item"><span class="ans-slot">played</span> 1. I play basketball every day. → I <span class="ans-fill">played</span> basketball yesterday.</div>
+      <div class="q-item"><span class="ans-slot">liked</span> 2. Amy likes dogs. → Amy <span class="ans-fill">liked</span> dogs before.</div>
+      <div class="q-item"><span class="ans-slot">studied</span> 3. We study English every day. → We <span class="ans-fill">studied</span> English yesterday.</div>
+      <div class="q-item"><span class="ans-slot">went</span> 4. They go home every day. → They <span class="ans-fill">went</span> home yesterday.</div>
+
+      <div class="part-title">二、閱讀測驗 (RESTAURANT MENU 餐廳價目表)</div>
+      <div class="q-box">
+        Amy: I want a bowl of Bean Soup and a piece of Toast.<br>
+        Ben: I want a Cheese Sandwich.<br>
+        Lea: I am not hungry. I only want a cup of Tea.<br>
+        Amy: Ben, do you want a drink? &nbsp;&nbsp; Ben: Yes, I want a cup of Coffee.<br>
+        Lea: Let's also have a bowl of French Fries. &nbsp;&nbsp; Amy: Good idea!<br>
+        <small>菜單價格：Steak $25, Salad $6, French Fries $5, Bean Soup $5, Coffee $4, Fried Chicken $12, Pizza $18, Hamburger $8, Vegetable Soup $5, Tea $4, Pork $15, Ham Sandwich $7, Cheese Sandwich $7, Bun $3, Toast $3</small>
+      </div>
+      <div class="q-item"><span class="ans-slot">A</span> 1. What does Amy want to eat? (A) Bean Soup and Toast (B) Vegetable Soup and Bun (C) Salad and Pizza (D) Steak and Pork</div>
+      <div class="q-item"><span class="ans-slot">B</span> 2. How many people order a drink? (A) One (B) Two (C) Three (D) Four</div>
+      <div class="q-item"><span class="ans-slot">C</span> 3. What snack (點心) do they share? (A) A Bun (B) A piece of Toast (C) A bowl of French Fries (D) A plate of Fried Chicken</div>
+      <div class="q-item"><span class="ans-slot">C</span> 4. How much is Amy's order (Soup + Toast)? (A) $6 (B) $7 (C) $8 (D) $9</div>
+
+      <p><em>(聽力測驗 1-16 題、文法選擇 6-10 題、單字配對 1-15 題與 三A 題庫相同)</em></p>
+    </section>
+
+    <!-- ==========================================
+         (三C)
+         ========================================== -->
+    <section id="sec-3C" class="section-card">
+      <div class="section-header">
+        <h2>(三C) 115-1 異想教室 英文科 第一次段考</h2>
+        <div class="info-fields">_____班 姓名：____________</div>
+      </div>
+
+      <div class="part-title">一、完整句：排列造句</div>
+      <div class="q-item">
+        <span class="ans-slot">She</span>
+        <div>1. 她是我的媽媽。 my / She / mother / is<br>→ <span class="ans-fill">She is my mother.</span></div>
+      </div>
+      <div class="q-item">
+        <span class="ans-slot">I</span>
+        <div>3. 我是她的姊妹。 her / sister / I / am<br>→ <span class="ans-fill">I am her sister.</span></div>
+      </div>
+      <div class="q-item">
+        <span class="ans-slot">They</span>
+        <div>5. 他們是我們的老師。 teachers / They / our / are<br>→ <span class="ans-fill">They are our teachers.</span></div>
+      </div>
+
+      <div class="part-title">二、閱讀測驗 (RESTAURANT MENU 同三B)</div>
+      <div class="q-item"><span class="ans-slot">A</span> 1. What does Amy want to eat? ｜ <span class="ans-slot">B</span> 2. How many people order a drink? ｜ <span class="ans-slot">C</span> 3. What snack do they share? ｜ <span class="ans-slot">C</span> 4. Amy's order ($5 + $3 = $8)</div>
+
+      <div class="part-title">四、文法選擇</div>
+      <div class="q-item"><span class="ans-slot">B</span> 1. Where is ______ pencil case? (A) you (B) your (C) yours</div>
+      <div class="q-item"><span class="ans-slot">C</span> 2. Tom and Mary ______ busy now. (A) am (B) is (C) are</div>
+      <div class="q-item"><span class="ans-slot">A</span> 3. ______ are my new classmates. (A) You (B) Your (C) Yours</div>
+      <div class="q-item"><span class="ans-slot">B</span> 4. Look at ______! She is dancing. (A) she (B) her (C) hers</div>
+      <div class="q-item"><span class="ans-slot">A</span> 5. That is not my bag. It is ______ bag. (A) his (B) he (C) him</div>
+
+      <p><em>(聽力測驗與單字配對 1-15 題與 三A 題庫相同)</em></p>
+    </section>
+
+    <!-- ==========================================
+         聽力測驗題本原稿
+         ========================================== -->
+    <section id="sec-audio-script" class="section-card">
+      <div class="section-header">
+        <h2>🎧 聽力測驗題本與對話逐字稿</h2>
+      </div>
+
+      <div class="part-title">英二聽力測驗題目 16-20</div>
+      <div class="q-item"><span class="ans-slot">16. B</span> <div>1. The girl fell down the stairs and hurt her legs. (對應圖 B：按著膝蓋)</div></div>
+      <div class="q-item"><span class="ans-slot">17. B</span> <div>2. They went to a music festival at a beach yesterday. (對應圖 B/C：海灘戴耳機聽歌)</div></div>
+      <div class="q-item"><span class="ans-slot">18. C</span> <div>3. John brought some ice cream to Linda yesterday. (對應圖 C：門口捧著冰淇淋)</div></div>
+      <div class="q-item"><span class="ans-slot">19. B</span> <div>4. How was your basketball camp last week? → (B) It was a great experience.</div></div>
+      <div class="q-item">
+        <span class="ans-slot">20. C</span>
+        <div>
+          5. W: How do you feel?<br>
+          M: Dr. Lynn, I feel terrible. My ears hurt very much.<br>
+          W: Let me see. Hmm, there’s some water in them.<br>
+          M: Yeah. I swam for two hours yesterday afternoon.<br>
+          W: I see. Take this medicine and get some rest. Don’t swim this week.<br>
+          Q: Where is the man? → (C) In a hospital.
+        </div>
+      </div>
+
+      <div class="part-title">英三聽力測驗題目 16-20</div>
+      <div class="q-item"><span class="ans-slot">16. C</span> <div>16. The boy has eaten half of the pizza. (對應圖 C：吃了一半披薩)</div></div>
+      <div class="q-item"><span class="ans-slot">17. C</span> <div>17. The man is using a hairdryer to dry the woman’s hair. (對應圖 C：吹風機吹乾頭髮)</div></div>
+      <div class="q-item"><span class="ans-slot">18. A</span> <div>18. Taking pictures of flowers is one of the woman’s interests. (對應圖 A：拿相機拍花)</div></div>
+      <div class="q-item"><span class="ans-slot">19. A</span> <div>19. Do you mind if I use your computer? → (A) Of course not.</div></div>
+      <div class="q-item">
+        <span class="ans-slot">20. B</span>
+        <div>
+          20. W: Where in the city are we?<br>
+          M: We’re on the south side of the city.<br>
+          W: I’ve never been to this area. What are we doing here?<br>
+          M: I’m taking you to a famous restaurant. It has the best burgers and fries in the world.<br>
+          W: Oh, I love a good burger.<br>
+          Q: What are the man and the woman going to do? → (B) Try some dishes.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    let showAnswers = false; // 預設開啟時隱藏解答 (清除答案狀態)
+
+    function toggleAnswers() {
+      showAnswers = !showAnswers;
+      const body = document.body;
+      const btnText = document.getElementById('btn-text');
+      const btnIcon = document.getElementById('btn-icon');
+      
+      if (showAnswers) {
+        body.classList.remove('hide-ans');
+        body.classList.add('show-ans');
+        btnText.textContent = '隱藏答案 (切換為測驗模式)';
+        btnIcon.textContent = '👁️';
+      } else {
+        body.classList.remove('show-ans');
+        body.classList.add('hide-ans');
+        btnText.textContent = '顯示解答 (目前：測驗模式)';
+        btnIcon.textContent = '📝';
+      }
+    }
+  </script>
+</body>
+</html>
