@@ -172,9 +172,9 @@
         <div id="screen-shop" class="screen-area hidden" style="width: 100%;">
             <div class="gacha-machine">
                 <h2 style="color: var(--text-brown); margin:0;">時空彩蛋機</h2>
-                <p style="color: #888; font-size: 0.9rem;">50 金幣抽一次，收集 10 個經典家具！</p>
+                <p id="gacha-main-hint" style="color: #888; font-size: 0.9rem;">50 金幣抽一次，收集 10 個經典家具！</p>
                 <div id="machine-egg" class="machine-icon">🥚</div>
-                <p style="color: var(--barn-red); font-weight: bold; font-size: 0.85rem; margin-bottom: 5px;">(每 5 抽必出裝飾)</p>
+                <p id="gacha-pity-hint" style="color: var(--barn-red); font-weight: bold; font-size: 0.85rem; margin-bottom: 5px;">(每 5 抽必出裝飾)</p>
                 
                 <div class="progress-bar-container">
                     <div id="deco-progress-bar" class="progress-bar-fill"></div>
@@ -421,6 +421,11 @@
         const progress = gameState.ownedDecos.length;
         document.getElementById('deco-progress-text').innerText = `${progress}/10`;
         document.getElementById('deco-progress-bar').style.width = `${(progress / 10) * 100}%`;
+        const allDecosCollected = progress >= 10;
+        document.getElementById('gacha-main-hint').innerText = allDecosCollected
+            ? "🎉 家具全部收集完成！現在每抽必得飼料，繼續陪小啾長大吧！"
+            : "50 金幣抽一次，收集 10 個經典家具！";
+        document.getElementById('gacha-pity-hint').classList.toggle('hidden', allDecosCollected);
 
         let stageInfo = getPetStage(gameState.exp);
         document.getElementById('sidebar-pet-icon').innerText = stageInfo.icon;
@@ -557,7 +562,6 @@
     // --- 7. 扭蛋商城 ---
     function startGacha() {
         if (gameState.coins < 50) return alert("金幣不夠囉！去地圖答題賺金幣吧！");
-        if (gameState.ownedDecos.length >= 10) return alert("太強了！您已經收集完全部 10 個經典家具！");
 
         gameState.coins -= 50; gameState.drawCount++; updateUI();
         const egg = document.getElementById('machine-egg');
