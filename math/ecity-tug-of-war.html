@@ -402,7 +402,9 @@
       }
       .app-layout {
         max-width: 100%;
-        height: calc(100vh - 58px);
+        height: auto;
+        min-height: 0;
+        overflow: hidden;
         display: grid;
         grid-template-columns: 32% 36% 32%;
         padding: 12px 18px;
@@ -414,12 +416,14 @@
       .calc-b {
         order: 1;
         height: 100%;
+        min-height: 0;
         border-radius: 20px;
         padding: 16px;
       }
       .tug-arena {
         order: 2;
         height: 100%;
+        min-height: 0;
         border-radius: 20px;
         padding: 24px 16px;
         display: flex;
@@ -429,6 +433,7 @@
       .calc-r {
         order: 3;
         height: 100%;
+        min-height: 0;
         border-radius: 20px;
         padding: 16px;
       }
@@ -473,6 +478,24 @@
         font-size: 2.1rem;
         border-radius: 14px;
       }
+    }
+
+    /* 大電視採較矮的瀏覽器視窗時，保留題目字級並壓縮非操作區。 */
+    @media (min-width: 1024px) and (max-height: 800px) {
+      .control-header { padding: 4px 12px; gap: 10px; }
+      .app-layout { padding: 7px 14px; gap: 12px; }
+      .calc-b, .calc-r { padding: 10px; }
+      .calc-head { font-size: 1.35rem; margin-bottom: 2px; }
+      .q-text { font-size: 1.85rem; min-height: 58px; }
+      .ans-box { height: 50px; font-size: 2rem; margin-bottom: 8px; }
+      .key-grid { min-height: 0; gap: 5px; }
+      .btn-k { min-height: 38px; font-size: 1.8rem; }
+      .tug-arena { padding: 12px; }
+      .status-bar { font-size: 1.5rem; margin-bottom: 4px; }
+      .clock-badge { font-size: 1.25rem; padding: 5px 18px; }
+      .rope-track { height: 110px; }
+      .puller-emoji { font-size: 48px; }
+      .rope-cable { width: 190px; height: 10px; }
     }
   </style>
 </head>
@@ -593,7 +616,7 @@
   <div class="modal-curtain" id="endModal">
     <div class="modal-box">
       <div class="modal-t" id="winHead">🏆 藍隊獲勝！</div>
-      <div class="modal-sub" id="winDesc">率先領先 7 分！</div>
+      <div class="modal-sub" id="winDesc">比賽結束！</div>
       <div class="modal-btns">
         <button class="modal-btn-act btn-act-replay" id="mBtnReplay">再玩一次</button>
         <button class="modal-btn-act btn-act-change" id="mBtnChange">更換題庫</button>
@@ -823,23 +846,29 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // 更新拔河位置與判定領先 7 分
+    function getWinningLead() {
+      return totalDuration === 60 ? 3 : 5;
+    }
+
+    // 更新拔河位置，並依比賽時間判定提前獲勝門檻
     function updateTugPosition() {
       const diff = teamState[1].score - teamState[2].score; // 藍正(往左), 紅負(往右)
-      const clamped = Math.max(-7, Math.min(7, diff));
+      const winningLead = getWinningLead();
+      const clamped = Math.max(-winningLead, Math.min(winningLead, diff));
 
       const isTV = window.innerWidth >= 1024;
-      const pxPerStep = isTV ? 30 : 18;
+      const ropeTrack = ropeBundle.parentElement;
+      const measuredTravel = (ropeTrack.clientWidth - ropeBundle.offsetWidth) / 2 - 8;
+      const maxTravel = Math.max(0, measuredTravel || (isTV ? 120 : 54));
 
       // 藍隊領先往左 (-px)，紅隊領先往右 (+px)
-      const movePixels = -clamped * pxPerStep;
+      const movePixels = -(clamped / winningLead) * maxTravel;
       ropeBundle.style.transform = `translateX(${movePixels}px)`;
 
-      // 領先 7 分獲勝判定
-      if (diff >= 7) {
-        stopAndFinish("🏆 藍隊獲勝！", "領先達 7 分，拔河獲勝！");
-      } else if (diff <= -7) {
-        stopAndFinish("🏆 紅隊獲勝！", "領先達 7 分，拔河獲勝！");
+      if (diff >= winningLead) {
+        stopAndFinish("🏆 藍隊獲勝！", `領先達 ${winningLead} 分，拔河獲勝！`);
+      } else if (diff <= -winningLead) {
+        stopAndFinish("🏆 紅隊獲勝！", `領先達 ${winningLead} 分，拔河獲勝！`);
       }
     }
 
@@ -938,8 +967,10 @@
     }
 
     function stopAndFinish(title, reason) {
+      if (!isRunning) return;
       isRunning = false;
       clearInterval(timerLoop);
+      timerLoop = null;
       teamState[1].locked = true;
       teamState[2].locked = true;
       grid1.classList.add("disabled");
@@ -957,6 +988,7 @@
     function resetToIdle() {
       isRunning = false;
       clearInterval(timerLoop);
+      timerLoop = null;
       endModal.style.display = "none";
 
       teamState[1] = { score: 0, ans: "", input: "", locked: true, lastQ: "" };
@@ -986,8 +1018,8 @@
       isRunning = true;
       endModal.style.display = "none";
 
-      teamState[1].score = 0;
-      teamState[2].score = 0;
+      teamState[1] = { score: 0, ans: "", input: "", locked: true, lastQ: "" };
+      teamState[2] = { score: 0, ans: "", input: "", locked: true, lastQ: "" };
       document.getElementById("sc-1").textContent = "0";
       document.getElementById("sc-2").textContent = "0";
       ropeBundle.style.transform = "translateX(0px)";

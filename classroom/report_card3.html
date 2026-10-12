@@ -236,15 +236,35 @@
       white-space: nowrap;
     }
     .ratio-section + .ratio-section { margin-top: 6mm; }
-    .ratio-heading {
-      margin: 0 0 2mm;
-      padding: 1.5mm 2.5mm;
-      border-left: 4px solid #111827;
-      background: #f1f5f9;
-      font-size: .72em;
-      font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
-      font-weight: 700;
+    .table-block { margin-top: 2mm; break-inside: avoid; page-break-inside: avoid; }
+    .ratio-guide {
+      width: 100%;
+      min-height: 14mm;
+      display: grid;
+      grid-template-columns: 10% 9% 15% 15% 15% 13% 23%;
+      align-items: end;
+      margin: 0 auto 1.5mm;
     }
+    .ratio-house {
+      width: 18mm;
+      height: 14mm;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 2.5mm;
+      background: #eef2f7;
+      color: #111827;
+      clip-path: polygon(0 0, 100% 0, 100% 68%, 50% 100%, 0 68%);
+      box-shadow: inset 0 0 0 .35mm #111827;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      font-size: 11.5pt;
+      font-weight: 800;
+      line-height: 1;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .ratio-house.daily { grid-column: 5; justify-self: center; }
+    .ratio-house.exam { grid-column: 6; justify-self: center; }
     .ratio-note {
       margin: 1.8mm 0 0;
       font-size: .62em;
@@ -312,7 +332,7 @@
           <span>成績排列方式</span>
           <select id="viewMode">
             <option value="class" selected>依班級排列（同班集中）</option>
-            <option value="ratio">依比例排列（50%／100%分區）</option>
+            <option value="ratio">比例分區｜箭頭</option>
           </select>
         </label>
       </section>
@@ -531,6 +551,17 @@
       </table>`;
     }
 
+    function ratioHouseHtml(ratio, kind) {
+      return `<div class="ratio-house ${kind}" aria-label="${kind === "daily" ? "日常" : "定期"}評量 ${ratio}%">${ratio}%</div>`;
+    }
+
+    function ratioGuideHtml(dailyRatio) {
+      return `<div class="ratio-guide" aria-label="成績比例箭頭">
+        ${ratioHouseHtml(dailyRatio, "daily")}
+        ${ratioHouseHtml(100, "exam")}
+      </div>`;
+    }
+
     function noticeHtml(group) {
       const [year, semester, period] = $("#exam").value.split("|");
       const students = group.students.filter(student => !excluded.has(student.id));
@@ -543,8 +574,7 @@
 
         if (fiftyStudents.length) {
           bodyHtml += `<section class="ratio-section">
-            <h3 class="ratio-heading">日常評量參考比例：50%｜定期評量：100%</h3>
-            ${gradeTableHtml(fiftyStudents, false)}
+            <div class="table-block">${ratioGuideHtml(50)}${gradeTableHtml(fiftyStudents, false)}</div>
             <div class="ratio-note">
               <p>異想教室上課節數未達原班 50%者，請老師參閱此成績，依 50%比例評定該生日常成績。</p>
             </div>
@@ -553,8 +583,7 @@
 
         if (hundredStudents.length) {
           bodyHtml += `<section class="ratio-section">
-            <h3 class="ratio-heading">日常評量評定比例：100%｜定期評量：100%</h3>
-            ${gradeTableHtml(hundredStudents, false)}
+            <div class="table-block">${ratioGuideHtml(100)}${gradeTableHtml(hundredStudents, false)}</div>
             <div class="ratio-note">
               <p>異想教室上課節數超過原班 50%者，由異想教室評定 100%日常成績。</p>
             </div>

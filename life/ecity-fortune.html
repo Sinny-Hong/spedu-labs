@@ -14,6 +14,7 @@
       font-family: 'Noto Sans TC', sans-serif;
       user-select: none;
       -webkit-user-select: none;
+      background: transparent !important;
     }
     .font-cinzel {
       font-family: 'Cinzel', serif;
@@ -74,13 +75,18 @@
       background-size: 200% 100%;
       animation: shimmer 2.5s infinite linear;
     }
+
+    .perspective-1000 {
+      width: min(310px, calc(100vw - 24px)) !important;
+      height: min(485px, calc(100dvh - 24px)) !important;
+    }
     @keyframes shimmer {
       0% { background-position: -200% 0; }
       100% { background-position: 200% 0; }
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-3 sm:p-4 overflow-hidden select-none cursor-pointer">
+<body class="text-slate-100 min-h-screen flex flex-col items-center justify-center p-3 overflow-hidden select-none cursor-pointer">
 
   <!-- 核心卡牌舞台（尺寸縮小約 10%：寬 280-310px，高 455-485px） -->
   <main class="w-full flex items-center justify-center pointer-events-none">
