@@ -61,6 +61,9 @@ button{cursor:pointer}
 .status-group{display:flex;align-items:center;gap:9px;color:#178f4b;font-weight:700;font-size:14px}
 .online-dot{width:9px;height:9px;background:#22c55e;border-radius:50%}
 .ghost-btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 12px;color:var(--ink);text-decoration:none}
+.test-lab-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 12px;color:var(--navy);text-decoration:none;font-weight:900}
+.test-lab-btn:hover{background:#f3f6fb}
+.test-lab-btn svg{width:18px;height:18px;stroke-width:2.1}
 
 .workspace{height:calc(100vh - 100px);display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:16px;align-items:stretch}
 .content-panel,.clock-panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
@@ -272,6 +275,7 @@ button{cursor:pointer}
   .topbar{display:block;height:auto;min-height:54px;padding-left:43px}
   .topbar h1{font-size:24px}
   .status-group{margin-top:11px;justify-content:flex-start;flex-wrap:wrap}
+  .test-lab-btn{padding:7px 10px}
   .status-group span:not(.online-dot){display:none}
   .workspace{height:auto;grid-template-columns:1fr}
   .tabs{overflow-x:auto;display:flex}.tab{min-width:105px}

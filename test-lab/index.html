@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test Lab｜測試區總入口</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --navy: #0b2f5f;
+      --navy-light: #174e70;
+      --gold: #f0a426;
+      --paper: #f4f7f9;
+      --line: #b9c9d5;
+      --muted: #607386;
+      --bar-height: 54px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body {
+      display: grid;
+      grid-template-rows: var(--bar-height) minmax(0, 1fr);
+      background: var(--paper);
+      color: #20374d;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+    }
+
+    .lab-bar {
+      display: grid;
+      grid-template-columns: minmax(240px, 390px) minmax(160px, 1fr) auto;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+      padding: 6px 12px;
+      border-bottom: 1px solid #082341;
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      box-shadow: 0 3px 14px rgba(11, 47, 95, .2);
+    }
+
+    .picker-wrap { position: relative; min-width: 0; }
+    .picker-label {
+      position: absolute;
+      top: -7px;
+      left: 11px;
+      z-index: 1;
+      padding: 0 5px;
+      background: var(--navy);
+      color: #c9d9e6;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    #test-picker {
+      width: 100%;
+      height: 38px;
+      padding: 0 38px 0 13px;
+      border: 1px solid #8fb1c8;
+      border-radius: 9px;
+      background: #fff;
+      color: var(--navy);
+      font: 800 15px/1.2 inherit;
+      cursor: pointer;
+    }
+
+    #test-picker:focus-visible,
+    .lab-action:focus-visible { outline: 3px solid #ffd27a; outline-offset: 2px; }
+
+    .current-title {
+      min-width: 0;
+      overflow: hidden;
+      color: #fff;
+      font-size: clamp(15px, 1.45vw, 21px);
+      font-weight: 900;
+      line-height: 1.25;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .current-title small {
+      display: block;
+      margin-bottom: 2px;
+      color: #bcd0df;
+      font-size: 10px;
+      letter-spacing: .12em;
+    }
+
+    .lab-actions { display: flex; gap: 8px; align-items: center; }
+    .lab-action {
+      height: 36px;
+      padding: 0 11px;
+      border: 1px solid rgba(255, 255, 255, .3);
+      border-radius: 9px;
+      background: rgba(255, 255, 255, .11);
+      color: #fff;
+      font: 800 14px/1 inherit;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .lab-action:hover { background: rgba(255, 255, 255, .2); }
+    .lab-action.primary { border-color: #ffc35d; background: var(--gold); color: #302009; }
+
+    .viewer {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      margin: 4px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    #test-frame { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+
+    .notice {
+      position: absolute;
+      inset: 50% auto auto 50%;
+      width: min(520px, calc(100% - 32px));
+      transform: translate(-50%, -50%);
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .97);
+      box-shadow: 0 12px 35px rgba(31, 55, 75, .14);
+      color: var(--muted);
+      font-weight: 800;
+      text-align: center;
+    }
+    .notice[hidden] { display: none; }
+
+    @media (max-width: 820px) {
+      :root { --bar-height: 92px; }
+      .lab-bar {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: 40px 34px;
+        gap: 5px 8px;
+        padding: 6px 8px;
+      }
+      .picker-wrap { grid-column: 1; grid-row: 1; }
+      .current-title { grid-column: 1 / -1; grid-row: 2; padding-right: 220px; font-size: 14px; }
+      .current-title small { display: none; }
+      .lab-actions { grid-column: 2; grid-row: 1 / 3; align-self: end; gap: 5px; }
+      .lab-action { width: 40px; padding: 0; font-size: 0; }
+      .lab-action::before { font-size: 19px; }
+      .lab-action[data-action="home"]::before { content: "⌂"; }
+      .lab-action[data-action="reload"]::before { content: "↻"; }
+      .lab-action[data-action="open"]::before { content: "↗"; }
+    }
+
+    @media (max-width: 480px) {
+      .current-title { padding-right: 0; }
+      .viewer { margin: 2px; }
+      .lab-action { width: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="lab-bar" aria-label="Test Lab 共用工具列">
+    <div class="picker-wrap">
+      <label class="picker-label" for="test-picker">切換測試頁</label>
+      <select id="test-picker" aria-label="切換測試頁"></select>
+    </div>
+    <div class="current-title" id="current-title" aria-live="polite">
+      <small>TEST LAB</small>
+      <span>正在建立目錄</span>
+    </div>
+    <nav class="lab-actions" aria-label="頁面操作">
+      <button class="lab-action" type="button" data-action="home" title="返回網站首頁">返回首頁</button>
+      <button class="lab-action" type="button" data-action="reload" title="重新載入目前頁面">重新載入</button>
+      <button class="lab-action primary" type="button" data-action="open" title="在新視窗開啟目前測試頁">另開視窗</button>
+    </nav>
+  </header>
+
+  <main class="viewer">
+    <div class="notice" id="notice">正在掃描 Test Lab 測試頁……</div>
+    <iframe id="test-frame" title="Test Lab 測試頁內容"></iframe>
+  </main>
+
+  <script src="test-lab-manifest.js"></script>
+  <script>
+    (() => {
+      "use strict";
+
+      const REPOSITORY_API = "https://api.github.com/repos/Sinny-Hong/spedu-labs/contents/test-lab?ref=main";
+      const fallbackItems = Array.isArray(window.TEST_LAB_MANIFEST) ? window.TEST_LAB_MANIFEST : [];
+      const picker = document.getElementById("test-picker");
+      const frame = document.getElementById("test-frame");
+      const currentTitle = document.querySelector("#current-title span");
+      const notice = document.getElementById("notice");
+      let items = [];
+      let hasLoadedPage = false;
+
+      const naturalSort = (left, right) => left.file.localeCompare(right.file, undefined, { numeric: true, sensitivity: "base" });
+      const isTestHtml = (name) => /\.html$/i.test(name) && !/^(index|library)/i.test(name) && !/^[._~]/.test(name);
+
+      async function readTitle(file) {
+        try {
+          const response = await fetch(file, { cache: "no-store" });
+          if (!response.ok) throw new Error(String(response.status));
+          const html = await response.text();
+          const title = new DOMParser().parseFromString(html, "text/html").title.trim();
+          return title || file.replace(/\.html$/i, "");
+        } catch (_) {
+          return fallbackItems.find((item) => item.file === file)?.title || file.replace(/\.html$/i, "");
+        }
+      }
+
+      async function discoverItems() {
+        if (!/^https?:$/.test(location.protocol)) return fallbackItems.slice().sort(naturalSort);
+        try {
+          const response = await fetch(REPOSITORY_API, {
+            cache: "no-store",
+            headers: { Accept: "application/vnd.github+json" }
+          });
+          if (!response.ok) throw new Error(String(response.status));
+          const entries = await response.json();
+          const files = entries.filter((entry) => entry.type === "file" && isTestHtml(entry.name)).map((entry) => entry.name);
+          const discovered = await Promise.all(files.map(async (file) => ({ file, title: await readTitle(file) })));
+          return discovered.sort(naturalSort);
+        } catch (error) {
+          console.warn("Test Lab 自動目錄載入失敗，改用備援清單。", error);
+          return fallbackItems.slice().sort(naturalSort);
+        }
+      }
+
+      function currentItem() {
+        return items.find((item) => item.file === picker.value) || items[0] || null;
+      }
+
+      function loadItem(item) {
+        if (!item) {
+          notice.textContent = "目前沒有可顯示的測試頁。";
+          notice.hidden = false;
+          currentTitle.textContent = "Test Lab 尚無測試頁";
+          return;
+        }
+        notice.hidden = false;
+        notice.textContent = "正在載入測試頁……";
+        currentTitle.textContent = item.title;
+        picker.value = item.file;
+        frame.title = item.title;
+        if (hasLoadedPage) frame.contentWindow.location.replace(item.file);
+        else {
+          frame.src = item.file;
+          hasLoadedPage = true;
+        }
+      }
+
+      async function init() {
+        items = await discoverItems();
+        picker.innerHTML = "";
+        items.forEach((item) => {
+          const option = document.createElement("option");
+          option.value = item.file;
+          option.textContent = item.title;
+          picker.append(option);
+        });
+        loadItem(items[0] || null);
+      }
+
+      picker.addEventListener("change", () => loadItem(currentItem()));
+      frame.addEventListener("load", () => { notice.hidden = true; });
+
+      document.querySelector('[data-action="home"]').addEventListener("click", () => {
+        location.href = "../index.html";
+      });
+      document.querySelector('[data-action="reload"]').addEventListener("click", () => {
+        notice.hidden = false;
+        notice.textContent = "正在重新載入測試頁……";
+        frame.contentWindow.location.reload();
+      });
+      document.querySelector('[data-action="open"]').addEventListener("click", () => {
+        const item = currentItem();
+        if (item) window.open(item.file, "_blank", "noopener");
+      });
+
+      void init();
+    })();
+  </script>
+</body>
+</html>
