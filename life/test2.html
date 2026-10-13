@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>社會適應能力 - 全螢幕不滑動報讀測驗</title>
+    <title>社會適應能力 - 左右雙欄電視/手機適配版</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     
     <style>
@@ -38,19 +38,18 @@
 </head>
 <body class="h-[100dvh] w-screen overflow-hidden bg-slate-900 text-slate-800 flex flex-col justify-center items-center p-0 md:p-3">
 
-    <!-- 主容器：精確填滿全螢幕高度，禁止外部捲動 -->
+    <!-- 主外框容器 -->
     <div id="app-container" class="w-full h-full max-w-7xl bg-white md:rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         
-        <!-- 1. 頂部精簡控制列 (緊湊化設計) -->
-        <header class="flex-none bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-3 py-2 md:px-5 md:py-3 flex items-center justify-between shadow-sm">
+        <!-- 頂部精簡列 -->
+        <header class="flex-none bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-3 py-2 md:px-6 md:py-3 flex items-center justify-between shadow-sm">
             <div class="flex items-center gap-2">
                 <span class="bg-blue-500/40 border border-blue-300/30 text-white text-xs px-2 py-0.5 rounded-full font-bold hidden sm:inline">能力評估</span>
-                <h1 class="text-sm sm:text-base md:text-xl font-black tracking-wide flex items-center gap-1.5 truncate">
+                <h1 class="text-base md:text-xl font-black tracking-wide flex items-center gap-2 truncate">
                     <i class="fa-solid fa-graduation-cap"></i> 社會適應能力
                 </h1>
             </div>
 
-            <!-- 控制功能群組 -->
             <div class="flex items-center gap-2">
                 <!-- 模式切換 -->
                 <div class="flex bg-blue-900/40 p-0.5 rounded-lg border border-blue-400/30 text-xs">
@@ -64,93 +63,90 @@
 
                 <!-- 單元切換 -->
                 <select id="unit-select" onchange="changeUnit(this.value)" class="bg-blue-800/80 border border-blue-400/40 text-white rounded-lg px-2 py-1 text-xs sm:text-sm font-bold focus:outline-none">
-                    <!-- JS 生成 -->
                 </select>
 
-                <!-- 設定選單按鈕（語音/語速） -->
+                <!-- 設定按鈕 -->
                 <button onclick="toggleVoiceModal()" class="w-8 h-8 rounded-lg bg-blue-500/30 hover:bg-blue-500/50 flex items-center justify-center text-white" title="設定語音">
                     <i class="fa-solid fa-gear text-sm"></i>
                 </button>
             </div>
         </header>
 
-        <!-- 2. 進度與得分狀態列 -->
+        <!-- 進度指示條 -->
         <div class="flex-none bg-slate-50 border-b border-slate-200 px-3 py-1.5 md:px-6 md:py-2 flex items-center justify-between text-xs sm:text-sm font-bold">
             <div class="flex items-center gap-2 sm:gap-4">
-                <span id="unit-title-display" class="text-indigo-800 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                <span id="unit-title-display" class="text-indigo-800 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200 font-extrabold">
                     單元 1
                 </span>
-                <span id="progress-text" class="text-slate-500">
+                <span id="progress-text" class="text-slate-500 font-bold">
                     第 1 / 10 題
                 </span>
             </div>
 
-            <!-- 10 題進度點 (手機保持小圓點，大電視清晰可見) -->
-            <div class="flex items-center gap-1 sm:gap-1.5" id="progress-dots-container">
-                <!-- JS 動態生成 -->
-            </div>
+            <div class="flex items-center gap-1 sm:gap-1.5" id="progress-dots-container"></div>
 
-            <!-- 分數面板 -->
             <div class="flex items-center gap-1.5">
-                <span class="text-slate-500 text-xs hidden sm:inline">得分:</span>
+                <span class="text-slate-500 text-xs hidden sm:inline">目前得分:</span>
                 <span id="current-score-display" class="text-base sm:text-lg font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.2 rounded border border-emerald-200">0</span>
             </div>
         </div>
 
-        <!-- 3. 主答題區 (彈性伸縮，內容垂直置中，不產生拉動) -->
-        <main class="flex-1 overflow-hidden px-3.5 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 flex flex-col justify-between">
+        <!-- 主作答區：手機上下排版，平板/大電視自動切換為左右雙欄 -->
+        <main class="flex-1 overflow-hidden p-3.5 sm:p-5 md:p-6 lg:p-8 flex flex-col lg:flex-row gap-3.5 lg:gap-8">
             
-            <!-- 題目區域 -->
-            <div class="flex-none mb-2 md:mb-4">
-                <!-- 前言 (若有) -->
-                <div id="preamble-text" class="hidden mb-1.5 p-2 bg-amber-50 border-l-4 border-amber-400 text-amber-900 rounded-r text-xs sm:text-sm font-medium"></div>
-                
-                <div class="flex items-start gap-2.5 md:gap-4">
-                    <button id="replay-btn" onclick="speakCurrentQuestion()" class="flex-none bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white w-9 h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-xl shadow flex items-center justify-center transition-all" title="朗讀題目與選項">
-                        <i class="fa-solid fa-volume-high text-base sm:text-xl"></i>
-                    </button>
-                    <h2 id="question-text" class="text-base sm:text-xl md:text-2xl 2xl:text-3xl font-extrabold text-slate-800 leading-snug tracking-tight">
-                        載入中...
-                    </h2>
+            <!-- 【左欄】：題幹、報讀按鈕、即時回饋（大螢幕佔 45%） -->
+            <section class="flex-none lg:flex-1 lg:max-w-[45%] flex flex-col justify-between">
+                <div>
+                    <!-- 前言 (若有) -->
+                    <div id="preamble-text" class="hidden mb-2 p-2.5 bg-amber-50 border-l-4 border-amber-400 text-amber-900 rounded-r text-sm md:text-base font-bold"></div>
+                    
+                    <div class="flex items-start gap-3 md:gap-4">
+                        <button id="replay-btn" onclick="speakCurrentQuestion()" class="flex-none bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white w-11 h-11 md:w-14 md:h-14 2xl:w-16 2xl:h-16 rounded-2xl shadow flex items-center justify-center transition-all mt-0.5" title="朗讀題目與選項">
+                            <i class="fa-solid fa-volume-high text-xl md:text-2xl 2xl:text-3xl"></i>
+                        </button>
+                        <!-- 字體放大：手機 text-lg / 電視 text-2xl~text-3xl -->
+                        <h2 id="question-text" class="text-lg sm:text-xl md:text-2xl 2xl:text-3xl font-extrabold text-slate-800 leading-snug tracking-normal">
+                            載入中...
+                        </h2>
+                    </div>
                 </div>
-            </div>
 
-            <!-- 選項區：手機單欄，平板/電視 2x2 雙欄，高度精準分配 -->
-            <div id="options-list" class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-2.5 md:gap-4 2xl:gap-5 content-center">
-                <!-- JS 生成選項 -->
-            </div>
+                <!-- 回饋訊息 (大螢幕常駐在左下側，手機置於題目下方) -->
+                <div id="feedback-alert" class="mt-2 lg:mt-4 p-3 rounded-xl border flex items-center gap-3 hidden">
+                    <div id="feedback-icon-container" class="text-xl md:text-2xl flex-none"></div>
+                    <div class="flex-1 text-sm md:text-base font-extrabold" id="feedback-desc"></div>
+                </div>
+            </section>
 
-            <!-- 回饋提示條 (學習模式下顯示，固定高度不推擠版面) -->
-            <div id="feedback-alert" class="flex-none mt-2 px-3 py-2 rounded-xl border flex items-center gap-2.5 hidden min-h-[44px]">
-                <div id="feedback-icon-container" class="text-lg flex-none"></div>
-                <div class="flex-1 text-xs sm:text-sm font-bold truncate" id="feedback-desc"></div>
-            </div>
+            <!-- 【右欄】：選項區（大螢幕為單列垂直向下排，手機亦為垂直向下） -->
+            <section class="flex-1 flex flex-col justify-center">
+                <div id="options-list" class="grid grid-cols-1 gap-2.5 sm:gap-3 md:gap-3.5 2xl:gap-4 w-full">
+                    <!-- JS 生成選項 -->
+                </div>
+            </section>
         </main>
 
-        <!-- 4. 底部切換工具列 -->
+        <!-- 底部控制列 -->
         <nav class="flex-none bg-slate-50 border-t border-slate-200 px-3 py-2 md:px-6 md:py-3 flex justify-between items-center gap-3">
-            <button id="prev-btn" onclick="prevQuestion()" class="px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl font-extrabold text-xs sm:text-sm md:text-base text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 disabled:opacity-30 disabled:pointer-events-none transition-all">
+            <button id="prev-btn" onclick="prevQuestion()" class="px-5 py-2.5 sm:px-6 sm:py-2.5 rounded-xl font-black text-sm md:text-base text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 disabled:opacity-30 disabled:pointer-events-none transition-all">
                 <i class="fa-solid fa-arrow-left mr-1"></i> 上一題
             </button>
 
-            <!-- 離線版下載/全螢幕按鈕 (電視上非常實用) -->
-            <div class="flex items-center gap-2">
-                <button onclick="toggleFullScreen()" class="hidden md:flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-800 px-2 py-1 rounded bg-slate-200/60">
-                    <i class="fa-solid fa-expand"></i> 全螢幕
-                </button>
-            </div>
+            <button onclick="toggleFullScreen()" class="hidden md:flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg bg-slate-200/70">
+                <i class="fa-solid fa-expand"></i> 全螢幕模式
+            </button>
 
-            <button id="submit-quiz-btn" onclick="calculateAndShowReport(true)" class="hidden px-5 py-2 sm:px-7 sm:py-2.5 rounded-xl font-extrabold text-xs sm:text-sm md:text-base text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition-all animate-pulse">
+            <button id="submit-quiz-btn" onclick="calculateAndShowReport(true)" class="hidden px-6 py-2.5 sm:px-7 sm:py-2.5 rounded-xl font-black text-sm md:text-base text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition-all animate-pulse">
                 <i class="fa-solid fa-paper-plane mr-1"></i> 提交測驗
             </button>
 
-            <button id="next-btn" onclick="nextQuestion()" class="px-5 py-2 sm:px-7 sm:py-2.5 rounded-xl font-extrabold text-xs sm:text-sm md:text-base text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-30 disabled:pointer-events-none transition-all">
+            <button id="next-btn" onclick="nextQuestion()" class="px-6 py-2.5 sm:px-7 sm:py-2.5 rounded-xl font-black text-sm md:text-base text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-30 disabled:pointer-events-none transition-all">
                 下一題 <i class="fa-solid fa-arrow-right ml-1"></i>
             </button>
         </nav>
     </div>
 
-    <!-- 語音設定彈出視窗 (Modal，避免佔據主畫面空間) -->
+    <!-- 語音設定 Modal -->
     <div id="voice-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl shadow-2xl p-5 w-full max-w-sm border border-slate-200">
             <div class="flex justify-between items-center mb-4">
@@ -175,7 +171,7 @@
                     <input id="speed-control" type="range" min="0.5" max="1.5" step="0.1" value="0.9" oninput="updateSpeed(this.value)" class="w-full accent-blue-600">
                 </div>
                 <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-xs font-bold text-slate-700">換題時自動唸題目</span>
+                    <span class="text-xs font-bold text-slate-700">下一題自動唸題目</span>
                     <input type="checkbox" id="auto-read-toggle" class="w-4 h-4 accent-blue-600 rounded">
                 </div>
             </div>
@@ -229,7 +225,6 @@
     </div>
 
     <script>
-        // 題庫資料（保持原本 100 題完整資料）
         const questions = [
             { section: "社會適應選擇題", displayId: "1", question: "1. 小新收到簡訊要求點擊連結「驗證」銀行帳戶,最恰當的做法是?", options: ["(1)立刻點擊連結並輸入帳號密碼", "(2)不予理會,並打電話給官方客服確認", "(3)截圖分享到社群媒體請朋友判斷", "(4)回覆簡訊告知對方自己的個資"], answer: 1 },
             { section: "社會適應選擇題", displayId: "2", question: "2. 求職廣告寫「日薪3000元」,但要求先交 5000元保證金,這極可能是?", options: ["(1)體貼員工的好公司", "(2)高薪但專業的要求", "(3)合理的行政費用", "(4)典型的求職陷阱"], answer: 3 },
@@ -304,7 +299,7 @@
             { section: "社會適應選擇題", displayId: "71", question: "71. 所謂的職場「團隊合作」,真正的意思是指什麼?", options: ["(1)一起偷懶", "(2)各揮所長互相配合", "(3)推工作給強者", "(4)只管自己"], answer: 1 },
             { section: "社會適應選擇題", displayId: "72", question: "72. 如果發現有人背後說我壞話,我應該如何冷靜地處理?", options: ["(1)決鬥", "(2)罵回去", "(3)做好本分請教主管", "(4)臉書大罵"], answer: 2 },
             { section: "社會適應選擇題", displayId: "73", question: "73. 參加公司聚餐時,下列哪一種行為是不合禮儀、不合適的?", options: ["(1)保持禮貌", "(2)端走喜歡的菜", "(3)互動聊天", "(4)整理桌面"], answer: 1 },
-            { section: "社會適應選擇題", displayId: "74", question: "74. 關於職場上的性別平等觀念,下列哪一項敘述才是正確的?", options: ["(1)粗重只能男生做", "(2)文書只能女生做", "(3)每個人享平等尊重", "(4)男生薪水應多"], answer: 2 },
+            { section: "社會適應選擇題", displayId: "74", label: "74", question: "74. 關於職場上的性別平等觀念,下列哪一項敘述才是正確的?", options: ["(1)粗重只能男生做", "(2)文書只能女生做", "(3)每個人享平等尊重", "(4)男生薪水應多"], answer: 2 },
             { section: "社會適應選擇題", displayId: "75", question: "75. 想要在職場建立良好的個人信用,我應該怎麼做?", options: ["(1)說到做到準時交付", "(2)開空頭支票", "(3)答應不做了", "(4)只會說"], answer: 0 },
             { section: "社會適應選擇題", displayId: "76", question: "76. 家中有過期的藥品時,正確的處理方式是什麼?", options: ["(1)丟垃圾桶", "(2)沖馬桶", "(3)拿至回收箱處理", "(4)餵豬"], answer: 2 },
             { section: "社會適應選擇題", displayId: "77", question: "77. 在搭乘手扶梯時,通常大家會遵守什麼樣的搭乘習慣?", options: ["(1)亂站", "(2)靠右站立空出左側", "(3)包包佔位", "(4)跑跳"], answer: 1 },
@@ -481,16 +476,16 @@
             optionsEl.innerHTML = '';
             q.options.forEach((optText, optIdx) => {
                 const btn = document.createElement('button');
-                // 緊湊高度、大字體、觸控友善
-                btn.className = "w-full text-left p-2.5 sm:p-3 md:p-3.5 2xl:p-5 rounded-xl border-2 border-slate-200 bg-white hover:bg-blue-50/50 hover:border-blue-400 font-bold text-sm sm:text-base md:text-lg 2xl:text-xl transition-all flex items-center justify-between shadow-sm active:scale-[0.98]";
+                // 選項全面放大：手機 text-base、大電視 text-xl~2xl，垂直排列點擊面積超大
+                btn.className = "w-full text-left p-3 sm:p-4 md:p-4 lg:p-4.5 2xl:p-6 rounded-2xl border-2 border-slate-200 bg-white hover:bg-blue-50/70 hover:border-blue-400 font-bold text-base sm:text-lg md:text-xl 2xl:text-2xl transition-all flex items-center justify-between shadow-sm active:scale-[0.99]";
                 
                 const textSpan = document.createElement('span');
                 textSpan.textContent = optText;
-                textSpan.className = "flex-grow pr-2 leading-snug";
+                textSpan.className = "flex-grow pr-2 leading-relaxed";
                 btn.appendChild(textSpan);
 
                 const iconContainer = document.createElement('span');
-                iconContainer.className = "flex-shrink-0 text-base md:text-xl w-6 h-6 flex items-center justify-center rounded-full ml-1";
+                iconContainer.className = "flex-shrink-0 text-lg md:text-2xl w-7 h-7 flex items-center justify-center rounded-full ml-1";
                 btn.appendChild(iconContainer);
 
                 btn.onclick = () => selectOption(optIdx);
@@ -529,20 +524,20 @@
                 if (checked) {
                     btn.disabled = true;
                     if (optIdx === correctIdx) {
-                        btn.className = "w-full text-left p-2.5 sm:p-3 md:p-3.5 2xl:p-5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-bold text-sm sm:text-base md:text-lg 2xl:text-xl flex items-center justify-between shadow-sm correct-animate";
+                        btn.className = "w-full text-left p-3 sm:p-4 md:p-4 lg:p-4.5 2xl:p-6 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-black text-base sm:text-lg md:text-xl 2xl:text-2xl flex items-center justify-between shadow-sm correct-animate";
                         iconContainer.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i>`;
                     } else if (optIdx === chosen) {
-                        btn.className = "w-full text-left p-2.5 sm:p-3 md:p-3.5 2xl:p-5 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-950 font-bold text-sm sm:text-base md:text-lg 2xl:text-xl flex items-center justify-between shadow-sm";
+                        btn.className = "w-full text-left p-3 sm:p-4 md:p-4 lg:p-4.5 2xl:p-6 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-950 font-black text-base sm:text-lg md:text-xl 2xl:text-2xl flex items-center justify-between shadow-sm";
                         iconContainer.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
                     } else {
-                        btn.className = "w-full text-left p-2.5 sm:p-3 md:p-3.5 2xl:p-5 rounded-xl border border-slate-200 bg-white font-bold text-sm sm:text-base md:text-lg 2xl:text-xl opacity-35 flex items-center justify-between";
+                        btn.className = "w-full text-left p-3 sm:p-4 md:p-4 lg:p-4.5 2xl:p-6 rounded-2xl border border-slate-200 bg-white font-medium text-base sm:text-lg md:text-xl 2xl:text-2xl opacity-40 flex items-center justify-between";
                     }
                 } else if (chosen === optIdx) {
-                    btn.className = "w-full text-left p-2.5 sm:p-3 md:p-3.5 2xl:p-5 rounded-xl border-2 border-blue-500 bg-blue-50/50 font-bold text-sm sm:text-base md:text-lg 2xl:text-xl flex items-center justify-between shadow-inner";
+                    btn.className = "w-full text-left p-3 sm:p-4 md:p-4 lg:p-4.5 2xl:p-6 rounded-2xl border-2 border-blue-500 bg-blue-50/60 font-black text-base sm:text-lg md:text-xl 2xl:text-2xl flex items-center justify-between shadow-inner";
                 }
             } else {
                 if (chosen === optIdx) {
-                    btn.className = "w-full text-left p-2.5 sm:p-3 md:p-3.5 2xl:p-5 rounded-xl border-2 border-indigo-600 bg-indigo-50/50 text-indigo-950 font-bold text-sm sm:text-base md:text-lg 2xl:text-xl flex items-center justify-between shadow-inner";
+                    btn.className = "w-full text-left p-3 sm:p-4 md:p-4 lg:p-4.5 2xl:p-6 rounded-2xl border-2 border-indigo-600 bg-indigo-50/60 text-indigo-950 font-black text-base sm:text-lg md:text-xl 2xl:text-2xl flex items-center justify-between shadow-inner";
                     iconContainer.innerHTML = `<i class="fa-solid fa-circle text-indigo-600 text-xs"></i>`;
                 }
             }
@@ -563,7 +558,7 @@
                     renderQuestion();
                     updateScoreBoard();
                     
-                    let feedbackSpeech = isCorrect ? "答對了！太棒了！" : `答錯囉，正確應該是：${q.options[q.answer].replace(/^\(\d+\)/, '')}`;
+                    let feedbackSpeech = isCorrect ? "答對了！太棒了！" : `答錯囉，正確答案是：${q.options[q.answer].replace(/^\(\d+\)/, '')}`;
                     speakText(feedbackSpeech);
                 }
             } else {
@@ -624,13 +619,13 @@
 
                 feedbackAlertEl.classList.remove('hidden');
                 if (isCorrect) {
-                    feedbackAlertEl.className = "flex-none mt-2 px-3 py-1.5 rounded-xl border border-emerald-200 bg-emerald-50 flex items-center gap-2.5 text-emerald-800";
+                    feedbackAlertEl.className = "mt-3 p-3 rounded-xl border border-emerald-200 bg-emerald-50 flex items-center gap-3 text-emerald-900";
                     feedbackIconContainer.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i>`;
-                    feedbackDescEl.textContent = "太棒了！完全正確，非常有生活常識！";
+                    feedbackDescEl.textContent = "答對了！非常有生活安全觀念！";
                 } else {
-                    feedbackAlertEl.className = "flex-none mt-2 px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 flex items-center gap-2.5 text-rose-800";
+                    feedbackAlertEl.className = "mt-3 p-3 rounded-xl border border-rose-200 bg-rose-50 flex items-center gap-3 text-rose-900";
                     feedbackIconContainer.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600"></i>`;
-                    feedbackDescEl.textContent = `正解是：${q.options[q.answer]}`;
+                    feedbackDescEl.textContent = `正解：${q.options[q.answer]}`;
                 }
             } else {
                 feedbackAlertEl.classList.add('hidden');
