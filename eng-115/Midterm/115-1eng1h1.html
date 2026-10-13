@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>115-1 國一英文科聽力測驗 - 特教慢速報讀系統</title>
+  <style>
+    :root {
+      --primary: #1e40af;
+      --active-bg: #fef2f2;
+      --active-border: #dc2626;
+      --text: #0f172a;
+      --bg: #f8fafc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* 頂部固定控制列 */
+    .control-panel {
+      position: sticky;
+      top: 10px;
+      z-index: 50;
+      background: #ffffff;
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      padding: 12px 18px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .btn-group { display: flex; gap: 8px; }
+    button {
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 0.95rem;
+      border: none;
+      transition: all 0.15s;
+    }
+    .btn-play-all { background: var(--primary); color: #fff; }
+    .btn-play-all:hover { background: #1d4ed8; }
+    .btn-stop { background: #ef4444; color: #fff; }
+    .btn-stop:hover { background: #dc2626; }
+    
+    .rate-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      background: #f1f5f9;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    .rate-box input { cursor: pointer; width: 100px; }
+
+    /* 大題分組標題 */
+    .section-banner {
+      background: #e2e8f0;
+      border-left: 5px solid var(--primary);
+      padding: 8px 12px;
+      margin: 18px 0 8px 0;
+      font-weight: bold;
+      font-size: 1.05rem;
+      color: #1e3a8a;
+      border-radius: 0 6px 6px 0;
+    }
+    .section-guide {
+      font-size: 0.88rem;
+      color: #475569;
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    /* 題目卡片 */
+    .q-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: all 0.15s;
+    }
+    .q-card.playing {
+      border: 2px solid var(--active-border);
+      background: var(--active-bg);
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.15);
+    }
+    .btn-single {
+      background: #e2e8f0;
+      color: #1e293b;
+      border: 1px solid #94a3b8;
+      padding: 6px 10px;
+      font-size: 0.88rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .btn-single:hover { background: #cbd5e1; }
+    
+    .q-content { flex: 1; }
+    .q-header {
+      font-size: 1.05rem;
+      font-weight: bold;
+      margin-bottom: 2px;
+      color: #1e40af;
+    }
+    .target-ans {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      margin-left: 8px;
+    }
+    .q-opts {
+      font-size: 0.95rem;
+      color: #334155;
+      margin: 2px 0 4px 0;
+      font-weight: 500;
+    }
+    .script-text {
+      font-size: 0.88rem;
+      color: #475569;
+      background: #f8fafc;
+      padding: 6px 10px;
+      border-left: 3px solid #3b82f6;
+      border-radius: 0 4px 4px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  
+  <!-- 控制面板 -->
+  <div class="control-panel">
+    <div>
+      <div style="font-size:1.1rem; font-weight:bold; color:var(--primary);">
+        🎙️ 國一英文聽力測驗 (精準節奏版)
+      </div>
+      <div id="status-indicator" style="font-size:0.85rem; color:#64748b; font-weight:600;">狀態：待命就緒</div>
+    </div>
+
+    <!-- 獨立英文慢速滑桿 -->
+    <div class="rate-box">
+      <label for="enRateSlider">英文語速：</label>
+      <input type="range" id="enRateSlider" min="0.4" max="0.8" step="0.05" value="0.5">
+      <span id="enRateValue" style="color:var(--primary);">0.50x</span>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-play-all" onclick="playAll()">▶️ 全卷連續朗讀</button>
+      <button class="btn-stop" onclick="stopAll()">⏹️ 停止</button>
+    </div>
+  </div>
+
+  <!-- 題目清單容器 -->
+  <div id="questions-list"></div>
+
+</div>
+
+<script>
+  // 大題解說資料
+  const sectionGuides = {
+    1: {
+      title: "第一大題：請圈出正確的字母 (Part A)",
+      intro: "第一大題，請圈出正確的字母。請聽老師念出的英文字母，並在試卷上圈出聽到的字母，每題念兩次。"
+    },
+    6: {
+      title: "第二大題：請把題目中念到的英文字母寫下來 (Part B)",
+      intro: "第二大題，請把題目中念到的英文字母寫在橫線上。每題念兩次。"
+    },
+    11: {
+      title: "第三大題：請填上念到的家人編號 (Part C)",
+      intro: "第三大題，請填上念到的家人編號。請根據聽到的英文單字，在括號中填入對應的中文英文字母代號，每題念兩次。"
+    },
+    16: {
+      title: "第四大題：請填入符合的答案 (Part D)",
+      intro: "第四大題，請根據聽到的句子或問句，選出最符合的圖片或最適合的回應句。每題念兩次。"
+    }
+  };
+
+  // 國一題庫資料（一A建基準）
+  const examData = [
+    // Part A
+    { id: 1, target: "p", content: "p", opts: "字母選項：a  p  l  e  o  x", type: "letter" },
+    { id: 2, target: "k", content: "k", opts: "字母選項：g  I  r  k  e  y", type: "letter" },
+    { id: 3, target: "d", content: "d", opts: "字母選項：p  I  g  d  o  q", type: "letter" },
+    { id: 4, target: "n", content: "n", opts: "字母選項：e  g  n  o  s  e", type: "letter" },
+    { id: 5, target: "f", content: "f", opts: "字母選項：f  s  h  j  u  i", type: "letter" },
+    // Part B
+    { id: 6, target: "b", content: "b", opts: "請在橫線上填寫字母：_____", type: "letter" },
+    { id: 7, target: "m", content: "m", opts: "請在橫線上填寫字母：_____", type: "letter" },
+    { id: 8, target: "t", content: "t", opts: "請在橫線上填寫字母：_____", type: "letter" },
+    { id: 9, target: "h", content: "h", opts: "請在橫線上填寫字母：_____", type: "letter" },
+    { id: 10, target: "r", content: "r", opts: "請在橫線上填寫字母：_____", type: "letter" },
+    // Part C
+    { id: 11, target: "F", content: "sister", opts: "( ) A. 丈夫   F. 姊妹", type: "word" },
+    { id: 12, target: "G", content: "mother", opts: "( ) B. 爺爺   G. 媽媽", type: "word" },
+    { id: 13, target: "C", content: "father", opts: "( ) C. 爸爸   H. 妻子", type: "word" },
+    { id: 14, target: "D", content: "brother", opts: "( ) D. 兄弟   I. 女兒", type: "word" },
+    { id: 15, target: "J", content: "grandmother", opts: "( ) E. 兒子   J. 奶奶", type: "word" },
+    // Part D
+    {
+      id: 16, target: "A",
+      content: "Look! This is my happy family.",
+      opts: "(A) 一家四口草地合照  (B) 學生在黑板前討論  (C) 獸醫師在診所檢查小狗",
+      type: "sentence"
+    },
+    {
+      id: 17, target: "A",
+      content: "My mother is forty years old.",
+      opts: "(A) 40歲白色蛋糕  (B) 14歲彩色杯子蛋糕  (C) 4歲紅色杯子蛋糕",
+      type: "sentence"
+    },
+    {
+      id: 18, target: "C",
+      content: "Is Julian a good singer?",
+      opts: "(A) No, he isn't a good cook.  (B) No. He is a good husband.  (C) Yes, and he is a good father, too.",
+      type: "sentence"
+    },
+    {
+      id: 19, target: "B",
+      content: "Is your cousin a writer?",
+      opts: "(A) Yes. She is a teacher.  (B) My cousin is a writer, too.  (C) No. She is an office worker.",
+      type: "sentence"
+    },
+    {
+      id: 20, target: "B",
+      content: "Is the girl short?",
+      opts: "(A) No. She is tall.  (B) Yes, she is short.  (C) Yes, she's young.",
+      type: "sentence"
+    }
+  ];
+
+  // 畫面渲染
+  const listContainer = document.getElementById("questions-list");
+  examData.forEach(q => {
+    // 插入大題標題
+    if (sectionGuides[q.id]) {
+      const banner = document.createElement("div");
+      banner.className = "section-banner";
+      banner.textContent = sectionGuides[q.id].title;
+      listContainer.appendChild(banner);
+
+      const guide = document.createElement("div");
+      guide.className = "section-guide";
+      guide.textContent = `【中文引導說明】：${sectionGuides[q.id].intro}`;
+      listContainer.appendChild(guide);
+    }
+
+    const card = document.createElement("div");
+    card.className = "q-card";
+    card.id = `q-card-${q.id}`;
+
+    card.innerHTML = `
+      <button class="btn-single" onclick="playSingle(${q.id})">🔊 念第 ${q.id} 題</button>
+      <div class="q-content">
+        <div class="q-header">
+          第 ${q.id} 題
+          <span class="target-ans">答案：${q.target}</span>
+        </div>
+        <div class="q-opts">${q.opts}</div>
+        <div class="script-text">【念讀內容】：<strong>${q.content}</strong> (念兩遍)</div>
+      </div>
+    `;
+    listContainer.appendChild(card);
+  });
+
+  // TTS 語音設定
+  const synth = window.speechSynthesis;
+  let isPlayingAll = false;
+  let voices = [];
+
+  function loadVoices() {
+    voices = synth.getVoices();
+  }
+  loadVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = loadVoices;
+  }
+
+  // 語速連動
+  const enRateSlider = document.getElementById("enRateSlider");
+  const enRateValue = document.getElementById("enRateValue");
+  enRateSlider.addEventListener("input", () => {
+    enRateValue.textContent = parseFloat(enRateSlider.value).toFixed(2) + "x";
+  });
+
+  function getEnRate() {
+    return parseFloat(enRateSlider.value) || 0.5;
+  }
+
+  // 單句播放
+  function speak(text, lang = "zh-TW") {
+    return new Promise((resolve) => {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = lang;
+
+      if (lang === "zh-TW") {
+        utter.rate = 1.0; // 中文固定自然速度
+        utter.pitch = 1.0;
+      } else {
+        utter.rate = getEnRate(); // 英文超慢速
+        utter.pitch = 1.05;
+        const enVoice = voices.find(v => v.lang.startsWith("en") && /female|zira|samantha|susan|jenny|karen/i.test(v.name));
+        if (enVoice) utter.voice = enVoice;
+      }
+
+      utter.onend = () => resolve();
+      utter.onerror = () => resolve();
+      synth.speak(utter);
+    });
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function highlight(id) {
+    document.querySelectorAll(".q-card").forEach(c => c.classList.remove("playing"));
+    if (id) {
+      const target = document.getElementById(`q-card-${id}`);
+      if (target) {
+        target.classList.add("playing");
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }
+
+  // 單題播放邏輯
+  async function runQuestion(q) {
+    highlight(q.id);
+    document.getElementById("status-indicator").textContent = `正在播放：第 ${q.id} 題`;
+
+    // 1. 中文念題號 (自然速度)
+    await speak(`第${q.id}題。`, "zh-TW");
+    await sleep(350); // 題號念完緊接英文
+
+    // 2. 英文念兩遍 (超慢速，中間間隔 0.8 秒)
+    await speak(q.content, "en-US");
+    await sleep(800);
+    await speak(q.content, "en-US");
+
+    // 3. 題與題之間間隔 1.0 秒
+    await sleep(1000);
+  }
+
+  // 單題點擊播放入口
+  async function playSingle(id) {
+    stopAll();
+    const q = examData.find(item => item.id === id);
+    if (!q) return;
+    await runQuestion(q);
+    highlight(null);
+    document.getElementById("status-indicator").textContent = `第 ${id} 題播放完畢`;
+  }
+
+  // 全卷朗讀入口
+  async function playAll() {
+    stopAll();
+    isPlayingAll = true;
+
+    // 開場宣告
+    document.getElementById("status-indicator").textContent = "正在宣告測驗開場...";
+    await speak("115學年度上學期國一英文科聽力測驗，開始。", "zh-TW");
+    await sleep(800);
+
+    for (let i = 0; i < examData.length; i++) {
+      if (!isPlayingAll) break;
+      const q = examData[i];
+
+      // 若為該大題第一題，先念大題說明
+      if (sectionGuides[q.id]) {
+        document.getElementById("status-indicator").textContent = `正在說明：${sectionGuides[q.id].title}`;
+        await speak(sectionGuides[q.id].intro, "zh-TW");
+        await sleep(1000);
+      }
+
+      await runQuestion(q);
+    }
+
+    if (isPlayingAll) {
+      await speak("聽力測驗結束，請繼續作答。", "zh-TW");
+      document.getElementById("status-indicator").textContent = "全卷播放完畢";
+    }
+    highlight(null);
+    isPlayingAll = false;
+  }
+
+  // 停止播放
+  function stopAll() {
+    isPlayingAll = false;
+    synth.cancel();
+    highlight(null);
+    document.getElementById("status-indicator").textContent = "已停止";
+  }
+</script>
+
+</body>
+</html>
