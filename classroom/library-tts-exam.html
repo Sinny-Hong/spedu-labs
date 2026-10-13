@@ -956,8 +956,16 @@
                 available: true,
                 questions: socialQuestions
             },
-            "exam-2": { title: "預留考卷（二）—尚未匯入", available: false, questions: [] },
-            "exam-3": { title: "預留考卷（三）—尚未匯入", available: false, questions: [] },
+            "115-1-grade2-physics": {
+                title: "115學年度第1學期國二理化第一次段考",
+                available: true,
+                dataFile: "tts-exam/115-1-grade2-physics.json"
+            },
+            "115-1-grade3-science": {
+                title: "115學年度第1學期國三自然第一次段考",
+                available: true,
+                dataFile: "tts-exam/115-1-grade3-science.json"
+            },
             "exam-4": { title: "預留考卷（四）—尚未匯入", available: false, questions: [] }
         };
         const defaultExamId = "social";
@@ -965,7 +973,7 @@
         const requestedExamId = pageParams.get('exam');
         const lockedMode = pageParams.get('locked') === '1';
         let currentExamId = examCatalog[requestedExamId]?.available ? requestedExamId : defaultExamId;
-        let questions = examCatalog[currentExamId].questions;
+        let questions = examCatalog[currentExamId].questions || [];
 
         let currentQuestionIndex = 0;
         let currentPreamble = null;
@@ -1247,12 +1255,38 @@
             });
         }
 
-        function activateExam(examId) {
+        async function loadExamQuestions(examId) {
+            const exam = examCatalog[examId];
+            if (exam.questions) return exam.questions;
+            if (!exam.dataFile) return [];
+            try {
+                const response = await fetch(exam.dataFile, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                if (!data || !Array.isArray(data.questions)) throw new Error('題庫格式不正確');
+                exam.questions = data.questions;
+                return exam.questions;
+            } catch (error) {
+                const localHint = window.location.protocol === 'file:'
+                    ? '\n\n目前以 file:// 開啟，瀏覽器會阻擋外部 JSON。請改用 GitHub Pages 或本機網頁伺服器開啟。'
+                    : '';
+                alert(`無法載入「${exam.title}」題庫。${localHint}`);
+                console.error('Exam data load failed:', exam.dataFile, error);
+                return null;
+            }
+        }
+
+        async function activateExam(examId) {
             const exam = examCatalog[examId];
             if (!exam || !exam.available) return;
+            const loadedQuestions = await loadExamQuestions(examId);
+            if (!loadedQuestions || loadedQuestions.length === 0) {
+                examSelectEl.value = currentExamId;
+                return;
+            }
             stopSequence();
             currentExamId = examId;
-            questions = exam.questions;
+            questions = loadedQuestions;
             currentQuestionIndex = 0;
             currentPreamble = null;
             document.title = exam.title;
@@ -1342,7 +1376,7 @@
             } 
         });
         replayBtn.addEventListener('click', speakCurrentQuestion);
-        examSelectEl.addEventListener('change', e => activateExam(e.target.value));
+        examSelectEl.addEventListener('change', e => { void activateExam(e.target.value); });
         openDedicatedBtn.addEventListener('click', () => {
             const url = new URL(window.location.href);
             url.search = '';
@@ -1368,19 +1402,26 @@
             settingsPanel.classList.toggle('collapsed');
         });
 
-        function init() {
+        async function init() {
             populateExamList();
             if (lockedMode) {
                 examToolbar.hidden = true;
                 lockedNote.classList.add('visible');
             }
-            populateQuestionList();
             populateVoiceList();
-            document.title = examCatalog[currentExamId].title;
-            logoEl.textContent = examCatalog[currentExamId].title;
-            renderQuestion(currentQuestionIndex);
+            if (currentExamId === defaultExamId) {
+                populateQuestionList();
+                document.title = examCatalog[currentExamId].title;
+                logoEl.textContent = examCatalog[currentExamId].title;
+                renderQuestion(currentQuestionIndex);
+            } else {
+                const requestedId = currentExamId;
+                currentExamId = defaultExamId;
+                questions = examCatalog[defaultExamId].questions;
+                await activateExam(requestedId);
+            }
         }
-        init();
+        void init();
     </script>
 </body>
 </html>
