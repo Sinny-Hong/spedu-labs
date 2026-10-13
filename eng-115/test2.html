@@ -1,14 +1,410 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>測試頁｜eng-115/test2.html</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>115-1 國二英文科聽力測驗 - 特教慢速報讀系統</title>
   <style>
-    body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;background:#f5f7fb;color:#17365d}
-    main{text-align:center;padding:32px}h1{margin:0 0 12px;font-size:clamp(2rem,6vw,4rem)}p{margin:0;color:#64748b;font-size:clamp(1.1rem,3vw,1.5rem)}
+    :root {
+      --primary: #1e40af;
+      --active-bg: #fef2f2;
+      --active-border: #dc2626;
+      --text: #0f172a;
+      --bg: #f8fafc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* 頂部固定控制面板 */
+    .control-panel {
+      position: sticky;
+      top: 10px;
+      z-index: 50;
+      background: #ffffff;
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      padding: 12px 18px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .btn-group { display: flex; gap: 8px; }
+    button {
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 0.95rem;
+      border: none;
+      transition: all 0.15s;
+    }
+    .btn-play-all { background: var(--primary); color: #fff; }
+    .btn-play-all:hover { background: #1d4ed8; }
+    .btn-stop { background: #ef4444; color: #fff; }
+    .btn-stop:hover { background: #dc2626; }
+    
+    .rate-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      background: #f1f5f9;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    .rate-box input { cursor: pointer; width: 100px; }
+
+    /* 題目卡片 */
+    .q-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: all 0.15s;
+    }
+    .q-card.playing {
+      border: 2px solid var(--active-border);
+      background: var(--active-bg);
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.15);
+    }
+    .btn-single {
+      background: #e2e8f0;
+      color: #1e293b;
+      border: 1px solid #94a3b8;
+      padding: 6px 10px;
+      font-size: 0.88rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .btn-single:hover { background: #cbd5e1; }
+    
+    .q-content { flex: 1; }
+    .q-header {
+      font-size: 1.05rem;
+      font-weight: bold;
+      margin-bottom: 2px;
+      color: #1e40af;
+    }
+    .target-ans {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      margin-left: 8px;
+    }
+    .q-opts {
+      font-size: 0.95rem;
+      color: #334155;
+      margin: 2px 0 4px 0;
+      font-weight: 500;
+    }
+    .script-text {
+      font-size: 0.88rem;
+      color: #475569;
+      background: #f8fafc;
+      padding: 6px 10px;
+      border-left: 3px solid #3b82f6;
+      border-radius: 0 4px 4px 0;
+    }
+    .role-m { color: #0284c7; font-weight: bold; }
+    .role-w { color: #db2777; font-weight: bold; }
+    .role-q { color: #b45309; font-weight: bold; }
   </style>
 </head>
-<body><main><h1>測試頁</h1><p>eng-115/test2.html</p></main></body>
-</html>
+<body>
 
+<div class="container">
+  
+  <!-- 控制面板 -->
+  <div class="control-panel">
+    <div>
+      <div style="font-size:1.1rem; font-weight:bold; color:var(--primary);">
+        🎙️ 國二英文聽力測驗 (精準節奏版)
+      </div>
+      <div id="status-indicator" style="font-size:0.85rem; color:#64748b; font-weight:600;">狀態：待命就緒</div>
+    </div>
+
+    <!-- 獨立英文慢速滑桿 -->
+    <div class="rate-box">
+      <label for="enRateSlider">英文語速：</label>
+      <input type="range" id="enRateSlider" min="0.4" max="0.8" step="0.05" value="0.5">
+      <span id="enRateValue" style="color:var(--primary);">0.50x</span>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-play-all" onclick="playAll()">▶️ 全卷連續朗讀</button>
+      <button class="btn-stop" onclick="stopAll()">⏹️ 停止</button>
+    </div>
+  </div>
+
+  <!-- 題目列表 -->
+  <div id="questions-list"></div>
+
+</div>
+
+<script>
+  // 國二題庫資料 (第1-15題 A, B, C 平均各 5 題；第16-20題情境與看診對話)
+  const examData = [
+    { id: 1, target: "A", word: "sunny", opts: "(A) sunny  (B) spring  (C) science" },
+    { id: 2, target: "B", word: "winter", opts: "(A) weather  (B) winter  (C) whose" },
+    { id: 3, target: "C", word: "lovely", opts: "(A) rainy  (B) history  (C) lovely" },
+    { id: 4, target: "A", word: "cloud", opts: "(A) cloud  (B) club  (C) cool" },
+    { id: 5, target: "B", word: "lesson", opts: "(A) wind  (B) lesson  (C) mine" },
+    { id: 6, target: "C", word: "finish", opts: "(A) borrow  (B) festival  (C) finish" },
+    { id: 7, target: "A", word: "lend", opts: "(A) lend  (B) tell  (C) lesson" },
+    { id: 8, target: "B", word: "subject", opts: "(A) jacket  (B) subject  (C) robot" },
+    { id: 9, target: "C", word: "strange", opts: "(A) science  (B) season  (C) strange" },
+    { id: 10, target: "A", word: "math", opts: "(A) math  (B) mad  (C) mine" },
+    { id: 11, target: "C", word: "hear", opts: "(A) history  (B) heavy  (C) hear" },
+    { id: 12, target: "B", word: "cloud", opts: "(A) club  (B) cloud  (C) call" },
+    { id: 13, target: "A", word: "teach", opts: "(A) teach  (B) Taiwan  (C) tell" },
+    { id: 14, target: "B", word: "festival", opts: "(A) finish  (B) festival  (C) free" },
+    { id: 15, target: "C", word: "end", opts: "(A) engineer  (B) interesting  (C) end" },
+    {
+      id: 16, target: "B",
+      sentence: "The girl fell down the stairs and hurt her legs.",
+      opts: "(A) 抱頭頭暈  (B) 跌坐在樓梯按著腿  (C) 跌在樓梯扶著腰"
+    },
+    {
+      id: 17, target: "B",
+      sentence: "They went to a music festival at a beach yesterday.",
+      opts: "(A) 海邊衝浪  (B) 三人戴耳機在戶外聽音樂唱歌  (C) 夜晚舞台演唱會"
+    },
+    {
+      id: 18, target: "C",
+      sentence: "John brought some ice cream to Linda yesterday.",
+      opts: "(A) 蛋糕櫃前  (B) 開冰箱看男生吃麵  (C) 男生拿著三盒冰淇淋到門口"
+    },
+    {
+      id: 19, target: "B",
+      sentence: "How was your basketball camp last week?",
+      opts: "(A) It was in August.  (B) It was a great experience.  (C) We practiced baseball every day."
+    },
+    {
+      id: 20, target: "C",
+      isDialogue: true,
+      opts: "(A) At home.  (B) At a beach.  (C) In a hospital.",
+      lines: [
+        { role: "W", text: "How do you feel?" },
+        { role: "M", text: "Dr. Lynn, I feel terrible. My ears hurt very much." },
+        { role: "W", text: "Let me see. Hmm, there’s some water in them." },
+        { role: "M", text: "Yeah. I swam for two hours yesterday afternoon." },
+        { role: "W", text: "I see. Take this medicine and get some rest. Don’t swim this week." }
+      ],
+      questionPrompt: "Where is the man?"
+    }
+  ];
+
+  // 渲染畫面
+  const listContainer = document.getElementById("questions-list");
+  examData.forEach(q => {
+    const card = document.createElement("div");
+    card.className = "q-card";
+    card.id = `q-card-${q.id}`;
+
+    let scriptHtml = "";
+    if (q.id <= 15) {
+      scriptHtml = `【腳本】：第 ${q.id} 題 → <strong>${q.word}</strong> (念兩遍)`;
+    } else if (q.id <= 19) {
+      scriptHtml = `【腳本】：第 ${q.id} 題 → <strong>${q.sentence}</strong> (念兩遍)`;
+    } else {
+      scriptHtml = q.lines.map(l => {
+        let tag = l.role === 'M' ? '<span class="role-m">[男生 Man]</span>' : '<span class="role-w">[醫生 Dr. Lynn]</span>';
+        return `<div>${tag} ${l.text}</div>`;
+      }).join("") + `<div><span class="role-q">[提問 Question]</span> ${q.questionPrompt}</div>`;
+    }
+
+    card.innerHTML = `
+      <button class="btn-single" onclick="playSingle(${q.id})">🔊 念第 ${q.id} 題</button>
+      <div class="q-content">
+        <div class="q-header">
+          第 ${q.id} 題
+          <span class="target-ans">答案：(${q.target})</span>
+        </div>
+        <div class="q-opts">${q.opts}</div>
+        <div class="script-text">${scriptHtml}</div>
+      </div>
+    `;
+    listContainer.appendChild(card);
+  });
+
+  // TTS 設定
+  const synth = window.speechSynthesis;
+  let isPlayingAll = false;
+  let voices = [];
+
+  function loadVoices() {
+    voices = synth.getVoices();
+  }
+  loadVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = loadVoices;
+  }
+
+  // 語速連動
+  const enRateSlider = document.getElementById("enRateSlider");
+  const enRateValue = document.getElementById("enRateValue");
+  enRateSlider.addEventListener("input", () => {
+    enRateValue.textContent = parseFloat(enRateSlider.value).toFixed(2) + "x";
+  });
+
+  function getEnRate() {
+    return parseFloat(enRateSlider.value) || 0.5;
+  }
+
+  // 發音函數
+  function speak(text, lang = "zh-TW", role = "N") {
+    return new Promise((resolve) => {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = lang;
+
+      if (lang === "zh-TW") {
+        utter.rate = 1.0; // 中文固定自然語速
+        utter.pitch = 1.0;
+      } else {
+        utter.rate = getEnRate(); // 英文超慢速
+        const enVoices = voices.filter(v => v.lang.startsWith("en"));
+
+        if (role === "M") {
+          const maleVoice = enVoices.find(v => /male|david|mark|george|guy/i.test(v.name));
+          if (maleVoice) utter.voice = maleVoice;
+          utter.pitch = 0.75;
+        } else if (role === "W") {
+          const femaleVoice = enVoices.find(v => /female|zira|samantha|susan|jenny|karen/i.test(v.name));
+          if (femaleVoice) utter.voice = femaleVoice;
+          utter.pitch = 1.15;
+        } else {
+          utter.pitch = 1.0;
+        }
+      }
+
+      utter.onend = () => resolve();
+      utter.onerror = () => resolve();
+      synth.speak(utter);
+    });
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function highlight(id) {
+    document.querySelectorAll(".q-card").forEach(c => c.classList.remove("playing"));
+    if (id) {
+      const target = document.getElementById(`q-card-${id}`);
+      if (target) {
+        target.classList.add("playing");
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }
+
+  // 單題執行邏輯（緊湊間隔）
+  async function runQuestion(q) {
+    highlight(q.id);
+    document.getElementById("status-indicator").textContent = `正在播放：第 ${q.id} 題`;
+
+    // 1. 中文念題號 (自然語速)
+    await speak(`第${q.id}題。`, "zh-TW");
+    await sleep(350); // 題號念完緊接英文
+
+    if (q.id <= 15) {
+      // 單字題念兩遍，中間間隔 0.8 秒
+      await speak(q.word, "en-US", "W");
+      await sleep(800);
+      await speak(q.word, "en-US", "W");
+    } else if (q.id <= 19) {
+      // 句子題念兩遍，中間間隔 0.8 秒
+      await speak(q.sentence, "en-US", "W");
+      await sleep(800);
+      await speak(q.sentence, "en-US", "W");
+    } else if (q.id === 20) {
+      // 第 20 題看診對話念兩遍
+      for (let run = 1; run <= 2; run++) {
+        if (!synth.speaking && !isPlayingAll && run > 1) return;
+
+        // 男女生輪流對話
+        for (const line of q.lines) {
+          await speak(line.text, "en-US", line.role);
+          await sleep(350);
+        }
+
+        // 對話念完，明確說 "Question." 並停頓後念問句
+        await sleep(500);
+        await speak("Question.", "en-US", "W");
+        await sleep(400);
+        await speak(q.questionPrompt, "en-US", "W");
+
+        if (run === 1) await sleep(1200);
+      }
+    }
+
+    // 題與題之間間隔 1.0 秒
+    await sleep(1000);
+  }
+
+  // 單題播放入口
+  async function playSingle(id) {
+    stopAll();
+    const q = examData.find(item => item.id === id);
+    if (!q) return;
+    await runQuestion(q);
+    highlight(null);
+    document.getElementById("status-indicator").textContent = `第 ${id} 題播放完畢`;
+  }
+
+  // 全卷朗讀入口
+  async function playAll() {
+    stopAll();
+    isPlayingAll = true;
+
+    document.getElementById("status-indicator").textContent = "正在宣告測驗開場...";
+    await speak("115學年度上學期國二英文科聽力測驗，開始。", "zh-TW");
+    await sleep(800);
+
+    for (let i = 0; i < examData.length; i++) {
+      if (!isPlayingAll) break;
+      await runQuestion(examData[i]);
+    }
+
+    if (isPlayingAll) {
+      await speak("聽力測驗結束，請繼續作答。", "zh-TW");
+      document.getElementById("status-indicator").textContent = "全卷播放完畢";
+    }
+    highlight(null);
+    isPlayingAll = false;
+  }
+
+  // 停止
+  function stopAll() {
+    isPlayingAll = false;
+    synth.cancel();
+    highlight(null);
+    document.getElementById("status-indicator").textContent = "已停止";
+  }
+</script>
+
+</body>
+</html>
