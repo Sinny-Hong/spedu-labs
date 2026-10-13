@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>115-1 國三英文科聽力測驗 - 特教慢速報讀系統</title>
+  <title>115-1 國三英文科聽力測驗 - 精準節奏報讀系統</title>
   <style>
     :root {
       --primary: #1e40af;
@@ -20,7 +20,7 @@
       color: var(--text);
       padding: 16px;
       font-size: 16px;
-      line-height: 1.5;
+      line-height: 1.4;
     }
     .container {
       max-width: 900px;
@@ -35,14 +35,14 @@
       background: #ffffff;
       border: 2px solid var(--primary);
       border-radius: 8px;
-      padding: 14px 20px;
+      padding: 12px 18px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
+      gap: 12px;
     }
     .btn-group { display: flex; gap: 8px; }
     button {
@@ -50,9 +50,9 @@
       font-weight: bold;
       border-radius: 6px;
       padding: 8px 16px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       border: none;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
     .btn-play-all { background: var(--primary); color: #fff; }
     .btn-play-all:hover { background: #1d4ed8; }
@@ -67,32 +67,33 @@
       background: #f1f5f9;
       padding: 6px 12px;
       border-radius: 6px;
+      font-size: 0.9rem;
     }
-    .rate-box input { cursor: pointer; width: 110px; }
+    .rate-box input { cursor: pointer; width: 100px; }
 
     /* 題目卡片 */
     .q-card {
       background: #ffffff;
       border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      padding: 14px 18px;
-      margin-bottom: 12px;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
       display: flex;
       align-items: flex-start;
-      gap: 16px;
-      transition: all 0.2s;
+      gap: 14px;
+      transition: all 0.15s;
     }
     .q-card.playing {
-      border: 3px solid var(--active-border);
+      border: 2px solid var(--active-border);
       background: var(--active-bg);
-      box-shadow: 0 4px 8px rgba(220, 38, 38, 0.1);
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.15);
     }
     .btn-single {
       background: #e2e8f0;
       color: #1e293b;
       border: 1px solid #94a3b8;
-      padding: 8px 12px;
-      font-size: 0.95rem;
+      padding: 6px 10px;
+      font-size: 0.88rem;
       flex-shrink: 0;
       margin-top: 2px;
     }
@@ -100,35 +101,35 @@
     
     .q-content { flex: 1; }
     .q-header {
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       font-weight: bold;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       color: #1e40af;
     }
     .target-ans {
       background: #fee2e2;
       color: #dc2626;
-      padding: 2px 8px;
+      padding: 1px 6px;
       border-radius: 4px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       margin-left: 8px;
     }
     .q-opts {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       color: #334155;
-      margin: 4px 0 8px 0;
+      margin: 2px 0 4px 0;
       font-weight: 500;
     }
     .script-text {
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       color: #475569;
       background: #f8fafc;
-      padding: 8px 12px;
-      border-left: 4px solid #3b82f6;
+      padding: 6px 10px;
+      border-left: 3px solid #3b82f6;
       border-radius: 0 4px 4px 0;
     }
-    .role-m { color: #0369a1; font-weight: bold; }
-    .role-w { color: #be185d; font-weight: bold; }
+    .role-m { color: #0284c7; font-weight: bold; }
+    .role-w { color: #db2777; font-weight: bold; }
     .role-q { color: #b45309; font-weight: bold; }
   </style>
 </head>
@@ -136,19 +137,19 @@
 
 <div class="container">
   
-  <!-- 頂部控制列 -->
+  <!-- 控制面板 -->
   <div class="control-panel">
     <div>
-      <div style="font-size:1.15rem; font-weight:bold; color:var(--primary);">
-        🎙️ 國三英文聽力測驗 (超慢速特教輔助報讀)
+      <div style="font-size:1.1rem; font-weight:bold; color:var(--primary);">
+        🎙️ 國三英文聽力測驗 (精準節奏版)
       </div>
-      <div id="status-indicator" style="font-size:0.9rem; color:#64748b; font-weight:600;">狀態：待命就緒</div>
+      <div id="status-indicator" style="font-size:0.85rem; color:#64748b; font-weight:600;">狀態：待命就緒</div>
     </div>
 
-    <!-- 獨立英文語速滑桿 -->
+    <!-- 獨立英文慢速滑桿 -->
     <div class="rate-box">
-      <label for="enRateSlider">英文超慢速：</label>
-      <input type="range" id="enRateSlider" min="0.35" max="0.9" step="0.05" value="0.5">
+      <label for="enRateSlider">英文語速：</label>
+      <input type="range" id="enRateSlider" min="0.4" max="0.8" step="0.05" value="0.5">
       <span id="enRateValue" style="color:var(--primary);">0.50x</span>
     </div>
 
@@ -164,7 +165,7 @@
 </div>
 
 <script>
-  // 1-15 題 A, B, C 平均各 5 題[span_0](start_span)[span_0](end_span)
+  // 1-15 題 A, B, C 平均各 5 題
   const examData = [
     { id: 1, target: "A", word: "potato", opts: "(A) potato  (B) page  (C) history" },
     { id: 2, target: "C", word: "chocolate", opts: "(A) candy  (B) soldier  (C) chocolate" },
@@ -210,13 +211,13 @@
         { role: "M", text: "We’re on the south side of the city." },
         { role: "W", text: "I’ve never been to this area. What are we doing here?" },
         { role: "M", text: "I’m taking you to a famous restaurant. It has the best burgers and fries in the world." },
-        { role: "W", text: "Oh, I love a good burger." },
-        { role: "Q", text: "What are the man and the woman going to do?" }
-      ]
+        { role: "W", text: "Oh, I love a good burger." }
+      ],
+      questionPrompt: "What are the man and the woman going to do?"
     }
   ];
 
-  // 畫面渲染
+  // 渲染畫面
   const listContainer = document.getElementById("questions-list");
   examData.forEach(q => {
     const card = document.createElement("div");
@@ -225,14 +226,14 @@
 
     let scriptHtml = "";
     if (q.id <= 15) {
-      scriptHtml = `【念讀腳本】：第 ${q.id} 題 → <strong>${q.word}</strong> (念兩遍)`;
+      scriptHtml = `【腳本】：第 ${q.id} 題 → <strong>${q.word}</strong> (念兩遍)`;
     } else if (q.id <= 19) {
-      scriptHtml = `【念讀腳本】：第 ${q.id} 題 → <strong>${q.sentence}</strong> (念兩遍)`;
+      scriptHtml = `【腳本】：第 ${q.id} 題 → <strong>${q.sentence}</strong> (念兩遍)`;
     } else {
       scriptHtml = q.lines.map(l => {
-        let tag = l.role === 'M' ? '<span class="role-m">[男生 Man]</span>' : (l.role === 'W' ? '<span class="role-w">[女生 Woman]</span>' : '<span class="role-q">[題目 Question]</span>');
+        let tag = l.role === 'M' ? '<span class="role-m">[男生 Man]</span>' : '<span class="role-w">[女生 Woman]</span>';
         return `<div>${tag} ${l.text}</div>`;
-      }).join("");
+      }).join("") + `<div><span class="role-q">[提問 Question]</span> ${q.questionPrompt}</div>`;
     }
 
     card.innerHTML = `
@@ -249,7 +250,7 @@
     listContainer.appendChild(card);
   });
 
-  // TTS 與語音設定
+  // TTS 設定
   const synth = window.speechSynthesis;
   let isPlayingAll = false;
   let voices = [];
@@ -273,7 +274,7 @@
     return parseFloat(enRateSlider.value) || 0.5;
   }
 
-  // 單句播放函數
+  // 發音函數
   function speak(text, lang = "zh-TW", role = "N") {
     return new Promise((resolve) => {
       const utter = new SpeechSynthesisUtterance(text);
@@ -283,16 +284,14 @@
         utter.rate = 1.0; // 中文固定自然語速
         utter.pitch = 1.0;
       } else {
-        utter.rate = getEnRate(); // 英文採用指定超慢速 (預設 0.5x)
-        
+        utter.rate = getEnRate(); // 英文超慢速
         const enVoices = voices.filter(v => v.lang.startsWith("en"));
+
         if (role === "M") {
-          // 優先找真正的系統原生男聲 (如 David, Mark, George, Guy)
           const maleVoice = enVoices.find(v => /male|david|mark|george|guy/i.test(v.name));
           if (maleVoice) utter.voice = maleVoice;
-          utter.pitch = 0.75; // 即使沒男聲，也以 0.75 低頻模擬成年男聲
+          utter.pitch = 0.75;
         } else if (role === "W") {
-          // 優先找女聲 (如 Zira, Samantha, Susan, Jenny)
           const femaleVoice = enVoices.find(v => /female|zira|samantha|susan|jenny|karen/i.test(v.name));
           if (femaleVoice) utter.voice = femaleVoice;
           utter.pitch = 1.15;
@@ -322,47 +321,51 @@
     }
   }
 
-  // 播放單題完整邏輯
+  // 單題執行邏輯（緊湊間隔）
   async function runQuestion(q) {
     highlight(q.id);
     document.getElementById("status-indicator").textContent = `正在播放：第 ${q.id} 題`;
 
-    // 1. 中文念題號 (自然語速 1.0x)
+    // 1. 中文念題號 (自然語速)
     await speak(`第${q.id}題。`, "zh-TW");
-    await sleep(600); // 題號念完稍微停頓
+    await sleep(350); // 題號念完緊接英文，僅間隔約0.3秒
 
     if (q.id <= 15) {
-      // 1-15 題單字 (超慢速 0.5x 念兩遍，中間留白 1.5 秒)
+      // 單字題念兩遍，中間間隔 0.8 秒
       await speak(q.word, "en-US", "W");
-      await sleep(1500);
+      await sleep(800);
       await speak(q.word, "en-US", "W");
     } else if (q.id <= 19) {
-      // 16-19 題句子 (超慢速 0.5x 念兩遍，中間留白 2 秒)
+      // 句子題念兩遍，中間間隔 0.8 秒
       await speak(q.sentence, "en-US", "W");
-      await sleep(2000);
+      await sleep(800);
       await speak(q.sentence, "en-US", "W");
     } else if (q.id === 20) {
-      // 第 20 題男女對話 (念兩遍)
+      // 第 20 題對話念兩遍
       for (let run = 1; run <= 2; run++) {
         if (!synth.speaking && !isPlayingAll && run > 1) return;
+
+        // 男女生輪流對話
         for (const line of q.lines) {
-          if (line.role === "Q") {
-            await sleep(800);
-            await speak(line.text, "en-US", "W");
-          } else {
-            await speak(line.text, "en-US", line.role);
-            await sleep(700); // 對話行與行之間的自然停頓
-          }
+          await speak(line.text, "en-US", line.role);
+          await sleep(350); // 對話行間停頓
         }
-        if (run === 1) await sleep(2500); // 第一遍與第二遍對話之間的長停頓
+
+        // 對話念完，明確說 "Question:" 並停頓 0.5 秒後才念問題
+        await sleep(500);
+        await speak("Question.", "en-US", "W");
+        await sleep(400);
+        await speak(q.questionPrompt, "en-US", "W");
+
+        if (run === 1) await sleep(1200); // 兩次播放間隔
       }
     }
 
-    // 題目念完給學生劃記時間 (2.5 秒)
-    await sleep(2500);
+    // 題與題之間間隔縮短為 1.0 秒，避免焦慮等待
+    await sleep(1000);
   }
 
-  // 單題點擊播放
+  // 單題播放入口
   async function playSingle(id) {
     stopAll();
     const q = examData.find(item => item.id === id);
@@ -372,15 +375,14 @@
     document.getElementById("status-indicator").textContent = `第 ${id} 題播放完畢`;
   }
 
-  // 全部連續朗讀
+  // 全卷朗讀入口
   async function playAll() {
     stopAll();
     isPlayingAll = true;
 
-    // 開場宣告 (中文自然語速)
     document.getElementById("status-indicator").textContent = "正在宣告測驗開場...";
     await speak("115學年度上學期國三英文科聽力測驗，開始。", "zh-TW");
-    await sleep(2000);
+    await sleep(800);
 
     for (let i = 0; i < examData.length; i++) {
       if (!isPlayingAll) break;
@@ -388,14 +390,14 @@
     }
 
     if (isPlayingAll) {
-      await speak("聽力測驗播放結束，請繼續作答其餘題目。", "zh-TW");
+      await speak("聽力測驗結束，請繼續作答。", "zh-TW");
       document.getElementById("status-indicator").textContent = "全卷播放完畢";
     }
     highlight(null);
     isPlayingAll = false;
   }
 
-  // 停止播放
+  // 停止
   function stopAll() {
     isPlayingAll = false;
     synth.cancel();
