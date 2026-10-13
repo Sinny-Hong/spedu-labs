@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>115-1 第一次段考｜教材總入口</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --shell-navy: #17324d;
+      --shell-blue: #214d70;
+      --shell-gold: #f0a426;
+      --shell-paper: #f4f7f9;
+      --shell-line: #b9c9d5;
+      --shell-text: #20374d;
+      --shell-muted: #607386;
+      --shell-height: 54px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--shell-paper);
+      color: var(--shell-text);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+    }
+
+    body {
+      display: grid;
+      grid-template-rows: var(--shell-height) minmax(0, 1fr);
+      transition: grid-template-rows .2s ease;
+    }
+
+    body.shell-collapsed { grid-template-rows: 0 minmax(0, 1fr); }
+
+    .shell-bar {
+      position: relative;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: minmax(250px, 390px) minmax(180px, 1fr) auto;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      padding: 6px 12px;
+      border-bottom: 1px solid #0d263a;
+      background: linear-gradient(135deg, var(--shell-navy), var(--shell-blue));
+      box-shadow: 0 3px 14px rgba(17, 37, 55, .2);
+      transition: transform .2s ease, opacity .16s ease;
+    }
+
+    body.shell-collapsed .shell-bar {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .picker-wrap { position: relative; min-width: 0; }
+
+    .picker-label {
+      position: absolute;
+      top: -7px;
+      left: 11px;
+      z-index: 1;
+      padding: 0 5px;
+      background: var(--shell-navy);
+      color: #c9d9e6;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    #midterm-picker {
+      width: 100%;
+      height: 38px;
+      min-width: 0;
+      padding: 0 38px 0 13px;
+      border: 1px solid #8fb1c8;
+      border-radius: 9px;
+      background: #fff;
+      color: #17324d;
+      font: 800 15px/1.2 inherit;
+      cursor: pointer;
+    }
+
+    #midterm-picker:focus-visible,
+    .shell-action:focus-visible {
+      outline: 3px solid #ffd27a;
+      outline-offset: 2px;
+    }
+
+    .current-title {
+      min-width: 0;
+      overflow: hidden;
+      color: #fff;
+      font-size: clamp(15px, 1.45vw, 21px);
+      font-weight: 900;
+      line-height: 1.25;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .current-title small {
+      display: block;
+      margin-bottom: 2px;
+      color: #bcd0df;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+    }
+
+    .shell-actions { display: flex; align-items: center; gap: 8px; }
+
+    .shell-action {
+      height: 36px;
+      padding: 0 11px;
+      border: 1px solid rgba(255, 255, 255, .3);
+      border-radius: 9px;
+      background: rgba(255, 255, 255, .11);
+      color: #fff;
+      font: 800 14px/1 inherit;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .shell-action:hover { background: rgba(255, 255, 255, .2); }
+    .shell-action.primary { border-color: #ffc35d; background: var(--shell-gold); color: #302009; }
+    .shell-action.primary:hover { background: #ffb936; }
+
+    .viewer {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      margin: 4px;
+      overflow: hidden;
+      border: 1px solid var(--shell-line);
+      background: #fff;
+    }
+
+    #midterm-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+
+    .loading-card,
+    .error-card {
+      position: absolute;
+      inset: 50% auto auto 50%;
+      width: min(520px, calc(100% - 32px));
+      transform: translate(-50%, -50%);
+      padding: 24px;
+      border: 1px solid var(--shell-line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .97);
+      box-shadow: 0 12px 35px rgba(31, 55, 75, .14);
+      text-align: center;
+    }
+
+    .loading-card[hidden],
+    .error-card[hidden] { display: none; }
+    .loading-card { color: var(--shell-muted); font-weight: 800; }
+    .error-card h1 { margin: 0 0 8px; font-size: 20px; }
+    .error-card p { margin: 0; color: var(--shell-muted); line-height: 1.6; }
+
+    @media (max-width: 900px) {
+      :root { --shell-height: 92px; }
+      .shell-bar {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: 40px 34px;
+        gap: 5px 8px;
+        padding: 6px 8px;
+      }
+      .picker-wrap { grid-column: 1; grid-row: 1; }
+      .current-title { grid-column: 1 / -1; grid-row: 2; padding-right: 285px; }
+      .current-title small { display: none; }
+      .shell-actions { grid-column: 2; grid-row: 1 / 3; align-self: end; }
+      .shell-action { width: 44px; padding: 0; font-size: 0; }
+      .shell-action::before { font-size: 19px; }
+      .shell-action[data-action="home"]::before { content: "⌂"; }
+      .shell-action[data-action="reload"]::before { content: "↻"; }
+      .shell-action[data-action="open"]::before { content: "↗"; }
+      .shell-action[data-action="print"]::before { content: "⎙"; }
+    }
+
+    @media (max-width: 560px) {
+      :root { --shell-height: 88px; }
+      .current-title { padding-right: 0; font-size: 14px; }
+      .shell-actions { gap: 5px; }
+      .shell-action { width: 36px; height: 34px; }
+      .viewer { margin: 2px; }
+    }
+
+    @media (min-width: 1500px) {
+      :root { --shell-height: 60px; }
+      .shell-bar { padding: 7px 18px; gap: 18px; }
+      #midterm-picker { height: 42px; font-size: 17px; }
+      .shell-action { height: 40px; padding-inline: 15px; font-size: 16px; }
+    }
+
+    @media print {
+      .shell-bar { display: none !important; }
+      body { display: block; height: auto; overflow: visible; background: #fff; }
+      .viewer { height: auto; margin: 0; overflow: visible; border: 0; }
+      #midterm-frame { width: 100%; height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell-bar" aria-label="段考教材共用工具列">
+    <div class="picker-wrap">
+      <label class="picker-label" for="midterm-picker">切換段考教材</label>
+      <select id="midterm-picker" aria-label="切換段考教材"></select>
+    </div>
+    <div class="current-title" id="current-title" aria-live="polite">
+      <small>目前教材</small>
+      <span>載入中</span>
+    </div>
+    <nav class="shell-actions" aria-label="頁面操作">
+      <button class="shell-action" type="button" data-action="home" title="返回課本講義首頁">返回首頁</button>
+      <button class="shell-action" type="button" data-action="reload" title="重新載入目前教材">重新載入</button>
+      <button class="shell-action" type="button" data-action="open" title="在新視窗開啟原始教材">另開原頁</button>
+      <button class="shell-action primary" type="button" data-action="print" title="列印目前教材">列印目前版</button>
+    </nav>
+  </header>
+
+  <main class="viewer">
+    <div class="loading-card" id="loading-card">正在載入段考教材……</div>
+    <div class="error-card" id="error-card" hidden>
+      <h1>教材載入失敗</h1>
+      <p>請確認教材檔案仍在 Midterm 資料夾，或用「另開原頁」檢查檔案。</p>
+    </div>
+    <iframe id="midterm-frame" title="段考教材內容" allow="fullscreen"></iframe>
+  </main>
+
+  <script src="Midterm/midterm-manifest.js"></script>
+  <script>
+    (() => {
+      "use strict";
+
+      const items = Array.isArray(window.MIDTERM_MANIFEST) ? window.MIDTERM_MANIFEST : [];
+      const picker = document.getElementById("midterm-picker");
+      const frame = document.getElementById("midterm-frame");
+      const currentTitle = document.querySelector("#current-title span");
+      const loadingCard = document.getElementById("loading-card");
+      const errorCard = document.getElementById("error-card");
+      const BASE = "Midterm/";
+
+      function safeItemByFile(file) {
+        return items.find((item) => item.file === file) || items[0] || null;
+      }
+
+      function currentItem() {
+        return safeItemByFile(picker.value);
+      }
+
+      function loadItem(item) {
+        if (!item) {
+          loadingCard.hidden = true;
+          errorCard.hidden = false;
+          currentTitle.textContent = "找不到可載入的段考教材";
+          return;
+        }
+
+        document.body.classList.remove("shell-collapsed");
+        loadingCard.hidden = false;
+        errorCard.hidden = true;
+        currentTitle.textContent = item.title;
+        picker.value = item.file;
+        frame.title = item.title;
+        frame.src = BASE + item.file;
+      }
+
+      items.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.file;
+        option.textContent = item.title;
+        picker.append(option);
+      });
+
+      picker.addEventListener("change", () => loadItem(currentItem()));
+
+      frame.addEventListener("load", () => {
+        loadingCard.hidden = true;
+        errorCard.hidden = true;
+        try {
+          const frameWindow = frame.contentWindow;
+          const syncShellVisibility = () => {
+            const scrollTop = frameWindow.scrollY
+              || frameWindow.document.documentElement.scrollTop
+              || frameWindow.document.body.scrollTop
+              || 0;
+            document.body.classList.toggle("shell-collapsed", scrollTop > 12);
+          };
+          frameWindow.addEventListener("scroll", syncShellVisibility, { passive: true });
+          syncShellVisibility();
+          frameWindow.focus();
+        } catch (_) { /* Same-origin access may be unavailable. */ }
+      });
+
+      frame.addEventListener("error", () => {
+        loadingCard.hidden = true;
+        errorCard.hidden = false;
+      });
+
+      document.querySelector('[data-action="reload"]').addEventListener("click", () => {
+        loadingCard.hidden = false;
+        try {
+          frame.contentWindow.location.reload();
+        } catch (_) {
+          const item = currentItem();
+          if (item) frame.src = BASE + item.file;
+        }
+      });
+
+      document.querySelector('[data-action="home"]').addEventListener("click", () => {
+        location.href = "index.html";
+      });
+
+      document.querySelector('[data-action="open"]').addEventListener("click", () => {
+        const item = currentItem();
+        if (item) window.open(BASE + item.file, "_blank", "noopener");
+      });
+
+      document.querySelector('[data-action="print"]').addEventListener("click", () => {
+        try {
+          frame.contentWindow.focus();
+          frame.contentWindow.print();
+        } catch (_) {
+          const item = currentItem();
+          if (item) window.open(BASE + item.file, "_blank", "noopener");
+        }
+      });
+
+      loadItem(items[0] || null);
+    })();
+  </script>
+</body>
+</html>
