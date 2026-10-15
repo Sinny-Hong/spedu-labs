@@ -40,6 +40,171 @@ let weeklyWordGroups = [];
 let viewedWordWeekIndex = -1;
 const CLASSROOM_ACCESS_KEY = "speduClassroomAccess";
 const CLASSROOM_PASSWORD_HASH = "4a081bff0bf93d06ee54ff45353e8b65bce23522ae6a45769f5968ff5956356e";
+const QUICK_CONTACT_KEY = "speduContactQuickSelectionsV1";
+const NO_HOMEWORK = "今天沒作業 (≧▽≦)";
+const QUICK_OPTIONS = {
+  class: [
+    "L1 單字", "L1 課文", "L2 單字", "L2 課文", "L3 單字", "L3 課文",
+    "L4 單字", "L4 課文", "L5 單字", "L5 課文", "L6 單字", "L6 課文",
+    "文法講義", "段考訂正與檢討", "段考複習", "節慶文化", "多元評量", "閱讀測驗", "聽力理解"
+  ],
+  homework: ["考卷訂正與簽名", "單字講義", "課文翻譯講義", "文法講義", "1200 單字", NO_HOMEWORK],
+  message: [
+    "🚨 我會記得帶課本。", "🚨 我會記得帶講義。", "🚨 我會記得請家長簽名。",
+    "🚨 我會記得請導師簽名。", "🚨 我上課會保持安靜。", "L夾內的通知單簽名。"
+  ]
+};
+const quickSelections = loadQuickSelections();
+
+function loadQuickSelections() {
+  const blank = { class1: "", class2: "", homework1: "", homework2: "", message1: "", message2: "" };
+  try {
+    const saved = JSON.parse(localStorage.getItem(QUICK_CONTACT_KEY) || "{}");
+    Object.keys(blank).forEach(key => {
+      const group = key.replace(/\d$/, "");
+      if (QUICK_OPTIONS[group].includes(saved[key])) blank[key] = saved[key];
+    });
+  } catch(error) {
+    console.warn("聯絡簿快捷選單的本機資料無法讀取，已改用空白狀態。", error);
+  }
+  if (blank.homework1 === NO_HOMEWORK) blank.homework2 = "";
+  else if (blank.homework2 === NO_HOMEWORK) blank.homework1 = "";
+  return blank;
+}
+
+function saveQuickSelections() {
+  try {
+    localStorage.setItem(QUICK_CONTACT_KEY, JSON.stringify(quickSelections));
+  } catch(error) {
+    console.warn("聯絡簿快捷選單無法儲存在此瀏覽器。", error);
+  }
+}
+
+function closeQuickMenus(exceptPicker) {
+  document.querySelectorAll(".quick-picker").forEach(picker => {
+    if (picker === exceptPicker) return;
+    picker.querySelector(".quick-trigger")?.setAttribute("aria-expanded", "false");
+    const menu = picker.querySelector(".quick-menu");
+    if (menu) menu.hidden = true;
+  });
+}
+
+function updateHomeworkCloudVisibility() {
+  const hideCloud = quickSelections.homework1 === NO_HOMEWORK || quickSelections.homework2 === NO_HOMEWORK;
+  document.getElementById("homeworkContent")?.classList.toggle("is-quick-hidden", hideCloud);
+}
+
+function renderQuickPicker(id) {
+  const picker = document.querySelector(`.quick-picker[data-quick-id="${id}"]`);
+  if (!picker) return;
+  const value = quickSelections[id];
+  const trigger = picker.querySelector(".quick-trigger");
+  trigger.querySelector("span").textContent = value || "—";
+  trigger.title = value;
+  picker.querySelectorAll(".quick-option").forEach(option => {
+    option.setAttribute("aria-selected", String(option.dataset.value === value));
+  });
+}
+
+function setQuickSelection(id, value) {
+  const group = id.replace(/\d$/, "");
+  if (group === "homework") {
+    const otherId = id === "homework1" ? "homework2" : "homework1";
+    if (value === NO_HOMEWORK || (value && quickSelections[otherId] === NO_HOMEWORK)) {
+      quickSelections[otherId] = "";
+      renderQuickPicker(otherId);
+    }
+  }
+  quickSelections[id] = value;
+  renderQuickPicker(id);
+  updateHomeworkCloudVisibility();
+  saveQuickSelections();
+}
+
+function buildQuickPickers() {
+  document.querySelectorAll("[data-quick-group]").forEach(stack => {
+    const group = stack.dataset.quickGroup;
+    const groupName = group === "class" ? "上課內容" : group === "homework" ? "回家作業" : "親師交流";
+    for (let number = 1; number <= 2; number++) {
+      const id = `${group}${number}`;
+      const picker = document.createElement("div");
+      picker.className = "quick-picker";
+      picker.dataset.quickId = id;
+      picker.innerHTML = `<button class="quick-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="${id}Menu" aria-label="${groupName}快捷選單 ${number}"><span>—</span></button><div class="quick-menu" id="${id}Menu" role="listbox" aria-label="${groupName}快捷選單 ${number}" hidden></div>`;
+      const menu = picker.querySelector(".quick-menu");
+      ["", ...QUICK_OPTIONS[group]].forEach(value => {
+        const option = document.createElement("button");
+        option.className = "quick-option";
+        option.type = "button";
+        option.setAttribute("role", "option");
+        option.dataset.value = value;
+        option.textContent = value || "—";
+        menu.appendChild(option);
+      });
+      stack.appendChild(picker);
+      renderQuickPicker(id);
+    }
+  });
+  updateHomeworkCloudVisibility();
+}
+
+buildQuickPickers();
+
+document.addEventListener("click", event => {
+  const option = event.target.closest(".quick-option");
+  if (option) {
+    const picker = option.closest(".quick-picker");
+    setQuickSelection(picker.dataset.quickId, option.dataset.value);
+    closeQuickMenus();
+    picker.querySelector(".quick-trigger").focus();
+    return;
+  }
+  const trigger = event.target.closest(".quick-trigger");
+  if (trigger) {
+    const picker = trigger.closest(".quick-picker");
+    const menu = picker.querySelector(".quick-menu");
+    const willOpen = menu.hidden;
+    closeQuickMenus(willOpen ? picker : null);
+    menu.hidden = !willOpen;
+    trigger.setAttribute("aria-expanded", String(willOpen));
+    return;
+  }
+  closeQuickMenus();
+});
+
+document.addEventListener("keydown", event => {
+  const trigger = event.target.closest(".quick-trigger");
+  if (trigger && event.key === "Escape" && trigger.getAttribute("aria-expanded") === "true") {
+    event.preventDefault();
+    closeQuickMenus();
+    return;
+  }
+  if (trigger && ["ArrowDown", "ArrowUp"].includes(event.key)) {
+    event.preventDefault();
+    const picker = trigger.closest(".quick-picker");
+    const menu = picker.querySelector(".quick-menu");
+    closeQuickMenus(picker);
+    menu.hidden = false;
+    trigger.setAttribute("aria-expanded", "true");
+    const options = [...menu.querySelectorAll(".quick-option")];
+    (event.key === "ArrowDown" ? options[0] : options.at(-1))?.focus();
+    return;
+  }
+  const option = event.target.closest(".quick-option");
+  if (!option) return;
+  const options = [...option.parentElement.querySelectorAll(".quick-option")];
+  const index = options.indexOf(option);
+  if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+    event.preventDefault();
+    const nextIndex = event.key === "Home" ? 0 : event.key === "End" ? options.length - 1 : (index + (event.key === "ArrowDown" ? 1 : -1) + options.length) % options.length;
+    options[nextIndex].focus();
+  } else if (event.key === "Escape") {
+    event.preventDefault();
+    const picker = option.closest(".quick-picker");
+    closeQuickMenus();
+    picker.querySelector(".quick-trigger").focus();
+  }
+});
 
 function openFortuneModal() {
   if (!fortuneFrame.src) fortuneFrame.src = fortuneFrame.dataset.src;

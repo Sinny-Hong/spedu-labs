@@ -33,12 +33,6 @@ window.GRAMMAR_DATA = [
   { id: "english-time", category: "日常英文", title: "⏰ 英文時間互動學習館", desc: "搭配大螢幕操作時鐘、英文發音、隨堂挑戰與時間表達鷹架", filename: "game-english-time.html", themeColor: "#14B8A6" },
   { id: "e1", category: "日常英文", title: "📝 評估｜生活英文 (V1)", desc: "高中職特教班及資源班生活英語聽說讀寫綜合評量 (第一版)", filename: "exam-lifeenglish-v1.html", themeColor: "#14B8A6" },
 
-  // ==== 其他 ====
-  { id: "test-1", category: "其他", title: "Test 1", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test1.html", themeColor: "#64748B" },
-  { id: "test-2", category: "其他", title: "Test 2", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test2.html", themeColor: "#64748B" },
-  { id: "test-3", category: "其他", title: "Test 3", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test3.html", themeColor: "#64748B" },
-  { id: "test-4", category: "其他", title: "Test 4", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test4.html", themeColor: "#64748B" },
-  { id: "test-5", category: "其他", title: "Test 5", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗", filename: "test5.html", themeColor: "#64748B" }
 ];
 
 window.GRAMMAR_CATEGORIES = [
@@ -46,6 +40,5 @@ window.GRAMMAR_CATEGORIES = [
   "閱讀理解與測驗",
   "互動遊戲",
   "E-City 異想城市",
-  "日常英文",
-  "其他"
+  "日常英文"
 ];

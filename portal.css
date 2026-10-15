@@ -124,6 +124,9 @@ button{cursor:pointer}
 .contact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,max-content);gap:10px;align-content:start}
 .info-card{min-width:0;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff;overflow:visible}
 .info-card h3{margin:0 0 7px;font-size:22px}
+.info-card-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.info-card-heading>span:first-child{min-width:0;overflow-wrap:anywhere}
+.info-card-heading .card-title{flex-wrap:wrap;white-space:normal}
 .info-card p,.info-card li{font-size:21px;line-height:1.58}
 .info-card p{margin:5px 0}
 .card-title{display:inline-flex;align-items:center;gap:9px;white-space:nowrap}
@@ -134,6 +137,18 @@ button{cursor:pointer}
 .info-card.green{background:#f5fcf7;border-color:#cfe9d6}.info-card.green h3{color:#22864b}
 .info-card.orange{background:#fffaf3;border-color:#f5d9ad}.info-card.orange h3{color:#e36e00}
 .info-card.purple{background:#faf8ff;border-color:#ddd5f4}.info-card.purple h3{color:#6846b7}
+.quick-stack{display:grid;gap:2px;margin:0 0 7px}
+.quick-picker{position:relative;min-width:0}
+.quick-trigger{position:relative;width:100%;min-height:35px;padding:6px 34px 6px 2px;border:0;border-radius:7px;background:transparent;color:var(--ink);font:inherit;font-size:21px;font-weight:800;line-height:1.32;text-align:left;white-space:normal;overflow-wrap:anywhere}
+.quick-trigger::after{content:"";position:absolute;right:12px;top:50%;width:7px;height:7px;border-right:2px solid #64748b;border-bottom:2px solid #64748b;transform:translateY(-70%) rotate(45deg);transition:transform .16s ease}
+.quick-trigger[aria-expanded="true"]::after{transform:translateY(-30%) rotate(225deg)}
+.quick-trigger:hover,.quick-trigger:focus-visible{background:rgba(255,255,255,.55);outline:0}
+.quick-menu{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;max-height:min(280px,42vh);padding:5px;overflow-y:auto;border:1px solid #cbd5e1;border-radius:10px;background:#fff;box-shadow:0 12px 28px rgba(11,47,95,.2)}
+.quick-menu[hidden]{display:none}
+.quick-option{display:block;width:100%;padding:8px 9px;border:0;border-radius:7px;background:transparent;color:var(--ink);font:inherit;font-size:19px;font-weight:700;line-height:1.35;text-align:left;white-space:normal;overflow-wrap:anywhere}
+.quick-option:hover,.quick-option:focus-visible{background:#edf4fc;outline:0}
+.quick-option[aria-selected="true"]{background:#e3edf8;color:var(--navy)}
+.cloud-content.is-quick-hidden{display:none}
 .word-list{list-style:none;padding:0;margin:0;display:grid;gap:2px}
 .info-card[hidden]{display:none}
 .word-list li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:9px;padding:2px;font-size:19px;line-height:1.35}
@@ -320,6 +335,8 @@ button{cursor:pointer}
   .contact-grid{gap:10px}
   .info-card{padding:10px 12px}
   .info-card h3{font-size:20px;margin-bottom:6px}
+  .quick-trigger{min-height:32px;padding-top:5px;padding-bottom:5px;font-size:19px}
+  .quick-option{padding:7px 8px;font-size:18px}
   .info-card p,.info-card li,#classContent,#homeworkContent,#teacherMessage{font-size:19px;line-height:1.45}
   .word-list{gap:1px}
   .word-list li{gap:6px;padding:1px;font-size:17px;line-height:1.3}

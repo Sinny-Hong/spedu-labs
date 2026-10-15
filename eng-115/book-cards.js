@@ -1,4 +1,4 @@
-window.BOOK_CATEGORIES = ["單字", "課文", "電子書", "測試網頁"];
+window.BOOK_CATEGORIES = ["單字", "課文", "電子書"];
 
 window.BOOK_DATA = [
   { id: "text_hub", category: "課文", tag: "Library（Text）", title: "課文教材 Library", desc: "集中切換七、八、九年級的課文翻譯、關鍵字與句型教材；保留各頁課次導覽、互動與列印功能", filename: "library-text.html", themeColor: "#0f766e" },
@@ -13,8 +13,5 @@ window.BOOK_DATA = [
   { id: "match_numbers", category: "單字", tag: "課堂配對板", title: "英文數字配對板", desc: "英文數字三排對照，支援語音與課堂互動配對", filename: "../eng-grammar/match-numbers.html", themeColor: "#2563eb" },
   { id: "match_family", category: "單字", tag: "課堂配對板", title: "家人稱謂配對板", desc: "家人稱謂與親友關係三排對照，支援發音", filename: "../eng-grammar/match-family.html", themeColor: "#db2777" },
   { id: "match_pronouns", category: "單字", tag: "課堂配對板", title: "人稱代名詞配對板", desc: "主格、受格、所有格、Be 動詞與反身代名詞互動提示", filename: "../eng-grammar/match-pronouns.html", themeColor: "#7c3aed" },
-  { id: "match_time_date", category: "單字", tag: "課堂配對板", title: "時間與日期配對板", desc: "星期、月份、日期與時間的三排對照，支援語音", filename: "../eng-grammar/match-time-date.html", themeColor: "#ea580c" },
-
-  { id: "test-1", category: "測試網頁", tag: "Test 1", title: "測試網頁 Test 1", desc: "獨立測試 HTML，可直接覆蓋進行下一個實驗。", filename: "test1.html", themeColor: "#64748b" },
-  { id: "test-2", category: "測試網頁", tag: "Test 2", title: "測試網頁 Test 2", desc: "另一份獨立測試 HTML，可與 Test 1 分開使用。", filename: "test2.html", themeColor: "#64748b" }
+  { id: "match_time_date", category: "單字", tag: "課堂配對板", title: "時間與日期配對板", desc: "星期、月份、日期與時間的三排對照，支援語音", filename: "../eng-grammar/match-time-date.html", themeColor: "#ea580c" }
 ];

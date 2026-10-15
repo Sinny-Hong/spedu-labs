@@ -1,11 +1,10 @@
-window.CLASSROOM_CATEGORIES = ["課表查詢", "班務紀錄", "段考相關", "後台管理", "測試網頁"];
+window.CLASSROOM_CATEGORIES = ["課表查詢", "班務紀錄", "段考相關", "後台管理"];
 
 window.CLASSROOM_CATEGORY_LABELS = {
   "課表查詢": "課表",
   "班務紀錄": "班務紀錄",
   "段考相關": "段考",
-  "後台管理": "後台管理",
-  "測試網頁": "測試網頁"
+  "後台管理": "後台管理"
 };
 
 window.CLASSROOM_DATA = [
@@ -25,7 +24,5 @@ window.CLASSROOM_DATA = [
   { id: "exam-board", category: "段考相關", tag: "監考", title: "段考監考座位表", desc: "依段考日期、節次與考場安排學生座位，並提供手寫備註區。", filename: "exam-board-v4.html", themeColor: "#ea580c", linkLabel: "開啟座位表 →" },
   { id: "tts-exam-library", category: "段考相關", tag: "報讀", title: "段考報讀卷總入口", desc: "集中切換段考報讀題庫，支援題號選擇、逐句點讀、整題播放及專屬頁面。", filename: "library-tts-exam.html", themeColor: "#0f766e", linkLabel: "開啟報讀卷 →" },
   { id: "student-guidance-responses", category: "班務紀錄", tag: "限定共用", title: "學生輔導紀錄（回覆）", desc: "僅限具有共用資料夾權限的授權帳號查看學生輔導紀錄回覆。", filename: "https://docs.google.com/spreadsheets/d/1NSbmw9PpUnAsjqJpWLTALgiZODqSpdlmv9XscfdmX64/edit?gid=460017595#gid=460017595", themeColor: "#f59e0b", external: true, linkLabel: "查看回覆 ↗" },
-  { id: "student-sheet-admin", category: "後台管理", tag: "限定共用", title: "115學生課表後台試算表", desc: "僅限已加入共用對象的授權帳號開啟與編輯。", filename: "https://docs.google.com/spreadsheets/d/1RUvk22m4pEClx3nqrbn6684t6T_KS8XEB1EXubEw7A4/edit?usp=sharing", themeColor: "#f59e0b", external: true },
-  { id: "test-1", category: "測試網頁", tag: "Test 1", title: "測試網頁 Test 1", desc: "獨立的空白測試 HTML，可供下一個實驗直接覆蓋，不影響正式頁面。", filename: "test1.html", themeColor: "#64748b" },
-  { id: "test-2", category: "測試網頁", tag: "Test 2", title: "測試網頁 Test 2", desc: "另一份獨立的空白測試 HTML，可與 Test 1 分開使用。", filename: "test2.html", themeColor: "#64748b" }
+  { id: "student-sheet-admin", category: "後台管理", tag: "限定共用", title: "115學生課表後台試算表", desc: "僅限已加入共用對象的授權帳號開啟與編輯。", filename: "https://docs.google.com/spreadsheets/d/1RUvk22m4pEClx3nqrbn6684t6T_KS8XEB1EXubEw7A4/edit?usp=sharing", themeColor: "#f59e0b", external: true }
 ];
