@@ -99,7 +99,7 @@ function renderQuickPicker(id) {
   if (!picker) return;
   const value = quickSelections[id];
   const trigger = picker.querySelector(".quick-trigger");
-  trigger.querySelector("span").textContent = value || "—";
+  trigger.querySelector("span").textContent = value || "-";
   trigger.title = value;
   picker.querySelectorAll(".quick-option").forEach(option => {
     option.setAttribute("aria-selected", String(option.dataset.value === value));
@@ -130,7 +130,7 @@ function buildQuickPickers() {
       const picker = document.createElement("div");
       picker.className = "quick-picker";
       picker.dataset.quickId = id;
-      picker.innerHTML = `<button class="quick-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="${id}Menu" aria-label="${groupName}快捷選單 ${number}"><span>—</span></button><div class="quick-menu" id="${id}Menu" role="listbox" aria-label="${groupName}快捷選單 ${number}" hidden></div>`;
+      picker.innerHTML = `<button class="quick-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="${id}Menu" aria-label="${groupName}快捷選單 ${number}"><span>-</span></button><div class="quick-menu" id="${id}Menu" role="listbox" aria-label="${groupName}快捷選單 ${number}" hidden></div>`;
       const menu = picker.querySelector(".quick-menu");
       ["", ...QUICK_OPTIONS[group]].forEach(value => {
         const option = document.createElement("button");
@@ -138,7 +138,7 @@ function buildQuickPickers() {
         option.type = "button";
         option.setAttribute("role", "option");
         option.dataset.value = value;
-        option.textContent = value || "—";
+        option.textContent = value || "-";
         menu.appendChild(option);
       });
       stack.appendChild(picker);
@@ -593,7 +593,7 @@ function renderContact(rows,vocabRows=[]) {
     });
   }
   if(!wordMap.size&&currentWeekLabel&&currentWords.length)wordMap.set(currentWeekLabel,currentWords);
-  const renderLines=items=>items.length?items.map(item=>`<p>✓ ${escapeHtml(item)}</p>`).join(""):"<p>今天沒有勾選內容。</p>";
+  const renderLines=items=>items.length?items.map(item=>`<p>✓ ${escapeHtml(item)}</p>`).join(""):"<p>-</p>";
   document.getElementById("classContent").innerHTML=renderLines(content);
   document.getElementById("homeworkContent").innerHTML=renderLines(homework);
   document.getElementById("teacherMessage").innerHTML=renderLines(messages);
