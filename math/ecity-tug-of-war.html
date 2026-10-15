@@ -9,6 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
+      --cream: #fff9ec;
+      --gold: #f5b942;
+      --ink: #385f81;
       --blue-main: #2563eb;
       --blue-border: #bfdbfe;
       --blue-bg: #eff6ff;
@@ -29,9 +32,9 @@
     }
 
     body {
-      font-family: 'Lexend', 'Noto Sans TC', sans-serif;
-      background: #f8fafc;
-      color: var(--text-main);
+      font-family: "Comic Sans MS", "Trebuchet MS", "Microsoft JhengHei", 'Noto Sans TC', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
@@ -42,21 +45,30 @@
 
     /* 頂部控制與設定列 */
     .control-header {
-      background: linear-gradient(90deg, #eff6ff 0%, #ffffff 52%, #fff7ed 100%);
-      border-bottom: 3px solid #f59e0b;
-      padding: 8px 16px;
+      min-height: 60px;
+      background: transparent;
+      border-bottom: 0;
+      padding: 6px 15px;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      gap: 16px;
+      gap: 8px;
       flex-wrap: wrap;
       z-index: 20;
     }
     .game-title {
-      color: #174a7e;
-      font-size: 1.15rem;
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(22px, 2.1vw, 34px);
       font-weight: 800;
       white-space: nowrap;
+    }
+    .header-tools {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 7px;
+      flex-wrap: wrap;
     }
     .ctrl-item {
       display: flex;
@@ -69,11 +81,11 @@
       font-family: inherit;
       padding: 5px 10px;
       border-radius: 8px;
-      border: 1.5px solid var(--gray-border);
+      border: 2px solid var(--gold);
       font-size: 0.95rem;
       font-weight: 600;
       background: #ffffff;
-      color: var(--text-main);
+      color: var(--ink);
       outline: none;
       cursor: pointer;
     }
@@ -90,12 +102,16 @@
       transition: background-color 0.2s, transform 0.1s;
     }
     .btn-start {
-      background: #16a34a;
-      box-shadow: 0 3px 0 #15803d;
+      background: #fffaf0;
+      color: #b86100;
+      border: 2px solid var(--gold);
+      box-shadow: 0 3px 0 #e7aa2f;
     }
     .btn-reset {
-      background: #64748b;
-      box-shadow: 0 3px 0 #475569;
+      background: #eef6ff;
+      color: var(--ink);
+      border: 2px solid #9eb7ce;
+      box-shadow: 0 3px 0 #bfd0df;
     }
     .action-btn-main:active {
       transform: translateY(2px);
@@ -147,8 +163,8 @@
       align-items: center;
     }
     .clock-badge {
-      background: #0f172a;
-      color: #ffffff;
+      background: transparent;
+      color: #ed8700;
       padding: 7px 24px;
       border: 0;
       border-radius: 24px;
@@ -161,11 +177,11 @@
       align-items: center;
       justify-content: center;
       gap: 12px;
-      box-shadow: 0 4px 0 #f59e0b;
+      box-shadow: none;
     }
     .clock-time { font-variant-numeric: tabular-nums; }
     .clock-arrow {
-      color: #ffffff;
+      color: #ed8700;
       font-size: .56em;
       line-height: 1;
       transform: translateY(-.04em);
@@ -220,16 +236,16 @@
       padding: 7px 8px;
       border: 3px solid;
       border-radius: 13px;
-      background: #0f172a;
+      background: #ffffff;
       text-align: center;
-      box-shadow: inset 0 0 0 2px rgba(255,255,255,.06);
+      box-shadow: 0 5px 14px rgba(56, 95, 129, .10);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
     }
-    .score-b { border-color: var(--blue-main); color: #60a5fa; }
-    .score-r { border-color: var(--red-main); color: #f87171; }
+    .score-b { border-color: var(--blue-main); color: var(--blue-main); background: #f3f8ff; }
+    .score-r { border-color: var(--red-main); color: var(--red-main); background: #fff6f6; }
     .score-label {
       display: block;
       font-size: .78rem;
@@ -240,22 +256,6 @@
       font-size: 2rem;
       line-height: 1;
       font-variant-numeric: tabular-nums;
-    }
-    .score-trophy {
-      position: absolute;
-      z-index: 2;
-      top: -17px;
-      left: 50%;
-      width: 38px;
-      height: 38px;
-      border: 3px solid #ffffff;
-      border-radius: 50%;
-      background: #f59e0b;
-      transform: translateX(-50%);
-      display: grid;
-      place-items: center;
-      font-size: 1.25rem;
-      box-shadow: 0 3px 8px rgba(15, 23, 42, .22);
     }
     .score-value.flip { animation: scoreFlip .24s ease-out; }
     @keyframes scoreFlip {
@@ -271,11 +271,11 @@
       min-height: 1.38em;
       padding: .08em .28em .14em;
       border-radius: .42em;
-      background: #1e293b;
-      color: #ffffff;
+      background: #fff0cf;
+      color: #e67e00;
       font-weight: 900;
       line-height: 1;
-      box-shadow: 0 2px 0 #f59e0b;
+      box-shadow: none;
     }
     .operand {
       display: inline-block;
@@ -331,25 +331,31 @@
       will-change: transform;
     }
 
-    /* Emoji 拔河隊員：左右隊使用鏡像，確保朝向中央繩索 */
+    /* 單一人物 SVG 以紅藍鏡像呈現兩隊。 */
+    .svg-defs {
+      position: absolute;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+    }
     .team-squad {
       display: flex;
       align-items: center;
       gap: 0;
+      position: relative;
+      z-index: 1;
     }
-    .puller-emoji {
-      display: inline-block;
-      font-size: 36px;
-      line-height: 1;
-      transform-origin: bottom center;
+    .puller-svg {
+      display: block;
+      width: 62px;
+      height: 76px;
+      fill: currentColor;
+      transform-origin: center;
       filter: drop-shadow(0 3px 2px rgba(15, 23, 42, .18));
     }
-    .squad-blue .puller-emoji {
-      transform: rotate(-13deg) scaleX(-1);
-    }
-    .squad-red .puller-emoji {
-      transform: rotate(13deg);
-    }
+    .squad-blue { color: var(--blue-main); }
+    .squad-red { color: var(--red-main); }
+    .squad-red .puller-svg { transform: scaleX(-1); }
 
     .rope-cable {
       width: 160px;
@@ -359,7 +365,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 -4px;
+      margin: 0 -22px;
+      z-index: 2;
     }
     .center-ribbon {
       width: 16px;
@@ -513,6 +520,13 @@
       font-weight: 800;
       margin-bottom: 14px;
     }
+    .modal-trophy {
+      display: block;
+      margin: 0 auto 8px;
+      font-size: 4rem;
+      line-height: 1;
+      filter: drop-shadow(0 5px 5px rgba(217, 119, 6, .24));
+    }
     .modal-score {
       margin-bottom: 0;
       color: var(--text-main);
@@ -621,9 +635,7 @@
         border-width: 3px;
         border-radius: 16px;
       }
-      .puller-emoji {
-        font-size: 40px;
-      }
+      .puller-svg { width: 70px; height: 86px; }
       .rope-cable {
         width: 130px;
         height: 11px;
@@ -679,7 +691,7 @@
       .score-value { font-size: 4.5rem; }
       .action-btn-main { min-height: 54px; padding: 8px 24px; font-size: 1.25rem; }
       .rope-track { height: 104px; min-height: 80px; margin-top: 0; }
-      .puller-emoji { font-size: 36px; }
+      .puller-svg { width: 58px; height: 72px; }
       .rope-cable { width: 116px; height: 9px; }
     }
   </style>
@@ -688,10 +700,11 @@
 
   <!-- 頂部控制列 -->
   <header class="control-header">
-    <div class="game-title">🏆 拔河錦標賽</div>
-    <div class="ctrl-item">
-      <label for="bankSel">題庫：</label>
-      <select id="bankSel">
+    <h1 class="game-title">E-City 拔河錦標賽</h1>
+    <nav class="header-tools" aria-label="遊戲功能">
+      <div class="ctrl-item">
+        <label for="bankSel">題庫：</label>
+        <select id="bankSel">
         <optgroup label="英文題庫">
           <option value="eng_numbers_20">英文數字 1～20</option>
           <option value="eng_numbers" selected>英文數字 1～100</option>
@@ -716,14 +729,15 @@
           <option value="math_2d_1d_mul">兩位數 × 一位數</option>
           <option value="math_2d_1d_div">兩位數 ÷ 一位數</option>
         </optgroup>
-      </select>
-    </div>
+        </select>
+      </div>
 
-    <label class="ctrl-item" for="voiceToggle">
-      <span>語音：</span>
-      <input id="voiceToggle" type="checkbox">
-      <span id="voiceState">關</span>
-    </label>
+      <label class="ctrl-item" for="voiceToggle">
+        <span>語音：</span>
+        <input id="voiceToggle" type="checkbox">
+        <span id="voiceState">關</span>
+      </label>
+    </nav>
 
   </header>
 
@@ -740,7 +754,6 @@
           <div class="timer-menu" id="timerMenu" role="menu" hidden></div>
         </div>
         <div class="score-board" aria-label="比賽計分板">
-          <span class="score-trophy" aria-hidden="true">🏆</span>
           <div class="team-score score-b"><span class="score-label">藍隊 BLUE</span><span class="score-value" id="sc-1">0</span></div>
           <div class="team-score score-r"><span class="score-label">紅隊 RED</span><span class="score-value" id="sc-2">0</span></div>
         </div>
@@ -749,19 +762,21 @@
       <div class="rope-track" id="track">
         <div class="mid-line"></div>
         <div class="rope-team-wrapper" id="ropeBundle">
-          <!-- 藍隊以鏡像攀爬 Emoji 呈現後仰拉繩姿勢 -->
-          <div class="team-squad squad-blue" role="img" aria-label="藍隊兩位隊員面向右方拔河">
-            <span class="puller-emoji" aria-hidden="true">🧗‍♀️</span>
-            <span class="puller-emoji" aria-hidden="true">🧗‍♂️</span>
+          <svg class="svg-defs" aria-hidden="true">
+            <symbol id="pullerShape" viewBox="0 0 94.684 94.684">
+              <path d="M71.023,48.185l-11.009-7.007c-0.707-0.45-1.538-1.601-1.743-2.414L55.23,26.708c-0.006-0.025-0.017-0.047-0.024-0.072c-0.271-1.378-1.485-2.422-2.942-2.422H37.436c-0.726,0-1.384,0.27-1.903,0.7c-0.068,0.041-0.143,0.077-0.206,0.122l-10.56,7.492c-1.207,0.856-1.939,2.667-1.667,4.123l3.268,17.458c0.28,1.499,1.7,2.673,3.233,2.673l1.677-0.09c0.807-0.045,1.55-0.422,2.038-1.033s0.69-1.419,0.555-2.217l-2.28-13.465c-0.12-0.706,0.306-1.725,0.892-2.138l1.954-1.374V56.68l-0.397,10.996c-0.046,1.265-0.645,3.245-1.309,4.324l-9.983,16.219c-0.522,0.848-0.636,1.818-0.311,2.661c0.325,0.843,1.059,1.486,2.016,1.764l3.125,0.91c0.351,0.102,0.722,0.154,1.104,0.154c1.557,0,3.1-0.859,3.838-2.139l9.518-16.478c0.79-1.368,1.529-3.67,1.682-5.242l0.878-9.008h2.223l3.404,8.714c0.459,1.176,0.683,3.224,0.488,4.472l-2.701,17.265c-0.145,0.927,0.077,1.79,0.624,2.43c0.53,0.62,1.307,0.961,2.188,0.961c0.158,0,0.32-0.011,0.488-0.034l3.222-0.447c1.87-0.26,3.519-1.93,3.755-3.803l2.18-17.306c0.198-1.571-0.032-3.981-0.523-5.487l-4.681-14.336v-5.393l11.838,6.816c0.456,0.262,0.976,0.401,1.505,0.401c1.068,0,2.07-0.563,2.615-1.469L72,52.332C72.845,50.925,72.406,49.065,71.023,48.185z"/>
+              <path d="M43.85,21.672c5.975,0,10.836-4.861,10.836-10.836S49.825,0,43.85,0c-5.975,0-10.835,4.861-10.835,10.836S37.876,21.672,43.85,21.672z"/>
+            </symbol>
+          </svg>
+          <div class="team-squad squad-blue" role="img" aria-label="藍隊人物面向中央拔河">
+            <svg class="puller-svg" viewBox="0 0 94.684 94.684" aria-hidden="true"><use href="#pullerShape"></use></svg>
           </div>
 
           <!-- 繩索與標記 -->
           <div class="rope-cable"><div class="center-ribbon"></div></div>
 
-          <!-- 紅隊保留 Emoji 原方向，與藍隊形成相反拉力 -->
-          <div class="team-squad squad-red" role="img" aria-label="紅隊兩位隊員面向左方拔河">
-            <span class="puller-emoji" aria-hidden="true">🧗‍♀️</span>
-            <span class="puller-emoji" aria-hidden="true">🧗‍♂️</span>
+          <div class="team-squad squad-red" role="img" aria-label="紅隊人物面向中央拔河">
+            <svg class="puller-svg" viewBox="0 0 94.684 94.684" aria-hidden="true"><use href="#pullerShape"></use></svg>
           </div>
         </div>
       </div>
@@ -821,7 +836,8 @@
   <div class="modal-curtain" id="endModal">
     <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="winHead">
       <button class="modal-close" id="modalClose" type="button" aria-label="關閉結果">×</button>
-      <div class="modal-t" id="winHead">🏆 藍隊獲勝！</div>
+      <div class="modal-trophy" id="winTrophy" aria-hidden="true">🏆</div>
+      <div class="modal-t" id="winHead">藍隊獲勝！</div>
       <div class="modal-score" id="winScore">藍隊 0 分｜紅隊 0 分</div>
     </div>
   </div>
@@ -1086,7 +1102,6 @@
     let remainSeconds = selectedPreset.seconds;
     let timerLoop = null;
     let isRunning = false;
-    let roundFinished = false;
 
     // 紀錄各隊狀態與上一題防止連續重複
     const teamState = {
@@ -1299,7 +1314,6 @@
     function stopAndFinish(title) {
       if (!isRunning) return;
       isRunning = false;
-      roundFinished = true;
       clearInterval(timerLoop);
       timerLoop = null;
       teamState[1].locked = true;
@@ -1307,12 +1321,13 @@
       grid1.classList.add("disabled");
       grid2.classList.add("disabled");
 
-      mainCtrlBtn.textContent = "請選擇新局設定";
+      mainCtrlBtn.textContent = "▶ 開始遊戲";
       mainCtrlBtn.className = "action-btn-main btn-start";
-      mainCtrlBtn.disabled = true;
+      mainCtrlBtn.disabled = false;
       bankSelect.disabled = false;
       clockButton.setAttribute("aria-disabled", "false");
 
+      document.getElementById("winTrophy").style.display = title === "平手" ? "none" : "block";
       document.getElementById("winHead").textContent = title;
       document.getElementById("winScore").textContent = `藍隊 ${teamState[1].score} 分｜紅隊 ${teamState[2].score} 分`;
       endModal.style.display = "flex";
@@ -1321,7 +1336,6 @@
     // 重置並進入就緒待機狀態
     function resetToIdle() {
       isRunning = false;
-      roundFinished = false;
       clearInterval(timerLoop);
       timerLoop = null;
       endModal.style.display = "none";
@@ -1357,7 +1371,6 @@
     // 開始遊戲正式倒數
     function startGamePlay() {
       isRunning = true;
-      roundFinished = false;
       endModal.style.display = "none";
 
       teamState[1] = { score: 0, answers: [], speech: "", input: "", locked: true, lastQ: "" };
