@@ -553,19 +553,14 @@
        左側 32% (藍隊) ── 中央 36% (拔河核心) ── 右側 32% (紅隊)
        ======================================================== */
     @media (min-width: 1024px) {
-      body {
-        height: 100vh;
-        overflow: hidden;
-      }
       .app-layout {
         max-width: 100%;
-        flex: 1 1 0;
-        height: 0;
-        min-height: 0;
-        overflow: hidden;
+        flex: 1 0 auto;
+        min-height: calc(100vh - 60px);
+        min-height: calc(100dvh - 60px);
         display: grid;
-        grid-template-columns: 32% 36% 32%;
-        grid-template-rows: minmax(0, 1fr);
+        grid-template-columns: minmax(0, 32fr) minmax(0, 36fr) minmax(0, 32fr);
+        grid-template-rows: minmax(560px, 1fr);
         padding: 12px 18px;
         gap: 16px;
       }
@@ -574,15 +569,11 @@
       }
       .calc-b {
         order: 1;
-        height: auto;
-        min-height: 0;
         border-radius: 20px;
         padding: 16px;
       }
       .tug-arena {
         order: 2;
-        height: auto;
-        min-height: 0;
         border-radius: 20px;
         padding: 16px;
         display: grid;
@@ -594,21 +585,17 @@
       }
       .calc-r {
         order: 3;
-        height: auto;
-        min-height: 0;
         border-radius: 20px;
         padding: 16px;
       }
 
       .calc-box {
         display: grid;
-        grid-template-rows: minmax(0, 40%) minmax(0, 60%);
-        overflow: hidden;
+        grid-template-rows: auto minmax(220px, 1fr);
       }
       .calc-display {
         display: grid;
-        grid-template-rows: auto minmax(0, 1fr) auto;
-        min-height: 0;
+        grid-template-rows: auto minmax(48px, auto) auto;
       }
 
       .competition-panel { gap: 20px; }
@@ -652,20 +639,22 @@
         font-size: 2.2rem;
         min-height: 0;
       }
+      .q-text.operation-question {
+        flex-direction: column;
+        gap: 2px;
+        line-height: 1.05;
+      }
       .ans-box {
         height: 54px;
         font-size: 2.4rem;
         margin-bottom: 8px;
       }
       .key-grid {
-        grid-template-rows: repeat(4, minmax(0, 1fr));
-        min-height: 0;
+        grid-template-rows: repeat(4, minmax(46px, 1fr));
       }
       .btn-k {
         font-size: 2.1rem;
         border-radius: 14px;
-        min-height: 0;
-        height: 100%;
       }
     }
 
@@ -678,10 +667,9 @@
       .q-text { font-size: 1.85rem; min-height: 0; }
       .q-text.operation-question { font-size: 1.65rem; }
       .ans-box { height: 42px; font-size: 2rem; margin-bottom: 4px; }
-      .key-grid { min-height: 0; gap: 4px; }
-      .btn-k { min-height: 0; height:100%; font-size: 1.75rem; }
-      .tug-arena { padding: 10px; }
-      .tug-arena { gap: 14px; }
+      .key-grid { gap: 4px; }
+      .btn-k { font-size: 1.75rem; }
+      .tug-arena { padding: 10px; gap: 14px; }
       .competition-panel { gap: 14px; }
       .clock-badge { font-size: 3.05rem; padding: 7px 28px; }
       .lead-hint { margin-top: 1px; font-size: .76rem; }
