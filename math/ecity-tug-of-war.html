@@ -31,6 +31,12 @@
       touch-action: manipulation;
     }
 
+    html {
+      min-width: 320px;
+      min-height: 100%;
+      background: var(--cream);
+    }
+
     body {
       font-family: "Comic Sans MS", "Trebuchet MS", "Microsoft JhengHei", 'Noto Sans TC', sans-serif;
       background: var(--cream);
@@ -54,6 +60,7 @@
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
+      flex: 0 0 auto;
       z-index: 20;
     }
     .game-title {
@@ -126,7 +133,7 @@
 
     /* 主頁面佈局容器 */
     .app-layout {
-      flex: 1;
+      flex: 1 0 auto;
       display: flex;
       flex-direction: column;
       width: 100%;
@@ -258,10 +265,6 @@
       font-variant-numeric: tabular-nums;
     }
     .score-value.flip { animation: scoreFlip .24s ease-out; }
-    @keyframes scoreFlip {
-      0% { transform: perspective(180px) rotateX(-70deg); opacity: .35; }
-      100% { transform: perspective(180px) rotateX(0); opacity: 1; }
-    }
     .operator {
       display: inline-flex;
       flex: 0 0 auto;
@@ -282,22 +285,8 @@
       white-space: nowrap;
     }
     .q-text.operation-question {
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       gap: .34em;
-    }
-
-    @media (max-width: 600px) {
-      .q-text.operation-question {
-        flex-direction: column;
-        gap: 2px;
-        font-size: clamp(.88rem, 4vw, 1.1rem);
-        line-height: 1.05;
-      }
-      .q-text.operation-question .operator {
-        min-width: 1.8em;
-        min-height: 1.15em;
-        padding: 0 .24em .08em;
-      }
     }
 
     .rope-track {
@@ -378,9 +367,8 @@
 
     /* 左右答題計算機區 */
     .calc-container {
-      flex: 1;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
       width: 100%;
     }
@@ -388,14 +376,15 @@
     .calc-box {
       border-radius: 16px;
       padding: 10px;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-rows: auto 240px;
+      align-content: start;
+      gap: 8px;
       border: 2px solid;
     }
     .calc-display {
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
+      display: grid;
+      grid-template-rows: 36px minmax(48px, auto) 44px;
     }
     .calc-b {
       background: var(--blue-bg);
@@ -410,7 +399,9 @@
       font-size: 1.15rem;
       font-weight: 800;
       text-align: center;
-      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .calc-b .calc-head { color: var(--blue-main); }
     .calc-r .calc-head { color: var(--red-main); }
@@ -425,6 +416,7 @@
       text-align: center;
       line-height: 1.2;
       padding: 2px 4px;
+      min-width: 0;
       word-break: break-word;
     }
     .calc-b .q-text { color: var(--blue-main); }
@@ -441,19 +433,18 @@
       font-size: 1.6rem;
       font-weight: 800;
       color: #0f172a;
-      margin-bottom: 8px;
       box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
       transition: background-color 0.2s, border-color 0.2s;
     }
     .ans-box.correct {
-      background: #dcfce7 !important;
-      border-color: #16a34a !important;
-      color: #15803d !important;
+      background: #dcfce7;
+      border-color: #16a34a;
+      color: #15803d;
     }
     .ans-box.wrong {
-      background: #fee2e2 !important;
-      border-color: #dc2626 !important;
-      color: #991b1b !important;
+      background: #fee2e2;
+      border-color: #dc2626;
+      color: #991b1b;
       font-size: 1.1rem;
     }
 
@@ -461,9 +452,9 @@
     .key-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(4, 1fr);
+      grid-template-rows: repeat(4, minmax(0, 1fr));
       gap: 6px;
-      flex: 1;
+      height: 240px;
     }
     .btn-k {
       background: #ffffff;
@@ -477,7 +468,7 @@
       justify-content: center;
       box-shadow: 0 2px 0 #cbd5e1;
       cursor: pointer;
-      min-height: 46px;
+      min-height: 0;
     }
     .btn-k:active {
       transform: translateY(2px);
@@ -493,7 +484,12 @@
       pointer-events: none;
     }
 
-    /* 結束彈窗 */
+    /* 動畫與結束彈窗 */
+    @keyframes scoreFlip {
+      0% { transform: perspective(180px) rotateX(-70deg); opacity: .35; }
+      100% { transform: perspective(180px) rotateX(0); opacity: 1; }
+    }
+
     .modal-curtain {
       position: fixed;
       inset: 0;
@@ -560,8 +556,9 @@
         min-height: calc(100dvh - 60px);
         display: grid;
         grid-template-columns: minmax(0, 32fr) minmax(0, 36fr) minmax(0, 32fr);
-        grid-template-rows: minmax(560px, 1fr);
-        padding: 12px 18px;
+        grid-template-rows: minmax(548px, 1fr);
+        align-items: stretch;
+        padding: 12px 18px 14px;
         gap: 16px;
       }
       .calc-container {
@@ -569,8 +566,6 @@
       }
       .calc-b {
         order: 1;
-        border-radius: 20px;
-        padding: 16px;
       }
       .tug-arena {
         order: 2;
@@ -585,17 +580,20 @@
       }
       .calc-r {
         order: 3;
-        border-radius: 20px;
-        padding: 16px;
       }
 
       .calc-box {
-        display: grid;
-        grid-template-rows: auto minmax(220px, 1fr);
+        align-self: start;
+        width: 100%;
+        height: 468px;
+        grid-template-rows: 160px 240px;
+        align-content: center;
+        gap: 12px;
+        padding: 16px;
+        border-radius: 20px;
       }
       .calc-display {
-        display: grid;
-        grid-template-rows: auto minmax(48px, auto) auto;
+        grid-template-rows: 40px 80px 40px;
       }
 
       .competition-panel { gap: 20px; }
@@ -636,21 +634,19 @@
         font-size: 1.6rem;
       }
       .q-text {
-        font-size: 2.2rem;
-        min-height: 0;
+        font-size: clamp(1.5rem, 2vw, 2.2rem);
       }
       .q-text.operation-question {
-        flex-direction: column;
-        gap: 2px;
+        flex-direction: row;
+        gap: .24em;
         line-height: 1.05;
       }
       .ans-box {
-        height: 54px;
+        height: 40px;
         font-size: 2.4rem;
-        margin-bottom: 8px;
       }
       .key-grid {
-        grid-template-rows: repeat(4, minmax(46px, 1fr));
+        height: 240px;
       }
       .btn-k {
         font-size: 2.1rem;
@@ -658,17 +654,8 @@
       }
     }
 
-    /* 大電視採較矮的瀏覽器視窗時，保留題目字級並壓縮非操作區。 */
-    @media (min-width: 1024px) and (max-height: 800px) {
-      .control-header { padding: 3px 12px; gap: 8px; }
-      .app-layout { padding: 5px 14px; gap: 10px; }
-      .calc-b, .calc-r { padding: 8px 10px; }
-      .calc-head { font-size: 1.35rem; margin-bottom: 2px; }
-      .q-text { font-size: 1.85rem; min-height: 0; }
-      .q-text.operation-question { font-size: 1.65rem; }
-      .ans-box { height: 42px; font-size: 2rem; margin-bottom: 4px; }
-      .key-grid { gap: 4px; }
-      .btn-k { font-size: 1.75rem; }
+    /* 矮螢幕只壓縮中央展示區；左右操作區維持 468px 與 240px 鍵盤。 */
+    @media (min-width: 1024px) and (max-height: 700px) {
       .tug-arena { padding: 10px; gap: 14px; }
       .competition-panel { gap: 14px; }
       .clock-badge { font-size: 3.05rem; padding: 7px 28px; }
@@ -681,6 +668,33 @@
       .rope-track { height: 104px; min-height: 80px; margin-top: 0; }
       .puller-svg { width: 58px; height: 72px; }
       .rope-cable { width: 116px; height: 9px; }
+    }
+
+    /* 手機保留雙隊並列操作，題目可換行，整頁依內容自然捲動。 */
+    @media (max-width: 600px) {
+      .control-header {
+        padding: 6px 8px;
+      }
+      .app-layout {
+        padding: 8px 6px 12px;
+      }
+      .calc-container {
+        gap: 6px;
+      }
+      .calc-box {
+        padding: 7px;
+      }
+      .q-text.operation-question {
+        flex-direction: column;
+        gap: 2px;
+        font-size: clamp(.88rem, 4vw, 1.1rem);
+        line-height: 1.05;
+      }
+      .q-text.operation-question .operator {
+        min-width: 1.8em;
+        min-height: 1.15em;
+        padding: 0 .24em .08em;
+      }
     }
   </style>
 </head>
@@ -949,6 +963,16 @@
       eng_weekdays: () => {
         const item = WEEK_DATA[randInt(0, WEEK_DATA.length - 1)];
         return { q: item.name, speech: item.name, answers: item.answers };
+      },
+      eng_dates: () => {
+        const month = MONTH_DATA[randInt(0, MONTH_DATA.length - 1)];
+        const day = randInt(1, month.days);
+        const dayText = dayToOrdinal(day);
+        return {
+          q: `${month.name} ${dayText}`,
+          speech: `${month.name} ${dayText}`,
+          a: `${month.m}${String(day).padStart(2, "0")}`
+        };
       }
     };
 
@@ -1059,15 +1083,6 @@
     function generateQuestion(bankKey) {
       if (EnglishQuestionGenerators[bankKey]) {
         return EnglishQuestionGenerators[bankKey]();
-      } else if (bankKey === 'eng_dates') {
-        const mObj = MONTH_DATA[randInt(0, MONTH_DATA.length - 1)];
-        const day = randInt(1, mObj.days);
-        const dayStr = String(day).padStart(2, '0');
-        return {
-          q: `${mObj.name} ${dayToOrdinal(day)}`,
-          speech: `${mObj.name} ${dayToOrdinal(day)}`,
-          a: `${mObj.m}${dayStr}` // MMDD 4 位數，字串保留前導 0
-        };
       } else if (MathQuestionGenerators[bankKey]) {
         return MathQuestionGenerators[bankKey]();
       }
@@ -1091,10 +1106,14 @@
     let timerLoop = null;
     let isRunning = false;
 
-    // 紀錄各隊狀態與上一題防止連續重複
+    function createTeamState() {
+      return { score: 0, answers: [], speech: "", input: "", locked: true, lastQ: "" };
+    }
+
+    // 紀錄各隊狀態與上一題，防止連續出現相同題目。
     const teamState = {
-      1: { score: 0, answers: [], speech: "", input: "", locked: true, lastQ: "" },
-      2: { score: 0, answers: [], speech: "", input: "", locked: true, lastQ: "" }
+      1: createTeamState(),
+      2: createTeamState()
     };
 
     const ropeBundle = document.getElementById("ropeBundle");
@@ -1111,7 +1130,7 @@
     const leadHint = document.getElementById("leadHint");
 
     function isEnglishBank() {
-      return document.getElementById("bankSel").value.startsWith("eng_");
+      return bankSelect.value.startsWith("eng_");
     }
 
     function updateQuestionSpeechState() {
@@ -1133,14 +1152,10 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    function getWinningLead() {
-      return selectedPreset.winningLead;
-    }
-
     // 更新拔河位置，並依比賽時間判定提前獲勝門檻
     function updateTugPosition() {
       const diff = teamState[1].score - teamState[2].score; // 藍正(往左), 紅負(往右)
-      const winningLead = getWinningLead();
+      const winningLead = selectedPreset.winningLead;
       const visualLead = winningLead || 5;
       const clamped = Math.max(-visualLead, Math.min(visualLead, diff));
 
@@ -1164,7 +1179,7 @@
 
     function issueNewQuestion(team) {
       if (!isRunning) return;
-      const bank = document.getElementById("bankSel").value;
+      const bank = bankSelect.value;
       
       let item;
       let tries = 0;
@@ -1328,8 +1343,8 @@
       timerLoop = null;
       endModal.style.display = "none";
 
-      teamState[1] = { score: 0, answers: [], speech: "", input: "", locked: true, lastQ: "" };
-      teamState[2] = { score: 0, answers: [], speech: "", input: "", locked: true, lastQ: "" };
+      teamState[1] = createTeamState();
+      teamState[2] = createTeamState();
 
       document.getElementById("sc-1").textContent = "0";
       document.getElementById("sc-2").textContent = "0";
@@ -1361,8 +1376,8 @@
       isRunning = true;
       endModal.style.display = "none";
 
-      teamState[1] = { score: 0, answers: [], speech: "", input: "", locked: true, lastQ: "" };
-      teamState[2] = { score: 0, answers: [], speech: "", input: "", locked: true, lastQ: "" };
+      teamState[1] = createTeamState();
+      teamState[2] = createTeamState();
       document.getElementById("sc-1").textContent = "0";
       document.getElementById("sc-2").textContent = "0";
       ropeBundle.style.transform = "translateX(0px)";
