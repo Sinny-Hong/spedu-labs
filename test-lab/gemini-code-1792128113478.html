@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐍 E-City｜英文貪食蛇迷宮逃脫</title>
+<style>
+:root{
+  --cream: #f5f8fc; 
+  --gold: #f5b942; 
+  --light-gold: #cbd8e7; 
+  --ink: #25425f; 
+  --blue: #2477cd;
+  --green: #40b56c; 
+  --red: #e56c63; 
+  --line: #e1eaf4; 
+  --navy: #17365d;
+  --orange: #f59e0b; 
+  --soft: #f4f8fc; 
+  --green-soft: #e5f7e8; 
+  --hint: #fff1c4; 
+}
+*{box-sizing:border-box}
+
+/* 桌機版預設：鎖定高度，內部捲動，完全符合大電視螢幕範圍 */
+html,body{margin:0;height:100%;overflow:hidden;}
+body{
+  background:var(--cream); color:var(--ink);
+  font-family: "Comic Sans MS", "Comic Sans", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+button,select{font:inherit;cursor:pointer;user-select:none;}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* 頂部工具列 */
+.topbar{flex:none; min-height:55px;display:flex;justify-content:space-between;align-items:center;padding:8px 20px;background:#fff;border-bottom:3px solid var(--orange);}
+h1{margin:0;font-size:clamp(20px,2vw,26px); color: var(--navy);}
+.toolbar{display:flex;align-items:center;gap:8px;}
+.tool,select{background:#fff;color:var(--ink);border:1px solid var(--light-gold);border-radius:10px;padding:7px 12px;font-weight:700;font-size:15px;}
+.tool:hover,select:hover{background:#fff5d9}
+
+/* 桌機整體佈局：完美契合 16:9 橫向大電視 */
+.layout{flex:1; display:grid;grid-template-columns:minmax(0,1.3fr) minmax(320px,1fr);gap:14px;padding:12px; min-height:0;}
+.panel{background:white;border:1px solid var(--light-gold);border-radius:18px;padding:14px;display:flex;flex-direction:column;min-height:0;box-shadow:0 3px 14px #28456513;}
+
+/* 左側：橫向扁寬迷宮區 (寬度大於高度，完美適應大電視) */
+.maze-wrapper{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;}
+.maze-container{
+  width:100%;aspect-ratio:1.5; /* 橫向 16:10 比例 */
+  background:#e9f3e8;border-radius:15px;
+  display:grid;grid-template-columns:repeat(8, 1fr);grid-template-rows:repeat(5, 1fr);
+  gap:4px;padding:8px;position:relative;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,0.06);
+}
+.cell{
+  background:#d5e8d4;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;font-size:clamp(18px, 2.5vw, 28px);
+}
+.cell.wall{
+  background:#b0c4de;border-radius:6px;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,0.15);
+}
+.cell.exit{
+  background:#ffe599;border-radius:8px;
+  font-weight:bold;animation:pulse 1.5s infinite;
+}
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.06)}
+  100%{transform:scale(1)}
+}
+
+/* Q版可愛貪食蛇頭與圓點身軀 */
+.snake-head{
+  width:78%;height:78%;background:var(--green);border-radius:50%;
+  position:relative;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 5px rgba(0,0,0,0.2);
+  transition:all 0.2s ease-in-out;
+  z-index:5;
+}
+.snake-head::before,.snake-head::after{
+  content:'';position:absolute;width:6px;height:6px;background:white;border-radius:50%;top:5px;
+}
+.snake-head::before{left:5px;}
+.snake-head::after{right:5px;}
+
+.snake-dot{
+  width:40%;height:40%;background:#82e0aa;border-radius:50%;
+}
+
+/* 右側：測驗與題目區 */
+.question-top{
+  display:flex;justify-content:space-between;
+  gap:8px;align-items:center;color:#6b8197;
+  font-weight:bold;margin-bottom:8px;flex-shrink:0;
+}
+.question{
+  font-size:clamp(20px,2.2vw,28px);
+  line-height:1.35;font-weight:800;
+  min-height:60px;margin-bottom:10px;overflow-wrap:anywhere;
+}
+.choices{display:grid;gap:10px;min-width:0;flex-shrink:0;}
+.choice{
+  text-align:left;background:var(--soft);
+  border:2px solid var(--line);border-radius:13px;
+  padding:12px 16px;font-size:20px;font-weight:bold;color:var(--navy);
+  min-width:0;width:100%;overflow-wrap:anywhere;
+  transition:all 0.15s;
+}
+.choice:hover:not(:disabled){border-color:var(--green);background:#eef9f2}
+.choice.correct{background:var(--green-soft);border-color:var(--green);color:var(--green)}
+.choice.wrong{background:#fff0ee;border-color:var(--red);color:var(--red)}
+.choice:disabled{cursor:default}
+
+.feedback{flex:1;display:flex;align-items:center;margin-top:8px;font-size:18px;font-weight:bold;color:var(--navy);min-height:40px;}
+
+.note-row{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:10px;flex-wrap:wrap;font-size:13px;color:#789;margin-top:8px;flex-shrink:0;
+}
+.copyright{font-size:12px;color:#8192a6;margin-left:auto}
+
+/* 撞牆動畫 */
+@keyframes shake{
+  0%, 100%{transform:translateX(0)}
+  20%, 60%{transform:translateX(-6px)}
+  40%, 80%{transform:translateX(6px)}
+}
+.shake{animation:shake 0.4s ease-in-out;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>🐍 E-City｜英文貪食蛇迷宮逃脫</h1>
+  <div class="toolbar">
+    <select id="mapChoice">
+      <option value="0">Map 1：經典直轉迷宮</option>
+      <option value="1">Map 2：錯綜交錯迷宮</option>
+    </select>
+    <button class="tool" id="restart-maze">↻ 開啟新局</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="panel">
+    <div class="maze-wrapper">
+      <div class="maze-container" id="maze-grid"></div>
+    </div>
+    <div class="note-row">
+      <span>💡 規則：看清路口方向，點選正確的英文指令前進。選錯會撞到牆壁喔！</span>
+      <span class="copyright">© Sinny’s Spedu Labs</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="question-top">
+      <span id="progress">Exploring Maze</span>
+      <span id="score">⭐ 0</span>
+    </div>
+    <div class="question" id="question" role="button" tabindex="0" aria-label="點擊朗讀題目">
+      Where should we go?
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+  </section>
+</main>
+
+<script>
+"use strict";
+
+/* 8欄 x 5列 橫向扁寬迷宮設計：0=道路, 1=牆壁帶裝飾Emoji, 2=出口 */
+const MAZES = [
+  {
+    // Map 1
+    grid: [
+      [1, 1, 1, 1, 2, 1, 1, 1],
+      [1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 1, 1, 1, 0, 1, 1],
+      [1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 0, 1, 1, 1, 1]
+    ],
+    start: {r: 4, c: 3},
+    decorations: {
+      "0,0":"🏫","0,1":"🏥","0,2":"🏦","0,3":"🌳","0,5":"📮","0,6":"📚","0,7":"💐",
+      "2,0":"🏪","2,7":"🏨",
+      "4,0":"☕","4,1":"🍕","4,2":"🍞","4,4":"🍎","4,5":"🥤","4,6":"🍦","4,7":"🍰"
+    }
+  },
+  {
+    // Map 2 (相同難度，不同牆面與通路配置)
+    grid: [
+      [1, 1, 1, 1, 1, 2, 1, 1],
+      [1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 0, 1, 1, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 0, 1, 1, 1, 1, 1]
+    ],
+    start: {r: 4, c: 2},
+    decorations: {
+      "0,0":"🏛️","0,1":"🏬","0,2":"🎬","0,3":"🚒","0,4":"👮","0,6":"🚉","0,7":"🚌",
+      "2,1":"🏋️","2,5":"📖",
+      "4,0":"🏠","4,1":"🌲","4,3":"🐈","4,4":"🐕","4,5":"🚲","4,6":"⭐","4,7":"🎁"
+    }
+  }
+];
+
+let currentMapId = 0;
+let score = 0;
+let snakePath = []; 
+let currentPos = {r: 4, c: 3};
+let currentDir = "UP"; // UP, DOWN, LEFT, RIGHT
+let isAnswered = false;
+
+const gridEl = document.getElementById("maze-grid");
+const questionEl = document.getElementById("question");
+const choicesEl = document.getElementById("choices");
+const feedbackEl = document.getElementById("feedback");
+const progressEl = document.getElementById("progress");
+const scoreEl = document.getElementById("score");
+const mapChoiceEl = document.getElementById("mapChoice");
+
+const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+
+function speakEnglish(text){
+  if(!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.rate = 0.9;
+  window.speechSynthesis.speak(utterance);
+}
+
+function initMaze(){
+  const maze = MAZES[currentMapId];
+  currentPos = {...maze.start};
+  score = 0;
+  snakePath = [{...currentPos}];
+  currentDir = "UP";
+  isAnswered = false;
+  
+  renderMaze();
+  showQuestion();
+}
+
+function renderMaze(){
+  const maze = MAZES[currentMapId];
+  gridEl.innerHTML = "";
+
+  for(let r=0; r<5; r++){
+    for(let c=0; c<8; c++){
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      
+      const type = maze.grid[r][c];
+      if(type === 1) {
+        cell.classList.add("wall");
+        // 放入牆面裝飾 Emoji
+        const key = `${r},${c}`;
+        if(maze.decorations && maze.decorations[key]){
+          cell.innerHTML = maze.decorations[key];
+        }
+      } else if(type === 2){
+        cell.classList.add("exit");
+        cell.innerHTML = "🚪";
+      }
+
+      // 檢查是否為走過的蛇身軌跡
+      const isPath = snakePath.some(p => p.r === r && p.c === c && !(p.r === currentPos.r && p.c === currentPos.c));
+      if(isPath){
+        const dot = document.createElement("div");
+        dot.className = "snake-dot";
+        cell.appendChild(dot);
+      }
+
+      // 檢查是否為蛇頭當前位置
+      if(currentPos.r === r && currentPos.c === c){
+        const head = document.createElement("div");
+        head.className = "snake-head";
+        let rot = 0;
+        if(currentDir === "DOWN") rot = 180;
+        if(currentDir === "LEFT") rot = 270;
+        if(currentDir === "RIGHT") rot = 90;
+        head.style.transform = `rotate(${rot}deg)`;
+        cell.appendChild(head);
+      }
+
+      gridEl.appendChild(cell);
+    }
+  }
+}
+
+function getTargetMove(dir, action){
+  let newDir = dir;
+  if(action === "Turn left."){
+    if(dir === "UP") newDir = "LEFT";
+    else if(dir === "LEFT") newDir = "DOWN";
+    else if(dir === "DOWN") newDir = "RIGHT";
+    else if(dir === "RIGHT") newDir = "UP";
+  } else if(action === "Turn right."){
+    if(dir === "UP") newDir = "RIGHT";
+    else if(dir === "RIGHT") newDir = "DOWN";
+    else if(dir === "DOWN") newDir = "LEFT";
+    else if(dir === "LEFT") newDir = "UP";
+  }
+
+  let nextR = currentPos.r;
+  let nextC = currentPos.c;
+  if(newDir === "UP") nextR--;
+  else if(newDir === "DOWN") nextR++;
+  else if(newDir === "LEFT") nextC--;
+  else if(newDir === "RIGHT") nextC++;
+
+  return {r: nextR, c: nextC, dir: newDir};
+}
+
+function showQuestion(){
+  const maze = MAZES[currentMapId];
+
+  // 檢查是否抵達出口
+  if(maze.grid[currentPos.r][currentPos.c] === 2){
+    questionEl.textContent = "🎉 恭喜你！成功逃出迷宮！";
+    choicesEl.innerHTML = "";
+    feedbackEl.textContent = "Great job! 你已經成功掌握方向英文囉！";
+    progressEl.textContent = "Completed!";
+    speakEnglish("Great job! You made it!");
+    return;
+  }
+
+  isAnswered = false;
+  progressEl.textContent = `Exploring Maze`;
+  scoreEl.textContent = `⭐ ${score}`;
+  questionEl.textContent = "Where should we go?";
+  feedbackEl.textContent = "";
+
+  const allOptions = ["Go straight.", "Turn left.", "Turn right."];
+  const randomizedOptions = shuffle(allOptions);
+
+  choicesEl.innerHTML = "";
+  randomizedOptions.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
+    btn.addEventListener("click", () => handleUserChoice(opt));
+    choicesEl.appendChild(btn);
+  });
+}
+
+function handleUserChoice(selectedAction){
+  if(isAnswered) return;
+  isAnswered = true;
+
+  const maze = MAZES[currentMapId];
+  const moveInfo = getTargetMove(currentDir, selectedAction);
+  
+  const isOutOfBounds = moveInfo.r < 0 || moveInfo.r >= 5 || moveInfo.c < 0 || moveInfo.c >= 8;
+  const isWall = isOutOfBounds || maze.grid[moveInfo.r][moveInfo.c] === 1;
+
+  if(!isWall){
+    // ✅ 答對直接無縫滑動連擊下一題
+    snakePath.push({...currentPos});
+    currentPos = {r: moveInfo.r, c: moveInfo.c};
+    currentDir = moveInfo.dir;
+    score++;
+    scoreEl.textContent = `⭐ ${score}`;
+    renderMaze();
+
+    feedbackEl.textContent = "✅ Correct! 走對了！";
+    speakEnglish("Correct!");
+
+    setTimeout(showQuestion, 450);
+  } else {
+    // ❌ 答錯撞牆，彈回原位
+    const oldPos = {...currentPos};
+    const oldDir = currentDir;
+    
+    currentDir = moveInfo.dir;
+    if(!isOutOfBounds){
+      currentPos = {r: moveInfo.r, c: moveInfo.c};
+    }
+    renderMaze();
+
+    gridEl.classList.add("shake");
+    setTimeout(() => gridEl.classList.remove("shake"), 400);
+    
+    feedbackEl.textContent = "💥 Oops! 這裡有牆壁（死路），撞牆了！請再試一次。";
+    speakEnglish("Oops! You hit the wall.");
+
+    setTimeout(() => {
+      currentPos = oldPos;
+      currentDir = oldDir;
+      renderMaze();
+      isAnswered = false;
+      showQuestion();
+    }, 1200);
+  }
+}
+
+mapChoiceEl.addEventListener("change", (e) => {
+  currentMapId = parseInt(e.target.value, 10);
+  initMaze();
+});
+
+document.getElementById("restart-maze").addEventListener("click", initMaze);
+questionEl.addEventListener("click", () => speakEnglish(questionEl.textContent));
+
+// 啟動遊戲
+initMaze();
+</script>
+</body>
+</html>
