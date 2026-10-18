@@ -1,14 +1,810 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>測試頁｜eng-grammar/test2.html</title>
-  <style>
-    body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;background:#f5f7fb;color:#17365d}
-    main{text-align:center;padding:32px}h1{margin:0 0 12px;font-size:clamp(2rem,6vw,4rem)}p{margin:0;color:#64748b;font-size:clamp(1.1rem,3vw,1.5rem)}
-  </style>
-</head>
-<body><main><h1>測試頁</h1><p>eng-grammar/test2.html</p></main></body>
-</html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>E-City｜異想奇島</title>
+<style>
+:root{--blue:#245b86;--orange:#f59e0b;--ink:#263b4b;--line:#d8e5e9;--bg:#f5f9fa;--white:#fff;--muted:#718591}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Trebuchet MS','Arial Rounded MT Bold','Noto Sans TC',system-ui,sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #f6b746;outline-offset:2px}
+.app{height:100dvh;min-height:490px;display:flex;flex-direction:column;padding:12px;gap:10px;max-width:1900px;margin:auto}
+.top{height:56px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 12px}
+.brand{font-size:clamp(22px,2vw,31px);font-weight:900;color:var(--blue);letter-spacing:.02em}
+.brand span{font-size:.59em;color:#81929a;margin-right:9px}
+.sub{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:8px}
+.workspace{display:grid;grid-template-columns:minmax(0,7fr) minmax(310px,3fr);gap:12px;min-height:0;flex:1}
+.stage,.panel{background:#fff;border:1px solid var(--line);border-radius:18px;min-height:0;box-shadow:0 3px 12px #2d59700b}
+.stage{position:relative;overflow:hidden;display:flex;flex-direction:column;padding:14px}
+.stage-top-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;z-index:5;flex-wrap:wrap}
+.island-label{background:#fff;border:1px solid #dde7e9;border-radius:999px;box-shadow:0 2px 8px #32556a13;padding:8px 16px;color:var(--blue);font-weight:900;font-size:clamp(15px,1.5vw,22px)}
+.island-label small{font-weight:700;color:var(--muted);font-size:.7em}
+.stage-tools{display:flex;gap:6px;align-items:center}
+.tool-btn{font-size:12px;font-weight:800;border:1px solid #d4e0e5;background:#fff;border-radius:99px;padding:6px 12px;color:#45677a;box-shadow:0 2px 5px #00000008;transition:all .15s}
+.tool-btn:hover{background:#f0f6f8}
+.tool-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.island-view{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;background:radial-gradient(ellipse at 50% 60%,#d8f1f5 0%,#eaf7fa 52%,#f8fcfd 85%);border-radius:15px;margin-top:10px;overflow:hidden;user-select:none}
+.island-canvas-wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#island-svg{width:100%;height:100%;max-width:1100px;max-height:760px;transition:transform .25s ease}
+.stage-foot{display:flex;justify-content:space-between;align-items:center;padding:10px 4px 0;color:var(--muted);font-size:12px;flex-wrap:wrap;gap:6px}
+.stat-pills{display:flex;gap:8px;flex-wrap:wrap}
+.stat-pill{background:#f2f7f9;border:1px solid #e1ecef;padding:3px 9px;border-radius:99px;font-weight:800;color:#466678;font-size:11px}
+.panel{display:flex;flex-direction:column;overflow:hidden}
+.panel-scroll{overflow:auto;padding:15px;min-height:0;scrollbar-width:thin}
+.section{margin-bottom:15px}
+.section-title{font-weight:900;color:var(--blue);font-size:14px;margin:0 0 9px;display:flex;justify-content:space-between;align-items:center}
+.groups{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.group-btn{border:1px solid var(--line);background:#f4f8f9;border-radius:10px;color:#45677a;font-weight:900;padding:9px 1px;min-width:0;transition:all .15s}
+.group-btn[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 2px 8px #245b8633}
+.xpbox{background:#f5f9fb;border:1px solid #e3edf1;border-radius:13px;padding:12px}
+.xp-head{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.xp{font-size:clamp(25px,2.7vw,38px);font-weight:900;color:var(--blue);line-height:1}
+.xp small{font-size:13px}
+.level{font-weight:900;color:#c77c00;font-size:clamp(16px,1.6vw,22px)}
+.bar{height:9px;background:#dfe9ed;border-radius:99px;overflow:hidden;margin:9px 0 5px}
+.fill{height:100%;width:0;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:99px;transition:width .25s}
+.xp-caption{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:6px}
+.score-list{display:grid;gap:8px}
+.score-item{border-bottom:1px solid #edf2f3;padding-bottom:8px}
+.score-item:last-child{border:0}
+.score-line{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.score-name{font-size:13px;font-weight:800;min-width:0;line-height:1.35;display:flex;align-items:center;gap:5px}
+.score-name .ico{font-size:19px}
+.item-badge{font-size:10px;background:#eef5f8;color:#3b698a;padding:2px 6px;border-radius:99px;font-weight:800}
+.score-controls{display:flex;align-items:center;gap:4px;flex:none}
+.score-controls button{height:31px;min-width:31px;padding:0 5px;border:1px solid #d4e0e5;border-radius:9px;background:#f4f8f9;color:var(--blue);font-size:15px;font-weight:900;line-height:1}
+.score-controls button.plus{background:#fff7e7;color:#ad7100;border-color:#f6dda2}
+.score-controls button.plus10{background:#fef3c7;color:#b45309;border-color:#fde68a;font-size:12px}
+.score-controls button:disabled{opacity:.35;cursor:default}
+.num{border:1px solid transparent;background:transparent;width:42px;text-align:center;color:var(--ink);font-weight:900;font-variant-numeric:tabular-nums;border-radius:6px;padding:3px 0}
+.num:focus{background:#fff5d9;border-color:#f59e0b}
+.score-sub{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#889ba4;margin:3px 2px 0 26px}
+.mini-bar{width:65px;height:4px;background:#e5eff2;border-radius:99px;overflow:hidden}
+.mini-fill{height:100%;background:#38a169;border-radius:99px;transition:width .2s}
+.footer-actions{display:flex;gap:7px;flex-wrap:wrap}
+.smallbtn{font-size:12px;font-weight:800;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 10px;color:#587082}
+.smallbtn:hover{background:#f8fbfc}
+.smallbtn.danger{color:#b34e42}
+.tiny{color:#93a3a9;font-size:11px;line-height:1.5;margin-top:8px}
+.toast{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:#1e4e68;color:#fff;padding:10px 18px;border-radius:99px;font-size:13px;font-weight:800;opacity:0;pointer-events:none;transition:all .22s;white-space:nowrap;box-shadow:0 4px 14px #00000025;z-index:10}
+.toast.show{opacity:1;bottom:22px}
 
+@keyframes popIn {
+  0% { transform: scale(0.2) translateY(-18px); opacity: 0; }
+  70% { transform: scale(1.08) translateY(2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.pop-anim { animation: popIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; transform-box: fill-box; transform-origin: center bottom; }
+
+@media(max-width:790px){
+  .app{height:auto;min-height:100dvh;padding:9px;gap:8px}
+  .top{height:auto;min-height:47px;padding:3px 6px}
+  .brand{font-size:22px}
+  .workspace{display:flex;flex-direction:column}
+  .stage{height:min(56vh,460px);min-height:290px}
+  .panel{overflow:visible}
+  .panel-scroll{overflow:visible;padding:14px}
+  .island-label{font-size:16px}
+  .groups{grid-template-columns:repeat(7,minmax(0,1fr))}
+  .group-btn{padding:10px 0;font-size:12px}
+  .score-name{font-size:14px}
+  .score-controls button{height:35px;min-width:35px}
+  .num{width:44px}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="brand"><span>E-City</span>異想奇島</div>
+    <div class="sub">
+      <span>單項每 10 分抽 1 物件 ｜ 總分每 100 分（10 等）島嶼擴建一倍</span>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <!-- 左側：等角積木浮島舞台 -->
+    <section class="stage" aria-label="島嶼舞台">
+      <div class="stage-top-bar">
+        <div class="island-label"><span id="stage-group">3A</span><small>'s</small> Fantasy Island</div>
+        <div class="stage-tools">
+          <button type="button" class="tool-btn" id="toggle-kenney" title="若將 HTML 放在 Kenney 的 Tiles 資料夾同層，可切換讀取真實 PNG 素材">🖼️ 切換 Kenney 圖檔模式</button>
+          <button type="button" class="tool-btn" id="reroll-island" title="重新隨機排列本組島嶼形狀與物件位置">🎲 重新排列島嶼</button>
+        </div>
+      </div>
+
+      <div class="island-view" id="island-view">
+        <div class="island-canvas-wrap">
+          <svg id="island-svg" viewBox="-420 -230 840 520" preserveAspectRatio="xMidYMid meet" aria-label="等角積木小島"></svg>
+        </div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+
+      <div class="stage-foot">
+        <span id="land-status" style="font-weight:800;color:var(--blue)">萌芽島 · 15 格土地</span>
+        <div class="stat-pills" id="stage-stats"></div>
+      </div>
+    </section>
+
+    <!-- 右側：教師控制面板 -->
+    <aside class="panel" aria-label="教師控制面板">
+      <div class="panel-scroll">
+        <section class="section">
+          <h2 class="section-title">選擇組別</h2>
+          <div class="groups" id="groups"></div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">
+            <span>總經驗值與等級</span>
+            <span id="expand-hint" style="font-size:11px;color:#c77c00;font-weight:800"></span>
+          </h2>
+          <div class="xpbox">
+            <div class="xp-head">
+              <div class="xp" id="xp">0 <small>XP</small></div>
+              <div class="level" id="level">LEVEL 01</div>
+            </div>
+            <div class="bar"><div class="fill" id="xpfill"></div></div>
+            <div class="xp-caption">
+              <span id="next-level">距離下一級還差 10 XP</span>
+              <span id="land-caption">土地階段 1 / 4（15 格）</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">
+            <span>各項加分</span>
+            <span style="font-size:11px;color:#93a3a9;font-weight:600">每滿 10 分自動抽 1 物件</span>
+          </h2>
+          <div class="score-list" id="scores"></div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">教師管理</h2>
+          <div class="footer-actions">
+            <button class="smallbtn" id="undo">↶ 復原上一步</button>
+            <button class="smallbtn danger" id="reset-group">重設本組</button>
+            <button class="smallbtn danger" id="reset-all">清除全部</button>
+          </div>
+          <div class="tiny">
+            💡 <strong>操作說明</strong>：點擊 <code>+1</code> 或 <code>+10</code>（或直接點擊數字輸入），單項每滿 10 分立即在島上隨機空地抽出對應物件（🌳樹、🌷花田、🏠建築、🪨岩石景觀）。總分每滿 100 分（每升 10 級），島嶼面積自動向外擴建一倍！所有抽籤結果與島嶼形狀皆自動保存於瀏覽器。
+          </div>
+        </section>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  const KEY = 'ecity_fantasy_island_v2_iso';
+  const GROUPS = ['3A', '3B', '3C', '2A', '2B', '1A', '1B'];
+
+  // 定義六大加分項目與對應的物件分類池
+  const ITEMS = [
+    { ico: '🌳', name: '家長簽名', type: 'tree', label: '樹木' },
+    { ico: '🌳', name: '導師簽名', type: 'tree', label: '樹木' },
+    { ico: '🌷', name: '每週單字', type: 'flower', label: '花草' },
+    { ico: '🌷', name: '1200 單字本', type: 'flower', label: '花草' },
+    { ico: '🏠', name: '準時交作業', type: 'building', label: '建築' },
+    { ico: '🪨', name: '攜帶文具', type: 'rock', label: '景觀' }
+  ];
+
+  // Kenney 素材分類表（同時提供內建 SVG 造型與 Tiles/ PNG 檔案路徑）
+  const ASSET_CATALOG = {
+    tree: [
+      { id: 'tree_single', name: '翠綠圓樹', file: 'Tiles/tree_single_S.png', variant: 'oak' },
+      { id: 'tree_multi', name: '雙子叢林樹', file: 'Tiles/tree_multiple_S.png', variant: 'twin' },
+      { id: 'tree_pine', name: '針葉松樹', file: 'Tiles/tree_pine_S.png', variant: 'pine' },
+      { id: 'tree_pine_lg', name: '高聳巨松', file: 'Tiles/tree_pineLarge_S.png', variant: 'giant_pine' }
+    ],
+    flower: [
+      { id: 'crop_flower', name: '繽紛花圃', file: 'Tiles/furrow_crop_S.png', variant: 'tulip' },
+      { id: 'crop_wheat', name: '黃金麥田', file: 'Tiles/furrow_cropWheat_S.png', variant: 'wheat' },
+      { id: 'flower_bloom', name: '向日葵叢', file: 'Tiles/grass_pathEnd_S.png', variant: 'sunflower' }
+    ],
+    building: [
+      { id: 'house_red', name: '溫馨紅頂小屋', file: 'Tiles/building_doorWindows_S.png', variant: 'cottage_red' },
+      { id: 'house_beige', name: '暖陽雙層屋', file: 'Tiles/building_doorBeige_S.png', variant: 'cottage_blue' },
+      { id: 'tower_beige', name: '瞭望石塔', file: 'Tiles/castle_towerBeige_S.png', variant: 'tower_beige' },
+      { id: 'tower_purple', name: '奇幻紫尖塔', file: 'Tiles/castle_towerPurple_S.png', variant: 'tower_purple' },
+      { id: 'tower_green', name: '森林精靈塔', file: 'Tiles/castle_towerGreen_S.png', variant: 'tower_green' }
+    ],
+    rock: [
+      { id: 'rock_grass', name: '青苔奇岩', file: 'Tiles/rocks_grass_S.png', variant: 'moss_rock' },
+      { id: 'rock_dirt', name: '礦石岩群', file: 'Tiles/rocks_dirt_S.png', variant: 'crystal_rock' },
+      { id: 'well_stone', name: '許願古井', file: 'Tiles/well_S.png', variant: 'well' },
+      { id: 'fence_wood', name: '木製圍欄樁', file: 'Tiles/fence_woodDouble_S.png', variant: 'fence' }
+    ]
+  };
+
+  // 依據總分 (每 100 XP = 10 等級) 決定島嶼大小 (每階段擴大一倍)
+  function getTargetTileCount(totalXp) {
+    // 0~99 (Lv.1~10): 15格
+    // 100~199 (Lv.11~20): 30格
+    // 200~299 (Lv.21~30): 60格
+    // 300+ (Lv.31+): 120格
+    if (totalXp >= 300) return { stage: 4, count: 120, title: '傳奇大陸 · 120 格土地' };
+    if (totalXp >= 200) return { stage: 3, count: 60, title: '奇蹟大島 · 60 格土地' };
+    if (totalXp >= 100) return { stage: 2, count: 30, title: '成長島嶼 · 30 格土地' };
+    return { stage: 1, count: 15, title: '萌芽小島 · 15 格土地' };
+  }
+
+  // 建立預設空白狀態
+  function createDefaultGroupState() {
+    return {
+      scores: Array(ITEMS.length).fill(0),
+      tiles: [{ x: 0, y: 0, elev: 0, surface: 'grass' }], // 島嶼地塊陣列
+      objects: [] // 抽出的物件 [{ id, itemIndex, type, assetId, x, y }]
+    };
+  }
+
+  function blankState() {
+    const groups = {};
+    GROUPS.forEach(g => { groups[g] = createDefaultGroupState(); });
+    return { current: '3A', useKenneyPng: false, groups };
+  }
+
+  let state = blankState();
+  let history = [];
+  let lastAddedObjId = null;
+
+  // 讀取 localStorage（並相容舊版 shell 資料）
+  try {
+    const raw = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('ecity_fantasy_island_shell_v1') || 'null');
+    if (raw && raw.groups) {
+      GROUPS.forEach(g => {
+        const savedG = raw.groups[g];
+        if (Array.isArray(savedG)) {
+          // 相容舊版純分數陣列
+          state.groups[g].scores = ITEMS.map((_, i) => Math.max(0, Math.min(99999, Math.trunc(Number(savedG[i]) || 0))));
+        } else if (savedG && Array.isArray(savedG.scores)) {
+          state.groups[g].scores = ITEMS.map((_, i) => Math.max(0, Math.min(99999, Math.trunc(Number(savedG.scores[i]) || 0))));
+          if (Array.isArray(savedG.tiles) && savedG.tiles.length) state.groups[g].tiles = savedG.tiles;
+          if (Array.isArray(savedG.objects)) state.groups[g].objects = savedG.objects;
+        }
+      });
+      if (GROUPS.includes(raw.current)) state.current = raw.current;
+      if (typeof raw.useKenneyPng === 'boolean') state.useKenneyPng = raw.useKenneyPng;
+    }
+  } catch (e) {
+    console.warn('讀取存檔失敗', e);
+  }
+
+  const $ = id => document.getElementById(id);
+
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+    } catch (e) {
+      announce('無法儲存：請檢查瀏覽器儲存空間');
+    }
+  }
+
+  function announce(msg) {
+    const el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(announce.t);
+    announce.t = setTimeout(() => el.classList.remove('show'), 2400);
+  }
+
+  function snapshot() {
+    history.push(JSON.stringify(state));
+    if (history.length > 30) history.shift();
+  }
+
+  // 確保某組的土地格數與物件數量跟目前分數同步
+  function syncIslandWithScores(groupKey, notifyNew = false) {
+    const gData = state.groups[groupKey];
+    const totalXp = gData.scores.reduce((a, b) => a + b, 0);
+    const targetLand = getTargetTileCount(totalXp);
+
+    // 1. 擴張或調整土地格數（保留既有地塊，從邊緣相鄰長出新地塊）
+    const existingSet = new Set(gData.tiles.map(t => `${t.x},${t.y}`));
+    const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+
+    let grewLand = false;
+    while (gData.tiles.length < targetLand.count) {
+      // 找出所有外圍可生長的相鄰候選格（偏好靠近中心，避免島嶼太破碎）
+      const candidates = [];
+      const candSet = new Set();
+      gData.tiles.forEach(t => {
+        dirs.forEach(([dx, dy]) => {
+          const nx = t.x + dx, ny = t.y + dy;
+          const k = `${nx},${ny}`;
+          if (!existingSet.has(k) && !candSet.has(k)) {
+            candSet.add(k);
+            // 計算鄰居數量（越多鄰居代表越緊密）
+            let neighbors = 0;
+            dirs.forEach(([qx, qy]) => {
+              if (existingSet.has(`${nx + qx},${ny + qy}`)) neighbors++;
+            });
+            candidates.push({ x: nx, y: ny, neighbors, dist: Math.hypot(nx, ny) });
+          }
+        });
+      });
+
+      if (!candidates.length) break;
+      // 挑選較緊密且距離中心較近的候選格帶點隨機
+      candidates.sort((a, b) => (a.dist - a.neighbors * 0.45) - (b.dist - b.neighbors * 0.45));
+      const poolSize = Math.min(candidates.length, Math.max(3, Math.ceil(candidates.length * 0.45)));
+      const pick = candidates[Math.floor(Math.random() * poolSize)];
+
+      // 少數地塊帶有高度 1（高地）或特殊花草地表
+      const elev = (pick.dist > 1.5 && Math.random() < 0.18) ? 1 : 0;
+      const surface = Math.random() < 0.15 ? 'meadow' : 'grass';
+
+      gData.tiles.push({ x: pick.x, y: pick.y, elev, surface });
+      existingSet.add(`${pick.x},${pick.y}`);
+      grewLand = true;
+    }
+
+    // 若因為扣分導致土地縮減，移除最外圍且沒有物件的地塊（或連同物件移回空地）
+    if (gData.tiles.length > targetLand.count) {
+      gData.tiles = gData.tiles.slice(0, targetLand.count);
+      const validCoord = new Set(gData.tiles.map(t => `${t.x},${t.y}`));
+      // 若物件所在格子被縮減，將物件重新安置到現有空地
+      gData.objects.forEach(obj => {
+        if (!validCoord.has(`${obj.x},${obj.y}`)) {
+          const empty = findEmptyTile(gData);
+          if (empty) { obj.x = empty.x; obj.y = empty.y; }
+        }
+      });
+    }
+
+    // 2. 檢查每個加分項目應有的物件數量：Math.floor(score / 10)
+    let newlyDrawnMsg = null;
+    ITEMS.forEach((item, idx) => {
+      const expectedCount = Math.floor(gData.scores[idx] / 10);
+      const currentItemObjs = gData.objects.filter(o => o.itemIndex === idx);
+
+      if (currentItemObjs.length < expectedCount) {
+        // 需要新增抽出物件
+        const toAdd = expectedCount - currentItemObjs.length;
+        const catalog = ASSET_CATALOG[item.type];
+        for (let k = 0; k < toAdd; k++) {
+          const chosenAsset = catalog[Math.floor(Math.random() * catalog.length)];
+          const spot = findEmptyTile(gData);
+          if (spot) {
+            const newId = 'obj_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+            gData.objects.push({
+              id: newId,
+              itemIndex: idx,
+              type: item.type,
+              assetId: chosenAsset.id,
+              assetName: chosenAsset.name,
+              x: spot.x,
+              y: spot.y
+            });
+            lastAddedObjId = newId;
+            newlyDrawnMsg = `🎉 【${item.name}】滿 10 分！成功抽出「${item.ico} ${chosenAsset.name}」！`;
+          }
+        }
+      } else if (currentItemObjs.length > expectedCount) {
+        // 分數減少時，從最後抽出的同項目物件移除
+        let toRemove = currentItemObjs.length - expectedCount;
+        for (let i = gData.objects.length - 1; i >= 0 && toRemove > 0; i--) {
+          if (gData.objects[i].itemIndex === idx) {
+            gData.objects.splice(i, 1);
+            toRemove--;
+          }
+        }
+      }
+    });
+
+    if (notifyNew) {
+      if (grewLand && newlyDrawnMsg) {
+        announce(`🌍 島嶼擴建為 ${targetLand.count} 格！且${newlyDrawnMsg}`);
+      } else if (grewLand) {
+        announce(`🌍 總分突破門檻！島嶼面積擴大為 ${targetLand.count} 格！`);
+      } else if (newlyDrawnMsg) {
+        announce(newlyDrawnMsg);
+      }
+    }
+  }
+
+  // 尋找島上的空地（若全滿則隨機挑一格非中心地塊）
+  function findEmptyTile(gData) {
+    const occupied = new Set(gData.objects.map(o => `${o.x},${o.y}`));
+    const emptyTiles = gData.tiles.filter(t => !occupied.has(`${t.x},${t.y}`));
+    if (emptyTiles.length > 0) {
+      return emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
+    }
+    return gData.tiles[Math.floor(Math.random() * gData.tiles.length)];
+  }
+
+  // 初始化時把所有組別同步一次
+  GROUPS.forEach(g => syncIslandWithScores(g, false));
+  save();
+
+  // 更新單項分數
+  function updateScore(itemIdx, newVal) {
+    newVal = Math.max(0, Math.min(99999, Math.trunc(Number(newVal) || 0)));
+    const gData = state.groups[state.current];
+    if (gData.scores[itemIdx] === newVal) return;
+    snapshot();
+    gData.scores[itemIdx] = newVal;
+    syncIslandWithScores(state.current, true);
+    save();
+    render();
+  }
+
+  // 繪製內建 2.5D 立體積木地塊與物件 (SVG)
+  function renderIsometricIsland() {
+    const svg = $('island-svg');
+    const gData = state.groups[state.current];
+    const tileW = 72; // 等角菱形寬
+    const tileH = 36; // 等角菱形高
+    const blockThickness = 14;
+    const elevOffset = 12;
+
+    // 根據島嶼格數自動調整 SVG 視野縮放
+    const count = gData.tiles.length;
+    const scale = count >= 120 ? 0.62 : count >= 60 ? 0.78 : count >= 30 ? 0.92 : 1.08;
+    const viewW = Math.round(800 / scale);
+    const viewH = Math.round(500 / scale);
+    svg.setAttribute('viewBox', `${-viewW / 2} ${-viewH / 2 - 20} ${viewW} ${viewH}`);
+
+    // 將物件建立座標索引
+    const objMap = new Map();
+    gData.objects.forEach(o => {
+      const key = `${o.x},${o.y}`;
+      if (!objMap.has(key)) objMap.set(key, []);
+      objMap.get(key).push(o);
+    });
+
+    // 深度排序 (Painter's Algorithm: 依 x + y 由小到大，由後往前畫)
+    const sortedTiles = [...gData.tiles].sort((a, b) => (a.x + a.y) - (b.x + b.y) || (a.x - b.x));
+
+    let html = '';
+
+    sortedTiles.forEach(t => {
+      const isoX = (t.x - t.y) * (tileW / 2);
+      const isoY = (t.x + t.y) * (tileH / 2) - (t.elev * elevOffset);
+      const thick = blockThickness + (t.elev * elevOffset);
+
+      if (state.useKenneyPng) {
+        // 使用 Kenney PNG 模式
+        const tileImg = t.elev > 0 ? 'Tiles/cliff_block_S.png' : 'Tiles/grass_block_S.png';
+        html += `<g transform="translate(${isoX}, ${isoY})">
+          <image href="${tileImg}" x="-44" y="-36" width="88" height="88" onerror="this.style.display='none'" />
+        </g>`;
+      } else {
+        // 內建超精緻 2.5D 立體厚草地積木
+        const topColor = t.elev > 0 ? '#84cc16' : (t.surface === 'meadow' ? '#65a30d' : '#76b82a');
+        const leftSoil = t.elev > 0 ? '#9ca3af' : '#b47b48';
+        const rightSoil = t.elev > 0 ? '#6b7280' : '#8f5d32';
+        const lipLeft = '#5a9418';
+        const lipRight = '#487a10';
+
+        // 頂面菱形頂點
+        const pTop = `0,${-tileH / 2} ${tileW / 2},0 0,${tileH / 2} ${-tileW / 2},0`;
+        // 左側面（土壤）
+        const pLeft = `${-tileW / 2},0 0,${tileH / 2} 0,${tileH / 2 + thick} ${-tileW / 2},${thick}`;
+        // 右側面（土壤）
+        const pRight = `0,${tileH / 2} ${tileW / 2},0 ${tileW / 2},${thick} 0,${tileH / 2 + thick}`;
+        // 草皮側邊薄邊
+        const pLipL = `${-tileW / 2},0 0,${tileH / 2} 0,${tileH / 2 + 4} ${-tileW / 2},4`;
+        const pLipR = `0,${tileH / 2} ${tileW / 2},0 ${tileW / 2},4 0,${tileH / 2 + 4}`;
+
+        html += `<g transform="translate(${isoX}, ${isoY})">
+          <polygon points="${pLeft}" fill="${leftSoil}" />
+          <polygon points="${pRight}" fill="${rightSoil}" />
+          <polygon points="${pLipL}" fill="${lipLeft}" />
+          <polygon points="${pLipR}" fill="${lipRight}" />
+          <polygon points="${pTop}" fill="${topColor}" stroke="#8cd13d" stroke-width="0.8" />
+          ${t.surface === 'meadow' ? `<circle cx="-8" cy="-2" r="2" fill="#fde047"/><circle cx="10" cy="3" r="1.8" fill="#fef08a"/>` : ''}
+        </g>`;
+      }
+
+      // 繪製該格上方的物件（對齊地塊中心錨點）
+      const cellObjs = objMap.get(`${t.x},${t.y}`) || [];
+      cellObjs.forEach(obj => {
+        const isNew = obj.id === lastAddedObjId;
+        const animClass = isNew ? 'pop-anim' : '';
+        html += `<g transform="translate(${isoX}, ${isoY})" class="${animClass}">
+          ${renderObjectGraphic(obj, state.useKenneyPng)}
+        </g>`;
+      });
+    });
+
+    svg.innerHTML = html;
+    lastAddedObjId = null;
+  }
+
+  // 繪製地塊上的物件（支援 Kenney PNG 或 內建 2.5D 立體向量）
+  function renderObjectGraphic(obj, usePng) {
+    const catList = ASSET_CATALOG[obj.type] || [];
+    const asset = catList.find(a => a.id === obj.assetId) || catList[0];
+
+    if (usePng && asset) {
+      return `<image href="${asset.file}" x="-44" y="-74" width="88" height="88" />`;
+    }
+
+    const v = asset ? asset.variant : 'oak';
+    switch (v) {
+      case 'oak':
+        return `
+          <ellipse cx="0" cy="2" rx="14" ry="7" fill="#00000022"/>
+          <rect x="-4" y="-18" width="8" height="20" rx="2" fill="#7c4a21"/>
+          <circle cx="0" cy="-28" r="16" fill="#2e7d32"/>
+          <circle cx="-8" cy="-22" r="12" fill="#388e3c"/>
+          <circle cx="8" cy="-22" r="12" fill="#1b5e20"/>
+          <circle cx="-3" cy="-32" r="11" fill="#4caf50"/>`;
+      case 'twin':
+        return `
+          <ellipse cx="0" cy="2" rx="16" ry="8" fill="#00000022"/>
+          <rect x="-9" y="-16" width="5" height="18" fill="#6d4c41"/>
+          <rect x="4" y="-13" width="5" height="15" fill="#5d4037"/>
+          <circle cx="-7" cy="-24" r="12" fill="#43a047"/>
+          <circle cx="-9" cy="-27" r="9" fill="#66bb6a"/>
+          <circle cx="7" cy="-19" r="10" fill="#2e7d32"/>
+          <circle cx="6" cy="-22" r="7" fill="#4caf50"/>`;
+      case 'pine':
+        return `
+          <ellipse cx="0" cy="2" rx="13" ry="6" fill="#00000022"/>
+          <rect x="-3.5" y="-14" width="7" height="16" fill="#6d4c41"/>
+          <polygon points="0,-44 -16,-14 16,-14" fill="#1b5e20"/>
+          <polygon points="0,-36 -13,-10 13,-10" fill="#2e7d32"/>
+          <polygon points="0,-46 -11,-24 11,-24" fill="#388e3c"/>`;
+      case 'giant_pine':
+        return `
+          <ellipse cx="0" cy="2" rx="15" ry="7" fill="#00000022"/>
+          <rect x="-4" y="-16" width="8" height="18" fill="#5d4037"/>
+          <polygon points="0,-54 -18,-14 18,-14" fill="#14532d"/>
+          <polygon points="0,-46 -15,-20 15,-20" fill="#166534"/>
+          <polygon points="0,-56 -11,-30 11,-30" fill="#22c55e"/>`;
+      case 'tulip':
+        return `
+          <ellipse cx="0" cy="1" rx="14" ry="7" fill="#5c3a2155"/>
+          <g transform="translate(-8,-6)"><line x1="0" y1="6" x2="0" y2="-4" stroke="#15803d" stroke-width="2.2"/><circle cx="0" cy="-6" r="4.5" fill="#f43f5e"/></g>
+          <g transform="translate(0,-9)"><line x1="0" y1="8" x2="0" y2="-4" stroke="#15803d" stroke-width="2.2"/><circle cx="0" cy="-6" r="5" fill="#fb7185"/></g>
+          <g transform="translate(8,-5)"><line x1="0" y1="6" x2="0" y2="-4" stroke="#15803d" stroke-width="2.2"/><circle cx="0" cy="-6" r="4.5" fill="#facc15"/></g>`;
+      case 'wheat':
+        return `
+          <polygon points="0,-8 18,0 0,8 -18,0" fill="#a16207"/>
+          <g stroke="#eab308" stroke-width="2.2" stroke-linecap="round">
+            <line x1="-8" y1="2" x2="-8" y2="-12"/><line x1="-2" y1="4" x2="-2" y2="-14"/>
+            <line x1="4" y1="3" x2="4" y2="-13"/><line x1="9" y1="1" x2="9" y2="-11"/>
+          </g>
+          <circle cx="-8" cy="-13" r="2.5" fill="#fde047"/><circle cx="-2" cy="-15" r="2.5" fill="#fde047"/>
+          <circle cx="4" cy="-14" r="2.5" fill="#fde047"/><circle cx="9" cy="-12" r="2.5" fill="#fde047"/>`;
+      case 'sunflower':
+        return `
+          <ellipse cx="0" cy="2" rx="12" ry="6" fill="#00000018"/>
+          <line x1="-5" y1="2" x2="-5" y2="-14" stroke="#15803d" stroke-width="2.5"/>
+          <circle cx="-5" cy="-16" r="6.5" fill="#facc15"/><circle cx="-5" cy="-16" r="3" fill="#78350f"/>
+          <line x1="6" y1="3" x2="6" y2="-10" stroke="#15803d" stroke-width="2.5"/>
+          <circle cx="6" cy="-12" r="5.5" fill="#fde047"/><circle cx="6" cy="-12" r="2.5" fill="#78350f"/>`;
+      case 'cottage_red':
+        return `
+          <ellipse cx="0" cy="3" rx="18" ry="9" fill="#00000022"/>
+          <polygon points="-16,-4 0,4 0,-18 -16,-26" fill="#fef3c7" stroke="#d97706" stroke-width="0.6"/>
+          <polygon points="0,4 16,-4 16,-26 0,-18" fill="#fde68a" stroke="#d97706" stroke-width="0.6"/>
+          <polygon points="-18,-24 0,-15 18,-24 0,-38" fill="#dc2626"/>
+          <polygon points="0,-15 18,-24 0,-38" fill="#b91c1c"/>
+          <polygon points="4,2 10,-1 10,-11 4,-8" fill="#78350f"/>`;
+      case 'cottage_blue':
+        return `
+          <ellipse cx="0" cy="3" rx="18" ry="9" fill="#00000022"/>
+          <polygon points="-15,-4 0,4 0,-22 -15,-30" fill="#f1f5f9"/>
+          <polygon points="0,4 15,-4 15,-22 0,-30" fill="#cbd5e1"/>
+          <polygon points="-17,-28 0,-19 17,-28 0,-42" fill="#2563eb"/>
+          <polygon points="0,-19 17,-28 0,-42" fill="#1d4ed8"/>
+          <polygon points="-10,-12 -4,-9 -4,-16 -10,-19" fill="#38bdf8"/>`;
+      case 'tower_beige':
+      case 'tower_purple':
+      case 'tower_green': {
+        const roofCol = v === 'tower_purple' ? '#7c3aed' : v === 'tower_green' ? '#059669' : '#d97706';
+        const roofDark = v === 'tower_purple' ? '#5b21b6' : v === 'tower_green' ? '#047857' : '#b45309';
+        return `
+          <ellipse cx="0" cy="3" rx="16" ry="8" fill="#00000025"/>
+          <polygon points="-12,-2 0,4 0,-28 -12,-34" fill="#e2e8f0"/>
+          <polygon points="0,4 12,-2 12,-34 0,-28" fill="#94a3b8"/>
+          <polygon points="-15,-32 0,-24 0,-50" fill="${roofCol}"/>
+          <polygon points="0,-24 15,-32 0,-50" fill="${roofDark}"/>
+          <rect x="-2" y="-20" width="4" height="7" rx="2" fill="#334155"/>`;
+      }
+      case 'moss_rock':
+        return `
+          <ellipse cx="0" cy="2" rx="15" ry="7" fill="#00000020"/>
+          <polygon points="-14,0 -8,-14 4,-16 14,-2 2,5" fill="#94a3b8"/>
+          <polygon points="4,-16 14,-2 2,5 0,-6" fill="#64748b"/>
+          <polygon points="-8,-14 4,-16 2,-9 -6,-7" fill="#65a30d"/>`;
+      case 'crystal_rock':
+        return `
+          <ellipse cx="0" cy="2" rx="14" ry="7" fill="#00000020"/>
+          <polygon points="-10,1 -4,-18 4,-4" fill="#38bdf8"/>
+          <polygon points="-2,3 5,-22 12,0" fill="#0284c7"/>
+          <polygon points="-12,2 -6,-10 2,3" fill="#7dd3fc"/>`;
+      case 'well':
+        return `
+          <ellipse cx="0" cy="2" rx="15" ry="8" fill="#00000022"/>
+          <ellipse cx="0" cy="-8" rx="12" ry="6" fill="#64748b"/>
+          <path d="M-12,-8 L-12,0 A12,6 0 0,0 12,0 L12,-8 Z" fill="#94a3b8"/>
+          <ellipse cx="0" cy="-8" rx="9" ry="4.2" fill="#0ea5e9"/>
+          <line x1="-9" y1="-8" x2="-9" y2="-24" stroke="#78350f" stroke-width="2.2"/>
+          <line x1="9" y1="-8" x2="9" y2="-24" stroke="#78350f" stroke-width="2.2"/>
+          <polygon points="-13,-22 0,-30 13,-22" fill="#b45309"/>`;
+      default:
+        return `
+          <line x1="-10" y1="2" x2="-10" y2="-12" stroke="#78350f" stroke-width="3"/>
+          <line x1="10" y1="2" x2="10" y2="-12" stroke="#78350f" stroke-width="3"/>
+          <line x1="-13" y1="-8" x2="13" y2="-8" stroke="#92400e" stroke-width="2.5"/>
+          <line x1="-13" y1="-3" x2="13" y2="-3" stroke="#92400e" stroke-width="2.5"/>`;
+    }
+  }
+
+  function render() {
+    const gData = state.groups[state.current];
+    const xp = gData.scores.reduce((a, b) => a + b, 0);
+    // 每 10 XP 升 1 級，每 100 XP (10 級) 島嶼面積擴大一倍
+    const lv = 1 + Math.floor(xp / 10);
+    const landInfo = getTargetTileCount(xp);
+
+    $('stage-group').textContent = state.current;
+    $('xp').innerHTML = xp.toLocaleString() + ' <small>XP</small>';
+    $('level').textContent = 'LEVEL ' + String(lv).padStart(2, '0');$('xpfill').style.width = ((xp % 100) / 100 * 100) + '%';
+
+    const toNextExpand = 100 - (xp % 100);
+    $('next-level').textContent = `距離下次島嶼擴建還差 ${toNextExpand} XP`;
+    $('expand-hint').textContent = `每滿 100 XP 擴建一倍`;
+    $('land-caption').textContent = `階段 ${landInfo.stage}（${landInfo.count} 格）`;
+    $('land-status').textContent = landInfo.title;
+
+    // 切換 Kenney 按鈕狀態
+    const kenneyBtn = $('toggle-kenney');
+    kenneyBtn.classList.toggle('active', state.useKenneyPng);
+    kenneyBtn.textContent = state.useKenneyPng ? '🖼️ 目前：Kenney 圖檔模式' : '🎨 目前：內建 2.5D 積木模式';
+
+    // 統計島上物件數量標籤
+    const counts = { tree: 0, flower: 0, building: 0, rock: 0 };
+    gData.objects.forEach(o => { if (counts[o.type] !== undefined) counts[o.type]++; });
+    $('stage-stats').innerHTML = `
+      <span class="stat-pill">🌳 樹木 × ${counts.tree}</span>
+      <span class="stat-pill">🌷 花草 × ${counts.flower}</span>
+      <span class="stat-pill">🏠 建築 × ${counts.building}</span>
+      <span class="stat-pill">🪨 景觀 × ${counts.rock}</span>
+    `;
+
+    // 組別按鈕
+    $('groups').innerHTML = '';
+    GROUPS.forEach(g => {
+      const b = document.createElement('button');
+      b.className = 'group-btn';
+      b.textContent = g;
+      b.setAttribute('aria-pressed', String(g === state.current));
+      b.onclick = () => {
+        state.current = g;
+        save();
+        render();
+      };
+      $('groups').append(b);
+    });
+
+    // 各項加分控制列
+    $('scores').innerHTML = '';
+    ITEMS.forEach((item, i) => {
+      const scoreVal = gData.scores[i];
+      const drawnCount = Math.floor(scoreVal / 10);
+      const remainder = scoreVal % 10;
+
+      const el = document.createElement('div');
+      el.className = 'score-item';
+
+      const line = document.createElement('div');
+      line.className = 'score-line';
+
+      const label = document.createElement('div');
+      label.className = 'score-name';
+      label.innerHTML = `<span class="ico">${item.ico}</span><span>${item.name}</span><span class="item-badge">已抽 ${drawnCount} ${item.label}</span>`;
+
+      const ctrl = document.createElement('div');
+      ctrl.className = 'score-controls';
+
+      const minus = document.createElement('button');
+      minus.type = 'button';
+      minus.textContent = '−';
+      minus.disabled = scoreVal === 0;
+      minus.onclick = () => updateScore(i, scoreVal - 1);
+
+      const inp = document.createElement('input');
+      inp.className = 'num';
+      inp.type = 'number';
+      inp.min = '0';
+      inp.max = '99999';
+      inp.value = scoreVal;
+      inp.onchange = () => updateScore(i, inp.value);
+
+      const plus = document.createElement('button');
+      plus.type = 'button';
+      plus.className = 'plus';
+      plus.textContent = '+1';
+      plus.onclick = () => updateScore(i, scoreVal + 1);
+
+      const plus10 = document.createElement('button');
+      plus10.type = 'button';
+      plus10.className = 'plus10';
+      plus10.textContent = '+10';
+      plus10.title = '直接加 10 分並立即抽取 1 個物件';
+      plus10.onclick = () => updateScore(i, scoreVal + 10);
+
+      ctrl.append(minus, inp, plus, plus10);
+      line.append(label, ctrl);
+
+      const sub = document.createElement('div');
+      sub.className = 'score-sub';
+      sub.innerHTML = `
+        <span>再加 ${10 - remainder} 分可再抽 1 個${item.label}</span>
+        <div class="mini-bar"><div class="mini-fill" style="width:${remainder * 10}%"></div></div>
+      `;
+
+      el.append(line, sub);
+      $('scores').append(el);
+    });
+
+    $('undo').disabled = !history.length;
+    renderIsometricIsland();
+  }
+
+  // 工具列與管理按鈕事件
+  $('toggle-kenney').onclick = () => {
+    state.useKenneyPng = !state.useKenneyPng;
+    save();
+    render();
+    announce(state.useKenneyPng ? '已切換為讀取 Tiles/ 資料夾 PNG 圖檔' : '已切換為內建 2.5D 積木渲染');
+  };
+
+  $('reroll-island').onclick = () => {
+    snapshot();
+    const gData = state.groups[state.current];
+    gData.tiles = [{ x: 0, y: 0, elev: 0, surface: 'grass' }];
+    gData.objects = [];
+    syncIslandWithScores(state.current, false);
+    save();
+    render();
+    announce(`🎲 已為 ${state.current} 重新隨機生成島嶼配置！`);
+  };
+
+  $('undo').onclick = () => {
+    if (!history.length) return;
+    state = JSON.parse(history.pop());
+    save();
+    render();
+    announce('已復原上一步');
+  };
+
+  $('reset-group').onclick = () => {
+    if (!confirm(`確定將 ${state.current} 的所有加分與島嶼歸零？此操作可用「復原上一步」恢復。`)) return;
+    snapshot();
+    state.groups[state.current] = createDefaultGroupState();
+    syncIslandWithScores(state.current, false);
+    save();
+    render();
+    announce(`${state.current} 已重設`);
+  };
+
+  $('reset-all').onclick = () => {
+    if (!confirm('確定清除七組全部分數與島嶼？')) return;
+    snapshot();
+    const usePng = state.useKenneyPng;
+    state = blankState();
+    state.useKenneyPng = usePng;
+    GROUPS.forEach(g => syncIslandWithScores(g, false));
+    save();
+    render();
+    announce('七組已全部歸零');
+  };
+
+  render();
+})();
+</script>
+</body>
+</html>
