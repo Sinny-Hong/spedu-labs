@@ -4,11 +4,14 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>七上 L3｜課文翻譯配對</title>
 <style>
+@font-face{font-family:"Bpmf GenSen Rounded";src:local("Bpmf GenSen Rounded R"),local("ㄅ源泉注音圓體 R"),local("Bpmf GenSen Rounded"),local("ㄅ源泉注音圓體"),url("https://cdn.jsdelivr.net/gh/tadlearn/webfonts/BpmfGenSenRounded-R.woff2") format("woff2");font-display:swap}
 *{box-sizing:border-box} body{margin:0;background:#e8edf3;color:#1e293b;font-family:"DFKai-SB","BiauKai","標楷體",serif}
 .app-toolbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #cbd5e1;box-shadow:0 2px 8px #0f172a18}
 .toolbar-inner{max-width:1040px;margin:auto;padding:12px 16px;display:flex;align-items:end;gap:10px;flex-wrap:wrap}
 .control{display:flex;flex-direction:column;gap:3px}.control label{font-size:12px;font-weight:700;color:#475569}
 .control select{height:36px;padding:0 32px 0 10px;border:1px solid #94a3b8;border-radius:6px;background:#fff;font-weight:600}
+.font-button{height:36px;border:1px solid #64748b;border-radius:6px;background:#fff;color:#334155;font-weight:700;padding:0 13px;cursor:pointer}
+.font-button[aria-pressed="true"]{border-color:#0284c7;background:#e0f2fe;color:#0369a1}
 .print-button{height:36px;border:1px solid #0f766e;border-radius:6px;background:#0f766e;color:#fff;font-weight:700;padding:0 14px;cursor:pointer;margin-left:auto}
 .stage{padding:18px 12px 40px}.lesson{width:min(210mm,100%);margin:auto;background:#fff;box-shadow:0 8px 24px #0f172a20}
 .sheet{width:210mm;min-height:297mm;padding:6mm 8mm;background:#fff}
@@ -20,6 +23,7 @@
 .action.active{background:#e0f2fe;border-color:#7dd3fc;color:#0369a1}.action.answer.active{background:#ffe4e6;border-color:#fda4af;color:#be123c}
 .refbox{margin-top:2.5mm;border:1px dashed #b8c7d8;border-radius:10px;background:#f8fbfe;padding:3mm 4mm;display:grid;grid-template-columns:1fr;column-gap:8mm;row-gap:1.5mm}
 .ref{font-size:12.5pt;line-height:1.35;cursor:pointer;border-radius:5px;padding:1.5px 4px 1.5px calc(4px + 2em);text-indent:-2em;transition:.12s}.ref:hover,.ref.pending{background:#dbeafe;outline:2px solid #7dd3fc}
+.bopomofo-font .ref{font-family:"Bpmf GenSen Rounded","ㄅ源泉注音圓體 R","ㄅ源泉注音圓體",sans-serif;font-size:15pt;line-height:1.75}
 .tts-trigger{display:inline-block;border-radius:5px;color:#0369a1;cursor:pointer;transition:.12s}.ref .tts-trigger{min-width:1.6em;text-align:center}.num.tts-trigger{color:#0369a1}.tts-trigger:hover,.tts-trigger:focus-visible,.tts-trigger.speaking{background:#e0f2fe;outline:2px solid #7dd3fc;outline-offset:1px}
 .kw{border:1.5px solid transparent;border-radius:4px;padding:0 .08em}.zhhint .ref .kw{border-color:#b6c8dc;background:#f5f9fd}
 .match-list{margin-top:2mm}.row{display:flex;align-items:flex-start;gap:2mm;min-height:13mm;padding:1.6mm 2mm;border-radius:7px;cursor:pointer}
@@ -37,6 +41,7 @@
 <div class="control"><label>冊別／年級</label><select id="gradeSelect"><option value="7">七上</option><option value="8">八上</option><option value="9">九上</option></select></div>
 <div class="control"><label>課次</label><select id="lessonSelect"><option>L1</option><option>L2</option><option selected>L3</option><option>L4</option><option>L5</option><option>L6</option></select></div>
 <div class="control"><label>列印模式</label><select id="printMode"><option value="lesson">列印本課</option><option value="book">列印本冊</option><option value="teacher">列印本冊（教師版）</option></select></div>
+<button class="font-button" id="fontButton" type="button" aria-pressed="false" title="切換源泉注音圓體">注音字型</button>
 <button class="print-button" id="printButton" type="button">列印</button>
 </div></header>
 <main class="stage"><div class="lesson" id="lesson"></div></main>
@@ -109,8 +114,17 @@ const lesson=document.getElementById('lesson');
 const gradeSelect=document.getElementById('gradeSelect');
 const lessonSelect=document.getElementById('lessonSelect');
 const printMode=document.getElementById('printMode');
+const fontButton=document.getElementById('fontButton');
 const printButton=document.getElementById('printButton');
 const gradeLabels={7:'七上',8:'八上',9:'九上'};
+const FONT_PREF_KEY='textMatchBopomofoFont';
+function setBopomofoFont(on,save=true){
+ document.body.classList.toggle('bopomofo-font',on);
+ fontButton.setAttribute('aria-pressed',String(on));
+ fontButton.textContent=on?'注音字型：開':'注音字型';
+ if(save){try{localStorage.setItem(FONT_PREF_KEY,on?'on':'off')}catch(error){}}
+ requestAnimationFrame(()=>fitEnglishLineHeight());
+}
 function fitEnglishLineHeight(scope=lesson){
  scope.querySelectorAll('.sheet').forEach(sheet=>{
   const base=sheet.classList.contains('dense')?1.3:1.65;
@@ -155,7 +169,9 @@ function preparePrint(){
 }
 gradeSelect.onchange=renderLesson;
 lessonSelect.onchange=renderLesson;
+fontButton.onclick=()=>setBopomofoFont(fontButton.getAttribute('aria-pressed')!=='true');
 printButton.onclick=preparePrint;
 window.addEventListener('afterprint',renderLesson);
+try{setBopomofoFont(localStorage.getItem(FONT_PREF_KEY)==='on',false)}catch(error){setBopomofoFont(false,false)}
 renderLesson();
 </script></body></html>
