@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🐍 E-City｜英文貪食蛇迷宮逃脫</title>
+<title>E-City｜貪食蛇迷宮逃脫 V2</title>
 <style>
 :root{
   --cream: #f5f8fc; 
@@ -59,18 +59,22 @@ h1{margin:0;font-size:clamp(19px,2vw,26px);color:var(--navy);}
 /* Phone: genuine one-column flow, no horizontal squeezing or clipped vertical content. */
 @media (max-width:700px){html,body{height:auto;min-height:100%;overflow-x:hidden}body{display:block;overflow-y:auto}.topbar{padding:10px 12px;display:flex;flex-direction:column;align-items:stretch;gap:9px}h1{font-size:clamp(19px,5vw,25px);line-height:1.3;overflow-wrap:normal}.toolbar{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.toolbar select{min-width:0;width:100%;font-size:clamp(13px,3.4vw,16px)}.tool{font-size:clamp(13px,3.4vw,16px);white-space:nowrap}.layout{display:flex;flex-direction:column;gap:10px;padding:10px;min-height:0}.panel{width:100%;padding:10px;min-height:0;flex:none}.maze-wrapper{width:100%;flex:none}.maze-container{width:100%;max-height:none;aspect-ratio:8/5;gap:clamp(2px,.65vw,4px);padding:clamp(3px,1vw,8px);border-radius:10px}.cell{font-size:clamp(15px,4vw,25px);border-radius:5px}.note-row{font-size:12px;line-height:1.45;gap:4px}.copyright{margin-left:0}.question{font-size:clamp(22px,6vw,29px)}.facing{font-size:16px}.choices{gap:9px}.choice{font-size:clamp(19px,5vw,23px);padding:13px 15px}.feedback{min-height:42px;padding-top:9px;font-size:16px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* V2: preserve the two-column layout and allow short panels to scroll naturally. */
+.zh{display:none}.bilingual .zh{display:inline}.toolbar{flex-wrap:wrap;justify-content:flex-end}.tool,select{min-height:44px}.question-top{flex-wrap:wrap}.panel{overflow:auto}.maze-wrapper{overflow:hidden}.maze-container{flex:none;width:100%;max-height:none;aspect-ratio:auto}.cell{overflow:hidden;container-type:size}.cell.exit{animation:none;background:#fff1b8}.goal-star{width:90%;height:90%;fill:#ffce16;stroke:#c58b00;stroke-width:4;position:absolute;inset:5%}.snake-head{width:84%;height:84%;border-radius:46% 46% 48% 48%;background:linear-gradient(#65ce87,#36a862)}.snake-head::before,.snake-head::after{display:none}.eye{position:absolute;top:9%;width:34%;height:38%;background:#fff;border-radius:50%;box-shadow:0 1px 2px #164a3433}.eye.left{left:9%}.eye.right{right:9%}.eye::after{content:'';position:absolute;width:52%;height:58%;left:24%;top:8%;background:#173c31;border-radius:50%}.record{color:#9a6400;margin:8px 0}.result{text-align:center;padding:10px;border-radius:12px;background:#fff5d9}.poster{width:min(650px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;border:1px solid var(--line);border-radius:18px;padding:20px;color:var(--ink);font:inherit}.poster::backdrop{background:#17365d88}.poster h2{margin:0}.poster p{line-height:1.6}.poster-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.poster-card{display:flex;flex-direction:column;align-items:center;background:#f4f8fc;border-radius:12px;padding:10px;gap:4px}.poster-card svg{width:clamp(55px,12vw,100px);height:auto}.poster-card path{fill:none;stroke:#2477cd;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}.poster-note{font-size:14px}.poster form{text-align:right}.note-row{line-height:1.4}
+@media(min-width:701px){.topbar h1{font-size:clamp(18px,1.8vw,26px)}.toolbar{gap:5px}.toolbar .tool,.toolbar select{font-size:14px;padding:6px 9px}.maze-wrapper{min-height:100px}.maze-container{width:100%}}
+@media(max-width:700px){.toolbar{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:6px}.toolbar select{width:auto;flex:1}.toolbar .tool{padding:7px 9px}.maze-container{width:100%;aspect-ratio:auto}.maze-wrapper{overflow:visible}.panel{overflow:visible}.choice{min-height:48px}}
 </style>
 </head>
 <body>
 
 <header class="topbar">
-  <h1>🐍 E-City｜英文貪食蛇迷宮逃脫</h1>
+  <h1>🐍 E-City｜Snake Maze<span class="zh"> 貪食蛇迷宮逃脫</span></h1>
   <div class="toolbar">
-    <select id="mapChoice">
-      <option value="0">Map 1：經典直轉迷宮</option>
-      <option value="1">Map 2：錯綜交錯迷宮</option>
-    </select>
-    <button class="tool" id="restart-maze">↻ 開啟新局</button>
+    <select id="mapChoice" aria-label="Level"><option value="0">Level 1-1</option><option value="1">Level 1-2</option><option value="2">Level 2-1</option><option value="3">Level 2-2</option><option value="4">Level 3-1</option><option value="5">Level 3-2</option></select>
+    <button class="tool" id="directions-btn">Directions<span class="zh"> 方向</span></button>
+    <button class="tool" id="language-btn" aria-pressed="false">EN</button>
+    <button class="tool" id="restart-maze">↻ Retry<span class="zh"> 重試</span></button>
   </div>
 </header>
 
@@ -80,7 +84,7 @@ h1{margin:0;font-size:clamp(19px,2vw,26px);color:var(--navy);}
       <div class="maze-container" id="maze-grid"></div>
     </div>
     <div class="note-row">
-      <span>💡 自由探索：選擇英文指令移動，走得通就能前進；遇到死路可向後轉。</span>
+      <span>Choose a direction to reach the star.<span class="zh"> 選擇方向前往星星；死路可向後轉。</span></span>
       <span class="copyright">© Sinny’s Spedu Labs</span>
     </div>
   </section>
@@ -88,23 +92,25 @@ h1{margin:0;font-size:clamp(19px,2vw,26px);color:var(--navy);}
   <section class="panel">
     <div class="question-top">
       <span id="progress">Exploring Maze</span>
-      <span id="score">⭐ 0</span>
+      <span id="score">⭐ 0</span><span id="moves">Moves: 0</span><span id="best">Best: —</span>
     </div>
     <div class="question" id="question" role="button" tabindex="0" aria-label="點擊朗讀題目">
       Where should we go?
     </div>
-    <div class="facing" aria-live="polite"><span>目前面向 Facing：</span><span class="facing-arrow" id="facing-arrow">↑</span><span id="facing-label">Up</span></div>
+    <div class="facing" aria-live="polite"><span>Facing<span class="zh"> 目前面向</span>:</span><span class="facing-arrow" id="facing-arrow">↑</span><span id="facing-label">Up</span></div>
     <div class="choices" id="choices"></div>
     <div class="feedback" id="feedback"></div>
   </section>
 </main>
 
+<dialog id="directions-dialog" class="poster"><h2>Directions 方向教學</h2><p>Where should I go?（我該往哪裡走？）<br>How can I get to the star?（我要怎麼到達星星？）</p><p class="poster-note">Start facing forward ↑ · 先想像自己是朝前的蛇 ↑<br>Arrows show turns relative to the snake. 箭頭表示蛇的相對方向。</p><div class="poster-grid"><div class="poster-card"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 85 V15 M32 33 L50 15 68 33"/></svg><strong>Go straight.</strong><span>直走</span></div><div class="poster-card"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M75 85 V45 Q75 25 55 25 H15 M33 7 L15 25 33 43"/></svg><strong>Turn left.</strong><span>左轉</span></div><div class="poster-card"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M25 85 V45 Q25 25 45 25 H85 M67 7 L85 25 67 43"/></svg><strong>Turn right.</strong><span>右轉</span></div><div class="poster-card"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M25 85 V35 A25 25 0 0 1 75 35 V85 M57 67 L75 85 93 67"/></svg><strong>Turn around.</strong><span>向後轉</span></div></div><p class="poster-note">A turn also moves one square. 轉向後會前進一格。</p><form method="dialog"><button class="tool">Close 關閉</button></form></dialog>
 <script>
 "use strict";
 
 /* 8欄 x 5列 橫向扁寬迷宮設計：0=道路, 1=牆壁帶裝飾Emoji, 2=出口 */
 const MAZES = [
   {
+    id:"1-1", facing:"UP",
     // Map 1
     grid: [
       [1, 1, 1, 1, 2, 1, 1, 1],
@@ -121,6 +127,7 @@ const MAZES = [
     }
   },
   {
+    id:"1-2", facing:"LEFT",
     // Map 2 (相同難度，不同牆面與通路配置)
     grid: [
       [1, 1, 1, 1, 1, 2, 1, 1],
@@ -129,7 +136,7 @@ const MAZES = [
       [1, 0, 0, 0, 0, 0, 0, 1],
       [1, 1, 0, 1, 1, 1, 1, 1]
     ],
-    start: {r: 4, c: 2},
+    start: {r: 3, c: 6},
     decorations: {
       "0,0":"🏛️","0,1":"🏬","0,2":"🎬","0,3":"🚒","0,4":"👮","0,6":"🚉","0,7":"🚌",
       "2,1":"🏋️","2,5":"📖",
@@ -138,7 +145,21 @@ const MAZES = [
   }
 ];
 
+MAZES.push(
+{id:'2-1',facing:'RIGHT',start:{r:1,c:0},grid:['111111111','000000101','111010101','100010001','101111101','100000021'].map(r=>[...r].map(Number))},
+{id:'2-2',facing:'DOWN',start:{r:0,c:7},grid:['111111101','100000001','101110111','100010001','111010101','120000001'].map(r=>[...r].map(Number))},
+{id:'3-1',facing:'RIGHT',start:{r:5,c:0},grid:['1111111121','1000000001','1011101101','1010001001','1010111011','0000100001','1111111111'].map(r=>[...r].map(Number))},
+{id:'3-2',facing:'LEFT',start:{r:1,c:9},grid:['1111111111','1000000000','1011111101','1000001001','1110101011','1200100001','1111111111'].map(r=>[...r].map(Number))}
+);
 let currentMapId = 0;
+let moves=0, bilingual=false, newRecord=false, resultSaved=false;
+const BEST_KEY='ecity_snake_maze_v2_best';
+let bests={};try{const saved=JSON.parse(localStorage.getItem(BEST_KEY)||'{}');for(const m of MAZES)if(Number.isInteger(saved[m.id])&&saved[m.id]>0)bests[m.id]=saved[m.id]}catch{}
+const CN={'Go straight.':'直走','Turn left.':'左轉','Turn right.':'右轉','Turn around.':'向後轉'};
+const ui=(en,zh)=>en+(bilingual?' '+zh:'');
+function counters(){document.getElementById('moves').textContent='Moves: '+moves;document.getElementById('best').textContent='Best: '+(bests[MAZES[currentMapId].id]??'—')}
+function fitMaze(){const m=MAZES[currentMapId],box=gridEl.parentElement;const ratio=m.grid[0].length/m.grid.length;gridEl.style.width=Math.max(0,Math.min(box.clientWidth,matchMedia('(max-width:700px)').matches?box.clientWidth:box.clientHeight*ratio))+'px';gridEl.style.aspectRatio=ratio}
+
 let score = 0;
 let snakePath = [];
 let currentPos = {r:4,c:3};
@@ -183,7 +204,7 @@ function initMaze(){
   gridEl.classList.remove("shake");
   if("speechSynthesis" in window) window.speechSynthesis.cancel();
   const maze = MAZES[currentMapId];
-  currentPos={...maze.start};currentDir="UP";score=0;snakePath=[{...currentPos}];isAnswered=false;finished=false;
+  currentPos={...maze.start};currentDir=maze.facing;score=0;moves=0;newRecord=false;resultSaved=false;snakePath=[{...currentPos}];isAnswered=false;finished=false;
   renderMaze();showQuestion();
 }
 function updateFacing(){
@@ -200,18 +221,18 @@ function renderMaze(){
     const cell=document.createElement("div");cell.className="cell";
     const type=maze.grid[r][c];
     if(type===1){cell.classList.add("wall");cell.textContent=maze.decorations?.[`${r},${c}`] || "";}
-    else if(type===2){cell.classList.add("exit");cell.textContent="🚪";}
+    else if(type===2){cell.classList.add("exit");cell.innerHTML='<svg class="goal-star" viewBox="0 0 100 100" role="img" aria-label="Star"><path d="M50 5 63 34 95 38 71 60 78 93 50 76 22 93 29 60 5 38 37 34Z"/></svg>';}
     if(snakePath.some(p=>p.r===r&&p.c===c) && !(currentPos.r===r&&currentPos.c===c)){
       const dot=document.createElement("div");dot.className="snake-dot";cell.appendChild(dot);
     }
     if(currentPos.r===r&&currentPos.c===c){
-      const head=document.createElement("div");head.className="snake-head";
+      const head=document.createElement("div");head.className="snake-head";head.innerHTML='<i class="eye left"></i><i class="eye right"></i>';
       head.style.transform=`rotate(${DIRECTIONS.indexOf(currentDir)*90}deg)`;
       cell.appendChild(head);
     }
     gridEl.appendChild(cell);
   }
-  updateFacing();
+  updateFacing();fitMaze();
 }
 function getTargetMove(dir,action,pos=currentPos){
   let index=DIRECTIONS.indexOf(dir);
@@ -226,12 +247,15 @@ function canEnter(move,maze=MAZES[currentMapId]){
 }
 function showQuestion(){
   const maze=MAZES[currentMapId];updateFacing();
-  scoreEl.textContent=`⭐ ${score}`;
+  scoreEl.textContent=`⭐ ${score}`;counters();
   if(maze.grid[currentPos.r][currentPos.c]===2){
     finished=true;isAnswered=true;
-    questionEl.textContent="🎉 恭喜你！成功逃出迷宮！";
-    choicesEl.innerHTML="";feedbackEl.textContent="Great job! You made it!";
-    progressEl.textContent="Completed!";speakEnglish("Great job! You made it!");return;
+    if(!resultSaved){const id=maze.id;newRecord=bests[id]===undefined||moves<bests[id];if(newRecord){bests[id]=moves;try{localStorage.setItem(BEST_KEY,JSON.stringify(bests))}catch{}}resultSaved=true}
+    counters();questionEl.textContent=ui('MISSION COMPLETE','任務完成');progressEl.textContent=ui('Completed!','已通關');
+    choicesEl.innerHTML='<div class="result"><strong>Moves: '+moves+' · Best: '+bests[maze.id]+'</strong>'+(newRecord?'<p class="record">NEW RECORD<span class="zh"> 新紀錄</span></p>':'')+'</div>';
+    const retry=document.createElement('button');retry.className='choice';retry.textContent=ui('Retry','重試');retry.onclick=initMaze;choicesEl.append(retry);
+    const next=document.createElement('button');next.className='choice';next.textContent=ui(currentMapId<MAZES.length-1?'Next Level':'All levels complete · Level 1-1',currentMapId<MAZES.length-1?'下一關':'全部完成 · 回到 1-1');next.onclick=()=>{currentMapId=(currentMapId+1)%MAZES.length;mapChoiceEl.value=currentMapId;initMaze()};choicesEl.append(next);
+    feedbackEl.textContent=ui('Great job! You made it!','成功到達星星！');return;
   }
   isAnswered=false;progressEl.textContent="Exploring Maze";
   questionEl.textContent="Where should we go?";feedbackEl.textContent="";
@@ -241,10 +265,10 @@ function showQuestion(){
   choicesEl.innerHTML="";
   options.forEach((option,i)=>{
     const button=document.createElement("button");button.type="button";button.className="choice";
-    button.textContent=`${String.fromCharCode(65+i)}. ${option}`;
+    button.dataset.action=option;button.textContent=`${String.fromCharCode(65+i)}. ${option}`+(bilingual?" "+CN[option]:"");
     button.addEventListener("click",()=>handleUserChoice(option,button));choicesEl.appendChild(button);
   });
-  if(deadEnd)feedbackEl.textContent="↩️ 前方是死路！請選擇向後轉。";
+  if(deadEnd)feedbackEl.textContent=ui("↩ Dead end! Turn around.","前方是死路，請向後轉。");
 }
 function handleUserChoice(action,button){
   if(isAnswered||finished)return;
@@ -253,15 +277,15 @@ function handleUserChoice(action,button){
   choicesEl.querySelectorAll("button").forEach(b=>b.disabled=true);
   if(canEnter(move)){
     button.classList.add("correct");
-    snakePath.push({...currentPos});currentPos={r:move.r,c:move.c};currentDir=move.dir;score++;
+    snakePath.push({...currentPos});currentPos={r:move.r,c:move.c};currentDir=move.dir;score++;moves++;counters();
     renderMaze();scoreEl.textContent=`⭐ ${score}`;
-    feedbackEl.textContent="✅ Nice move! 繼續探索！";
+    feedbackEl.textContent=ui("✓ Nice move!","繼續探索！");
     speakEnglish(action);
     queueAction(showQuestion,500);
   }else{
     button.classList.add("wrong");
     gridEl.classList.remove("shake");void gridEl.offsetWidth;gridEl.classList.add("shake");
-    feedbackEl.textContent="💥 Oops! That's a wall. 試試其他方向！";
+    feedbackEl.textContent=ui("Oops! That's a wall.","試試其他方向！");
     speakEnglish("Oops! That's a wall.");
     queueAction(()=>gridEl.classList.remove("shake"),400);
     // Current position and facing never change on a failed move.
@@ -276,6 +300,9 @@ questionEl.addEventListener("click",()=>speakEnglish(questionEl.textContent));
 questionEl.addEventListener("keydown",event=>{
   if(event.key==="Enter"||event.key===" "){event.preventDefault();speakEnglish(questionEl.textContent);}
 });
+document.getElementById('directions-btn').onclick=()=>document.getElementById('directions-dialog').showModal();
+document.getElementById('language-btn').onclick=()=>{bilingual=!bilingual;document.body.classList.toggle('bilingual',bilingual);document.documentElement.lang=bilingual?'zh-Hant':'en';const b=document.getElementById('language-btn');b.textContent=bilingual?'EN＋中文':'EN';b.setAttribute('aria-pressed',String(bilingual));if(!isAnswered||finished)showQuestion();else{choicesEl.querySelectorAll('[data-action]').forEach((button,i)=>{const action=button.dataset.action;button.textContent=String.fromCharCode(65+i)+'. '+action+(bilingual?' '+CN[action]:'')});if(feedbackEl.textContent.startsWith('✓'))feedbackEl.textContent=ui('✓ Nice move!','繼續探索！');else if(feedbackEl.textContent.startsWith('Oops'))feedbackEl.textContent=ui("Oops! That's a wall.",'試試其他方向！')}};
+new ResizeObserver(fitMaze).observe(gridEl.parentElement);
 initMaze();
 </script>
 </body>
