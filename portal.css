@@ -350,3 +350,9 @@ button{cursor:pointer}
   .welcome-line{display:block}
   .task-watermark{width:210px;height:210px;right:-28px;bottom:-28px}
 }
+
+/* Classroom tools: island beside tug-of-war; fortune spans the first row. */
+.widget-grid .fortune-card{grid-column:1 / -1;min-height:90px;flex-direction:row;gap:12px}
+.island-card{background:linear-gradient(145deg,#eef9df,#ccecc8)}
+.island-visual{border-radius:20px;color:#267849;background:linear-gradient(145deg,#d9f4b8,#a6dcb2)}
+.island-visual svg{width:43px;height:43px;stroke-width:2.2}

@@ -17,6 +17,8 @@ window.GRAMMAR_DATA = [
   { id: "g6", category: "互動遊戲", title: "🧩 配對板｜時間與日期", desc: "星期、月份、日期與時間的三排對照語音配對", filename: "match-time-date.html", themeColor: "#F43F5E" },
   { id: "g7", category: "互動遊戲", title: "🧩 配對板｜人稱代名詞", desc: "限時配對、亂序、干擾卡與課堂訂正挑戰", filename: "match-pronouns.html", themeColor: "#F43F5E" },
 
+  { id: "ecity-snake-maze", category: "E-City 異想城市", tag: "方向英文", title: "貪食蛇迷宮逃脫", desc: "依蛇頭朝向練習直走與左右轉，挑戰六關迷宮並記錄最少操作次數，支援雙語提示與方向海報", filename: "ecity-snake-maze.html", themeColor: "#40B56C" },
+
   // ==== E-City 異想城市 ====
   { id: "g2", category: "E-City 異想城市", tag: "異想小鎮", title: "異想家庭樹", desc: "觀察家庭樹、點讀親屬英文並完成五題選擇題，可切換三種難度", filename: "ecity-family-tree.html", themeColor: "#F59E0B" },
   { id: "ecity-01", category: "E-City 異想城市", tag: "異想小鎮", title: "我的異想小鎮", desc: "隨機城市地圖與八種位置句型挑戰，附中英提示板、單字發音與答題音效", filename: "ecity-my-town.html", themeColor: "#F59E0B" },
