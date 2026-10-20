@@ -32,6 +32,33 @@
   .student-print .order-row .sentence-answer{display:none!important}
   .teacher-print .word-bank-print,.student-print .word-bank-print{display:block!important}
 }
+
+/* Final v1.3 spacing and clean exam print layout. */
+.q-prefix:not(.response){min-width:1.5em}
+.order-row,.sentence-row{grid-template-columns:fit-content(45%) minmax(0,1fr);align-items:baseline}
+.sentence-en,.order-row .order-prompt,.sentence-zh{overflow-wrap:anywhere;line-height:1.9}
+.answer-on .sentence-hint{display:none}
+@media(max-width:650px){.order-row,.sentence-row{grid-template-columns:minmax(0,1fr)}.order-row .word-bank{margin-left:2em}.sentence-row .sentence-en{margin-left:2em}}
+@media(min-width:651px){.sentence-row .sentence-en{margin-left:0}.order-row .word-bank{margin-left:0}}
+@media print{
+ .section-head{border:0!important;background:transparent!important;border-radius:0;box-shadow:none;padding:0;margin-bottom:9px}
+ .section,.section.allow-split{break-inside:avoid;page-break-inside:avoid}
+ .section-head,.chapter-title{break-after:avoid;page-break-after:avoid}
+ .plain-table,.rule-table{break-inside:avoid;page-break-inside:avoid}
+ .order-row,.sentence-row{grid-template-columns:fit-content(45%) minmax(0,1fr);column-gap:8px}
+ .sentence-row .sentence-en{margin-left:0}
+ .teacher-print [data-type="circle"] .choice.answer{color:var(--red)!important;background:#fff1f2!important;border:1px solid #fda4af!important}
+}
+
+/* Answer codes use the same three visual states as their options. */
+.chosen{display:inline-block;min-width:1.25em;line-height:1.35;border-radius:4px;text-align:center}
+.q:has(.choice.selected) .chosen,.match-row[data-value] .chosen{color:#1d4ed8;background:#dbeafe}
+.q:has(.choice.correct) .chosen,.match-row.good .chosen{color:var(--green);background:#dcfce7}
+.answer-on .q:has(.choice) .chosen,.answer-on .match-row .chosen{color:var(--red);background:#fff1f2}
+@media print{
+ .student-print .chosen{background:transparent!important}
+ .teacher-print .answer-on .chosen{color:var(--red)!important;background:#fff1f2!important}
+}
 </style></head><body id="top"><header class="toolbar"><strong>文法電子講義｜元件模板 v1.3</strong><button id="navBtn" type="button">章節目錄</button><div class="print-wrap"><button id="printBtn" type="button" aria-expanded="false">列印 ▾</button><div id="printMenu" class="print-menu" hidden><button data-print="student">學生版</button><button data-print="teacher">教師版</button></div></div></header><nav id="nav" class="nav" hidden aria-label="章節目錄"><strong>章節目錄</strong></nav><main class="book"><article class="paper"><header class="pagehead"><div><h1>英文科講義｜元件模板示範</h1></div><div class="student">班級：______　姓名：____________</div></header>
 <h2 class="chapter-title" id="chapter1">第一章｜基礎元件展示</h2><p class="chapter-note">以下使用少量假題測試各元件；正式講義可自由複製、調換題組順序。</p>
 <section class="section quiz" id="circle" data-type="circle"><div class="section-head"><h3>第一大題｜圈圈看（單選）</h3><div class="actions"><span class="score"></span><button data-act="grade">批改</button><button data-act="clear">清空</button><button data-act="answer">解答</button></div></div><div class="q" data-correct="cat"><span class="q-prefix">1.</span><div class="q-main">圈出名詞：<button class="choice" data-value="run">run</button>／<button class="choice" data-value="cat">cat</button>／<button class="choice" data-value="happy">happy</button></div></div></section>
