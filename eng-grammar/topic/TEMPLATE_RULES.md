@@ -16,7 +16,7 @@
 
 ## 03｜元件使用規格
 
-母版以 `<section class="section quiz" id="..." data-type="...">` 包住互動題組。題組標頭是 `.section-head`、`h3` 與 `.actions`，按鈕以 `data-act="grade"`（批改）、`hint`（提示）、`clear`（清空）、`answer`（解答）配置。只有該題型需要的按鈕才放入。批改結果寫入 `.score`。`clear(sec)` 清除整個題組的選擇、提示、解答及分數；`showAnswer(sec, force)` 切換 `.answer-on`，答案維持原作答位置。`grade(sec)` 目前支援 `choice`、`circle`、`match`、`order`；純展示填答使用 `display`，不假裝具備鍵入批改。提示按鈕切換題組的 `.hint-on`，與 `.answer-on` 各自獨立。
+母版以 `<section class="section quiz" id="..." data-type="...">` 包住互動題組。題組標頭是 `.section-head`、`h3` 與 `.actions`，按鈕以 `data-act="grade"`（批改）、`hint`（提示）、`clear`（清空）、`answer`（解答）配置。只有該題型需要的按鈕才放入。批改結果寫入 `.score`。`clear(sec)` 清除整個題組的選擇、提示、解答及分數；`showAnswer(sec, force)` 切換 `.answer-on`，答案維持原作答位置。`grade(sec)` 目前支援 `choice`、`circle`、`multi`、`match`、`order`；純展示填答使用 `display`，不假裝具備鍵入批改。提示按鈕切換題組的 `.hint-on`，與 `.answer-on` 各自獨立。
 
 填空題等不含作答括號的 `.q-prefix:not(.response)` 最小寬度為 `1.5em`，題號後沿用 `8px` 欄距，不套用選擇題括號的寬欄；螢幕與列印都維持緊湊凸排。
 
@@ -27,6 +27,7 @@
 | 是非題 ○／× | `data-type="choice"`；每題 `.q[data-correct="○" 或 "×"]`，`.q-prefix.response .chosen` 是作答括號，兩個 `.choice.tf-choice[data-value]` 供點選。○／× 同尺寸。 | 點選時代號進括號；`grade` 正確變綠、錯誤取消選取；`answer` 將正解顯示在原括號；`clear` 重設。示範鍵：批改、清空、解答。列印隱藏題末 ○／× 按鈕。 |
 | 選擇題（二／三／四選一） | `data-type="choice"`；`.q[data-correct="A/B/C/D"]`、`.q-text`、`.options` 內放 2–4 個 `.choice[data-value]`，括號為 `.q-prefix.response .chosen`。 | 點選選項即同步括號；批改、解答、清空同上。示範另有提示鍵，會標示題幹中的 `.hint-word`；各題可有不同提示字。 |
 | 圈選題（單選） | `data-type="circle"`；每題 `.q[data-correct]`，在 `.q-main` 內排 `.choice[data-value]`。 | 點選圈選、批改正確變綠／錯誤取消、解答標正解、清空。示範鍵：批改、清空、解答。 |
+| 表格多選圈選 | `data-type="multi"`；保留 `.plain-table.subject-table` 原表格，每格使用 `button.multi-choice[data-correct="true/false"][aria-pressed="false"]`。按鈕填滿整格，整格皆可點選並顯示底色；保留原表格格線、圓角及英文粗體，每格至少 46px 高。可獨立點選多格，再點取消。 | 選答為淺藍底藍字；批改只處理已選格，正確保留並呈淺綠底綠字，錯誤取消選取；未選格不揭答、不判錯。分數是「正確已選數／已選數」，不代表是否找齊全部正解。解答以淺粉底紅字標出所有正解，隱藏後恢復原選擇；清空重設選擇、批改、解答、分數與 `aria-pressed`。學生版列印保留原表格而不印選擇；教師版在原格標示全部正解。示範鍵：批改、清空、解答。 |
 | 填空題 | `data-type="display"`；`.q` 內用 `.slot`（可選 `.medium`、`.long`），其中 `.placeholder` 保留空位，`.solution` 填正解。 | `answer` 在同一空格顯示正解；示範另有 `.hint-word`、提示、清空。無鍵入批改。 |
 | 左右配對題 | `data-type="match"`；左側 `.match-left` 內 `.match-row[data-correct]`、`.match-code .chosen`，右側 `.match-bank` 內 `.bank-opt[data-value]`。先點左題再點右側代號。 | 代號飛入原括號；批改正確變綠、錯誤清掉該題代號；解答顯示各題正確代號；清空。示範鍵：批改、清空、解答。 |
 | 表格式填空 | `data-type="display"`；`.plain-table` 的表格儲存格以 `.cell-answer` 裝正解。 | `answer` 在原儲存格揭答；示範鍵：解答。無互動輸入或批改。 |
@@ -80,7 +81,8 @@
 - [ ] 各題型題數、選項數與 Word 一致。
 - [ ] 沒有漏掉規則、例題、小提示、圖片或表格。
 - [ ] 各題 `data-correct`、`.solution`、`.cell-answer`、`.sentence-answer` 與提示正確對應。
-- [ ] 九種題型各使用母版對應元件；重複題型正常運作。
+- [ ] 十種題型各使用母版對應元件；重複題型正常運作。
+- [ ] 表格多選可複選及取消；批改僅處理已選格，解答標出所有正解，清空完全重設。
 - [ ] 批改、提示、清空、解答按鍵依題型配置且運作正常。
 - [ ] 顯示／隱藏答案不覆寫學生原作答；取消後可還原。
 - [ ] 所有答案都顯示在原作答位置，排序與造句的底線仍在。
