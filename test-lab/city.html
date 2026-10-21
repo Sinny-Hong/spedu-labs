@@ -1,0 +1,1328 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>E-City | 2.5D 奇幻立體島英文問路尋寶</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    
+    body {
+      font-family: 'Noto Sans TC', 'Fredoka', sans-serif;
+      background: radial-gradient(circle at top, #e0f2fe 0%, #bae6fd 40%, #e2e8f0 100%);
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    /* Custom scrollbars & smooth transitions */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 999px; }
+    
+    .pixel-shadow {
+      box-shadow: 0 8px 0 rgba(15, 23, 42, 0.08), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-3d {
+      transition: all 0.1s ease;
+      box-shadow: 0 4px 0 #0f766e;
+    }
+    .btn-3d:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #0f766e;
+    }
+    .btn-blue-3d {
+      transition: all 0.1s ease;
+      box-shadow: 0 4px 0 #1d4ed8;
+    }
+    .btn-blue-3d:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #1d4ed8;
+    }
+    .btn-amber-3d {
+      transition: all 0.1s ease;
+      box-shadow: 0 4px 0 #b45309;
+    }
+    .btn-amber-3d:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #b45309;
+    }
+
+    /* Floating Canvas Overlay Animations */
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-bounce-slow {
+      animation: bounce-slow 2.2s infinite ease-in-out;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.3; }
+      100% { transform: scale(0.9); opacity: 0.8; }
+    }
+    .pulse-effect {
+      animation: pulse-ring 1.8s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="w-screen h-screen flex flex-col justify-between text-slate-800">
+
+  <!-- TOP HEADER NAV BAR -->
+  <header class="w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 py-2.5 flex items-center justify-between z-30 shadow-sm">
+    <div class="flex items-center space-x-2.5">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white text-xl shadow-md font-bold">
+        🧭
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-black tracking-wider uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">E-City 2.5D</span>
+          <h1 class="text-base sm:text-lg font-black text-slate-800">立體城鎮．英文問路</h1>
+        </div>
+        <p class="text-[11px] text-slate-500 hidden sm:block">Sinny's Spedu Labs · 麥塊風空間方位互動學習</p>
+      </div>
+    </div>
+
+    <!-- Mode Selector & Reset -->
+    <div class="flex items-center space-x-2">
+      <!-- Mode Toggle -->
+      <div class="bg-slate-100 p-1 rounded-xl flex items-center border border-slate-200 text-xs font-bold">
+        <button id="modeQuestBtn" onclick="setGameMode('quest')" class="px-3 py-1.5 rounded-lg transition-all bg-white text-emerald-700 shadow-sm">
+          <i class="fa-solid fa-flag-checkered mr-1"></i> 任務尋路
+        </button>
+        <button id="modeFreeBtn" onclick="setGameMode('free')" class="px-3 py-1.5 rounded-lg text-slate-600 transition-all hover:text-slate-900">
+          <i class="fa-solid fa-person-walking mr-1"></i> 自由漫步
+        </button>
+      </div>
+
+      <!-- TTS Voice toggle -->
+      <button onclick="speakCurrentInstruction()" title="朗讀英文句子" class="w-9 h-9 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 flex items-center justify-center font-bold text-sm">
+        <i class="fa-solid fa-volume-high"></i>
+      </button>
+
+      <!-- Reset Position -->
+      <button onclick="resetPlayerLocation()" title="回到起始點" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold flex items-center gap-1">
+        <i class="fa-solid fa-arrow-rotate-left"></i>
+        <span class="hidden md:inline">重置</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORT CONTAINER -->
+  <main class="relative flex-1 w-full h-full overflow-hidden bg-slate-100">
+
+    <!-- CANVAS FOR 2.5D ISOMETRIC RENDERING -->
+    <canvas id="isoCanvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+
+    <!-- FLOATING MAP CONTROLS (PAN / ZOOM / RECENTER) -->
+    <div class="absolute top-4 right-4 z-20 flex flex-col space-y-2 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl shadow-lg border border-slate-200/80">
+      <button onclick="zoomMap(1.2)" class="w-9 h-9 rounded-xl hover:bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-lg transition" title="放大 (+)">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+      <button onclick="zoomMap(0.833)" class="w-9 h-9 rounded-xl hover:bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-lg transition" title="縮小 (-)">
+        <i class="fa-solid fa-minus"></i>
+      </button>
+      <button onclick="centerOnPlayer()" class="w-9 h-9 rounded-xl hover:bg-slate-100 text-emerald-600 flex items-center justify-center font-bold text-sm transition" title="聚焦角色">
+        <i class="fa-solid fa-crosshairs"></i>
+      </button>
+      <button onclick="resetView()" class="w-9 h-9 rounded-xl hover:bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-xs transition" title="重置地圖視野">
+        <i class="fa-solid fa-expand"></i>
+      </button>
+    </div>
+
+    <!-- COMPASS & ORIENTATION HUD -->
+    <div class="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-md px-3 py-2 rounded-2xl shadow-md border border-slate-200/80 flex items-center space-x-3">
+      <div id="characterPreview" class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-xl shadow-inner relative">
+        <!-- Live avatar direction visual -->
+        <span id="charIcon">🤠</span>
+      </div>
+      <div>
+        <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Facing Direction 面向</div>
+        <div id="facingBadge" class="text-xs sm:text-sm font-black text-emerald-700 flex items-center gap-1">
+          <i id="facingArrowIcon" class="fa-solid fa-arrow-up text-emerald-500"></i>
+          <span id="facingText">東北 (NE)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOUCH HELPER NOTICE -->
+    <div class="absolute bottom-2 left-4 z-10 hidden sm:flex items-center space-x-2 text-[11px] text-slate-500 bg-white/70 backdrop-blur-sm px-2.5 py-1 rounded-full border border-slate-200">
+      <span><i class="fa-solid fa-hand-pointer mr-1 text-slate-400"></i>點擊道路移動 · 拖曳滑動平移地圖 · 滾輪縮放</span>
+    </div>
+
+    <!-- FLOATING SUCCESS / TOAST MODAL -->
+    <div id="toastBox" class="hidden absolute top-20 left-1/2 -translate-x-1/2 z-40 bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 transition-all duration-300">
+      <i class="fa-solid fa-circle-check text-2xl text-yellow-300"></i>
+      <div>
+        <p id="toastTitle" class="font-black text-sm">Excellent! 答對了！</p>
+        <p id="toastDesc" class="text-xs text-emerald-100 font-medium">成功抵達指定目的地！</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM INTERACTION CONSOLE (ENGLISH TASKS & MOVEMENT CONTROLS) -->
+  <footer class="w-full bg-white border-t border-slate-200 shadow-2xl z-30 flex flex-col p-3 sm:p-4 transition-all">
+    
+    <!-- 1. QUEST MODE PANEL -->
+    <div id="questPanel" class="max-w-4xl mx-auto w-full flex flex-col space-y-3">
+      
+      <!-- Top Quest Bar -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-black bg-indigo-100 text-indigo-800 px-2.5 py-0.5 rounded-lg flex items-center gap-1">
+            <i class="fa-solid fa-location-dot"></i> 第 <span id="questLevel">1</span> 題
+          </span>
+          <span id="questScore" class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">
+            ★ 星星：0
+          </span>
+        </div>
+
+        <div class="text-xs font-bold text-slate-500 flex items-center gap-3">
+          <span>步數：<span id="stepCount" class="text-slate-800 font-extrabold">0</span></span>
+          <button onclick="nextQuest()" class="text-xs text-indigo-600 hover:text-indigo-800 underline font-bold">換一題 ➔</button>
+        </div>
+      </div>
+
+      <!-- English Question Speech Bubble -->
+      <div class="bg-gradient-to-r from-slate-50 to-indigo-50/40 p-3 sm:p-3.5 rounded-2xl border border-indigo-100 flex items-start justify-between shadow-sm">
+        <div class="flex-1 pr-3">
+          <div class="flex items-center space-x-2 mb-1">
+            <span class="text-base">🗣️</span>
+            <span class="text-xs font-bold text-indigo-700 tracking-wide uppercase">Asking for Directions 問路指引：</span>
+          </div>
+          <!-- English Main Sentence -->
+          <p id="questEnglish" class="text-sm sm:text-base font-black text-slate-800 leading-snug tracking-tight">
+            "Go straight for two blocks and turn left at the corner. Where is it?"
+          </p>
+          <!-- Chinese Translation Prompt -->
+          <p id="questChinese" class="text-xs font-medium text-slate-500 mt-1">
+            「直走兩個街區，在轉角左轉。它會在你的右手邊。」
+          </p>
+        </div>
+
+        <!-- Speak button -->
+        <button onclick="speakCurrentInstruction()" class="flex-shrink-0 w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 shadow-md">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+      </div>
+
+      <!-- Action Choice / Navigation Buttons -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+        <!-- 3 choices for quick quiz OR step directions -->
+        <div id="choiceContainer" class="sm:col-span-3 grid grid-cols-3 gap-2">
+          <!-- Dynamically populated choices -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 2. FREE ROAM CONTROLS (STEERING + SURROUNDING FEEDBACK) -->
+    <div id="freePanel" class="max-w-3xl mx-auto w-full hidden flex-col space-y-2.5">
+      <div class="flex items-center justify-between text-xs font-bold text-slate-500">
+        <span>🎮 自由操縱：小人帶鴨舌帽與大眼睛，轉向一目了然！</span>
+        <span id="currentCoordInfo" class="bg-slate-100 px-2 py-0.5 rounded text-slate-700 font-mono">X:4, Y:4</span>
+      </div>
+
+      <!-- Live Spatial Status (English Prepositions feedback) -->
+      <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-2.5 flex items-center justify-between text-xs sm:text-sm">
+        <div class="flex items-center space-x-2">
+          <span class="text-lg">👀</span>
+          <div>
+            <span class="font-bold text-amber-900">周遭環境 (Current Surroundings):</span>
+            <span id="relativeSpatialText" class="font-bold text-indigo-700 ml-1">Looking straight ahead down Main Street.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls Row -->
+      <div class="grid grid-cols-3 gap-3 pt-1">
+        <button onclick="playerTurn(-1)" class="btn-3d bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 sm:py-3 rounded-2xl flex items-center justify-center gap-1.5 text-sm sm:text-base">
+          <i class="fa-solid fa-arrow-rotate-left"></i>
+          <span>向左轉 Turn Left</span>
+        </button>
+        <button onclick="playerStepForward()" class="btn-blue-3d bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 sm:py-3 rounded-2xl flex items-center justify-center gap-1.5 text-sm sm:text-base">
+          <i class="fa-solid fa-person-walking"></i>
+          <span>直走 Go Straight</span>
+        </button>
+        <button onclick="playerTurn(1)" class="btn-3d bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 sm:py-3 rounded-2xl flex items-center justify-center gap-1.5 text-sm sm:text-base">
+          <span>向右轉 Turn Right</span>
+          <i class="fa-solid fa-arrow-rotate-right"></i>
+        </button>
+      </div>
+    </div>
+
+  </footer>
+
+  <script>
+    /* ====================================================================
+       E-CITY 2.5D ISOMETRIC ENGINE & DIRECTION-FINDING GAME
+       ==================================================================== */
+
+    // 1. GRID CONFIGURATION (15x15 Large Town with multi-block roads)
+    const GRID_SIZE = 15;
+    const TILE_WIDTH = 64;   // Isometric projected width
+    const TILE_HEIGHT = 32;  // Isometric projected height
+    const TILE_DEPTH = 16;   // Height of land block
+
+    // Tile Types: 0 = Grass block, 1 = Road, 2 = Building Foundation
+    // Roads are structured on coordinates to form realistic intersections & blocks
+    const mapGrid = Array(GRID_SIZE).fill(0).map(() => Array(GRID_SIZE).fill(0));
+
+    // Define Road Grid Network (Avenues & Streets)
+    // Vertical Roads (X = 2, 6, 10, 14)
+    // Horizontal Roads (Y = 2, 6, 10, 14)
+    const ROAD_COORDS = [2, 6, 10];
+
+    for (let x = 0; x < GRID_SIZE; x++) {
+      for (let y = 0; y < GRID_SIZE; y++) {
+        if (ROAD_COORDS.includes(x) || ROAD_COORDS.includes(y)) {
+          mapGrid[x][y] = 1; // Road
+        }
+      }
+    }
+
+    // 2. MULTI-TILE BUILDINGS & LANDMARKS DEFINITION
+    // Placed strictly inside grass blocks adjacent to roads
+    const BUILDINGS = [
+      {
+        id: "hospital",
+        nameEn: "Hospital",
+        nameZh: "醫院",
+        icon: "🏥",
+        color: "#ffffff",
+        roofColor: "#ef4444",
+        signBg: "#dc2626",
+        x: 3, y: 3, w: 2, h: 2, height: 42,
+        roadSide: { x: 2, y: 3 }
+      },
+      {
+        id: "bank",
+        nameEn: "Bank",
+        nameZh: "銀行",
+        icon: "🏦",
+        color: "#e2e8f0",
+        roofColor: "#0284c7",
+        signBg: "#0369a1",
+        x: 7, y: 3, w: 2, h: 2, height: 46,
+        roadSide: { x: 6, y: 3 }
+      },
+      {
+        id: "bakery",
+        nameEn: "Bakery",
+        nameZh: "麵包店",
+        icon: "🥐",
+        color: "#fef3c7",
+        roofColor: "#d97706",
+        signBg: "#b45309",
+        x: 3, y: 7, w: 2, h: 2, height: 36,
+        roadSide: { x: 2, y: 7 }
+      },
+      {
+        id: "library",
+        nameEn: "Library",
+        nameZh: "圖書館",
+        icon: "📚",
+        color: "#f1f5f9",
+        roofColor: "#059669",
+        signBg: "#047857",
+        x: 7, y: 7, w: 2, h: 2, height: 40,
+        roadSide: { x: 6, y: 7 }
+      },
+      {
+        id: "school",
+        nameEn: "School",
+        nameZh: "學校",
+        icon: "🏫",
+        color: "#f8fafc",
+        roofColor: "#8b5cf6",
+        signBg: "#7c3aed",
+        x: 11, y: 3, w: 3, h: 2, height: 48,
+        roadSide: { x: 10, y: 3 }
+      },
+      {
+        id: "flower_shop",
+        nameEn: "Flower Shop",
+        nameZh: "花店",
+        icon: "🌸",
+        color: "#fdf2f8",
+        roofColor: "#ec4899",
+        signBg: "#db2777",
+        x: 3, y: 11, w: 2, h: 2, height: 32,
+        roadSide: { x: 2, y: 11 }
+      },
+      {
+        id: "post_office",
+        nameEn: "Post Office",
+        nameZh: "郵局",
+        icon: "📮",
+        color: "#fef2f2",
+        roofColor: "#dc2626",
+        signBg: "#991b1b",
+        x: 7, y: 11, w: 2, h: 2, height: 36,
+        roadSide: { x: 6, y: 11 }
+      },
+      {
+        id: "park",
+        nameEn: "Central Park",
+        nameZh: "中央公園",
+        icon: "🌳",
+        color: "#86efac",
+        roofColor: "#22c55e",
+        signBg: "#15803d",
+        x: 11, y: 7, w: 2, h: 2, height: 18,
+        roadSide: { x: 10, y: 7 }
+      }
+    ];
+
+    // Mark building occupied footprints
+    BUILDINGS.forEach(b => {
+      for (let dx = 0; dx < b.w; dx++) {
+        for (let dy = 0; dy < b.h; dy++) {
+          if (b.x + dx < GRID_SIZE && b.y + dy < GRID_SIZE) {
+            mapGrid[b.x + dx][b.y + dy] = 2; // Building plot
+          }
+        }
+      }
+    });
+
+    // 3. DIRECTIONS SYSTEM (Isometric 4 Diagonals)
+    // In Isometric 2.5D:
+    // 0: North-East (x increases, y stays) -> SCREEN TOP-RIGHT
+    // 1: South-East (x stays, y increases) -> SCREEN BOTTOM-RIGHT
+    // 2: South-West (x decreases, y stays) -> SCREEN BOTTOM-LEFT
+    // 3: North-West (x stays, y decreases) -> SCREEN TOP-LEFT
+    const DIRECTIONS = [
+      { id: 'NE', nameZh: '東北 (NE)', deltaX: 1, deltaY: 0, arrow: 'fa-arrow-trend-up', label: '往前朝東北' },
+      { id: 'SE', nameZh: '東南 (SE)', deltaX: 0, deltaY: 1, arrow: 'fa-arrow-trend-down', label: '往前朝東南' },
+      { id: 'SW', nameZh: '西南 (SW)', deltaX: -1, deltaY: 0, arrow: 'fa-arrow-trend-down fa-flip-horizontal', label: '往前朝西南' },
+      { id: 'NW', nameZh: '西北 (NW)', deltaX: 0, deltaY: -1, arrow: 'fa-arrow-trend-up fa-flip-horizontal', label: '往前朝西北' }
+    ];
+
+    // 4. GAME STATE
+    let gameState = {
+      mode: 'quest', // 'quest' or 'free'
+      player: {
+        x: 2,
+        y: 2,
+        dir: 1, // Facing SE initially along the avenue
+        targetX: 2,
+        targetY: 2,
+        animProgress: 1.0,
+        bobOffset: 0
+      },
+      camera: {
+        x: 0,
+        y: 0,
+        zoom: 1.0,
+        isDragging: false,
+        dragStartX: 0,
+        dragStartY: 0,
+        initCamX: 0,
+        initCamY: 0
+      },
+      score: 0,
+      steps: 0,
+      currentQuestIdx: 0,
+      highlightTile: null,
+      highlightPath: []
+    };
+
+    // 5. ENGLISH DIRECTION-FINDING QUEST CURRICULUM
+    const QUESTS = [
+      {
+        startPos: { x: 2, y: 2, dir: 1 }, // Start at (2,2) facing SE
+        en: "Walk straight along Green Avenue for one block. It's on your LEFT, next to the post office. Where are you?",
+        zh: "沿著綠色大道直走一個街區。它就在你的【左手邊】，而且在郵局隔壁。請問這是哪裡？",
+        targetBuildingId: "bakery",
+        choices: [
+          { text: "Bakery 麵包店", correct: true },
+          { text: "Hospital 醫院", correct: false },
+          { text: "School 學校", correct: false }
+        ]
+      },
+      {
+        startPos: { x: 2, y: 6, dir: 0 }, // Start at (2,6) facing NE
+        en: "Go straight for one block, then turn right at the crossroad. The building is on your RIGHT, across from the Bank. What is it?",
+        zh: "直走一個街區，接著在十字路口右轉。建築物會在你的【右手邊】，正好在銀行的對面。這是哪裡？",
+        targetBuildingId: "library",
+        choices: [
+          { text: "Library 圖書館", correct: true },
+          { text: "Flower Shop 花店", correct: false },
+          { text: "Hospital 醫院", correct: false }
+        ]
+      },
+      {
+        startPos: { x: 6, y: 2, dir: 1 }, // Start at (6,2) facing SE
+        en: "Walk straight for two blocks. Turn left at the corner. The destination is on your LEFT, across from the Central Park.",
+        zh: "往前直走兩個街區。在路口左轉。目的地會在你的【左手邊】，隔著馬路與中央公園相對。",
+        targetBuildingId: "post_office",
+        choices: [
+          { text: "Post Office 郵局", correct: true },
+          { text: "Bakery 麵包店", correct: false },
+          { text: "Bank 銀行", correct: false }
+        ]
+      },
+      {
+        startPos: { x: 6, y: 10, dir: 3 }, // Start at (6,10) facing NW
+        en: "Go straight past the library. At the first intersection, look at your LEFT corner. You will find the doctor here.",
+        zh: "直走經過圖書館。在第一個十字路口看你的【左手邊轉角】。你可以在這裡找到醫生。",
+        targetBuildingId: "hospital",
+        choices: [
+          { text: "Hospital 醫院", correct: true },
+          { text: "School 學校", correct: false },
+          { text: "Central Park 公園", correct: false }
+        ]
+      },
+      {
+        startPos: { x: 10, y: 6, dir: 3 }, // Start at (10,6) facing NW
+        en: "Walk straight. Turn right at the intersection. You will see a large building with books and students on your LEFT.",
+        zh: "往前直走。在路口右轉。你會在你的【左手邊】看到一棟有書本和學生的大型建築。",
+        targetBuildingId: "school",
+        choices: [
+          { text: "School 學校", correct: true },
+          { text: "Bank 銀行", correct: false },
+          { text: "Bakery 麵包店", correct: false }
+        ]
+      }
+    ];
+
+    // CANVAS & RENDERING PIPELINE
+    const canvas = document.getElementById('isoCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      render();
+    }
+
+    // Convert Grid (x, y, z) to Screen coordinates
+    function gridToScreen(gx, gy, gz = 0) {
+      const screenX = (gx - gy) * (TILE_WIDTH / 2);
+      const screenY = (gx + gy) * (TILE_HEIGHT / 2) - (gz * TILE_DEPTH);
+      return {
+        x: screenX * gameState.camera.zoom + gameState.camera.x,
+        y: screenY * gameState.camera.zoom + gameState.camera.y
+      };
+    }
+
+    // Convert Screen coordinates to Grid (x, y)
+    function screenToGrid(sx, sy) {
+      const adjX = (sx - gameState.camera.x) / gameState.camera.zoom;
+      const adjY = (sy - gameState.camera.y) / gameState.camera.zoom;
+      
+      const gx = (adjX / (TILE_WIDTH / 2) + adjY / (TILE_HEIGHT / 2)) / 2;
+      const gy = (adjY / (TILE_HEIGHT / 2) - adjX / (TILE_WIDTH / 2)) / 2;
+      return { x: Math.floor(gx), y: Math.floor(gy) };
+    }
+
+    // DRAW ISOMETRIC DIAMOND TILE
+    function drawIsoTile(gx, gy, fillTop, fillLeft, fillRight, elevation = 0, isRoad = false) {
+      const p = gridToScreen(gx, gy, elevation);
+      const w = (TILE_WIDTH / 2) * gameState.camera.zoom;
+      const h = (TILE_HEIGHT / 2) * gameState.camera.zoom;
+      const d = TILE_DEPTH * gameState.camera.zoom;
+
+      // Top diamond face
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + w, p.y + h);
+      ctx.lineTo(p.x, p.y + h * 2);
+      ctx.lineTo(p.x - w, p.y + h);
+      ctx.closePath();
+      ctx.fillStyle = fillTop;
+      ctx.fill();
+
+      // Top face borders
+      ctx.strokeStyle = isRoad ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Road markings (Dashed yellow/white lines for realism)
+      if (isRoad) {
+        ctx.beginPath();
+        ctx.strokeStyle = '#fef08a';
+        ctx.lineWidth = Math.max(1.5, 2 * gameState.camera.zoom);
+        ctx.setLineDash([4 * gameState.camera.zoom, 4 * gameState.camera.zoom]);
+        // Center line
+        ctx.moveTo(p.x, p.y + h * 0.3);
+        ctx.lineTo(p.x, p.y + h * 1.7);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // Left face
+      ctx.beginPath();
+      ctx.moveTo(p.x - w, p.y + h);
+      ctx.lineTo(p.x, p.y + h * 2);
+      ctx.lineTo(p.x, p.y + h * 2 + d);
+      ctx.lineTo(p.x - w, p.y + h + d);
+      ctx.closePath();
+      ctx.fillStyle = fillLeft;
+      ctx.fill();
+
+      // Right face
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y + h * 2);
+      ctx.lineTo(p.x + w, p.y + h);
+      ctx.lineTo(p.x + w, p.y + h + d);
+      ctx.lineTo(p.x, p.y + h * 2 + d);
+      ctx.closePath();
+      ctx.fillStyle = fillRight;
+      ctx.fill();
+    }
+
+    // DRAW 3D MULTI-TILE BUILDING WITH VOXEL ROOF & SIGNAGE
+    function drawBuilding(b) {
+      const pTopLeft = gridToScreen(b.x, b.y, 0);
+      const pBottom = gridToScreen(b.x + b.w, b.y + b.h, 0);
+      const bHeight = b.height * gameState.camera.zoom;
+      const wTile = (TILE_WIDTH / 2) * gameState.camera.zoom;
+      const hTile = (TILE_HEIGHT / 2) * gameState.camera.zoom;
+
+      // Calculate perimeter corners for multi-tile block
+      const cNorth = gridToScreen(b.x, b.y);
+      const cEast = gridToScreen(b.x + b.w, b.y);
+      const cSouth = gridToScreen(b.x + b.w, b.y + b.h);
+      const cWest = gridToScreen(b.x, b.y + b.h);
+
+      // Building Wall - South/West Facing Wall
+      ctx.beginPath();
+      ctx.moveTo(cWest.x, cWest.y);
+      ctx.lineTo(cSouth.x, cSouth.y);
+      ctx.lineTo(cSouth.x, cSouth.y - bHeight);
+      ctx.lineTo(cWest.x, cWest.y - bHeight);
+      ctx.closePath();
+      ctx.fillStyle = shadeColor(b.color, -15);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+      ctx.stroke();
+
+      // Building Wall - South/East Facing Wall
+      ctx.beginPath();
+      ctx.moveTo(cSouth.x, cSouth.y);
+      ctx.lineTo(cEast.x, cEast.y);
+      ctx.lineTo(cEast.x, cEast.y - bHeight);
+      ctx.lineTo(cSouth.x, cSouth.y - bHeight);
+      ctx.closePath();
+      ctx.fillStyle = shadeColor(b.color, -30);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+      ctx.stroke();
+
+      // Windows and Door details
+      drawBuildingWindows(cWest, cSouth, cEast, bHeight);
+
+      // Building Roof (Top Diamond)
+      ctx.beginPath();
+      ctx.moveTo(cNorth.x, cNorth.y - bHeight);
+      ctx.lineTo(cEast.x, cEast.y - bHeight);
+      ctx.lineTo(cSouth.x, cSouth.y - bHeight);
+      ctx.lineTo(cWest.x, cWest.y - bHeight);
+      ctx.closePath();
+      ctx.fillStyle = b.roofColor;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+      ctx.stroke();
+
+      // FLOATING 3D SIGNBOARD & BADGE
+      const signCenter = {
+        x: (cNorth.x + cSouth.x) / 2,
+        y: (cNorth.y + cSouth.y) / 2 - bHeight - 16 * gameState.camera.zoom
+      };
+
+      // Draw floating cute pill banner
+      ctx.save();
+      ctx.translate(signCenter.x, signCenter.y);
+
+      // Shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.18)';
+      ctx.beginPath();
+      ctx.ellipse(0, 10, 36 * gameState.camera.zoom, 8 * gameState.camera.zoom, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Badge Container
+      const pillWidth = 90 * Math.max(0.85, gameState.camera.zoom);
+      const pillHeight = 26 * Math.max(0.85, gameState.camera.zoom);
+      
+      ctx.fillStyle = '#ffffff';
+      roundRect(ctx, -pillWidth / 2, -pillHeight / 2, pillWidth, pillHeight, 8);
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = b.signBg;
+      ctx.stroke();
+
+      // Icon & Text
+      ctx.fillStyle = '#0f172a';
+      ctx.font = `900 ${Math.round(11 * Math.max(0.85, gameState.camera.zoom))}px 'Fredoka', 'Noto Sans TC'`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${b.icon} ${b.nameEn}`, 0, 0);
+
+      ctx.restore();
+    }
+
+    // Windows helper
+    function drawBuildingWindows(cWest, cSouth, cEast, bHeight) {
+      ctx.fillStyle = '#93c5fd';
+      const steps = 3;
+      for (let i = 1; i < steps; i++) {
+        const t = i / steps;
+        const wx = cWest.x + (cSouth.x - cWest.x) * t;
+        const wy = cWest.y + (cSouth.y - cWest.y) * t - bHeight * 0.5;
+        ctx.fillRect(wx - 4, wy - 4, 8, 8);
+      }
+    }
+
+    // 5. DRAW MINECRAFT-STYLE VOXEL CHARACTER WITH CAP & FACING EYE VISIBILITY
+    function drawMinecraftCharacter(gx, gy, dirIdx) {
+      const p = gridToScreen(gx, gy, 0);
+      const z = gameState.camera.zoom;
+      
+      // Walking bob animation
+      const bob = Math.sin(Date.now() / 150) * (gameState.player.animProgress < 1.0 ? 3 : 0);
+      const baseY = p.y + (TILE_HEIGHT / 2) * z - (4 * z) + bob;
+      const baseX = p.x;
+
+      ctx.save();
+      ctx.translate(baseX, baseY);
+
+      // Shadow on road
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+      ctx.beginPath();
+      ctx.ellipse(0, 2 * z, 14 * z, 7 * z, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pixel Character Proportions (Minecraft blocky style)
+      const headSize = 16 * z;
+      const bodyWidth = 14 * z;
+      const bodyHeight = 16 * z;
+      const legHeight = 12 * z;
+
+      // 1. Legs (Blue Pants)
+      ctx.fillStyle = '#1e3a8a';
+      ctx.fillRect(-6 * z, -legHeight, 5 * z, legHeight);
+      ctx.fillRect(1 * z, -legHeight, 5 * z, legHeight);
+
+      // 2. Torso (Teal / Emerald T-Shirt)
+      const torsoY = -legHeight - bodyHeight;
+      ctx.fillStyle = '#059669';
+      ctx.fillRect(-bodyWidth / 2, torsoY, bodyWidth, bodyHeight);
+      
+      // Backpack on rear
+      if (dirIdx === 0 || dirIdx === 3) { // Facing NE or NW (back visible)
+        ctx.fillStyle = '#b45309';
+        ctx.fillRect(-4 * z, torsoY + 2 * z, 8 * z, 10 * z);
+      }
+
+      // 3. Head (Skin tone block)
+      const headY = torsoY - headSize;
+      ctx.fillStyle = '#fed7aa';
+      ctx.fillRect(-headSize / 2, headY, headSize, headSize);
+      ctx.strokeStyle = '#ea580c';
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(-headSize / 2, headY, headSize, headSize);
+
+      // 4. Stylish Baseball Cap (Red Cap with distinct BRIM pointing in dir direction)
+      ctx.fillStyle = '#dc2626';
+      // Cap Crown
+      ctx.fillRect(-headSize / 2 - 1 * z, headY - 3 * z, headSize + 2 * z, 7 * z);
+
+      // Cap Visor / Brim based on facing direction (NE, SE, SW, NW)
+      ctx.fillStyle = '#991b1b'; // Darker red for brim
+      
+      // 5. Big Eyes & Cap Brim strictly pointing towards isometric direction:
+      ctx.fillStyle = '#1e293b'; // Eyes pupil
+
+      if (dirIdx === 1) { 
+        // Facing SE (Down-Right) -> Eyes and brim point to the right/down
+        // Brim
+        ctx.fillRect(headSize / 2 - 2 * z, headY + 3 * z, 7 * z, 3 * z);
+        // Big White Eyes
+        drawPixelEye(ctx, 1 * z, headY + 7 * z, z);
+        drawPixelEye(ctx, 5 * z, headY + 7 * z, z);
+      } else if (dirIdx === 2) { 
+        // Facing SW (Down-Left) -> Eyes and brim point to the left/down
+        // Brim
+        ctx.fillRect(-headSize / 2 - 5 * z, headY + 3 * z, 7 * z, 3 * z);
+        // Big White Eyes
+        drawPixelEye(ctx, -7 * z, headY + 7 * z, z);
+        drawPixelEye(ctx, -3 * z, headY + 7 * z, z);
+      } else if (dirIdx === 0) { 
+        // Facing NE (Up-Right) -> Looking away upwards right
+        ctx.fillRect(headSize / 2 - 1 * z, headY - 1 * z, 6 * z, 3 * z); // brim
+        // Back of head/hair visible
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(-headSize / 2, headY + 4 * z, headSize - 4 * z, 8 * z);
+      } else if (dirIdx === 3) { 
+        // Facing NW (Up-Left) -> Looking away upwards left
+        ctx.fillRect(-headSize / 2 - 5 * z, headY - 1 * z, 6 * z, 3 * z); // brim
+        // Back of hair visible
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(-headSize / 2 + 4 * z, headY + 4 * z, headSize - 4 * z, 8 * z);
+      }
+
+      // Direction Marker Indicator Ring around feet
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 2 * z;
+      ctx.beginPath();
+      const currentDir = DIRECTIONS[dirIdx];
+      const pointerEndX = currentDir.deltaX * 16 * z - currentDir.deltaY * 16 * z;
+      const pointerEndY = (currentDir.deltaX + currentDir.deltaY) * 8 * z;
+      ctx.moveTo(0, 0);
+      ctx.lineTo(pointerEndX, pointerEndY);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawPixelEye(ctx, x, y, scale) {
+      // White sclera
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(x, y, 4 * scale, 4 * scale);
+      // Dark pupil
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(x + 1 * scale, y + 1 * scale, 2.5 * scale, 2.5 * scale);
+    }
+
+    // Helper: Rounded rectangle
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    // Helper: Color shading
+    function shadeColor(color, percent) {
+      let num = parseInt(color.replace("#",""),16),
+          amt = Math.round(2.55 * percent),
+          R = (num >> 16) + amt,
+          G = (num >> 8 & 0x00FF) + amt,
+          B = (num & 0x0000FF) + amt;
+      return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
+    }
+
+    // 6. MAIN RENDER LOOP
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Interpolate smooth player movement
+      let curX = gameState.player.x;
+      let curY = gameState.player.y;
+      if (gameState.player.animProgress < 1.0) {
+        gameState.player.animProgress += 0.08;
+        if (gameState.player.animProgress > 1.0) gameState.player.animProgress = 1.0;
+        curX = gameState.player.x + (gameState.player.targetX - gameState.player.x) * gameState.player.animProgress;
+        curY = gameState.player.y + (gameState.player.targetY - gameState.player.y) * gameState.player.animProgress;
+        if (gameState.player.animProgress === 1.0) {
+          gameState.player.x = gameState.player.targetX;
+          gameState.player.y = gameState.player.targetY;
+          updateSurroundingsHUD();
+        }
+      }
+
+      // Draw Isometric Ground Grid
+      for (let x = 0; x < GRID_SIZE; x++) {
+        for (let y = 0; y < GRID_SIZE; y++) {
+          const tileType = mapGrid[x][y];
+          let topColor = '#86efac';    // Grass top
+          let leftColor = '#65a30d';   // Grass dirt left
+          let rightColor = '#4d7c0f';  // Grass dirt right
+          const isRoad = (tileType === 1);
+
+          if (isRoad) {
+            topColor = '#475569';      // Asphalt top
+            leftColor = '#334155';     // Asphalt dark side
+            rightColor = '#1e293b';
+          } else if (tileType === 2) {
+            topColor = '#cbd5e1';      // Concrete foundation
+            leftColor = '#94a3b8';
+            rightColor = '#64748b';
+          }
+
+          // Highlight Hover / Target Path
+          if (gameState.highlightTile && gameState.highlightTile.x === x && gameState.highlightTile.y === y) {
+            topColor = '#fef08a'; // Bright yellow hover
+          }
+
+          drawIsoTile(x, y, topColor, leftColor, rightColor, 0, isRoad);
+        }
+      }
+
+      // Draw 3D Buildings & Character sorted by Isometric depth (x + y)
+      const renderList = [];
+
+      BUILDINGS.forEach(b => {
+        renderList.push({
+          type: 'building',
+          depth: b.x + b.y + (b.w + b.h) / 2,
+          data: b
+        });
+      });
+
+      renderList.push({
+        type: 'player',
+        depth: curX + curY,
+        x: curX,
+        y: curY,
+        dir: gameState.player.dir
+      });
+
+      // Sort by isometric rendering depth
+      renderList.sort((a, b) => a.depth - b.depth);
+
+      renderList.forEach(item => {
+        if (item.type === 'building') {
+          drawBuilding(item.data);
+        } else if (item.type === 'player') {
+          drawMinecraftCharacter(item.x, item.y, item.dir);
+        }
+      });
+
+      requestAnimationFrame(render);
+    }
+
+    // 7. SURROUNDING SPATIAL DETECTION (Real-time Left, Right, Across Analysis)
+    function updateSurroundingsHUD() {
+      const px = gameState.player.x;
+      const py = gameState.player.y;
+      const dirIdx = gameState.player.dir;
+      const curDir = DIRECTIONS[dirIdx];
+
+      // Relative Vectors:
+      // Straight: (deltaX, deltaY)
+      // Left: relative turn -1
+      const leftDir = DIRECTIONS[(dirIdx + 3) % 4];
+      const rightDir = DIRECTIONS[(dirIdx + 1) % 4];
+
+      const leftCoord = { x: px + leftDir.deltaX * 2, y: py + leftDir.deltaY * 2 };
+      const rightCoord = { x: px + rightDir.deltaX * 2, y: py + rightDir.deltaY * 2 };
+
+      const leftB = getBuildingAt(leftCoord.x, leftCoord.y);
+      const rightB = getBuildingAt(rightCoord.x, rightCoord.y);
+
+      let text = "Walking on the road.";
+      if (leftB && rightB) {
+        text = `${leftB.nameEn} is on your LEFT, and ${rightB.nameEn} is on your RIGHT.`;
+      } else if (leftB) {
+        text = `On your LEFT: ${leftB.icon} ${leftB.nameEn} (${leftB.nameZh})`;
+      } else if (rightB) {
+        text = `On your RIGHT: ${rightB.icon} ${rightB.nameEn} (${rightB.nameZh})`;
+      } else {
+        text = `Looking straight ahead down the road. Keep walking!`;
+      }
+
+      document.getElementById('relativeSpatialText').innerText = text;
+      document.getElementById('currentCoordInfo').innerText = `X:${px}, Y:${py}`;
+    }
+
+    function getBuildingAt(x, y) {
+      return BUILDINGS.find(b => x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h);
+    }
+
+    // 8. PLAYER MOVEMENT & CONTROLS
+    function playerStepForward() {
+      if (gameState.player.animProgress < 1.0) return; // Busy moving
+
+      const curDir = DIRECTIONS[gameState.player.dir];
+      const targetX = gameState.player.x + curDir.deltaX;
+      const targetY = gameState.player.y + curDir.deltaY;
+
+      // Validate road walkable bounds
+      if (targetX >= 0 && targetX < GRID_SIZE && targetY >= 0 && targetY < GRID_SIZE) {
+        if (mapGrid[targetX][targetY] === 1) { // Walkable Road
+          gameState.player.targetX = targetX;
+          gameState.player.targetY = targetY;
+          gameState.player.animProgress = 0.0;
+          gameState.steps++;
+          document.getElementById('stepCount').innerText = gameState.steps;
+          playBeep(440, 0.05);
+        } else {
+          showToast("⚠️ 這是人行道/建築區，請沿著灰色道路行走！", "Stay on the street!");
+          playBeep(220, 0.15);
+        }
+      }
+    }
+
+    function playerTurn(delta) {
+      // delta = -1 (left), +1 (right)
+      gameState.player.dir = (gameState.player.dir + delta + 4) % 4;
+      updateFacingHUD();
+      updateSurroundingsHUD();
+      playBeep(520, 0.05);
+    }
+
+    function updateFacingHUD() {
+      const dir = DIRECTIONS[gameState.player.dir];
+      document.getElementById('facingText').innerText = dir.nameZh;
+      
+      // Update Arrow
+      const arrowIcon = document.getElementById('facingArrowIcon');
+      arrowIcon.className = `fa-solid ${dir.arrow} text-emerald-500`;
+
+      // Update Character Avatar Icon preview
+      const icons = ['🧭 NE', '↘️ SE', '↙️ SW', '↖️ NW'];
+      document.getElementById('charIcon').innerText = ['🤠', '😎', '🧐', '🎒'][gameState.player.dir];
+    }
+
+    // 9. MAP INTERACTION (PANNING & ZOOMING)
+    function zoomMap(factor) {
+      const newZoom = Math.min(Math.max(gameState.camera.zoom * factor, 0.5), 2.2);
+      gameState.camera.zoom = newZoom;
+    }
+
+    function centerOnPlayer() {
+      const p = gridToScreen(gameState.player.x, gameState.player.y);
+      const canvasCenterX = canvas.width / (2 * (window.devicePixelRatio || 1));
+      const canvasCenterY = canvas.height / (2 * (window.devicePixelRatio || 1));
+      
+      gameState.camera.x += (canvasCenterX - p.x);
+      gameState.camera.y += (canvasCenterY - p.y);
+    }
+
+    function resetView() {
+      gameState.camera.zoom = 1.0;
+      const canvasCenterX = canvas.width / (2 * (window.devicePixelRatio || 1));
+      const canvasCenterY = canvas.height / (2 * (window.devicePixelRatio || 1));
+      gameState.camera.x = canvasCenterX;
+      gameState.camera.y = canvasCenterY * 0.45;
+    }
+
+    // Mouse and Touch Event Handlers
+    function setupCanvasInteractions() {
+      let isPointerDown = false;
+      let startX, startY;
+      let hasDragged = false;
+
+      // Mouse drag to pan
+      canvas.addEventListener('mousedown', (e) => {
+        isPointerDown = true;
+        hasDragged = false;
+        startX = e.clientX;
+        startY = e.clientY;
+        gameState.camera.initCamX = gameState.camera.x;
+        gameState.camera.initCamY = gameState.camera.y;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isPointerDown) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        if (Math.hypot(dx, dy) > 5) hasDragged = true;
+        gameState.camera.x = gameState.camera.initCamX + dx;
+        gameState.camera.y = gameState.camera.initCamY + dy;
+      });
+
+      window.addEventListener('mouseup', (e) => {
+        if (isPointerDown && !hasDragged) {
+          handleTileClick(e.clientX, e.clientY);
+        }
+        isPointerDown = false;
+      });
+
+      // Mouse wheel zoom
+      canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const zoomDelta = e.deltaY < 0 ? 1.1 : 0.9;
+        zoomMap(zoomDelta);
+      }, { passive: false });
+
+      // Touch interactions (Pan & Tap)
+      let touchStartX = 0, touchStartY = 0;
+      let touchDist = 0;
+
+      canvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          isPointerDown = true;
+          hasDragged = false;
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+          gameState.camera.initCamX = gameState.camera.x;
+          gameState.camera.initCamY = gameState.camera.y;
+        } else if (e.touches.length === 2) {
+          touchDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+        }
+      });
+
+      canvas.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 1 && isPointerDown) {
+          const dx = e.touches[0].clientX - touchStartX;
+          const dy = e.touches[0].clientY - touchStartY;
+          if (Math.hypot(dx, dy) > 6) hasDragged = true;
+          gameState.camera.x = gameState.camera.initCamX + dx;
+          gameState.camera.y = gameState.camera.initCamY + dy;
+        } else if (e.touches.length === 2) {
+          const curDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          if (touchDist > 0) {
+            zoomMap(curDist / touchDist > 1 ? 1.03 : 0.97);
+          }
+          touchDist = curDist;
+        }
+      });
+
+      canvas.addEventListener('touchend', (e) => {
+        if (isPointerDown && !hasDragged && e.changedTouches.length === 1) {
+          handleTileClick(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        }
+        isPointerDown = false;
+      });
+    }
+
+    // Click handler for Road Walking or Building Tapping
+    function handleTileClick(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const sx = clientX - rect.left;
+      const sy = clientY - rect.top;
+      const grid = screenToGrid(sx, sy);
+
+      if (grid.x >= 0 && grid.x < GRID_SIZE && grid.y >= 0 && grid.y < GRID_SIZE) {
+        // 1. If clicked a building directly
+        const b = getBuildingAt(grid.x, grid.y);
+        if (b) {
+          handleBuildingTap(b);
+          return;
+        }
+
+        // 2. If clicked an adjacent road tile -> move character towards it
+        if (mapGrid[grid.x][grid.y] === 1) {
+          const dx = grid.x - gameState.player.x;
+          const dy = grid.y - gameState.player.y;
+
+          // If adjacent
+          if (Math.abs(dx) + Math.abs(dy) === 1) {
+            // Determine direction to face
+            if (dx === 1 && dy === 0) gameState.player.dir = 0;
+            else if (dx === 0 && dy === 1) gameState.player.dir = 1;
+            else if (dx === -1 && dy === 0) gameState.player.dir = 2;
+            else if (dx === 0 && dy === -1) gameState.player.dir = 3;
+
+            updateFacingHUD();
+            playerStepForward();
+          }
+        }
+      }
+    }
+
+    // 10. QUEST MODE ENGINE & CHOICE SELECTION
+    function loadQuest(index) {
+      gameState.currentQuestIdx = index % QUESTS.length;
+      const q = QUESTS[gameState.currentQuestIdx];
+
+      // Set player position & direction for question starting point
+      gameState.player.x = q.startPos.x;
+      gameState.player.y = q.startPos.y;
+      gameState.player.targetX = q.startPos.x;
+      gameState.player.targetY = q.startPos.y;
+      gameState.player.dir = q.startPos.dir;
+      gameState.player.animProgress = 1.0;
+      gameState.steps = 0;
+
+      document.getElementById('stepCount').innerText = gameState.steps;
+      document.getElementById('questLevel').innerText = gameState.currentQuestIdx + 1;
+      document.getElementById('questEnglish').innerText = `"${q.en}"`;
+      document.getElementById('questChinese').innerText = q.zh;
+
+      updateFacingHUD();
+      updateSurroundingsHUD();
+      centerOnPlayer();
+
+      // Render 3 Choice Buttons
+      const container = document.getElementById('choiceContainer');
+      container.innerHTML = '';
+      q.choices.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = "py-2.5 px-3 rounded-xl border-2 border-indigo-200 bg-white hover:bg-indigo-50 text-slate-800 font-black text-xs sm:text-sm shadow-sm transition active:scale-95 text-center flex items-center justify-center";
+        btn.innerText = c.text;
+        btn.onclick = () => checkAnswer(c.correct);
+        container.appendChild(btn);
+      });
+
+      // Auto read speech prompt on quest load
+      speakCurrentInstruction();
+    }
+
+    function checkAnswer(isCorrect) {
+      if (isCorrect) {
+        gameState.score += 10;
+        document.getElementById('questScore').innerText = `★ 星星：${gameState.score}`;
+        showToast("🎉 Excellent Job! 完全正確！", "You found the right place!");
+        playCelebrationSound();
+        setTimeout(() => {
+          nextQuest();
+        }, 1600);
+      } else {
+        showToast("❌ Try again! 仔細看面向與左手邊／右手邊喔！", "Check your orientation.");
+        playBeep(240, 0.2);
+      }
+    }
+
+    function handleBuildingTap(building) {
+      if (gameState.mode === 'quest') {
+        const q = QUESTS[gameState.currentQuestIdx];
+        if (building.id === q.targetBuildingId) {
+          checkAnswer(true);
+        } else {
+          showToast(`這是 ${building.nameEn} (${building.nameZh})`, "不是目標地點喔，再試試！");
+        }
+      } else {
+        showToast(`📍 抵達地標：${building.nameEn} (${building.nameZh})`, `位於坐標 X:${building.x}, Y:${building.y}`);
+        speakEnglishText(building.nameEn);
+      }
+    }
+
+    function nextQuest() {
+      loadQuest(gameState.currentQuestIdx + 1);
+    }
+
+    function setGameMode(mode) {
+      gameState.mode = mode;
+      const questBtn = document.getElementById('modeQuestBtn');
+      const freeBtn = document.getElementById('modeFreeBtn');
+      const questPanel = document.getElementById('questPanel');
+      const freePanel = document.getElementById('freePanel');
+
+      if (mode === 'quest') {
+        questBtn.className = "px-3 py-1.5 rounded-lg transition-all bg-white text-emerald-700 shadow-sm";
+        freeBtn.className = "px-3 py-1.5 rounded-lg text-slate-600 transition-all hover:text-slate-900";
+        questPanel.classList.remove('hidden');
+        freePanel.classList.add('hidden');
+        loadQuest(gameState.currentQuestIdx);
+      } else {
+        freeBtn.className = "px-3 py-1.5 rounded-lg transition-all bg-white text-emerald-700 shadow-sm";
+        questBtn.className = "px-3 py-1.5 rounded-lg text-slate-600 transition-all hover:text-slate-900";
+        questPanel.classList.add('hidden');
+        freePanel.classList.remove('hidden');
+        updateSurroundingsHUD();
+      }
+    }
+
+    function resetPlayerLocation() {
+      if (gameState.mode === 'quest') {
+        loadQuest(gameState.currentQuestIdx);
+      } else {
+        gameState.player.x = 2;
+        gameState.player.y = 2;
+        gameState.player.targetX = 2;
+        gameState.player.targetY = 2;
+        gameState.player.dir = 1;
+        gameState.player.animProgress = 1.0;
+        updateFacingHUD();
+        updateSurroundingsHUD();
+        centerOnPlayer();
+      }
+    }
+
+    // 11. AUDIO & TEXT-TO-SPEECH (TTS)
+    function speakCurrentInstruction() {
+      if (gameState.mode === 'quest') {
+        const q = QUESTS[gameState.currentQuestIdx];
+        speakEnglishText(q.en);
+      } else {
+        const text = document.getElementById('relativeSpatialText').innerText;
+        speakEnglishText(text);
+      }
+    }
+
+    function speakEnglishText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9; // Friendly teaching speed
+        utterance.pitch = 1.05;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    // Simple Audio Synthesizer Beeps (No external assets required)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(freq, duration) {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    function playCelebrationSound() {
+      playBeep(440, 0.1);
+      setTimeout(() => playBeep(554, 0.1), 100);
+      setTimeout(() => playBeep(659, 0.1), 200);
+      setTimeout(() => playBeep(880, 0.3), 300);
+    }
+
+    // 12. TOAST NOTIFICATION
+    function showToast(title, desc) {
+      const toast = document.getElementById('toastBox');
+      document.getElementById('toastTitle').innerText = title;
+      document.getElementById('toastDesc').innerText = desc;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2500);
+    }
+
+    // 13. INITIALIZATION ON WINDOW LOAD
+    window.onload = function() {
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      setupCanvasInteractions();
+      resetView();
+      loadQuest(0);
+      render();
+    };
+
+    // Keyboard Arrow Keys mapping (for Desktop)
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp' || e.key === 'w') {
+        playerStepForward();
+      } else if (e.key === 'ArrowLeft' || e.key === 'a') {
+        playerTurn(-1);
+      } else if (e.key === 'ArrowRight' || e.key === 'd') {
+        playerTurn(1);
+      } else if (e.key === '+' || e.key === '=') {
+        zoomMap(1.15);
+      } else if (e.key === '-' || e.key === '_') {
+        zoomMap(0.85);
+      }
+    });
+
+  </script>
+</body>
+</html>
+```
