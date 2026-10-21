@@ -27,9 +27,6 @@
         <a id="classroomLink" href="./classroom/index.html"><span><i data-lucide="calendar-days"></i></span><b>班務管理</b></a>
       </nav>
 
-      <div class="sidebar-footer">
-        <span>Every idea lights a life.</span>
-      </div>
     </aside>
     <button class="sidebar-overlay" id="sidebarOverlay" aria-label="關閉選單" hidden></button>
 
@@ -38,6 +35,7 @@
         <div class="welcome-block">
           <div class="welcome-line">
             <h1>歡迎來到異想教室</h1>
+            <span class="header-tagline">Every idea lights a life.</span>
           </div>
         </div>
         <div class="status-group">
@@ -141,13 +139,13 @@
               <button class="widget-card fortune-card" id="fortuneOpen" type="button"><span class="widget-visual" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="20" r="14" fill="#eee7ff"/><path d="m24 10 2.5 7.5L34 20l-7.5 2.5L24 30l-2.5-7.5L14 20l7.5-2.5Z" fill="#bca1ee"/><path d="m17 33-3 8h20l-3-8M17 37h14"/></svg></span><b>異想命運館</b></button>
               <a class="widget-card tug-card" href="./math/ecity-tug-of-war.html"><span class="widget-visual" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 7h18v13a9 9 0 0 1-18 0Z" fill="#ffdf89"/><path d="M15 11H8v6a8 8 0 0 0 9 8m16-14h7v6a8 8 0 0 1-9 8M24 29v9m-8 3h16m-13-3h10"/></svg></span><b>拔河錦標賽</b></a>
               <a class="widget-card island-card" href="./life/ecity-fantasy-island.html"><span class="widget-visual" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 24 19-10 19 10-19 10Z" fill="#b5dd8e"/><path d="M5 24v9l19 10 19-10v-9M24 34v9" fill="#dfc394"/><path d="m5 24 19 10 19-10M14 19l19 10m-9-15v10l-10 5"/><path d="M31 20v-7m-5 0a5 5 0 1 1 10 0c0 3-2 5-5 5s-5-2-5-5Z" fill="#8ecb93"/><path d="m12 22 6-3 6 3-6 3Zm0 0v5l6 3 6-3v-5m-6 3v5" fill="#efd494"/></svg></span><b>奇幻異想島</b></a>
-              <div class="widget-slot" aria-hidden="true"></div><div class="widget-slot" aria-hidden="true"></div><div class="widget-slot" aria-hidden="true"></div>
+              <button class="widget-card seasonal-card" id="seasonalEffectTrigger" type="button"><span class="widget-visual" aria-hidden="true">🎁</span><b>節慶彩蛋</b></button>
+              <div class="widget-slot" aria-hidden="true"></div><div class="widget-slot" aria-hidden="true"></div>
             </div>
           </div>
         </aside>
       </section>
 
-      <footer class="footer">© SINNY SPEDU LABS　異想教室控制台</footer>
     </main>
   </div>
 
@@ -201,5 +199,6 @@
   <script src="shared/js/lucide.min.js"></script>
   <script src="shared/js/qrcode.min.js"></script>
   <script src="portal.js"></script>
+  <script src="shared/js/seasonal-effects.js"></script>
 </body>
 </html>
