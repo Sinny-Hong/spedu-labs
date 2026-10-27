@@ -1,13 +1,28 @@
 (() => {
   "use strict";
 
-  const ACTIVE_THEME = "halloween";
+  // 尚未確認其他節慶檔期；萬聖節沿用現有動畫至 2026-11-01（含）。
+  const THEME_SCHEDULE = Object.freeze({ halloween: { start: null, end: "2026-11-01" } });
   const STYLE_ID = "seasonal-effect-style";
   const LAYER_ID = "seasonal-effect-layer";
+  const SINNY_LAYER_ID = "seasonal-sinny-layer";
   const TRIGGER_ID = "seasonalEffectTrigger";
   const CLEANUP_DELAY = 7200;
+  const SINNY_DURATION = 3000;
+  const sinnyBase = new URL("../../assets/sinny/", document.currentScript.src);
   let cleanupTimer = 0;
   let animationFrames = [];
+  let sinnyTimer = 0;
+  let sinnyRequest = 0;
+  let previousSinny = "";
+  let sinnyManifest;
+
+  function activeTheme(now = new Date()) {
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    return Object.entries(THEME_SCHEDULE).find(([, dates]) =>
+      (!dates.start || today >= dates.start) && (!dates.end || today <= dates.end)
+    )?.[0] || null;
+  }
 
   function installStyles() {
     if (document.getElementById(STYLE_ID)) return;
@@ -143,6 +158,37 @@
       }
       @media (prefers-reduced-motion: reduce) {
         #${LAYER_ID} { display: none !important; }
+      }
+      #${SINNY_LAYER_ID} {
+        position: fixed;
+        z-index: 9998;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+        background: transparent;
+      }
+      #${SINNY_LAYER_ID} img {
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border: 0;
+        background: transparent;
+        animation: seasonal-sinny-visit 3s ease-in-out both;
+      }
+      @keyframes seasonal-sinny-visit {
+        0% { opacity: 0; transform: translateY(16px); }
+        15%, 72% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-7px); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #${SINNY_LAYER_ID} img { animation: seasonal-sinny-fade 3s linear both; }
+      }
+      @keyframes seasonal-sinny-fade {
+        0%, 100% { opacity: 0; }
+        15%, 72% { opacity: 1; }
       }
     `;
     document.head.append(style);
@@ -356,7 +402,7 @@
 
   function play() {
     stop();
-    if (ACTIVE_THEME !== "halloween" || reducedMotion()) return false;
+    if (activeTheme() !== "halloween" || reducedMotion()) return false;
     const layer = document.createElement("div");
     layer.id = LAYER_ID;
     layer.setAttribute("aria-hidden", "true");
@@ -371,12 +417,72 @@
     return true;
   }
 
-  function bindTrigger() {
-    installStyles();
-    document.getElementById(TRIGGER_ID)?.addEventListener("click", play);
+  function clearSinny() {
+    window.clearTimeout(sinnyTimer);
+    sinnyTimer = 0;
+    document.getElementById(SINNY_LAYER_ID)?.remove();
   }
 
-  window.SeasonalEffects = Object.freeze({ play, stop, activeTheme: ACTIVE_THEME });
+  function positionSinny(layer) {
+    const panel = document.querySelector(".clock-panel");
+    if (!panel) return false;
+    const rect = panel.getBoundingClientRect();
+    const left = Math.max(0, rect.left);
+    const top = Math.max(0, rect.top);
+    const right = Math.min(window.innerWidth, rect.right);
+    const bottom = Math.min(window.innerHeight, rect.bottom);
+    if (right <= left || bottom <= top) return false;
+    Object.assign(layer.style, { left: `${left}px`, top: `${top}px`, width: `${right - left}px`, height: `${bottom - top}px` });
+    return true;
+  }
+
+  async function showSinny() {
+    const request = ++sinnyRequest;
+    clearSinny();
+    stop();
+    try {
+      sinnyManifest ||= fetch(new URL("manifest.json", sinnyBase)).then(response => {
+        if (!response.ok) throw new Error(`Sinny manifest: ${response.status}`);
+        return response.json();
+      }).catch(error => { sinnyManifest = null; throw error; });
+      const manifest = await sinnyManifest;
+      if (request !== sinnyRequest) return;
+      const files = manifest.images.map(item => item.file).filter(file => /^[a-z0-9-]+\.webp$/.test(file));
+      const choices = files.filter(file => file !== previousSinny);
+      if (!choices.length) return;
+      const file = choices[Math.floor(Math.random() * choices.length)];
+      const image = new Image();
+      image.alt = "";
+      image.src = new URL(file, sinnyBase).href;
+      await image.decode();
+      if (request !== sinnyRequest) return;
+      const layer = document.createElement("div");
+      layer.id = SINNY_LAYER_ID;
+      layer.setAttribute("aria-hidden", "true");
+      if (!positionSinny(layer)) return;
+      layer.append(image);
+      document.body.append(layer);
+      previousSinny = file;
+      sinnyTimer = window.setTimeout(clearSinny, SINNY_DURATION);
+    } catch (error) {
+      console.warn("Sinny 角色圖片無法載入。", error);
+    }
+  }
+
+  function bindTrigger() {
+    installStyles();
+    document.getElementById(TRIGGER_ID)?.addEventListener("click", () => {
+      if (activeTheme() === "halloween") {
+        ++sinnyRequest;
+        clearSinny();
+        play();
+      } else {
+        showSinny();
+      }
+    });
+  }
+
+  window.SeasonalEffects = Object.freeze({ play, stop, get activeTheme() { return activeTheme(); } });
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bindTrigger, { once: true });
   else bindTrigger();
 })();
