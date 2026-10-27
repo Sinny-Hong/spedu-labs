@@ -13,5 +13,6 @@ window.BOOK_DATA = [
   { id: "match_numbers", category: "單字", tag: "課堂配對板", title: "英文數字配對板", desc: "英文數字三排對照，支援語音與課堂互動配對", filename: "../eng-grammar/match-numbers.html", themeColor: "#2563eb" },
   { id: "match_family", category: "單字", tag: "課堂配對板", title: "家人稱謂配對板", desc: "家人稱謂與親友關係三排對照，支援發音", filename: "../eng-grammar/match-family.html", themeColor: "#db2777" },
   { id: "match_pronouns", category: "單字", tag: "課堂配對板", title: "人稱代名詞配對板", desc: "主格、受格、所有格、Be 動詞與反身代名詞互動提示", filename: "../eng-grammar/match-pronouns.html", themeColor: "#7c3aed" },
+  { id: "vocab_match_challenge", category: "單字", tag: "自主練習", title: "課本單字配對挑戰", desc: "選擇年級與課次，隨機挑戰中英文配對，逐組批改並累計整課成績。", filename: "vocab-match.html", themeColor: "#f59e0b" },
   { id: "match_time_date", category: "單字", tag: "課堂配對板", title: "時間與日期配對板", desc: "星期、月份、日期與時間的三排對照，支援語音", filename: "../eng-grammar/match-time-date.html", themeColor: "#ea580c" }
 ];

@@ -1,0 +1,2321 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>E-City｜立體導航城 v0.4</title>
+<style>
+:root {
+  --blue: #245b86;
+  --blue-light: #eef6fa;
+  --orange: #f59e0b;
+  --green: #16a34a;
+  --ink: #263b4b;
+  --line: #d8e5e9;
+  --bg: #f5f9fa;
+  --white: #fff;
+  --muted: #718591;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Trebuchet MS', 'Arial Rounded MT Bold', 'Noto Sans TC', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select { font: inherit; }
+button { cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+button:focus-visible, select:focus-visible {
+  outline: 3px solid #f6b746;
+  outline-offset: 2px;
+}
+
+/* 16:9 大電視與桌機主容器 */
+.app {
+  height: 100dvh;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 10px;
+  max-width: 1900px;
+  margin: auto;
+}
+
+/* 頂部 E-City 共用扁長工具列 */
+.top {
+  height: 52px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  gap: 8px;
+  position: relative;
+  z-index: 30;
+}
+.brand {
+  font-size: clamp(20px, 2vw, 29px);
+  font-weight: 900;
+  color: var(--blue);
+  letter-spacing: .02em;
+  display: flex;
+  align-items: baseline;
+  white-space: nowrap;
+}
+.brand span {
+  font-size: .62em;
+  color: #81929a;
+  margin-right: 8px;
+}
+.brand small {
+  font-size: .5em;
+  background: #e3eff6;
+  color: var(--blue);
+  padding: 2px 7px;
+  border-radius: 99px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  position: relative;
+}
+.mission-select {
+  font-size: 14px;
+  font-weight: 900;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--blue);
+  border-radius: 10px;
+  padding: 7px 11px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px #2d59700a;
+}
+.gear-btn {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 10px;
+  color: var(--blue);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px #2d59700a;
+  transition: transform .15s, background .15s;
+}
+.gear-btn:hover { background: #f4f8f9; }
+.gear-btn[aria-expanded="true"] {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+.gear-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* 齒輪彈出選單 */
+.gear-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 256px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  box-shadow: 0 10px 28px rgba(36, 91, 134, 0.18);
+  padding: 13px;
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 50;
+}
+.gear-popover.open { display: flex; }
+.gear-row {
+  display: flex;
+   flex-direction: column;
+  gap: 6px;
+}
+.gear-label {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.seg-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #f1f6f8;
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid #e1ecef;
+}
+.seg-btn {
+  border: 0;
+  background: transparent;
+  padding: 6px 8px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #5a7180;
+  transition: all .15s;
+}
+.seg-btn.active {
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 2px 5px rgba(36, 91, 134, 0.2);
+}
+.gear-divider {
+  height: 1px;
+  background: #edf2f3;
+  margin: 2px 0;
+}
+.gear-action-btn {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: #f8fbfc;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  padding: 8px 10px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.gear-action-btn:hover { background: #eef5f8; }
+.gear-action-btn.danger {
+  color: #b34e42;
+  border-color: #f2d6d3;
+  background: #fff9f8;
+}
+.gear-action-btn.danger:hover { background: #ffefed; }
+
+/* 雙欄工作區 */
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(330px, 3.2fr);
+  gap: 12px;
+  min-height: 0;
+  flex: 1;
+}
+.stage, .panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  min-height: 0;
+  box-shadow: 0 3px 12px #2d59700b;
+}
+
+/* 左側：地圖舞台 */
+.stage {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+}
+.stage-hud-top {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  right: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+  z-index: 5;
+}
+.island-label {
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(4px);
+  border: 1px solid #dde7e9;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px #32556a13;
+  padding: 7px 14px;
+  color: var(--blue);
+  font-weight: 900;
+  font-size: clamp(13px, 1.2vw, 17px);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.island-label .dir-badge {
+  background: var(--blue);
+  color: #fff;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 0.9em;
+}
+.map-controls {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  border: 1px solid #dde7e9;
+  border-radius: 12px;
+  padding: 5px;
+  box-shadow: 0 2px 8px #32556a13;
+}
+.map-ctrl-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #d4e0e5;
+  border-radius: 8px;
+  background: #f4f8f9;
+  color: var(--blue);
+  font-size: 16px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.map-ctrl-btn:hover { background: #e6f0f4; }
+.map-ctrl-btn:active { transform: scale(0.95); }
+
+.island-view {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: radial-gradient(ellipse at 50% 60%, #e9f6f0 0%, #f4fbfc 52%, #ffffff 85%);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #edf4f6;
+}
+#gameCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+  cursor: grab;
+}
+#gameCanvas:active { cursor: grabbing; }
+
+.stage-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 4px 0;
+  color: var(--muted);
+  font-size: 12px;
+  flex: none;
+}
+
+/* 提示氣泡 Toast */
+.toast {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #245b86;
+  color: #fff;
+  padding: 9px 16px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 800;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s, transform .22s;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(36,91,134,0.28);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+.toast.warn { background: #d97706; }
+.toast.success { background: #15803d; }
+
+/* 右側：卡拉 OK 導航與操作面板 */
+.panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.panel-head {
+  padding: 12px 15px 10px;
+  border-bottom: 1px solid #edf2f3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: none;
+}
+.panel-title {
+  font-weight: 900;
+  color: var(--blue);
+  font-size: 15px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.progress-pill {
+  font-size: 12px;
+  font-weight: 900;
+  color: #ad7100;
+  background: #fff7e7;
+  border: 1px solid #f6dda2;
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+/* 高度精簡、內部可滾動的卡拉 OK 導航視窗 */
+.karaoke-window-wrap {
+  padding: 12px 14px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.karaoke-viewport {
+  background: #172a3a;
+  border: 2px solid #28465e;
+  border-radius: 15px;
+  padding: 10px 11px;
+  overflow-y: auto;
+  max-height: 230px;
+  min-height: 178px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #3e607b #172a3a;
+  box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.28);
+}
+.k-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: 11px;
+  transition: all .22s ease;
+  border: 1px solid transparent;
+}
+/* 尚未執行：灰色 */
+.k-line.upcoming {
+  color: #6c8599;
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 14px;
+  font-weight: 700;
+}
+/* 已完成：灰色，保留完成標記 */
+.k-line.done {
+  color: #8fa8bc;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 14px;
+  font-weight: 700;
+}
+/* 正在執行：高亮、白色文字 */
+.k-line.active {
+  background: #213c54;
+  border-color: #4882b4;
+  color: #ffffff;
+  font-size: clamp(16px, 1.35vw, 19px);
+  font-weight: 900;
+  padding: 12px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+.k-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+  line-height: 1.42;
+}
+.k-status-ico {
+  flex: none;
+  font-size: 13px;
+  margin-top: 2px;
+  width: 18px;
+  text-align: center;
+}
+.k-line.done .k-status-ico { color: #34d399; }
+.k-line.active .k-status-ico { color: #facc15; }
+.k-line.upcoming .k-status-ico { color: #526b7e; }
+
+.k-text {
+  word-break: break-word;
+  flex: 1;
+}
+/* 半透明黃色螢光筆（僅於正在執行的英文核心導航詞顯示） */
+.k-line.active .hl-word {
+  background: rgba(250, 204, 21, 0.36);
+  color: #fef08a;
+  padding: 1px 6px;
+  margin: 0 1px;
+  border-radius: 6px;
+  box-shadow: inset 0 -2px 0 rgba(250, 204, 21, 0.65);
+}
+
+/* 圓滾滾可愛定位點按鈕（Map-pin 回溯按鈕） */
+.pin-rollback-btn {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .15s, background .15s, border-color .15s;
+  padding: 0;
+}
+.pin-rollback-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: #7dd3fc;
+  transform: scale(1.07);
+}
+.pin-rollback-btn:active {
+  transform: scale(0.93);
+}
+.pin-rollback-btn svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+/* 目前步驟即時輔助小狀態列 */
+.live-subbar {
+  background: #f4f8fa;
+  border: 1px solid #dfeaf0;
+  border-radius: 10px;
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #496374;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.live-subbar strong { color: var(--blue); }
+
+/* 過關橫幅 */
+.win-banner {
+  display: none;
+  background: #ecfdf5;
+  border: 2px solid #10b981;
+  border-radius: 13px;
+  padding: 11px 13px;
+  text-align: center;
+  margin: 0 14px 8px;
+}
+.win-banner.show { display: block; }
+.win-banner h3 {
+  margin: 0 0 4px;
+  color: #065f46;
+  font-size: 16px;
+}
+.win-banner p {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  color: #047857;
+}
+.win-next-btn {
+  background: #10b981;
+  color: #fff;
+  border: 0;
+  border-radius: 9px;
+  padding: 7px 15px;
+  font-weight: 900;
+  font-size: 13.5px;
+}
+
+/* 底部操作三鍵區 */
+.control-dock {
+  padding: 11px 14px 14px;
+  background: #f5f9fb;
+  border-top: 1px solid #e3edf1;
+  flex: none;
+}
+.control-hint {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin: 0 0 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr 1fr;
+  gap: 8px;
+}
+.act-btn {
+  border: 1px solid #cadbe2;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 6px;
+  color: var(--blue);
+  font-weight: 900;
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  box-shadow: 0 3px 0 #d5e3e9;
+  transition: transform .08s, background .15s;
+}
+.act-btn small {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 800;
+}
+.act-btn:hover { background: #f4f9fb; }
+.act-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #d5e3e9;
+}
+.act-btn.go {
+  background: var(--blue);
+  border-color: #1b496d;
+  color: #fff;
+  box-shadow: 0 3px 0 #163b58;
+}
+.act-btn.go small { color: #cbe3f2; }
+.act-btn.go:hover { background: #1e4f75; }
+
+/* 手機直式響應式：自然向下捲動，不鎖死 body */
+@media (max-width: 790px) {
+  .app {
+    height: auto;
+    min-height: 100dvh;
+    padding: 9px;
+    gap: 8px;
+  }
+  .top {
+    height: auto;
+    min-height: 46px;
+    padding: 3px 4px;
+    flex-wrap: wrap;
+  }
+  .brand { font-size: 19px; }
+  .mission-select { font-size: 13px; padding: 6px 9px; }
+  .workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .stage {
+    height: min(56vh, 450px);
+    min-height: 295px;
+    padding: 9px;
+  }
+  .stage-hud-top {
+    top: 16px;
+    left: 16px;
+    right: 16px;
+  }
+  .island-label {
+    font-size: 13px;
+    padding: 6px 11px;
+  }
+  .panel {
+    overflow: visible;
+  }
+  .karaoke-viewport {
+    max-height: 185px;
+    min-height: 155px;
+  }
+  .act-btn {
+    padding: 13px 6px;
+    font-size: 15px;
+  }
+}
+
+/* 矮螢幕橫向適配 */
+@media (max-height: 650px) and (min-width: 791px) {
+  .app { padding: 6px; gap: 5px; }
+  .top { height: 42px; }
+  .stage { padding: 8px; }
+  .panel-head { padding: 8px 12px; }
+  .karaoke-window-wrap { padding: 8px 11px; }
+  .karaoke-viewport { min-height: 130px; max-height: 165px; }
+  .control-dock { padding: 8px 11px; }
+  .act-btn { padding: 8px 4px; font-size: 14px; }
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <!-- 頂部工具列：左側標題、右側精簡題目下拉 + 齒輪功能選單 -->
+  <header class="top">
+    <div class="brand">
+      <span>E-City</span>🧭 立體導航城
+      <small>v0.4</small>
+    </div>
+    <div class="top-actions">
+      <select id="missionSelect" class="mission-select" aria-label="選擇導航題目"></select>
+      <button type="button" class="gear-btn" id="btnGear" aria-label="開啟設定選單" aria-expanded="false" title="設定與工具">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+        </svg>
+      </button>
+
+      <!-- 齒輪彈出選單 -->
+      <div class="gear-popover" id="gearPopover" role="dialog" aria-label="導航設定選單">
+        <div class="gear-row">
+          <div class="gear-label">
+            <span>導航文本語言</span>
+            <small>不影響建築英文標籤</small>
+          </div>
+          <div class="seg-group" role="group" aria-label="導航文本語言切換">
+            <button type="button" class="seg-btn active" id="btnLangEn">EN 英文</button>
+            <button type="button" class="seg-btn" id="btnLangZh">中文</button>
+          </div>
+        </div>
+
+        <div class="gear-row">
+          <div class="gear-label">
+            <span>語音功能 (TTS)</span>
+            <small id="ttsStatusLabel">預設關閉</small>
+          </div>
+          <div class="seg-group" role="group" aria-label="語音功能開關">
+            <button type="button" class="seg-btn active" id="btnTtsOff">🔇 關閉</button>
+            <button type="button" class="seg-btn" id="btnTtsOn">🔊 開啟</button>
+          </div>
+          <button type="button" class="gear-action-btn" id="btnSpeakNow">🗣️ 朗讀目前英文句子</button>
+        </div>
+
+        <div class="gear-divider"></div>
+
+        <button type="button" class="gear-action-btn danger" id="btnResetMission">
+          ↺ 重置本題（回到起點）
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <!-- 左側（手機上方）：2.5D 城市地圖舞台 -->
+    <section class="stage" aria-label="立體導航地圖舞台">
+      <div class="stage-hud-top">
+        <div class="island-label">
+          <span>面向</span>
+          <span class="dir-badge" id="hudDirText">右上 ↗</span>
+        </div>
+        <div class="map-controls" aria-label="地圖視野控制">
+          <button type="button" class="map-ctrl-btn" id="btnZoomIn" title="放大地圖" aria-label="放大地圖">+</button>
+          <button type="button" class="map-ctrl-btn" id="btnZoomOut" title="縮小地圖" aria-label="縮小地圖">−</button>
+          <button type="button" class="map-ctrl-btn" id="btnCenterPlayer" title="定位角色" aria-label="定位角色">⌖</button>
+          <button type="button" class="map-ctrl-btn" id="btnFitMap" title="顯示全圖" aria-label="顯示全圖">⛶</button>
+        </div>
+      </div>
+
+      <div class="island-view" id="islandView">
+        <canvas id="gameCanvas"></canvas>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      </div>
+
+      <div class="stage-foot">
+        <span id="footStatus">18×14 街區導航島 · 15 座地標 · 路名邊緣防遮擋</span>
+        <span>© Sinny's Spedu Labs · E-City Series</span>
+      </div>
+    </section>
+
+    <!-- 右側（手機下方）：精簡卡拉 OK 導航視窗與操作面板 -->
+    <aside class="panel" aria-label="英文導航與操作面板">
+      <div class="panel-head">
+        <h2 class="panel-title">🎤 Follow the Directions</h2>
+        <span class="progress-pill" id="stepProgressPill">0 / 4</span>
+      </div>
+
+      <!-- 高度精簡、內部可滾動的卡拉 OK 視窗 -->
+      <div class="karaoke-window-wrap">
+        <div class="karaoke-viewport" id="karaokeList" aria-live="polite"></div>
+        <div class="live-subbar" id="liveSubbar">
+          <span id="liveStepHint">🚶 準備出發</span>
+          <span id="coordInfo">座標 (6, 10)</span>
+        </div>
+      </div>
+
+      <!-- 任務完成橫幅 -->
+      <div class="win-banner" id="winBanner">
+        <h3 id="winTitle">🎉 導航任務完成！</h3>
+        <p id="winDesc">你成功帶領角色抵達目的地！</p>
+        <button type="button" class="win-next-btn" id="btnBannerNext">挑戰下一題 →</button>
+      </div>
+
+      <!-- 操作三鍵區 -->
+      <div class="control-dock">
+        <div class="control-hint">
+          <span>💡 點擊句子右側「圓滾滾定位點」可回到該句起點</span>
+        </div>
+        <div class="action-grid">
+          <button type="button" class="act-btn" id="btnTurnLeft">
+            <span>↶ 左轉</span>
+            <small>Turn Left</small>
+          </button>
+          <button type="button" class="act-btn go" id="btnGoStraight">
+            <span>↑ 直走</span>
+            <small>Go Straight</small>
+          </button>
+          <button type="button" class="act-btn" id="btnTurnRight">
+            <span>右轉 ↷</span>
+            <small>Turn Right</small>
+          </button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  /* =========================================================
+   * 1. 2.5D 投影參數 (64:44)
+   * ========================================================= */
+  const MAP_COLS = 18;
+  const MAP_ROWS = 14;
+  const TILE_WIDTH = 64;
+  const TILE_HEIGHT = 44;
+  const HALF_W = TILE_WIDTH / 2;   // 32
+  const HALF_H = TILE_HEIGHT / 2;  // 22
+  const SLAB_DEPTH = 14;
+
+  /* =========================================================
+   * 2. 四方向定義（嚴格對齊 gridToScreen 投影公式）
+   * ========================================================= */
+  const DIRECTIONS = [
+    { id: 0, dx: 0,  dy: -1, label: '右上 ↗', short: '↗', en: 'Upper-Right' }, // y - 1
+    { id: 1, dx: 1,  dy: 0,  label: '右下 ↘', short: '↘', en: 'Lower-Right' }, // x + 1
+    { id: 2, dx: 0,  dy: 1,  label: '左下 ↙', short: '↙', en: 'Lower-Left'  }, // y + 1
+    { id: 3, dx: -1, dy: 0,  label: '左上 ↖', short: '↖', en: 'Upper-Left'  }  // x - 1
+  ];
+
+  /* =========================================================
+   * 3. 道路骨架與 15 座地標建築配置 (補滿外圍綠地教學地標)
+   *    橫向街道 (y 軸固定，沿 x=1..16 延伸):
+   *      y = 2  (Maple St.)
+   *      y = 6  (Main St.)
+   *      y = 10 (Oak St.)
+   *    縱向大道 (x 軸固定，沿 y=1..12 延伸):
+   *      x = 2  (West Rd.)
+   *      x = 6  (1st Ave.)
+   *      x = 11 (2nd Ave.)
+   *      x = 15 (East Rd.)
+   * ========================================================= */
+  const ROAD_X = new Set([2, 6, 11, 15]);
+  const ROAD_Y = new Set([2, 6, 10]);
+
+  function isRoadTile(x, y) {
+    if (x < 1 || x >= MAP_COLS - 1 || y < 1 || y >= MAP_ROWS - 1) return false;
+    return ROAD_X.has(x) || ROAD_Y.has(y);
+  }
+
+  function isIntersectionTile(x, y) {
+    return ROAD_X.has(x) && ROAD_Y.has(y);
+  }
+
+  /* =========================================================
+   * 道路名稱：配置於右下角 (x=17.45) 與左下角 (y=13.55) 道路出口外側
+   * 由於房子往上長 (z>0)，放在右下與左下出口處 100% 絕不會被任何建築或招牌擋住
+   * ========================================================= */
+  const STREET_LABELS = [
+    // 橫向街道：統一放在右下角出口外側 (x = 17.55)
+    { x: 17.55, y: 2.5,  text: 'Maple St.', axis: 'st' },
+    { x: 17.55, y: 6.5,  text: 'Main St.',  axis: 'st' },
+    { x: 17.55, y: 10.5, text: 'Oak St.',   axis: 'st' },
+    // 縱向大道：統一放在左下角出口外側 (y = 13.55)
+    { x: 2.5,   y: 13.55, text: 'West Rd.', axis: 'ave' },
+    { x: 6.5,   y: 13.55, text: '1st Ave.', axis: 'ave' },
+    { x: 11.5,  y: 13.55, text: '2nd Ave.', axis: 'ave' },
+    { x: 15.5,  y: 13.55, text: 'East Rd.', axis: 'ave' }
+  ];
+
+  // 15 座地標建築（外圍綠地補上 Cafe、Toy Shop、Bookstore，豐富街區方位練習）
+  const BUILDINGS = [
+    // 北排 (y = 0..1)
+    { id: 'hospital',    name: 'Hospital',       zh: '醫院',   icon: '🏥', x: 3,  y: 0,  w: 3, h: 2, wall: '#f8fafc', side: '#cbd5e1', roof: '#ef4444', accent: '#dc2626' },
+    { id: 'bakery',      name: 'Bakery',         zh: '麵包店', icon: '🥐', x: 7,  y: 0,  w: 2, h: 2, wall: '#fffbeb', side: '#fde68a', roof: '#f59e0b', accent: '#d97706' },
+    { id: 'police',      name: 'Police Station', zh: '警察局', icon: '🚓', x: 9,  y: 0,  w: 2, h: 2, wall: '#eff6ff', side: '#bfdbfe', roof: '#2563eb', accent: '#1d4ed8' },
+    { id: 'school',      name: 'School',         zh: '學校',   icon: '🏫', x: 12, y: 0,  w: 3, h: 2, wall: '#faf5ff', side: '#e9d5ff', roof: '#9333ea', accent: '#7e22ce' },
+
+    // 中北排 (y = 3..5)，包含左側外圍 Cafe
+    { id: 'cafe',        name: 'Cafe',           zh: '咖啡廳', icon: '☕', x: 0,  y: 3,  w: 2, h: 3, wall: '#fef3c7', side: '#fde68a', roof: '#b45309', accent: '#92400e' },
+    { id: 'flowershop',  name: 'Flower Shop',    zh: '花店',   icon: '🌸', x: 3,  y: 3,  w: 3, h: 3, wall: '#fdf2f8', side: '#fbcfe8', roof: '#ec4899', accent: '#db2777' },
+    { id: 'library',     name: 'Library',        zh: '圖書館', icon: '📚', x: 7,  y: 3,  w: 2, h: 3, wall: '#f0fdf4', side: '#bbf7d0', roof: '#16a34a', accent: '#15803d' },
+    { id: 'bank',        name: 'Bank',           zh: '銀行',   icon: '🏦', x: 9,  y: 3,  w: 2, h: 3, wall: '#f0f9ff', side: '#bae6fd', roof: '#0284c7', accent: '#0369a1' },
+    { id: 'supermarket', name: 'Supermarket',    zh: '超市',   icon: '🛒', x: 12, y: 3,  w: 3, h: 3, wall: '#fff7ed', side: '#fed7aa', roof: '#ea580c', accent: '#c2410c' },
+
+    // 中南排 (y = 7..9)
+    { id: 'postoffice',  name: 'Post Office',    zh: '郵局',   icon: '📮', x: 3,  y: 7,  w: 3, h: 3, wall: '#fef2f2', side: '#fecaca', roof: '#dc2626', accent: '#b91c1c' },
+    { id: 'park',        name: 'Central Park',   zh: '中央公園',icon: '🌳', x: 7,  y: 7,  w: 4, h: 3, wall: '#dcfce7', side: '#86efac', roof: '#22c55e', accent: '#15803d', isPark: true },
+    { id: 'theater',     name: 'Movie Theater',  zh: '電影院', icon: '🎬', x: 12, y: 7,  w: 3, h: 3, wall: '#f5f3ff', side: '#ddd6fe', roof: '#7c3aed', accent: '#6d28d9' },
+
+    // 南排 (y = 11..12)：補滿 Toy Shop、Restaurant、Bookstore
+    { id: 'toyshop',     name: 'Toy Shop',       zh: '玩具店', icon: '🧸', x: 3,  y: 11, w: 3, h: 2, wall: '#fffbeb', side: '#fde047', roof: '#eab308', accent: '#ca8a04' },
+    { id: 'restaurant',  name: 'Restaurant',     zh: '餐廳',   icon: '🍽️', x: 7,  y: 11, w: 4, h: 2, wall: '#fff1f2', side: '#fecdd3', roof: '#e11d48', accent: '#be123c' },
+    { id: 'bookstore',   name: 'Bookstore',      zh: '書店',   icon: '📖', x: 12, y: 11, w: 3, h: 2, wall: '#ecfeff', side: '#a5f3fc', roof: '#0891b2', accent: '#0e7490' }
+  ];
+
+  const GRASS_FLOWERS = [
+    { x: 0, y: 1, c: '#f472b6' }, { x: 1, y: 8, c: '#facc15' },
+    { x: 0, y: 11, c: '#fb923c' }, { x: 16, y: 1, c: '#f472b6' },
+    { x: 16, y: 5, c: '#facc15' }, { x: 16, y: 9, c: '#a78bfa' }
+  ];
+
+  /* =========================================================
+   * 4. 題庫定義：
+   *    - 頂部下拉選單採用極簡「編號 + 英文名」(1. Bank, 2. Flower Shop...)
+   *    - 每個英文句子以 {關鍵字} 明確標記極簡核心導航字（如 {straight}, {two blocks}, {right}, {left}）
+   * ========================================================= */
+  const MISSIONS = [
+    {
+      id: 1,
+      menuLabel: '1. Bank',
+      title: '1. Bank',
+      start: { x: 6, y: 10, dir: 0 },
+      steps: [
+        {
+          type: 'walk_blocks',
+          enMarkup: 'Go {straight} along 1st Avenue for {two blocks}.',
+          zh: '沿著 1st Ave. 直走兩個街區。',
+          expectedDir: 0,
+          targetBlocks: 2,
+          targetX: 6,
+          targetY: 2
+        },
+        {
+          type: 'turn_at',
+          enMarkup: 'Turn {right} at the {corner} of Maple Street.',
+          zh: '在 Maple St. 轉角向右轉。',
+          atX: 6,
+          atY: 2,
+          turnAction: 'right',
+          targetDir: 1
+        },
+        {
+          type: 'walk_blocks',
+          enMarkup: 'Go {straight} for {one block} to 2nd Avenue.',
+          zh: '往前直走一個街區到 2nd Ave.。',
+          expectedDir: 1,
+          targetBlocks: 1,
+          targetX: 11,
+          targetY: 2
+        },
+        {
+          type: 'tap_building',
+          enMarkup: "It's on your {right}, {across from} the Police Station. Tap it!",
+          zh: '就在你的右手邊，警察局對面。請點擊該建築招牌！',
+          targetBuildingId: 'bank',
+          validPositions: [{ x: 9, y: 2 }, { x: 10, y: 2 }, { x: 11, y: 2 }, { x: 11, y: 3 }, { x: 11, y: 4 }]
+        }
+      ]
+    },
+    {
+      id: 2,
+      menuLabel: '2. Flower Shop',
+      title: '2. Flower Shop',
+      start: { x: 11, y: 10, dir: 0 },
+      steps: [
+        {
+          type: 'walk_blocks',
+          enMarkup: 'Go {straight} along 2nd Avenue for {one block}.',
+          zh: '沿著 2nd Ave. 直走一個街區。',
+          expectedDir: 0,
+          targetBlocks: 1,
+          targetX: 11,
+          targetY: 6
+        },
+        {
+          type: 'turn_at',
+          enMarkup: 'Turn {left} at Main Street.',
+          zh: '在 Main St. 路口向左轉。',
+          atX: 11,
+          atY: 6,
+          turnAction: 'left',
+          targetDir: 3
+        },
+        {
+          type: 'walk_blocks',
+          enMarkup: 'Go {straight} for {one block} past Central Park.',
+          zh: '經過 Central Park，直走一個街區。',
+          expectedDir: 3,
+          targetBlocks: 1,
+          targetX: 6,
+          targetY: 6
+        },
+        {
+          type: 'tap_building',
+          enMarkup: "It's on your {right}, {across from} the Post Office. Tap it!",
+          zh: '在你的右手邊，郵局正對面。請點擊該建築招牌！',
+          targetBuildingId: 'flowershop',
+          validPositions: [{ x: 6, y: 6 }, { x: 5, y: 6 }, { x: 4, y: 6 }, { x: 6, y: 5 }]
+        }
+      ]
+    },
+    {
+      id: 3,
+      menuLabel: '3. Movie Theater',
+      title: '3. Movie Theater',
+      start: { x: 2, y: 6, dir: 1 },
+      steps: [
+        {
+          type: 'walk_blocks',
+          enMarkup: 'Go {straight} along Main Street for {two blocks}.',
+          zh: '沿著 Main St. 直走兩個街區。',
+          expectedDir: 1,
+          targetBlocks: 2,
+          targetX: 11,
+          targetY: 6
+        },
+        {
+          type: 'turn_at',
+          enMarkup: 'Turn {right} at the {corner} of 2nd Avenue.',
+          zh: '在 2nd Ave. 轉角處向右轉。',
+          atX: 11,
+          atY: 6,
+          turnAction: 'right',
+          targetDir: 2
+        },
+        {
+          type: 'walk_blocks',
+          enMarkup: 'Go {straight} for {one block} to Oak Street.',
+          zh: '直走一個街區到 Oak St.。',
+          expectedDir: 2,
+          targetBlocks: 1,
+          targetX: 11,
+          targetY: 10
+        },
+        {
+          type: 'tap_building',
+          enMarkup: "It's on your {left}, {across from} Central Park. Tap it!",
+          zh: '就在你的左手邊，中央公園對面。請點擊該建築招牌！',
+          targetBuildingId: 'theater',
+          validPositions: [{ x: 11, y: 10 }, { x: 11, y: 9 }, { x: 11, y: 8 }, { x: 12, y: 10 }, { x: 13, y: 10 }]
+        }
+      ]
+    },
+    {
+      id: 4,
+      menuLabel: '4. Hospital',
+      title: '4. Hospital',
+      start: { x: 11, y: 6, dir: 3 },
+      steps: [
+        {
+          type: 'walk_blocks',
+          enMarkup: 'Go {straight} on Main Street for {one block}.',
+          zh: '沿著 Main St. 直走一個街區。',
+          expectedDir: 3,
+          targetBlocks: 1,
+          targetX: 6,
+          targetY: 6
+        },
+        {
+          type: 'turn_at',
+          enMarkup: 'Turn {right} at 1st Avenue.',
+          zh: '在 1st Ave. 路口向右轉。',
+          atX: 6,
+          atY: 6,
+          turnAction: 'right',
+          targetDir: 0
+        },
+        {
+          type: 'walk_blocks',
+          enMarkup: 'Go {straight} for {one block} past the Library.',
+          zh: '經過 Library，直走一個街區。',
+          expectedDir: 0,
+          targetBlocks: 1,
+          targetX: 6,
+          targetY: 2
+        },
+        {
+          type: 'tap_building',
+          enMarkup: "It's on your {left}, {across from} the Flower Shop. Tap it!",
+          zh: '在你的左手邊，花店正對面。請點擊該建築招牌！',
+          targetBuildingId: 'hospital',
+          validPositions: [{ x: 6, y: 2 }, { x: 5, y: 2 }, { x: 4, y: 2 }]
+        }
+      ]
+    },
+    {
+      id: 5,
+      menuLabel: '5. Bookstore',
+      title: '5. Bookstore',
+      start: { x: 6, y: 2, dir: 2 },
+      steps: [
+        {
+          type: 'walk_blocks',
+          enMarkup: 'Go {straight} along 1st Avenue for {two blocks}.',
+          zh: '沿著 1st Ave. 直走兩個街區。',
+          expectedDir: 2,
+          targetBlocks: 2,
+          targetX: 6,
+          targetY: 10
+        },
+        {
+          type: 'turn_at',
+          enMarkup: 'Turn {left} at the {corner} of Oak Street.',
+          zh: '在 Oak St. 轉角處向左轉。',
+          atX: 6,
+          atY: 10,
+          turnAction: 'left',
+          targetDir: 1
+        },
+        {
+          type: 'walk_blocks',
+          enMarkup: 'Go {straight} for {one block} past the Restaurant.',
+          zh: '經過 Restaurant，直走一個街區。',
+          expectedDir: 1,
+          targetBlocks: 1,
+          targetX: 11,
+          targetY: 10
+        },
+        {
+          type: 'tap_building',
+          enMarkup: "Walk ahead! It's on your {right}, {across from} the Movie Theater. Tap it!",
+          zh: '就在你的右手邊，電影院正對面。請點擊該建築招牌！',
+          targetBuildingId: 'bookstore',
+          validPositions: [{ x: 11, y: 10 }, { x: 12, y: 10 }, { x: 13, y: 10 }, { x: 14, y: 10 }, { x: 15, y: 10 }]
+        }
+      ]
+    }
+  ];
+
+  /* =========================================================
+   * 5. 遊戲狀態機、語言與語音設定、Checkpoint 回溯結構
+   * ========================================================= */
+  let currentMissionIdx = 0;
+  let currentStepIdx = 0;
+  let missionCompleted = false;
+
+  // 齒輪選單內控制狀態（切換語言不影響進度或 Checkpoint）
+  let navLang = 'en';    // 'en' | 'zh'
+  let ttsEnabled = false; // 預設關閉
+
+  let stepProgress = {
+    blocksWalked: 0,
+    leftLastIntersection: false,
+    lastIntersectionKey: '',
+    turnedCorrectly: false
+  };
+
+  let checkpoints = [];
+
+  const player = {
+    x: 6,
+    y: 10,
+    renderX: 6,
+    renderY: 10,
+    dir: 0,
+    isMoving: false,
+    animStart: 0,
+    animDuration: 205,
+    fromX: 6,
+    fromY: 10
+  };
+
+  const camera = {
+    x: 0,
+    y: 0,
+    zoom: 1,
+    minZoom: 0.46,
+    maxZoom: 2.15
+  };
+
+  let buildingHitBoxes = [];
+
+  /* =========================================================
+   * 6. DOM 輔助與語音合成
+   * ========================================================= */
+  const $ = id => document.getElementById(id);
+  const canvas = $('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  // 圓滾滾可愛定位點 SVG 圖示（水滴大頭圓肚 + 白色小圓心）
+  const CUTE_PIN_SVG = `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#38bdf8" stroke="#0284c7" stroke-width="1.5" stroke-linejoin="round"
+        d="M12 2.2C7.4 2.2 4 5.5 4 9.9c0 5.1 6.1 10.7 7.3 11.7a1.1 1.1 0 0 0 1.4 0C13.9 20.6 20 15 20 9.9c0-4.4-3.4-7.7-8-7.7z"/>
+      <circle cx="12" cy="9.6" r="3.4" fill="#ffffff"/>
+    </svg>
+  `;
+
+  function stripMarkup(enMarkup) {
+    return enMarkup.replace(/\{|\}/g, '');
+  }
+
+  function formatHighlightedHTML(enMarkup, isActive) {
+    const escaped = enMarkup
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    if (!isActive) {
+      return escaped.replace(/\{|\}/g, '');
+    }
+    return escaped.replace(/\{([^}]+)\}/g, '<span class="hl-word">$1</span>');
+  }
+
+  function showToast(msg, type = 'info') {
+    const el = $('toast');
+    el.textContent = msg;
+    el.className = 'toast show' + (type === 'warn' ? ' warn' : type === 'success' ? ' success' : '');
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => {
+      el.classList.remove('show');
+    }, 2300);
+  }
+
+  function speakCurrentStep(force = false) {
+    if (!force && !ttsEnabled) return;
+    if (!('speechSynthesis' in window)) {
+      if (force) showToast('此瀏覽器不支援語音朗讀', 'warn');
+      return;
+    }
+    const m = MISSIONS[currentMissionIdx];
+    const step = m.steps[currentStepIdx];
+    if (!step) return;
+
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(stripMarkup(step.enMarkup));
+    u.lang = 'en-US';
+    u.rate = 0.92;
+    window.speechSynthesis.speak(u);
+  }
+
+  /* =========================================================
+   * 7. 座標投影換算 (64:44)
+   * ========================================================= */
+  function gridToWorld(gx, gy, gz = 0) {
+    return {
+      wx: (gx - gy) * HALF_W,
+      wy: (gx + gy) * HALF_H - gz
+    };
+  }
+
+  function worldToScreen(wx, wy) {
+    return {
+      sx: wx * camera.zoom + camera.x,
+      sy: wy * camera.zoom + camera.y
+    };
+  }
+
+  function gridToScreen(gx, gy, gz = 0) {
+    const { wx, wy } = gridToWorld(gx, gy, gz);
+    return worldToScreen(wx, wy);
+  }
+
+  function screenToGrid(sx, sy) {
+    const wx = (sx - camera.x) / camera.zoom;
+    const wy = (sy - camera.y) / camera.zoom;
+    const gx = (wy / HALF_H + wx / HALF_W) / 2;
+    const gy = (wy / HALF_H - wx / HALF_W) / 2;
+    return { gx: Math.floor(gx), gy: Math.floor(gy), rawX: gx, rawY: gy };
+  }
+
+  /* =========================================================
+   * 8. Fit Content 鏡頭計算（依城市實際建築與路名內容自動滿版）
+   * ========================================================= */
+  function getCityContentBounds() {
+    let minWX = Infinity, maxWX = -Infinity, minWY = Infinity, maxWY = -Infinity;
+
+    function expandPoint(gx, gy, gz = 0, padX = 0, padY = 0) {
+      const { wx, wy } = gridToWorld(gx, gy, gz);
+      if (wx - padX < minWX) minWX = wx - padX;
+      if (wx + padX > maxWX) maxWX = wx + padX;
+      if (wy - padY < minWY) minWY = wy - padY;
+      if (wy + padY > maxWY) maxWY = wy + padY;
+    }
+
+    // 納入所有建築基底與屋頂招牌高度
+    BUILDINGS.forEach(b => {
+      expandPoint(b.x, b.y, 42, 24, 24);
+      expandPoint(b.x + b.w, b.y, 42, 24, 24);
+      expandPoint(b.x, b.y + b.h, 0, 24, 16);
+      expandPoint(b.x + b.w, b.y + b.h, 0, 24, 16);
+    });
+
+    // 納入道路範圍與右下/左下出口路名標籤
+    STREET_LABELS.forEach(st => {
+      expandPoint(st.x, st.y, 0, 48, 22);
+    });
+
+    // 納入北角與西角道路邊界
+    expandPoint(1, 1, 15, 20, 20);
+    expandPoint(1, 12, 0, 25, 20);
+
+    return { minX: minWX, maxX: maxWX, minY: minWY, maxY: maxWY };
+  }
+
+  function fitMapToScreen() {
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const b = getCityContentBounds();
+    const worldW = b.maxX - b.minX;
+    const worldH = b.maxY - b.minY;
+
+    const padX = 18;
+    const padY = 22;
+    const scaleX = (rect.width - padX * 2) / worldW;
+    const scaleY = (rect.height - padY * 2) / worldH;
+    camera.zoom = Math.max(camera.minZoom, Math.min(camera.maxZoom, Math.min(scaleX, scaleY)));
+
+    const centerX = (b.minX + b.maxX) / 2;
+    const centerY = (b.minY + b.maxY) / 2;
+    camera.x = rect.width / 2 - centerX * camera.zoom;
+    camera.y = rect.height / 2 - centerY * camera.zoom;
+  }
+
+  function centerOnPlayer(targetZoom = null) {
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    if (targetZoom !== null) {
+      camera.zoom = Math.max(camera.minZoom, Math.min(camera.maxZoom, targetZoom));
+    }
+    const { wx, wy } = gridToWorld(player.renderX + 0.5, player.renderY + 0.5, 12);
+    camera.x = rect.width / 2 - wx * camera.zoom;
+    camera.y = rect.height / 2 - wy * camera.zoom;
+  }
+
+  function zoomAroundCenter(factor) {
+    const rect = canvas.getBoundingClientRect();
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const oldZoom = camera.zoom;
+    const newZoom = Math.max(camera.minZoom, Math.min(camera.maxZoom, oldZoom * factor));
+    if (newZoom === oldZoom) return;
+
+    const wx = (cx - camera.x) / oldZoom;
+    const wy = (cy - camera.y) / oldZoom;
+    camera.zoom = newZoom;
+    camera.x = cx - wx * newZoom;
+    camera.y = cy - wy * newZoom;
+  }
+
+  /* =========================================================
+   * 9. Checkpoint 建立與圓滾滾定位點回溯機制
+   * ========================================================= */
+  function createProgressForStep(x, y) {
+    return {
+      blocksWalked: 0,
+      leftLastIntersection: !isIntersectionTile(x, y),
+      lastIntersectionKey: isIntersectionTile(x, y) ? `${x},${y}` : '',
+      turnedCorrectly: false
+    };
+  }
+
+  function saveCheckpointForStep(stepIdx) {
+    checkpoints = checkpoints.slice(0, stepIdx);
+    checkpoints[stepIdx] = {
+      stepIndex: stepIdx,
+      x: player.x,
+      y: player.y,
+      dir: player.dir,
+      progress: JSON.parse(JSON.stringify(stepProgress))
+    };
+  }
+
+  function rollbackToStep(targetStepIdx) {
+    if (targetStepIdx < 0 || targetStepIdx >= checkpoints.length) return;
+    const cp = checkpoints[targetStepIdx];
+    if (!cp) return;
+
+    player.isMoving = false;
+    player.x = cp.x;
+    player.y = cp.y;
+    player.renderX = cp.x;
+    player.renderY = cp.y;
+    player.dir = cp.dir;
+
+    currentStepIdx = targetStepIdx;
+    missionCompleted = false;
+    stepProgress = JSON.parse(JSON.stringify(cp.progress));
+
+    checkpoints = checkpoints.slice(0, targetStepIdx + 1);
+
+    $('winBanner').classList.remove('show');
+    updateHUD();
+    renderKaraokePanel();
+    showToast(`📍 已回到第 ${targetStepIdx + 1} 句起點與朝向`);
+  }
+
+  function loadMission(index) {
+    currentMissionIdx = (index + MISSIONS.length) % MISSIONS.length;
+    const m = MISSIONS[currentMissionIdx];
+    $('missionSelect').value = String(currentMissionIdx);
+
+    player.isMoving = false;
+    player.x = m.start.x;
+    player.y = m.start.y;
+    player.renderX = m.start.x;
+    player.renderY = m.start.y;
+    player.dir = m.start.dir;
+
+    currentStepIdx = 0;
+    missionCompleted = false;
+    checkpoints = [];
+    stepProgress = createProgressForStep(player.x, player.y);
+
+    saveCheckpointForStep(0);
+
+    $('winBanner').classList.remove('show');
+    updateHUD();
+    renderKaraokePanel();
+    fitMapToScreen();
+    speakCurrentStep(false);
+  }
+
+  /* =========================================================
+   * 10. 過程型與結果型導航條件判定器
+   * ========================================================= */
+  function advanceToNextStep() {
+    const m = MISSIONS[currentMissionIdx];
+    if (currentStepIdx < m.steps.length - 1) {
+      currentStepIdx++;
+      stepProgress = createProgressForStep(player.x, player.y);
+      saveCheckpointForStep(currentStepIdx);
+      renderKaraokePanel();
+      showToast(`✓ 完成！進入第 ${currentStepIdx + 1} 句`, 'success');
+      speakCurrentStep(false);
+    }
+  }
+
+  function evaluateAfterMove() {
+    if (missionCompleted) return;
+    const m = MISSIONS[currentMissionIdx];
+    const step = m.steps[currentStepIdx];
+    if (!step) return;
+
+    if (step.type === 'walk_blocks') {
+      if (player.dir !== step.expectedDir) {
+        renderKaraokePanel();
+        return;
+      }
+      const onInter = isIntersectionTile(player.x, player.y);
+      const key = `${player.x},${player.y}`;
+
+      if (!onInter) {
+        stepProgress.leftLastIntersection = true;
+      } else if (onInter && stepProgress.leftLastIntersection && key !== stepProgress.lastIntersectionKey) {
+        stepProgress.blocksWalked++;
+        stepProgress.leftLastIntersection = false;
+        stepProgress.lastIntersectionKey = key;
+      }
+
+      if (
+        stepProgress.blocksWalked >= step.targetBlocks &&
+        player.x === step.targetX &&
+        player.y === step.targetY &&
+        player.dir === step.expectedDir
+      ) {
+        advanceToNextStep();
+        return;
+      }
+    }
+    renderKaraokePanel();
+  }
+
+  function evaluateAfterTurn() {
+    if (missionCompleted) return;
+    const m = MISSIONS[currentMissionIdx];
+    const step = m.steps[currentStepIdx];
+    if (!step) return;
+
+    if (step.type === 'turn_at') {
+      if (player.x === step.atX && player.y === step.atY && player.dir === step.targetDir) {
+        stepProgress.turnedCorrectly = true;
+        advanceToNextStep();
+        return;
+      } else if (player.x !== step.atX || player.y !== step.atY) {
+        showToast('請在指定的路口轉彎喔！可點定位點回溯', 'warn');
+      }
+    }
+    renderKaraokePanel();
+  }
+
+  function handleBuildingTap(building) {
+    if (missionCompleted) return;
+    const m = MISSIONS[currentMissionIdx];
+    const step = m.steps[currentStepIdx];
+
+    if (!step || step.type !== 'tap_building') {
+      showToast(`這是 ${building.name}，請先完成目前的導航句子！`, 'warn');
+      return;
+    }
+
+    if (building.id !== step.targetBuildingId) {
+      showToast(`這裡是 ${building.name}，再確認一下方向喔！`, 'warn');
+      return;
+    }
+
+    const isNear = step.validPositions.some(p => p.x === player.x && p.y === player.y);
+    if (!isNear) {
+      showToast(`你找到了 ${building.name}，請先帶角色走到它旁邊的道路！`, 'warn');
+      return;
+    }
+
+    missionCompleted = true;
+    renderKaraokePanel();
+    $('winTitle').textContent = `🎉 成功抵達 ${building.name}！`;
+    $('winDesc').textContent = `太棒了！你完成了「${m.title}」的所有導航指令。`;
+    $('winBanner').classList.add('show');
+    showToast(`🎉 任務完成！抵達 ${building.name}！`, 'success');
+  }
+
+  /* =========================================================
+   * 11. 角色操作：左轉、直走、右轉
+   * ========================================================= */
+  function turnLeft() {
+    if (player.isMoving || missionCompleted) return;
+    player.dir = (player.dir + 3) % 4;
+    updateHUD();
+    evaluateAfterTurn();
+  }
+
+  function turnRight() {
+    if (player.isMoving || missionCompleted) return;
+    player.dir = (player.dir + 1) % 4;
+    updateHUD();
+    evaluateAfterTurn();
+  }
+
+  function goStraight() {
+    if (player.isMoving || missionCompleted) return;
+    const d = DIRECTIONS[player.dir];
+    const nx = player.x + d.dx;
+    const ny = player.y + d.dy;
+
+    if (!isRoadTile(nx, ny)) {
+      showToast('前方不是道路，請先轉彎或點定位點回到本句起點！', 'warn');
+      return;
+    }
+
+    player.isMoving = true;
+    player.fromX = player.x;
+    player.fromY = player.y;
+    player.x = nx;
+    player.y = ny;
+    player.animStart = performance.now();
+    updateHUD();
+  }
+
+  /* =========================================================
+   * 12. UI 更新：HUD 與精簡卡拉 OK 視窗渲染
+   * ========================================================= */
+  function updateHUD() {
+    const d = DIRECTIONS[player.dir];
+    $('hudDirText').textContent = d.label;
+    $('coordInfo').textContent = `座標 (${player.x}, ${player.y}) · 面向${d.label}`;
+  }
+
+  function renderKaraokePanel() {
+    const m = MISSIONS[currentMissionIdx];
+    const list = $('karaokeList');
+    list.innerHTML = '';
+
+    const completedCount = missionCompleted ? m.steps.length : currentStepIdx;
+    $('stepProgressPill').textContent = `${completedCount} / ${m.steps.length}`;
+
+    m.steps.forEach((step, idx) => {
+      const row = document.createElement('div');
+      let stateClass = 'upcoming';
+      if (missionCompleted || idx < currentStepIdx) stateClass = 'done';
+      else if (idx === currentStepIdx) stateClass = 'active';
+
+      row.className = `k-line ${stateClass}`;
+
+      const left = document.createElement('div');
+      left.className = 'k-left';
+
+      const ico = document.createElement('span');
+      ico.className = 'k-status-ico';
+      ico.textContent = stateClass === 'done' ? '✓' : stateClass === 'active' ? '▶' : `${idx + 1}.`;
+
+      const textSpan = document.createElement('div');
+      textSpan.className = 'k-text';
+
+      // 依語言切換顯示 EN（含黃色螢光筆核心字）或 中文（無螢光筆）
+      if (navLang === 'en') {
+        textSpan.innerHTML = formatHighlightedHTML(step.enMarkup, stateClass === 'active');
+      } else {
+        textSpan.textContent = step.zh;
+      }
+
+      left.append(ico, textSpan);
+      row.appendChild(left);
+
+      // 僅在「目前句」與「已完成句」旁加入圓滾滾定位點按鈕，不將整張卡片設為觸發區
+      if (stateClass === 'done' || stateClass === 'active') {
+        const pinBtn = document.createElement('button');
+        pinBtn.type = 'button';
+        pinBtn.className = 'pin-rollback-btn';
+        pinBtn.title = stateClass === 'active' ? '回到本句起點' : `回到第 ${idx + 1} 句起點`;
+        pinBtn.setAttribute('aria-label', pinBtn.title);
+        pinBtn.innerHTML = CUTE_PIN_SVG;
+        pinBtn.onclick = e => {
+          e.stopPropagation();
+          rollbackToStep(idx);
+        };
+        row.appendChild(pinBtn);
+      }
+
+      list.appendChild(row);
+
+      // 自動將目前執行中的句子平滑捲動至卡拉 OK 視窗中央（僅捲動視窗內部，不影響頁面）
+      if (stateClass === 'active') {
+        setTimeout(() => {
+          const topTarget = row.offsetTop - list.clientHeight / 2 + row.clientHeight / 2;
+          list.scrollTo({ top: Math.max(0, topTarget), behavior: 'smooth' });
+        }, 30);
+      }
+    });
+
+    // 更新下方即時進度小提示
+    const activeStep = m.steps[currentStepIdx];
+    const hintEl = $('liveStepHint');
+    if (missionCompleted) {
+      hintEl.innerHTML = `🎉 <strong>已完成全部導航句子！</strong>`;
+    } else if (activeStep) {
+      if (activeStep.type === 'walk_blocks') {
+        hintEl.innerHTML = `🚶 街區進度：<strong>${Math.min(stepProgress.blocksWalked, activeStep.targetBlocks)} / ${activeStep.targetBlocks}</strong> block(s)`;
+      } else if (activeStep.type === 'turn_at') {
+        const atNode = (player.x === activeStep.atX && player.y === activeStep.atY);
+        hintEl.innerHTML = atNode
+          ? `✅ <strong>已抵達指定轉角，請執行轉彎</strong>`
+          : `📍 請在指定路口轉彎`;
+      } else if (activeStep.type === 'tap_building') {
+        hintEl.innerHTML = `👆 <strong>請點擊地圖上的目標建築招牌！</strong>`;
+      }
+    }
+  }
+
+  /* =========================================================
+   * 13. Canvas 2.5D 繪圖引擎
+   * ========================================================= */
+  function drawIsoTilePolygon(gx, gy, w, h, gz, fillStyle, strokeStyle = null, lineWidth = 1) {
+    const p0 = gridToScreen(gx, gy, gz);
+    const p1 = gridToScreen(gx + w, gy, gz);
+    const p2 = gridToScreen(gx + w, gy + h, gz);
+    const p3 = gridToScreen(gx, gy + h, gz);
+
+    ctx.beginPath();
+    ctx.moveTo(p0.sx, p0.sy);
+    ctx.lineTo(p1.sx, p1.sy);
+    ctx.lineTo(p2.sx, p2.sy);
+    ctx.lineTo(p3.sx, p3.sy);
+    ctx.closePath();
+
+    if (fillStyle) {
+      ctx.fillStyle = fillStyle;
+      ctx.fill();
+    }
+    if (strokeStyle) {
+      ctx.strokeStyle = strokeStyle;
+      ctx.lineWidth = lineWidth * camera.zoom;
+      ctx.stroke();
+    }
+  }
+
+  function drawIslandBase() {
+    const depth = SLAB_DEPTH * camera.zoom;
+    const pLeft = gridToScreen(0, MAP_ROWS, 0);
+    const pBottom = gridToScreen(MAP_COLS, MAP_ROWS, 0);
+    const pRight = gridToScreen(MAP_COLS, 0, 0);
+
+    // 左下泥土切面
+    ctx.beginPath();
+    ctx.moveTo(pLeft.sx, pLeft.sy);
+    ctx.lineTo(pBottom.sx, pBottom.sy);
+    ctx.lineTo(pBottom.sx, pBottom.sy + depth);
+    ctx.lineTo(pLeft.sx, pLeft.sy + depth);
+    ctx.closePath();
+    ctx.fillStyle = '#9c6b43';
+    ctx.fill();
+
+    // 右下泥土切面
+    ctx.beginPath();
+    ctx.moveTo(pBottom.sx, pBottom.sy);
+    ctx.lineTo(pRight.sx, pRight.sy);
+    ctx.lineTo(pRight.sx, pRight.sy + depth);
+    ctx.lineTo(pBottom.sx, pBottom.sy + depth);
+    ctx.closePath();
+    ctx.fillStyle = '#7c5130';
+    ctx.fill();
+  }
+
+  function drawGroundGrid() {
+    const m = MISSIONS[currentMissionIdx];
+    const activeStep = m.steps[currentStepIdx];
+
+    for (let y = 0; y < MAP_ROWS; y++) {
+      for (let x = 0; x < MAP_COLS; x++) {
+        const road = isRoadTile(x, y);
+        const inter = isIntersectionTile(x, y);
+
+        if (road) {
+          const fill = inter ? '#475569' : '#64748b';
+          drawIsoTilePolygon(x, y, 1, 1, 0, fill, '#526277', 0.8);
+
+          const c = gridToScreen(x + 0.5, y + 0.5, 0);
+          if (inter) {
+            ctx.fillStyle = 'rgba(255,255,255,0.28)';
+            ctx.beginPath();
+            ctx.arc(c.sx, c.sy, 4.5 * camera.zoom, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.strokeStyle = 'rgba(253, 224, 71, 0.65)';
+            ctx.lineWidth = 1.6 * camera.zoom;
+            ctx.beginPath();
+            if (ROAD_X.has(x)) {
+              const a = gridToScreen(x + 0.5, y + 0.25, 0);
+              const b = gridToScreen(x + 0.5, y + 0.75, 0);
+              ctx.moveTo(a.sx, a.sy);
+              ctx.lineTo(b.sx, b.sy);
+            } else {
+              const a = gridToScreen(x + 0.25, y + 0.5, 0);
+              const b = gridToScreen(x + 0.75, y + 0.5, 0);
+              ctx.moveTo(a.sx, a.sy);
+              ctx.lineTo(b.sx, b.sy);
+            }
+            ctx.stroke();
+          }
+
+          if (!missionCompleted && activeStep) {
+            const isTargetNode =
+              (activeStep.type === 'walk_blocks' && activeStep.targetX === x && activeStep.targetY === y) ||
+              (activeStep.type === 'turn_at' && activeStep.atX === x && activeStep.atY === y);
+            if (isTargetNode) {
+              drawIsoTilePolygon(x + 0.12, y + 0.12, 0.76, 0.76, 1, 'rgba(250, 204, 21, 0.28)', '#f59e0b', 1.8);
+            }
+          }
+        } else {
+          const grassColor = (x + y) % 2 === 0 ? '#86efac' : '#74e39a';
+          drawIsoTilePolygon(x, y, 1, 1, 0, grassColor, '#65d68c', 0.6);
+        }
+      }
+    }
+
+    GRASS_FLOWERS.forEach(f => {
+      const p = gridToScreen(f.x + 0.5, f.y + 0.5, 1);
+      ctx.fillStyle = f.c;
+      ctx.beginPath();
+      ctx.arc(p.sx, p.sy, 3.2 * camera.zoom, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  function drawBuilding(b) {
+    drawIsoTilePolygon(b.x + 0.06, b.y + 0.06, b.w - 0.12, b.h - 0.12, 2, '#bbf7d0', '#86efac', 1);
+
+    const px = player.renderX;
+    const py = player.renderY;
+    const bFrontSum = (b.x + b.w) + (b.y + b.h);
+    const pSum = px + py + 1;
+    const isOccludingPlayer =
+      !b.isPark &&
+      pSum < bFrontSum &&
+      px >= b.x - 1.2 && px <= b.x + b.w + 0.4 &&
+      py >= b.y - 1.2 && py <= b.y + b.h + 0.4;
+
+    ctx.save();
+    if (isOccludingPlayer) {
+      ctx.globalAlpha = 0.38;
+    }
+
+    const scale = b.isPark ? 0.84 : 0.64;
+    const bw = b.w * scale;
+    const bh = b.h * scale;
+    const bx = b.x + (b.w - bw) / 2;
+    const by = b.y + (b.h - bh) / 2;
+    const heightZ = b.isPark ? 7 : 26;
+
+    const pTop = gridToScreen(bx, by, heightZ);
+    const pRight = gridToScreen(bx + bw, by, heightZ);
+    const pBottom = gridToScreen(bx + bw, by + bh, heightZ);
+    const pLeft = gridToScreen(bx, by + bh, heightZ);
+
+    const bRight = gridToScreen(bx + bw, by, 2);
+    const bBottom = gridToScreen(bx + bw, by + bh, 2);
+    const bLeft = gridToScreen(bx, by + bh, 2);
+
+    ctx.beginPath();
+    ctx.moveTo(pLeft.sx, pLeft.sy);
+    ctx.lineTo(pBottom.sx, pBottom.sy);
+    ctx.lineTo(bBottom.sx, bBottom.sy);
+    ctx.lineTo(bLeft.sx, bLeft.sy);
+    ctx.closePath();
+    ctx.fillStyle = b.wall;
+    ctx.fill();
+    ctx.strokeStyle = b.side;
+    ctx.lineWidth = 1 * camera.zoom;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(pBottom.sx, pBottom.sy);
+    ctx.lineTo(pRight.sx, pRight.sy);
+    ctx.lineTo(bRight.sx, bRight.sy);
+    ctx.lineTo(bBottom.sx, bBottom.sy);
+    ctx.closePath();
+    ctx.fillStyle = b.side;
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(pTop.sx, pTop.sy);
+    ctx.lineTo(pRight.sx, pRight.sy);
+    ctx.lineTo(pBottom.sx, pBottom.sy);
+    ctx.lineTo(pLeft.sx, pLeft.sy);
+    ctx.closePath();
+    ctx.fillStyle = b.roof;
+    ctx.fill();
+    ctx.strokeStyle = b.accent;
+    ctx.lineWidth = 1.5 * camera.zoom;
+    ctx.stroke();
+
+    const centerGround = gridToScreen(b.x + b.w * 0.14, b.y + b.h * 0.86, 3);
+    ctx.fillStyle = '#4ade80';
+    ctx.beginPath();
+    ctx.arc(centerGround.sx, centerGround.sy, 4 * camera.zoom, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+
+    buildingHitBoxes.push({
+      building: b,
+      x1: Math.min(pLeft.sx, bLeft.sx),
+      y1: pTop.sy - 28 * camera.zoom,
+      x2: Math.max(pRight.sx, bRight.sx),
+      y2: bBottom.sy
+    });
+  }
+
+  // 建築英文招牌：無論語言切換為何，永遠固定顯示英文名稱
+  function drawBuildingSign(b) {
+    const m = MISSIONS[currentMissionIdx];
+    const step = m.steps[currentStepIdx];
+    const isTapStep = !missionCompleted && step && step.type === 'tap_building';
+
+    const heightZ = b.isPark ? 18 : 38;
+    const center = gridToScreen(b.x + b.w / 2, b.y + b.h / 2, heightZ);
+
+    ctx.save();
+    const fontSize = Math.max(11, Math.round(12.5 * camera.zoom));
+    ctx.font = `900 ${fontSize}px 'Trebuchet MS', 'Noto Sans TC', sans-serif`;
+    const labelText = `${b.icon} ${b.name}`;
+    const textW = ctx.measureText(labelText).width;
+    const padX = 9 * camera.zoom;
+    const boxW = textW + padX * 2;
+    const boxH = 23 * camera.zoom;
+    const bx = center.sx - boxW / 2;
+    const by = center.sy - boxH / 2;
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+    ctx.strokeStyle = isTapStep ? '#f59e0b' : b.accent;
+    ctx.lineWidth = (isTapStep ? 2.4 : 1.8) * camera.zoom;
+
+    ctx.beginPath();
+    ctx.roundRect(bx, by, boxW, boxH, 999);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#1e293b';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(labelText, center.sx, center.sy + 0.5);
+    ctx.restore();
+
+    buildingHitBoxes.push({
+      building: b,
+      x1: bx - 4,
+      y1: by - 4,
+      x2: bx + boxW + 4,
+      y2: by + boxH + 4
+    });
+  }
+
+  // 獨立最頂層：在右下與左下道路出口邊緣繪製路名，帶連接引線，零遮擋
+  function drawEdgeStreetLabels() {
+    STREET_LABELS.forEach(st => {
+      const p = gridToScreen(st.x, st.y, 0);
+      // 道路出口邊緣點
+      const roadEdge = st.axis === 'st'
+        ? gridToScreen(16.9, st.y, 0)
+        : gridToScreen(st.x, 12.9, 0);
+
+      ctx.save();
+      // 繪製從道路出口連向路名牌的柔和指示短線
+      ctx.strokeStyle = 'rgba(36, 91, 134, 0.45)';
+      ctx.lineWidth = 2 * camera.zoom;
+      ctx.beginPath();
+      ctx.moveTo(roadEdge.sx, roadEdge.sy);
+      ctx.lineTo(p.sx, p.sy);
+      ctx.stroke();
+
+      const fontSize = Math.max(10.5, Math.round(11.8 * camera.zoom));
+      ctx.font = `900 ${fontSize}px 'Trebuchet MS', sans-serif`;
+      const tw = ctx.measureText(st.text).width;
+      const pw = tw + 14 * camera.zoom;
+      const ph = 20 * camera.zoom;
+
+      ctx.fillStyle = '#1e293b';
+      ctx.strokeStyle = '#93c5fd';
+      ctx.lineWidth = 1.5 * camera.zoom;
+      ctx.beginPath();
+      ctx.roundRect(p.sx - pw / 2, p.sy - ph / 2, pw, ph, 6 * camera.zoom);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(st.text, p.sx, p.sy + 0.5);
+      ctx.restore();
+    });
+  }
+
+  function drawPlayerCharacter() {
+    const pos = gridToScreen(player.renderX + 0.5, player.renderY + 0.5, 2);
+    const z = camera.zoom;
+
+    ctx.save();
+    ctx.translate(pos.sx, pos.sy);
+
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.28)';
+    ctx.beginPath();
+    ctx.ellipse(0, 2 * z, 11 * z, 6.5 * z, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#1e3a8a';
+    ctx.fillRect(-5 * z, -9 * z, 4 * z, 9 * z);
+    ctx.fillRect(1 * z, -9 * z, 4 * z, 9 * z);
+
+    ctx.fillStyle = '#0d9488';
+    ctx.beginPath();
+    ctx.roundRect(-7.5 * z, -21 * z, 15 * z, 13 * z, 3.5 * z);
+    ctx.fill();
+    ctx.strokeStyle = '#115e59';
+    ctx.lineWidth = 1.2 * z;
+    ctx.stroke();
+
+    if (player.dir === 0 || player.dir === 3) {
+      const packX = player.dir === 0 ? -5.5 * z : -2.5 * z;
+      ctx.fillStyle = '#d97706';
+      ctx.beginPath();
+      ctx.roundRect(packX, -19.5 * z, 8 * z, 9.5 * z, 2 * z);
+      ctx.fill();
+    }
+
+    ctx.fillStyle = '#fde68a';
+    ctx.beginPath();
+    ctx.roundRect(-8.5 * z, -35 * z, 17 * z, 15 * z, 5 * z);
+    ctx.fill();
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1.1 * z;
+    ctx.stroke();
+
+    if (player.dir === 1) {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.ellipse(1.5 * z, -27 * z, 3.1 * z, 3.6 * z, 0, 0, Math.PI * 2);
+      ctx.ellipse(6.5 * z, -26.5 * z, 2.8 * z, 3.4 * z, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(2.4 * z, -26.6 * z, 1.6 * z, 0, Math.PI * 2);
+      ctx.arc(7.2 * z, -26.1 * z, 1.5 * z, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (player.dir === 2) {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.ellipse(-6.5 * z, -26.5 * z, 2.8 * z, 3.4 * z, 0, 0, Math.PI * 2);
+      ctx.ellipse(-1.5 * z, -27 * z, 3.1 * z, 3.6 * z, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(-7.2 * z, -26.1 * z, 1.5 * z, 0, Math.PI * 2);
+      ctx.arc(-2.4 * z, -26.6 * z, 1.6 * z, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (player.dir === 0) {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.ellipse(7.2 * z, -27.5 * z, 1.6 * z, 2.5 * z, 0, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (player.dir === 3) {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.ellipse(-7.2 * z, -27.5 * z, 1.6 * z, 2.5 * z, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.fillStyle = '#2563eb';
+    ctx.beginPath();
+    ctx.roundRect(-9.2 * z, -40 * z, 18.4 * z, 8.5 * z, 4.2 * z);
+    ctx.fill();
+    ctx.strokeStyle = '#1e40af';
+    ctx.lineWidth = 1.2 * z;
+    ctx.stroke();
+
+    ctx.fillStyle = '#93c5fd';
+    ctx.beginPath();
+    ctx.arc(0, -40 * z, 2 * z, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#1d4ed8';
+    ctx.strokeStyle = '#1e3a8a';
+    ctx.lineWidth = 1.2 * z;
+    ctx.beginPath();
+    if (player.dir === 1) {
+      ctx.moveTo(0 * z, -33.5 * z);
+      ctx.lineTo(15.5 * z, -29.5 * z);
+      ctx.lineTo(12.5 * z, -26.5 * z);
+      ctx.lineTo(-2 * z, -31.5 * z);
+    } else if (player.dir === 2) {
+      ctx.moveTo(0 * z, -33.5 * z);
+      ctx.lineTo(-15.5 * z, -29.5 * z);
+      ctx.lineTo(-12.5 * z, -26.5 * z);
+      ctx.lineTo(2 * z, -31.5 * z);
+    } else if (player.dir === 0) {
+      ctx.moveTo(2 * z, -36 * z);
+      ctx.lineTo(15.5 * z, -39.5 * z);
+      ctx.lineTo(13 * z, -34.5 * z);
+      ctx.lineTo(3 * z, -33 * z);
+    } else if (player.dir === 3) {
+      ctx.moveTo(-2 * z, -36 * z);
+      ctx.lineTo(-15.5 * z, -39.5 * z);
+      ctx.lineTo(-13 * z, -34.5 * z);
+      ctx.lineTo(-3 * z, -33 * z);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    if (player.dir === 0 || player.dir === 3) {
+      ctx.fillStyle = '#1e3a8a';
+      ctx.fillRect(-4 * z, -34 * z, 8 * z, 2.3 * z);
+    }
+
+    ctx.restore();
+  }
+
+  /* =========================================================
+   * 14. 主繪圖迴圈
+   * ========================================================= */
+  let rafId = null;
+
+  function renderFrame(now) {
+    if (player.isMoving) {
+      const elapsed = now - player.animStart;
+      const t = Math.min(1, elapsed / player.animDuration);
+      const ease = t * (2 - t);
+      player.renderX = player.fromX + (player.x - player.fromX) * ease;
+      player.renderY = player.fromY + (player.y - player.fromY) * ease;
+
+      if (t >= 1) {
+        player.renderX = player.x;
+        player.renderY = player.y;
+        player.isMoving = false;
+        evaluateAfterMove();
+      }
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    buildingHitBoxes = [];
+
+    drawIslandBase();
+    drawGroundGrid();
+
+    const renderables = [];
+    BUILDINGS.forEach(b => {
+      renderables.push({
+        type: 'building',
+        depth: (b.x + b.w * 0.5) + (b.y + b.h * 0.5),
+        data: b
+      });
+    });
+    renderables.push({
+      type: 'player',
+      depth: (player.renderX + 0.5) + (player.renderY + 0.5) + 0.15
+    });
+
+    renderables.sort((a, b) => a.depth - b.depth);
+
+    renderables.forEach(item => {
+      if (item.type === 'building') {
+        drawBuilding(item.data);
+      } else {
+        drawPlayerCharacter();
+      }
+    });
+
+    // 繪製建築英文招牌與最頂層出口路名
+    BUILDINGS.forEach(b => drawBuildingSign(b));
+    drawEdgeStreetLabels();
+
+    rafId = requestAnimationFrame(renderFrame);
+  }
+
+  /* =========================================================
+   * 15. Canvas 尺寸與觸控手勢
+   * ========================================================= */
+  function resizeCanvas() {
+    const view = $('islandView');
+    const rect = view.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  let isDragging = false;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let camStartX = 0;
+  let camStartY = 0;
+  let movedDistance = 0;
+  let pinchStartDist = 0;
+  let pinchStartZoom = 1;
+
+  canvas.addEventListener('mousedown', e => {
+    isDragging = true;
+    movedDistance = 0;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    camStartX = camera.x;
+    camStartY = camera.y;
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    movedDistance = Math.hypot(dx, dy);
+    camera.x = camStartX + dx;
+    camera.y = camStartY + dy;
+  });
+
+  window.addEventListener('mouseup', e => {
+    if (!isDragging) return;
+    isDragging = false;
+    if (movedDistance < 6) {
+      handleCanvasTap(e.clientX, e.clientY);
+    }
+  });
+
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.12 : 0.89;
+    zoomAroundCenter(factor);
+  }, { passive: false });
+
+  canvas.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      isDragging = true;
+      movedDistance = 0;
+      dragStartX = e.touches[0].clientX;
+      dragStartY = e.touches[0].clientY;
+      camStartX = camera.x;
+      camStartY = camera.y;
+    } else if (e.touches.length === 2) {
+      isDragging = false;
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      pinchStartDist = Math.hypot(dx, dy);
+      pinchStartZoom = camera.zoom;
+    }
+  }, { passive: true });
+
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (e.touches.length === 1 && isDragging) {
+      const dx = e.touches[0].clientX - dragStartX;
+      const dy = e.touches[0].clientY - dragStartY;
+      movedDistance = Math.hypot(dx, dy);
+      camera.x = camStartX + dx;
+      camera.y = camStartY + dy;
+    } else if (e.touches.length === 2 && pinchStartDist > 0) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const targetZoom = pinchStartZoom * (dist / pinchStartDist);
+      zoomAroundCenter(targetZoom / camera.zoom);
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', e => {
+    if (isDragging && movedDistance < 8 && e.changedTouches.length === 1) {
+      const t = e.changedTouches[0];
+      handleCanvasTap(t.clientX, t.clientY);
+    }
+    if (e.touches.length === 0) {
+      isDragging = false;
+      pinchStartDist = 0;
+    }
+  });
+
+  function handleCanvasTap(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const sx = clientX - rect.left;
+    const sy = clientY - rect.top;
+
+    for (let i = buildingHitBoxes.length - 1; i >= 0; i--) {
+      const box = buildingHitBoxes[i];
+      if (sx >= box.x1 && sx <= box.x2 && sy >= box.y1 && sy <= box.y2) {
+        handleBuildingTap(box.building);
+        return;
+      }
+    }
+
+    const { gx, gy } = screenToGrid(sx, sy);
+    const hitB = BUILDINGS.find(b => gx >= b.x && gx < b.x + b.w && gy >= b.y && gy < b.y + b.h);
+    if (hitB) {
+      handleBuildingTap(hitB);
+    }
+  }
+
+  /* =========================================================
+   * 16. 事件綁定與齒輪選單邏輯
+   * ========================================================= */
+  function closeGearPopover() {
+    $('gearPopover').classList.remove('open');
+    $('btnGear').setAttribute('aria-expanded', 'false');
+  }
+
+  function initEvents() {
+    // 題目下拉：僅顯示精簡編號 + 英文名
+    const sel = $('missionSelect');
+    MISSIONS.forEach((m, i) => {
+      const opt = document.createElement('option');
+      opt.value = String(i);
+      opt.textContent = m.menuLabel;
+      sel.appendChild(opt);
+    });
+    sel.onchange = () => {
+      closeGearPopover();
+      loadMission(Number(sel.value));
+    };
+
+    // 齒輪開關
+    const btnGear = $('btnGear');
+    const pop = $('gearPopover');
+    btnGear.onclick = e => {
+      e.stopPropagation();
+      const willOpen = !pop.classList.contains('open');
+      pop.classList.toggle('open', willOpen);
+      btnGear.setAttribute('aria-expanded', String(willOpen));
+    };
+
+    window.addEventListener('click', e => {
+      if (!pop.contains(e.target) && e.target !== btnGear) {
+        closeGearPopover();
+      }
+    });
+
+    // 導航文本語言切換（只重繪卡拉 OK 句子，不重置進度或 Checkpoint）
+    $('btnLangEn').onclick = () => {
+      navLang = 'en';
+      $('btnLangEn').classList.add('active');
+      $('btnLangZh').classList.remove('active');
+      renderKaraokePanel();
+      showToast('導航句子已切換為 EN 英文');
+    };
+
+    $('btnLangZh').onclick = () => {
+      navLang = 'zh';
+      $('btnLangZh').classList.add('active');
+      $('btnLangEn').classList.remove('active');
+      renderKaraokePanel();
+      showToast('導航句子已切換為中文');
+    };
+
+    // 語音開關（預設關閉）
+    $('btnTtsOff').onclick = () => {
+      ttsEnabled = false;
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      $('btnTtsOff').classList.add('active');
+      $('btnTtsOn').classList.remove('active');
+      $('ttsStatusLabel').textContent = '已關閉';
+      showToast('已關閉自動語音');
+    };
+
+    $('btnTtsOn').onclick = () => {
+      ttsEnabled = true;
+      $('btnTtsOn').classList.add('active');
+      $('btnTtsOff').classList.remove('active');
+      $('ttsStatusLabel').textContent = '自動朗讀開啟中';
+      speakCurrentStep(true);
+    };
+
+    $('btnSpeakNow').onclick = () => {
+      speakCurrentStep(true);
+    };
+
+    // 重置本題
+    $('btnResetMission').onclick = () => {
+      closeGearPopover();
+      rollbackToStep(0);
+      showToast('已重置本題至最初起點');
+    };
+
+    $('btnBannerNext').onclick = () => loadMission(currentMissionIdx + 1);
+
+    // 地圖控制鈕
+    $('btnZoomIn').onclick = () => zoomAroundCenter(1.2);
+    $('btnZoomOut').onclick = () => zoomAroundCenter(0.84);
+    $('btnCenterPlayer').onclick = () => centerOnPlayer(1.15);
+    $('btnFitMap').onclick = () => fitMapToScreen();
+
+    // 角色操作三鍵
+    $('btnTurnLeft').onclick = turnLeft;
+    $('btnGoStraight').onclick = goStraight;
+    $('btnTurnRight').onclick = turnRight;
+
+    // 鍵盤方向鍵支援
+    window.addEventListener('keydown', e => {
+      if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        e.preventDefault();
+        turnLeft();
+      } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+        e.preventDefault();
+        goStraight();
+      } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        e.preventDefault();
+        turnRight();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      fitMapToScreen();
+    });
+  }
+
+  function startApp() {
+    resizeCanvas();
+    initEvents();
+    loadMission(0);
+    if (!rafId) {
+      rafId = requestAnimationFrame(renderFrame);
+    }
+  }
+
+  startApp();
+})();
+</script>
+</body>
+</html>

@@ -13,12 +13,9 @@
     <aside class="sidebar" id="sidebar">
       <a class="brand-home" href="../index.html" aria-label="回到異想教室首頁"><img src="../assets/logo-banner.png" alt="Sinny Spedu Labs"></a>
       <div class="workspace-name"><small>BOOK WORKSPACE</small><strong>課本講義</strong></div>
-      <nav class="category-nav" id="categoryList" aria-label="教材分類">
-        <p class="category-label">教材區段</p>
-      </nav>
+      <nav class="category-nav" id="categoryList" aria-label="教材分類"><p class="category-label">教材區段</p></nav>
       <p class="sidebar-note">點選上方 Logo 可隨時回到異想教室首頁。</p>
     </aside>
-
     <main class="main">
       <header class="topbar">
         <div class="title-block"><p>SINNY SPEDU LABS</p><h1>課本講義工作區</h1></div>
@@ -28,36 +25,80 @@
     </main>
   </div>
 
-  <script src="book-cards.js?v=3.1"></script>
+  <script src="book-cards.js?v=3.2"></script>
   <script>
-    const availableFiles = new Set([
-      "1200voc.html", "vocab.html", "text-translation-match.html", "../eng-grammar/match-numbers.html", "../eng-grammar/match-family.html",
-      "../eng-grammar/match-pronouns.html", "../eng-grammar/match-time-date.html", "library-text.html",
-      "library-midterm.html"
-    ]);
-    const escapeHtml = value => String(value ?? "")
-      .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;").replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+    (() => {
+      "use strict";
+      const categories = Array.isArray(window.BOOK_CATEGORIES) ? window.BOOK_CATEGORIES : [];
+      const data = Array.isArray(window.BOOK_DATA) ? window.BOOK_DATA : [];
+      const escapeHtml = value => String(value ?? "")
+        .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;").replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 
-    document.getElementById("categoryList").insertAdjacentHTML("beforeend",
-      window.BOOK_CATEGORIES.map(category =>
-        `<button class="category-btn" type="button" data-jump-category="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${window.BOOK_DATA.filter(item => item.category === category).length}</span></button>`
-      ).join("")
-    );
+      document.getElementById("categoryList").insertAdjacentHTML("beforeend",
+        categories.map(category =>
+          `<button class="category-btn" type="button" data-jump-category="${escapeHtml(category)}"><span>${escapeHtml(category)}</span><span class="category-count">${data.filter(item => item.category === category).length}</span></button>`
+        ).join("")
+      );
 
-    const renderCard = item => {
-      const unavailable = !item.external && !availableFiles.has(item.filename);
-      const action = unavailable ? `<span class="card-link">教材準備中</span>` : "";
-      const href = unavailable ? "" : ` data-href="${escapeHtml(item.filename)}"${item.external ? ' data-target="_blank"' : ""}`;
-      return `<article class="resource-card${unavailable ? " is-placeholder" : ""}" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}"${href}>
-        <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span></div>
-        <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>${action}
-      </article>`;
-    };
-    document.getElementById("bookSections").innerHTML = window.BOOK_CATEGORIES.map(category =>
-      `<section class="resource-section" data-category-section="${escapeHtml(category)}"><h2 class="section-heading">${escapeHtml(category)}</h2><div class="card-grid">${window.BOOK_DATA.filter(item => item.category === category).map(renderCard).join("")}</div></section>`
-    ).join("");
+      // 不再使用 availableFiles 白名單。只有明確標示 coming-soon 的卡片先停用。
+      const isExplicitlyPending = item => item.status === "coming-soon" || !String(item.filename ?? "").trim();
+      const renderCard = (item, index) => {
+        const pending = isExplicitlyPending(item);
+        const href = pending ? "" : ` data-href="${escapeHtml(item.filename)}"${item.external ? ' data-target="_blank"' : ""}`;
+        return `<article class="resource-card${pending ? " is-placeholder" : ""}" data-book-index="${index}" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor || '#0f766e')}"${href}>
+          <div class="card-top"><span class="tag">${escapeHtml(item.tag || '教材')}</span></div>
+          <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>${pending ? '<span class="card-link">Coming Soon</span>' : ''}
+        </article>`;
+      };
+      document.getElementById("bookSections").innerHTML = categories.map(category =>
+        `<section class="resource-section" data-category-section="${escapeHtml(category)}"><h2 class="section-heading">${escapeHtml(category)}</h2><div class="card-grid">${data.map((item, i) => item.category === category ? renderCard(item, i) : '').join("")}</div></section>`
+      ).join("");
+
+      function setComingSoon(card) {
+        card.classList.add("is-placeholder");
+        delete card.dataset.href;
+        delete card.dataset.target;
+        card.removeAttribute("role");
+        card.removeAttribute("tabindex");
+        card.removeAttribute("aria-label");
+        if (!card.querySelector(".card-link")) card.insertAdjacentHTML("beforeend", '<span class="card-link">Coming Soon</span>');
+      }
+
+      // 既有 workspace.js 在此後載入；攔截已判定失效的卡片，避免其事件繼續跳轉。
+      document.querySelectorAll(".resource-card").forEach(card => {
+        card.addEventListener("click", event => {
+          if (card.classList.contains("is-placeholder")) { event.preventDefault(); event.stopImmediatePropagation(); }
+        }, true);
+        card.addEventListener("keydown", event => {
+          if (card.classList.contains("is-placeholder") && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault(); event.stopImmediatePropagation();
+          }
+        }, true);
+      });
+
+      // 只檢查同網站資源。外部電子書無法可靠跨網域預先查驗，直接保留連結。
+      async function checkLocalCard(card) {
+        const item = data[Number(card.dataset.bookIndex)];
+        if (!item || isExplicitlyPending(item) || item.external) return;
+        let url;
+        try { url = new URL(item.filename, document.baseURI); }
+        catch { setComingSoon(card); return; }
+        if (!/^https?:$/.test(url.protocol) || url.origin !== location.origin) return;
+        try {
+          let result = await fetch(url.href, { method: "HEAD", cache: "no-store" });
+          if (result.status === 405 || result.status === 501) {
+            result = await fetch(url.href, { method: "GET", cache: "no-store" });
+          }
+          if (result.status === 404 || result.status === 410) setComingSoon(card);
+        } catch (error) {
+          // 網路暫時中斷不能等同於檔案不存在：維持可點擊，避免誤判。
+          console.warn("教材連結暫時無法預檢：", item.filename, error);
+        }
+      }
+      document.querySelectorAll(".resource-card").forEach(checkLocalCard);
+    })();
   </script>
   <script src="../shared/js/workspace.js?v=4.0"></script>
 </body>
