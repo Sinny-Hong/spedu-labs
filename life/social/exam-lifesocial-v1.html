@@ -39,6 +39,82 @@
             0% { top: -10px; transform: translateX(0) rotate(0deg); opacity: 1; }
             100% { top: 100%; transform: translateX(100px) rotate(360deg); opacity: 0; }
         }
+
+        /* 四科題庫 vNext：保留原有題庫與互動，調整閱讀版面。 */
+        #app-container { max-width: 1600px; width: 100%; }
+        #app-container > header.vnext-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 20px; text-align: left; }
+        .vnext-header > h1 { min-width: 0; margin: 0; justify-content: flex-start; font-size: clamp(1.15rem, 1.8vw, 1.65rem); line-height: 1.25; }
+        .vnext-header > p, .vnext-header > div:not(.vnext-unit):not(.vnext-modes):not(#voice-settings-panel) { display: none; }
+        .vnext-unit { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; }
+        .vnext-unit label { display: none; }
+        .vnext-unit select { max-width: 175px; font-size: 1rem; }
+        .vnext-voice-toggles { flex-wrap: wrap; }
+        .vnext-main { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap: 18px; min-height: 0; padding: 18px; align-items: stretch; }
+        .vnext-left, .vnext-right { min-width: 0; display: flex; flex-direction: column; }
+        .vnext-left { gap: 14px; }
+        .vnext-progress { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 0 0 10px; border-bottom: 1px solid #dbe3ee; }
+        .vnext-progress #unit-title-display { display: none; }
+        .vnext-progress-line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        #progress-text { color: #334155; font-size: 1rem; white-space: nowrap; }
+        #question-text { font-size: clamp(1.65rem, 2.2vw, 2.2rem); line-height: 1.45; overflow-wrap: anywhere; }
+        #preamble-text { font-size: 1.1rem; }
+        .vnext-right #options-list { display: grid; gap: 12px; }
+        .vnext-right #options-list > button { min-height: 0; padding: 12px 16px !important; font-size: clamp(1.3rem, 1.75vw, 1.65rem) !important; line-height: 1.38; overflow-wrap: anywhere; }
+        .vnext-right #options-list > button span:first-child { min-width: 0; }
+        .vnext-right > nav { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; padding: 0; border: 0; background: transparent; }
+        .vnext-right #prev-btn, .vnext-right #next-btn { flex: 1 1 0; min-width: 0; padding: 10px 12px; white-space: nowrap; }
+        .vnext-right #submit-quiz-btn:not(.hidden) { order: 3; flex: 1 1 100%; }
+        .vnext-left > footer { margin-top: auto; padding: 10px 0 0; border-top: 1px solid #dbe3ee; background: transparent; text-align: left; align-items: flex-start; gap: 8px; }
+        .vnext-left > footer p { text-align: left; }
+        .vnext-source { font-size: .75rem; line-height: 1.5; color: #64748b; }
+        /* 能力評估題庫：整合頁首、浮動設定與精簡署名。 */
+        #app-container { overflow: visible; }
+        #app-container > header.vnext-header { flex-wrap: nowrap; overflow: visible; border-radius: 1rem 1rem 0 0; }
+        .vnext-header > h1 { flex: 1 1 auto; white-space: nowrap; align-items: baseline; gap: 8px; }
+        .vnext-subtitle { font-size: clamp(.78rem, 1vw, .95rem); font-weight: 500; opacity: .85; white-space: nowrap; }
+        .vnext-modes { flex: 0 0 auto; white-space: nowrap; }
+        .vnext-modes #mode-study-btn, .vnext-modes #mode-test-btn { padding: 6px 10px; font-size: .875rem; white-space: nowrap; }
+        .vnext-header .vnext-unit select { max-width: 155px; }
+        #voice-settings-toggle { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 38px; padding: 6px 10px; border-radius: 9px; color: #312e81; background: #fff; font-weight: 700; white-space: nowrap; }
+        #voice-settings-toggle:focus-visible { outline: 3px solid #c4b5fd; outline-offset: 2px; }
+        #voice-settings-panel { position: absolute; top: calc(100% + 6px); right: 12px; z-index: 40; box-sizing: border-box; width: min(620px, calc(100vw - 24px)); max-height: min(70vh, 420px); overflow-y: auto; margin: 0; color: #334155; box-shadow: 0 14px 38px rgba(30, 27, 75, .22); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        #voice-settings-panel.hidden { display: none !important; }
+        #replay-btn { width: 42px; height: 42px; min-width: 42px; padding: 0 !important; font-size: 18px; }
+        #replay-btn i { font-size: 18px !important; }
+        #replay-btn span { display: none !important; }
+        .vnext-left > footer { color: #64748b; font-size: .75rem; }
+        .vnext-left > footer p { white-space: nowrap; }
+        .vnext-left > footer a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+        @media (max-width: 900px) { #app-container > header.vnext-header { flex-wrap: wrap; } }
+        @media (max-width: 600px) {
+            #app-container > header.vnext-header { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; }
+            .vnext-header > h1 { grid-column: 1 / 3; grid-row: 1; }
+            .vnext-header .vnext-modes { grid-column: 1 / 3; grid-row: 2; justify-self: start; }
+            .vnext-header .vnext-unit { grid-column: 3; grid-row: 2; }
+            #voice-settings-toggle { grid-column: 3; grid-row: 1; justify-self: end; width: 38px; min-height: 36px; padding: 5px 8px; }
+            #voice-settings-toggle span { display: none; }
+            #voice-settings-panel { grid-template-columns: minmax(0, 1fr); right: 0; width: min(360px, calc(100vw - 16px)); }
+            .vnext-subtitle { font-size: .7rem; }
+            .vnext-left > footer p { white-space: normal; }
+        }
+        @media (min-width: 1600px) { #question-text { font-size: 2.35rem; } .vnext-right #options-list > button { font-size: 1.8rem !important; } }
+        @media (max-width: 900px) { .vnext-main { grid-template-columns: minmax(0, 1fr); } .vnext-left > footer { margin-top: 0; } }
+        @media (max-width: 600px) {
+            body { min-height: 100dvh; overflow-x: hidden; }
+            #app-container { overflow: visible; }
+            #app-container > header.vnext-header { gap: 8px; padding: 10px 12px; }
+            .vnext-header > h1 { font-size: 1.05rem; }
+            .vnext-header > h1 i { display: none; }
+            .vnext-unit select { max-width: 110px; font-size: .88rem; padding: 5px 6px; }
+            .vnext-main { padding: 12px; gap: 14px; }
+            #question-text { font-size: 1.42rem; }
+            .vnext-right #options-list > button { font-size: 1.18rem !important; padding: 10px 12px !important; }
+            .vnext-progress { align-items: flex-start; }
+            .vnext-progress-line { gap: 7px; }
+            #progress-dots-container { gap: 3px; }
+            .vnext-left > footer { flex-direction: column; }
+            #mode-study-btn, #mode-test-btn { padding: 6px 8px; font-size: .75rem; }
+        }
     </style>
 </head>
 <body class="min-height-screen flex flex-col justify-between text-slate-800 p-2 md:p-6">
@@ -61,10 +137,10 @@
                 <!-- 學習模式切換 -->
                 <div class="flex items-center gap-2 bg-white p-1 rounded-lg shadow-sm border border-slate-200">
                     <button id="mode-study-btn" onclick="switchMode('study')" class="px-4 py-1.5 rounded-md font-bold text-sm transition-all duration-200 bg-blue-600 text-white shadow-sm">
-                        <i class="fa-solid fa-book-open mr-1"></i> 即時學習模式
+                        <i class="fa-solid fa-book-open mr-1"></i> 學習
                     </button>
                     <button id="mode-test-btn" onclick="switchMode('test')" class="px-4 py-1.5 rounded-md font-bold text-sm transition-all duration-200 text-slate-600 hover:bg-slate-100">
-                        <i class="fa-solid fa-file-signature mr-1"></i> 模擬測驗模式
+                        <i class="fa-solid fa-file-signature mr-1"></i> 測驗
                     </button>
                 </div>
 
@@ -77,13 +153,13 @@
                 </div>
 
                 <!-- 展開/收合語音控制按鈕 -->
-                <button onclick="toggleVoicePanel()" class="text-sm font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                    <i class="fa-solid fa-sliders"></i> <span id="voice-panel-toggle-text">設定語音/語速</span>
+                <button id="voice-settings-toggle" type="button" onclick="toggleVoicePanel()" aria-label="設定" aria-controls="voice-settings-panel" aria-expanded="false" title="設定">
+                    <i class="fa-solid fa-gear" aria-hidden="true"></i> <span id="voice-panel-toggle-text">設定</span>
                 </button>
             </div>
 
             <!-- 語音控制面板 (預設展開，可收合) -->
-            <div id="voice-settings-panel" class="mt-4 p-4 bg-white rounded-xl border border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-300">
+            <div id="voice-settings-panel" class="hidden mt-4 p-4 bg-white rounded-xl border border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-300">
                 <div class="flex flex-col gap-1">
                     <label for="voice-select" class="text-sm font-bold text-slate-600"><i class="fa-solid fa-comment-dots mr-1 text-slate-400"></i>選擇唸讀聲音:</label>
                     <select id="voice-select" onchange="updateVoice()" class="bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500"></select>
@@ -99,10 +175,15 @@
                 <div class="flex items-center justify-around gap-2 pt-2 md:pt-0">
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" id="auto-read-toggle" class="sr-only peer">
+                        <span class="sr-only">題目自動朗讀</span>
                         <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         <span class="ml-2 text-sm font-bold text-slate-600">下一題自動唸題目</span>
                     </label>
                 </div>
+                <label class="vnext-answer-read flex items-center gap-2 text-sm font-bold cursor-pointer">
+                    <input type="checkbox" id="answer-read-toggle" class="w-4 h-4 accent-blue-600">
+                    自動朗讀解答
+                </label>
             </div>
         </div>
 
@@ -134,9 +215,8 @@
             <!-- 題目區域 -->
             <div>
                 <div class="flex items-start gap-4 mb-6">
-                    <button id="replay-btn" onclick="speakCurrentQuestion()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white p-3 md:p-4 rounded-xl shadow-md flex items-center justify-center gap-2 flex-shrink-0 transition-all duration-150" title="唸出題目與選項">
+                    <button id="replay-btn" onclick="speakCurrentQuestion()" aria-label="報讀題目" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white p-3 md:p-4 rounded-xl shadow-md flex items-center justify-center gap-2 flex-shrink-0 transition-all duration-150" title="唸出題目與選項">
                         <i class="fa-solid fa-volume-high text-xl md:text-2xl"></i>
-                        <span class="text-sm font-bold hidden md:inline">報讀題目</span>
                     </button>
                     <div class="flex-grow">
                         <!-- 當前題目的前言（如果有） -->
@@ -182,10 +262,7 @@
 
         <!-- 頁尾 -->
         <footer class="bg-slate-100 border-t border-slate-200 p-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
-            <button id="download-btn" onclick="downloadOfflineVersion()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-150 shadow-sm">
-                <i class="fa-solid fa-cloud-arrow-down"></i> 下載本單元互動離線版
-            </button>
-            <p class="text-xs text-slate-500 font-medium">© 報讀互動教學小幫手 ｜ 本單元採 CC BY-NC-SA 4.0 授權</p>
+            <p>© <a href="https://sinny-hong.github.io/spedu-labs/share/">Sinny’s Spedu Labs</a>｜歡迎教學分享，請保留出處與原始連結。</p>
         </footer>
     </div>
 
@@ -414,14 +491,10 @@
         // 切換語音設定面板顯示狀態
         function toggleVoicePanel() {
             const panel = document.getElementById('voice-settings-panel');
-            const txt = document.getElementById('voice-panel-toggle-text');
-            if (panel.classList.contains('hidden')) {
-                panel.classList.remove('hidden');
-                txt.textContent = '收合語音設定';
-            } else {
-                panel.classList.add('hidden');
-                txt.textContent = '設定語音/語速';
-            }
+            const toggle = document.getElementById('voice-settings-toggle');
+            const opening = panel.classList.contains('hidden');
+            panel.classList.toggle('hidden', !opening);
+            toggle.setAttribute('aria-expanded', String(opening));
         }
 
         // 更新語速
@@ -632,7 +705,7 @@
                         const correctTextClean = q.options[q.answer].replace(/^\(\d+\)/, ''); // 移除 (1) 這種編號
                         feedbackSpeech = `答錯囉，最恰當的做法應該是：${correctTextClean}`;
                     }
-                    speakText(feedbackSpeech);
+                    if (document.getElementById('answer-read-toggle').checked) speakText(feedbackSpeech);
 
                     // 自動在 1.5 秒後，如果不是最後一題，則提示點擊下一題 (或可手動切換)
                     // 為了教學流暢度，讓使用者自己點擊「下一題」能看得更清楚
@@ -917,6 +990,65 @@
             initUnits();
         });
     </script>
-  <script src="../../shared/js/public-footer.js"></script>
+
+    <script>
+        // 只搬移既有節點；題庫、按鈕事件與模式狀態仍使用原本的程式。
+        (() => {
+            const app = document.getElementById('app-container');
+            if (app.querySelector('.vnext-main')) return; // 離線版會複製已重排的 DOM。
+            const header = app.querySelector(':scope > header');
+            const main = app.querySelector(':scope > main');
+            const nav = app.querySelector(':scope > nav');
+            const footer = app.querySelector(':scope > footer');
+            const progress = document.getElementById('progress-text').parentElement.parentElement;
+            const unit = document.getElementById('unit-select').parentElement;
+            const questionBlock = main.firstElementChild;
+            const options = document.getElementById('options-list');
+            const feedback = document.getElementById('feedback-alert');
+            const left = document.createElement('section');
+            const right = document.createElement('section');
+            const progressLine = document.createElement('div');
+            header.classList.add('vnext-header');
+            header.querySelector('h1').innerHTML = '<span class="vnext-subject">社會適應能力</span><span class="vnext-subtitle">能力評估互動題庫</span>';
+            main.className = 'vnext-main';
+            unit.classList.add('vnext-unit');
+            const modeGroup = document.getElementById('mode-study-btn').parentElement;
+            const settingsButton = document.getElementById('voice-settings-toggle');
+            const settingsPanel = document.getElementById('voice-settings-panel');
+            const oldToolbar = modeGroup.parentElement.parentElement;
+            modeGroup.classList.add('vnext-modes');
+            header.append(modeGroup, unit, settingsButton, settingsPanel);
+            oldToolbar.remove();
+            document.addEventListener('pointerdown', event => {
+                if (!settingsPanel.classList.contains('hidden') && !settingsPanel.contains(event.target) && !settingsButton.contains(event.target)) {
+                    settingsPanel.classList.add('hidden');
+                    settingsButton.setAttribute('aria-expanded', 'false');
+                }
+            });
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape' && !settingsPanel.classList.contains('hidden')) {
+                    settingsPanel.classList.add('hidden');
+                    settingsButton.setAttribute('aria-expanded', 'false');
+                    settingsButton.focus();
+                }
+            });
+            const toggleGroup = document.getElementById('auto-read-toggle').closest('label').parentElement;
+            toggleGroup.classList.add('vnext-voice-toggles');
+            toggleGroup.appendChild(document.getElementById('answer-read-toggle').closest('label'));
+            left.className = 'vnext-left';
+            right.className = 'vnext-right';
+            progress.classList.add('vnext-progress');
+            progressLine.className = 'vnext-progress-line';
+            const progressText = document.getElementById('progress-text');
+            const oldProgressGroup = progressText.parentElement;
+            progressLine.append(progressText, document.getElementById('progress-dots-container'));
+            progress.insertBefore(progressLine, progress.firstChild);
+            oldProgressGroup.remove();
+            options.remove();
+            left.append(progress, questionBlock, feedback, footer);
+            right.append(options, nav);
+            main.replaceChildren(left, right);
+        })();
+    </script>
 </body>
 </html>
