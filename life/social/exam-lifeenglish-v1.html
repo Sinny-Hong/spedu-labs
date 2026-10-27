@@ -241,11 +241,6 @@
                         <p id="feedback-desc" class="text-sm md:text-base mt-1 text-stone-600"></p>
                     </div>
                 </div>
-                <!-- 詳解盒子 -->
-                <div class="mt-2 pt-3 border-t border-stone-200">
-                    <p class="text-[10px] font-black tracking-widest text-amber-700 uppercase"><i class="fa-solid fa-circle-info mr-1"></i>Feedback & Analysis / 詳解分析</p>
-                    <p id="feedback-explanation" class="text-sm md:text-base text-stone-600 mt-1 leading-relaxed font-medium"></p>
-                </div>
             </div>
         </main>
 
@@ -465,7 +460,6 @@
         const feedbackAlertEl = document.getElementById('feedback-alert');
         const feedbackTitleEl = document.getElementById('feedback-title');
         const feedbackDescEl = document.getElementById('feedback-desc');
-        const feedbackExplanationEl = document.getElementById('feedback-explanation');
         const feedbackIconContainer = document.getElementById('feedback-icon-container');
         const currentScoreDisplay = document.getElementById('current-score-display');
         const unitTitleDisplay = document.getElementById('unit-title-display');
@@ -809,18 +803,15 @@
                     feedbackTitleEl.className = "font-extrabold text-emerald-800 text-lg";
                     feedbackTitleEl.textContent = "答對了！非常優秀！";
                     feedbackDescEl.className = "text-sm md:text-base mt-1 text-emerald-700";
-                    feedbackDescEl.textContent = "代表你已經確實掌握這個實用英文觀念。";
+                    feedbackDescEl.textContent = q.explain || "答對了，繼續保持！";
                 } else {
                     feedbackAlertEl.className = "mt-6 p-5 rounded-2xl border border-rose-200 bg-rose-50/50 flex flex-col gap-2 transition-all duration-300";
                     feedbackIconContainer.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600"></i>`;
                     feedbackTitleEl.className = "font-extrabold text-rose-800 text-lg";
                     feedbackTitleEl.textContent = "答錯囉，再接再厲！";
                     feedbackDescEl.className = "text-sm md:text-base mt-1 text-rose-700 font-bold";
-                    feedbackDescEl.textContent = `正確答案應該是：${q.options[q.answer]}`;
+                    feedbackDescEl.textContent = `正確答案是：${q.options[q.answer]}。${q.explain || ""}`;
                 }
-
-                // 帶出詳解
-                feedbackExplanationEl.textContent = q.explain;
 
             } else {
                 feedbackAlertEl.classList.add('hidden');
