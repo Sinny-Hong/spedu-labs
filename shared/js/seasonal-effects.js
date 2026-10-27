@@ -325,12 +325,12 @@
       const startX = leftToRight ? -size * 1.5 : window.innerWidth + size;
       const finishX = leftToRight ? window.innerWidth + size : -size * 1.5;
       const y = window.innerHeight - size - (compact ? 3 : 8);
-      const flip = leftToRight ? 1 : -1;
+      const flip = leftToRight ? -1 : 1;
       const motion = cat.animate([
         { transform: `translate3d(${startX}px, ${y}px, 0) scaleX(${flip})`, opacity: 0 },
         { opacity: 1, offset: .08 },
-        { transform: `translate3d(${window.innerWidth * .42}px, ${y}px, 0) scaleX(${flip})`, opacity: 1, offset: .42 },
-        { transform: `translate3d(${window.innerWidth * .46}px, ${y - 3}px, 0) scaleX(${flip})`, opacity: 1, offset: .56 },
+        { transform: `translate3d(${window.innerWidth * (leftToRight ? .42 : .58)}px, ${y}px, 0) scaleX(${flip})`, opacity: 1, offset: .42 },
+        { transform: `translate3d(${window.innerWidth * (leftToRight ? .46 : .54)}px, ${y - 3}px, 0) scaleX(${flip})`, opacity: 1, offset: .56 },
         { transform: `translate3d(${finishX}px, ${y}px, 0) scaleX(${flip})`, opacity: 0 }
       ], { duration: 4400, delay: 1050, easing: "cubic-bezier(.36,.08,.3,1)", fill: "both" });
       motion.addEventListener("finish", () => cat.remove(), { once: true });
