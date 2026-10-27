@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sinny 角色庫｜測試頁</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      display: grid;
+      place-items: center;
+      min-height: 100dvh;
+      padding: 20px;
+      background: #f5f8fc;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    }
+    .character {
+      display: grid;
+      place-items: center;
+      width: min(390px, 100%);
+      aspect-ratio: 1;
+      padding: clamp(12px, 3vw, 22px);
+      overflow: hidden;
+      border: 1px solid rgba(72, 111, 151, .17);
+      border-radius: 26px;
+      background: rgba(255, 255, 255, .52);
+      box-shadow: 0 12px 30px rgba(27, 65, 104, .06);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .character:hover { background: rgba(255, 255, 255, .7); }
+    .character:focus-visible { outline: 3px solid #f59e0b; outline-offset: 4px; }
+    .character img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity .16s ease;
+      pointer-events: none;
+    }
+    .character img.ready { opacity: 1; }
+    .character:disabled { cursor: default; }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+    @media (max-width: 480px) {
+      body { padding: 12px; }
+      .character { width: min(88vw, 360px); border-radius: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <button class="character" id="character" type="button" aria-label="切換下一張 Sinny 角色" disabled>
+    <img id="character-image" alt="Sinny 角色" width="512" height="512" decoding="async">
+  </button>
+  <span class="visually-hidden" id="status" role="status"></span>
+  <script>
+    (() => {
+      "use strict";
+      const button = document.getElementById("character");
+      const image = document.getElementById("character-image");
+      const status = document.getElementById("status");
+      const base = "../assets/sinny/";
+      const prepared = new Map();
+      let files = [];
+      let index = 0;
+      let requested = 0;
+
+      function prepare(position) {
+        const file = files[position];
+        if (!prepared.has(file)) {
+          const preload = new Image();
+          preload.decoding = "async";
+          preload.src = base + file;
+          prepared.set(file, preload.decode().then(() => preload));
+        }
+        return prepared.get(file);
+      }
+
+      function warmCache() {
+        files.forEach((_, position) => {
+          if (position !== index) prepare(position).catch(() => {});
+        });
+      }
+
+      button.addEventListener("click", async () => {
+        if (!files.length) return;
+        const next = (index + 1) % files.length;
+        const turn = ++requested;
+        try {
+          await prepare(next);
+          if (turn !== requested) return;
+          image.src = base + files[next];
+          index = next;
+        } catch (_) {
+          status.textContent = "這張角色圖片無法載入。";
+        }
+      });
+
+      async function start() {
+        try {
+          const response = await fetch(base + "manifest.json");
+          if (!response.ok) throw new Error(String(response.status));
+          const manifest = await response.json();
+          files = manifest.images.map(item => item.file);
+          if (!files.length) throw new Error("empty manifest");
+          index = Math.max(0, files.indexOf(manifest.default));
+          await prepare(index);
+          image.src = base + files[index];
+          image.classList.add("ready");
+          button.disabled = false;
+          window.setTimeout(warmCache, 300);
+        } catch (_) {
+          status.textContent = "角色圖片目前無法載入。";
+        }
+      }
+      start();
+    })();
+  </script>
+</body>
+</html>

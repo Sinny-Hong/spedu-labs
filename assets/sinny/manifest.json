@@ -1,0 +1,222 @@
+{
+  "version": 1,
+  "default": "sinny-hello-master.webp",
+  "images": [
+    {
+      "file": "sinny-hello-master.webp",
+      "source": "sinny_hello_master_v2.png",
+      "sourceBytes": 997899,
+      "bytes": 33706,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-angry.webp",
+      "source": "sinny_angry_生氣.png",
+      "sourceBytes": 1156619,
+      "bytes": 41392,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-bye-bye.webp",
+      "source": "sinny_bye_bye_再見.png",
+      "sourceBytes": 1362931,
+      "bytes": 51598,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-cheer.webp",
+      "source": "sinny_cheer_加油.png",
+      "sourceBytes": 1335956,
+      "bytes": 50760,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-crying.webp",
+      "source": "sinny_crying_委屈大哭_v2.png",
+      "sourceBytes": 1331662,
+      "bytes": 48412,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-good.webp",
+      "source": "sinny_good_比讚.png",
+      "sourceBytes": 1062920,
+      "bytes": 40230,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-idea.webp",
+      "source": "sinny_idea_靈光一閃.png",
+      "sourceBytes": 1142207,
+      "bytes": 44118,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-laugh.webp",
+      "source": "sinny_laugh_笑翻.png",
+      "sourceBytes": 1310268,
+      "bytes": 49954,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-little-trouble.webp",
+      "source": "sinny_little_trouble_小困擾_v2.png",
+      "sourceBytes": 992990,
+      "bytes": 33088,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-love.webp",
+      "source": "sinny_love_愛心.png",
+      "sourceBytes": 1308893,
+      "bytes": 41462,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-no.webp",
+      "source": "sinny_no_NO.png",
+      "sourceBytes": 1279195,
+      "bytes": 47408,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-ok.webp",
+      "source": "sinny_ok_OK_v2.png",
+      "sourceBytes": 1200369,
+      "bytes": 42446,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-peek.webp",
+      "source": "sinny_peek_探頭.png",
+      "sourceBytes": 914821,
+      "bytes": 30642,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-please.webp",
+      "source": "sinny_please_Please.png",
+      "sourceBytes": 1393988,
+      "bytes": 54870,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-point.webp",
+      "source": "sinny_point_指向.png",
+      "sourceBytes": 1047687,
+      "bytes": 37820,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-proud.webp",
+      "source": "sinny_proud_得意.png",
+      "sourceBytes": 1196772,
+      "bytes": 43088,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-question.webp",
+      "source": "sinny_question_疑惑.png",
+      "sourceBytes": 1065019,
+      "bytes": 38290,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-shocked.webp",
+      "source": "sinny_shocked_晴天霹靂_v2.png",
+      "sourceBytes": 1426751,
+      "bytes": 50970,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-sly-grin.webp",
+      "source": "sinny_sly_grin_陰險奸笑_v2.png",
+      "sourceBytes": 1337677,
+      "bytes": 47072,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-sorry.webp",
+      "source": "sinny_sorry_SORRY.png",
+      "sourceBytes": 1166299,
+      "bytes": 44930,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-soul-out.webp",
+      "source": "sinny_soul_out_靈魂出竅_v2.png",
+      "sourceBytes": 1005688,
+      "bytes": 39882,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-surprise.webp",
+      "source": "sinny_surprise_驚訝_v2.png",
+      "sourceBytes": 1264926,
+      "bytes": 48320,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-thanks.webp",
+      "source": "sinny_thanks_ThankYou.png",
+      "sourceBytes": 1275486,
+      "bytes": 53914,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-tired.webp",
+      "source": "sinny_tired_累趴_v2.png",
+      "sourceBytes": 1276677,
+      "bytes": 40606,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-troubled.webp",
+      "source": "sinny_troubled_苦惱.png",
+      "sourceBytes": 1221711,
+      "bytes": 44604,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-wait.webp",
+      "source": "sinny_wait_等等.png",
+      "sourceBytes": 1326969,
+      "bytes": 46848,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "sinny-yes.webp",
+      "source": "sinny_yes_YES.png",
+      "sourceBytes": 1262753,
+      "bytes": 46556,
+      "width": 512,
+      "height": 512
+    }
+  ]
+}
