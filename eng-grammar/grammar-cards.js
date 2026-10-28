@@ -5,11 +5,11 @@ window.GRAMMAR_DATA = [
   { id: "pronouns-basic", category: "互動式電子講義", title: "人稱代名詞｜互動講義", desc: "主格、Be 動詞、所有格與家人稱謂，從配對、是非、圈選到排列造句與閱讀練習", filename: "pronouns.html", themeColor: "#3B82F6" },
   { id: "present-simple", category: "互動式電子講義", title: "現在簡單式｜互動講義", desc: "從使用時機、主詞判斷、第三人稱單數到 do／does，含造句與會考綜合練習", filename: "present-simple.html", themeColor: "#3B82F6" },
   { id: "past-simple", category: "互動式電子講義", title: "過去簡單式｜八頁互動講義", desc: "從 was／were、動詞過去式到 did＋原形，含進階練習與找過去式任務", filename: "past-simple.html", themeColor: "#3B82F6" },
-  { id: "grammar-library", category: "互動式電子講義", tag: "Library（Level 3）", title: "Level 3 文法講義庫", desc: "集中瀏覽 37 份單頁三階段文法講義，依主題分類快速切換與獨立開啟", filename: "library-level3.html", themeColor: "#3B82F6" },
-  { id: "topic-hub", category: "互動式電子講義", tag: "Topic 測試統整區", title: "文法主題互動式電子講義｜Topic 測試統整區", desc: "集中瀏覽 Topic 資料夾的文法講義，快速切換新作與未完成教材，並記住上次開啟的主題", filename: "library-topic.html", themeColor: "#3B82F6" },
+  { id: "grammar-library", category: "互動式電子講義", tag: "Library（Level 3）", title: "Level 3 文法講義庫", desc: "集中瀏覽 37 份單頁三階段文法講義，依主題分類快速切換與獨立開啟", filename: "library-level3.html", themeColor: "#3B82F6", newTab: true },
+  { id: "topic-hub", category: "互動式電子講義", tag: "Topic 測試統整區", title: "文法主題互動式電子講義｜Topic 測試統整區", desc: "集中瀏覽 Topic 資料夾的文法講義，快速切換新作與未完成教材，並記住上次開啟的主題", filename: "library-topic.html", themeColor: "#3B82F6", newTab: true },
 
   // ==== 閱讀理解與測驗 ====
-  { id: "reading-hub", category: "閱讀理解與測驗", tag: "Library（Reading）", title: "閱讀測驗 Library", desc: "集中切換分類資料夾內的閱讀教材；保留各教材的提示、批改、解答、語音與列印功能", filename: "library-reading.html", themeColor: "#EC4899" },
+  { id: "reading-hub", category: "閱讀理解與測驗", tag: "Library（Reading）", title: "閱讀測驗 Library", desc: "集中切換分類資料夾內的閱讀教材；保留各教材的提示、批改、解答、語音與列印功能", filename: "library-reading.html", themeColor: "#EC4899", newTab: true },
   // ==== 互動遊戲 ====
   { id: "g1", category: "互動遊戲", title: "🎮 遊戲｜地心探險數字挑戰", desc: "挑戰大考驗！熟悉英文數字 1～100000 聽力、大小與發音", filename: "game-corenum.html", themeColor: "#F43F5E" },
   { id: "g3", category: "互動遊戲", title: "🎮 遊戲｜小啾的時光農場", desc: "解鎖時光任務！訓練年月日、星期、小時、分鐘及秒針判讀", filename: "game-timefarm.html", themeColor: "#F43F5E" },

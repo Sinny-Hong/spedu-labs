@@ -46,7 +46,7 @@
       const isExplicitlyPending = item => item.status === "coming-soon" || !String(item.filename ?? "").trim();
       const renderCard = (item, index) => {
         const pending = isExplicitlyPending(item);
-        const href = pending ? "" : ` data-href="${escapeHtml(item.filename)}"${item.external ? ' data-target="_blank"' : ""}`;
+        const href = pending ? "" : ` data-href="${escapeHtml(item.filename)}"${item.external || item.newTab ? ' data-target="_blank"' : ""}`;
         return `<article class="resource-card${pending ? " is-placeholder" : ""}" data-book-index="${index}" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor || '#0f766e')}"${href}>
           <div class="card-top"><span class="tag">${escapeHtml(item.tag || '教材')}</span></div>
           <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>${pending ? '<span class="card-link">Coming Soon</span>' : ''}

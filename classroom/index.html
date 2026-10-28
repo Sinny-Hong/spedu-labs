@@ -61,7 +61,7 @@
     const renderCard = item => {
       const unavailable = item.available === false;
       const action = unavailable ? '<span class="card-link">功能準備中</span>' : '';
-      const href = unavailable ? '' : ` data-href="${escapeHtml(item.filename)}"${item.external ? ' data-target="_blank"' : ''}`;
+      const href = unavailable ? '' : ` data-href="${escapeHtml(item.filename)}"${item.external || item.newTab ? ' data-target="_blank"' : ''}`;
       return `<article class="resource-card${unavailable ? ' is-placeholder' : ''}" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}"${href}>
         <div class="card-top"><span class="tag">${escapeHtml(item.tag)}</span></div>
         <h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.desc)}</p>${action}

@@ -87,7 +87,7 @@
 
     document.getElementById("grammarCards").innerHTML = window.GRAMMAR_CATEGORIES.map(category => {
       const cards = availableGrammarData.filter(item => item.category === category).map(item => {
-        return `<article class="resource-card" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}" data-href="${escapeHtml(item.filename)}" tabindex="0" role="link">
+        return `<article class="resource-card" data-category="${escapeHtml(item.category)}" style="border-top-color:${escapeHtml(item.themeColor)}" data-href="${escapeHtml(item.filename)}"${item.newTab ? ' data-target="_blank"' : ''} tabindex="0" role="link">
           <div class="card-top"><span class="tag">${escapeHtml(item.tag || item.category)}</span></div>
           <h2 class="resource-title">${escapeHtml(item.title)}</h2>
           <p class="resource-description">${escapeHtml(item.desc)}</p>
