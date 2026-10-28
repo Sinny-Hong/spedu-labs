@@ -1,0 +1,9 @@
+
+/* v1.4 module: optional speech and independent document-anchored ink. */
+#ttsToggle[aria-pressed="true"],#inkToggle[aria-pressed="true"],.ink-tools button[aria-pressed="true"]{background:#dbeafe;border-color:#60a5fa;color:#163f78}
+.ink-tools{position:fixed;left:6px;top:50%;transform:translateY(-50%);z-index:60;display:grid;gap:5px;padding:5px;background:#fffffff2;border:1px solid var(--line);border-radius:9px;box-shadow:0 3px 12px #0002}
+.ink-tools button{display:grid;place-items:center;width:36px;height:38px;border:1px solid var(--line);border-radius:6px;background:white;font-size:19px;cursor:pointer}.ink-tools button svg{width:21px;height:21px}
+#inkLayer{position:absolute;left:0;top:0;width:100%;z-index:20;pointer-events:none;overflow:hidden}body.ink-enabled .paper{touch-action:none;cursor:crosshair}body.ink-enabled .paper button,body.ink-enabled .paper input,body.ink-enabled .paper select,body.ink-enabled .paper textarea{touch-action:manipulation;cursor:pointer}
+.module-notice{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);max-width:calc(100% - 24px);padding:8px 12px;border-radius:8px;background:#253345;color:white;z-index:80;font-size:14px;pointer-events:none}
+@media(max-width:650px){.toolbar{gap:5px}.toolbar button{padding:5px 8px}.ink-tools{left:3px}}
+@media print{#inkLayer,.ink-tools,.module-notice{display:none!important}}
