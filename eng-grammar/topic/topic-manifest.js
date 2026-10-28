@@ -5,7 +5,10 @@ window.TOPIC_MANIFEST = [
   {"file":"topic_a03_numbers_1_100.html","title":"《英文講義》數字 1–100"},
   {"file":"topic_a05_a06_nouns.html","title":"《文法講義》名詞與單複數"},
   {"file":"topic_a12_imperatives.html","title":"《文法講義》祈使句"},
+  {"file":"topic_a14_there_is_there_are.html","title":"《文法講義》There is / There are"},
   {"file":"topic_c01_present-continuous.html","title":"《文法講義》現在進行式"},
   {"file":"topic_c02_present-simple.html","title":"《文法講義》現在簡單式"},
-  {"file":"topic_c05_past-simple.html","title":"《文法講義》過去簡單式"}
+  {"file":"topic_c05_past-simple.html","title":"《文法講義》過去簡單式"},
+  {"file":"topic_d04_d06_gerunds_infinitives.html","title":"《文法講義》動名詞與不定詞"},
+  {"file":"topic_d10_d11_adjective_degrees.html","title":"《文法講義》形容詞三態"}
 ];
