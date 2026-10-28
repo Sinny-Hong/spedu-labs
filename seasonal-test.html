@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>節慶彩蛋 V1 測試室</title>
+  <style>
+    :root{font-family:system-ui,"Noto Sans TC",sans-serif;color:#17365d;background:#f4f7fb}
+    *{box-sizing:border-box}body{margin:0}button,select{font:inherit}
+    .wrap{max-width:1100px;margin:auto;padding:24px 18px 40px}
+    h1{font-size:clamp(24px,4vw,34px);margin:0 0 8px}.intro{margin:0 0 22px;color:#65778f;line-height:1.6}
+    .layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(250px,.8fr);gap:18px;align-items:start}
+    .panel,.clock-panel{background:#fff;border:1px solid #d9e3ef;border-radius:18px;box-shadow:0 8px 28px #18395c0c}
+    .panel{padding:22px}.controls{display:grid;gap:14px}.field{display:grid;gap:6px;font-weight:800}
+    select{width:100%;min-height:44px;padding:8px 11px;border:1px solid #bacce0;border-radius:10px;background:#fff;color:inherit}
+    .buttons{display:flex;flex-wrap:wrap;gap:9px}button{min-height:44px;padding:9px 14px;border:1px solid #cfdae6;border-radius:10px;background:#fff;color:#17365d;font-weight:800;cursor:pointer}
+    button:hover{background:#f2f7fc}button.primary{background:#fff1d9;border-color:#f5bd61;color:#a95800}
+    .status{margin-top:20px;padding:14px;border-radius:12px;background:#f2f6fb;line-height:1.7}
+    .status p{margin:3px 0}.status strong{display:inline-block;min-width:6em}.status [data-state="error"]{color:#b82738;font-weight:800}.status [data-state="ok"]{color:#087f61;font-weight:800}
+    .clock-panel{min-height:360px;padding:22px;display:grid;align-content:start;justify-items:center;gap:16px}
+    .clock-face{width:min(64vw,190px);aspect-ratio:1;border:7px solid #17365d;border-radius:50%;display:grid;place-items:center;color:#17365d;font-size:32px;font-weight:900;background:#fff}
+    .clock-time{font-size:25px;font-weight:900}.clock-caption{font-size:14px;color:#65778f;text-align:center}
+    @media(max-width:720px){.wrap{padding:16px 12px 32px}.layout{grid-template-columns:1fr;gap:12px}.panel{padding:16px}.clock-panel{min-height:260px;padding:14px}.clock-face{width:130px}.clock-time{font-size:21px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>節慶彩蛋 V1 測試室</h1>
+    <p class="intro">此頁僅測試獨立模組，不會修改正式首頁或回寫試算表。</p>
+    <div class="layout">
+      <section class="panel" aria-label="動畫測試控制">
+        <div class="controls">
+          <label class="field">測試模式<select id="testMode"><option value="manual">手動選主題</option><option value="sheet">依試算表設定</option></select></label>
+          <label class="field">主題<select id="testTheme"></select></label>
+          <div class="buttons"><button class="primary" id="playEffect" type="button">播放效果</button><button id="stopEffect" type="button">停止動畫</button><button id="reloadSheet" type="button">重新讀取試算表</button></div>
+        </div>
+        <div class="status" aria-live="polite">
+          <p><strong>同步狀態</strong><span id="syncStatus" data-state="loading">尚未讀取</span></p>
+          <p><strong>M2 開關</strong><span id="sheetSwitch">—</span></p>
+          <p><strong>M3 主題</strong><span id="sheetTheme">—</span></p>
+          <p><strong>對應代號</strong><span id="sheetCode">—</span></p>
+          <p><strong>目前效果</strong><span id="effectStatus">—</span></p>
+        </div>
+      </section>
+      <aside class="clock-panel" id="testClockPanel" aria-label="模擬首頁時鐘欄">
+        <div class="clock-face" aria-hidden="true">12</div><div class="clock-time">模擬時鐘欄</div><div class="clock-caption">Sinny 只會在這個區域短暫浮現；動畫圖層不攔截按鈕。</div>
+      </aside>
+    </div>
+  </main>
+  <script src="shared/js/seasonal-effects-v1.js"></script>
+</body>
+</html>
