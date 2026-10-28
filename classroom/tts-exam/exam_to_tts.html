@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{考卷名稱}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f766e;
+            --primary-light: #e0f2f1;
+            --primary-hover: #115e59;
+            --secondary: #64748b;
+            --secondary-light: #f1f5f9;
+            --secondary-hover: #475569;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --highlight-bg: #fffde7;
+            --highlight-underline: #26a69a;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+        }
+        body {
+            font-family: "LXGW WenKai TC", cursive;
+            background-color: var(--background);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            margin: 0;
+            -webkit-text-size-adjust: 100%;
+            color: var(--text-main);
+        }
+        #app-container {
+            background-color: var(--surface);
+            width: 100%;
+            max-width: 56rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.25rem;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 0.05em;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .nav-pager {
+            display: flex;
+            align-items: center;
+            background-color: var(--secondary-light);
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+            border: 1px solid var(--border);
+        }
+        .nav-pager button {
+            background: none;
+            border: none;
+            color: var(--secondary-hover);
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .nav-pager button:hover {
+            background-color: var(--border);
+            color: var(--text-main);
+        }
+        .nav-pager button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .select-wrapper {
+            position: relative;
+        }
+        .select-wrapper select {
+            appearance: none;
+            -webkit-appearance: none;
+            font-family: inherit;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 0.375rem;
+            color: var(--text-main);
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+            max-width: 180px;
+        }
+        .select-wrapper select:focus {
+            border-color: var(--primary);
+        }
+        .select-wrapper::after {
+            content: "";
+            position: absolute;
+            right: 0.65rem;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 4px solid transparent;
+            border-top-color: var(--text-muted);
+            pointer-events: none;
+        }
+        .select-q select {
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            padding-right: 1.5rem;
+            max-width: 150px;
+        }
+        .select-q::after {
+            right: 0.4rem;
+        }
+        .btn-primary, .btn-secondary {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 0.875rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 2px 4px rgb(15 118 110 / 0.1);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background-color: var(--secondary-light);
+            color: var(--secondary-hover);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover {
+            background-color: var(--border);
+            color: var(--text-main);
+            transform: translateY(-1px);
+        }
+        .settings-panel {
+            background-color: var(--background);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.25rem;
+            transition: max-height 0.3s ease-out, opacity 0.3s, padding 0.3s;
+            max-height: 200px;
+            opacity: 1;
+            overflow: hidden;
+        }
+        .settings-panel.collapsed {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .control-label {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .select-voice select {
+            width: 100%;
+            max-width: 260px;
+        }
+        .speed-slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-grow: 1;
+        }
+        #speed-control {
+            flex-grow: 1;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        #speed-control::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+        #speed-value {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            min-width: 2.5rem;
+        }
+        #quiz-area {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-height: 260px;
+            background-color: var(--surface);
+        }
+        #preamble-text {
+            background-color: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-muted);
+            white-space: pre-wrap;
+        }
+        #preamble-text p {
+            margin: 0 0 0.75rem 0;
+        }
+        #preamble-text p:last-child {
+            margin: 0;
+        }
+        .question-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        #question-text {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: pre-wrap;
+            flex-grow: 1;
+        }
+        #options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+        .option-item {
+            font-size: 1.05rem;
+            line-height: 1.5;
+            border: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            background-color: var(--surface);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-item:hover, #preamble-text span:hover, #question-text span.non-option:hover {
+            background-color: var(--highlight-bg);
+            border-color: var(--primary);
+        }
+        .speaking, .speaking:hover {
+            text-decoration: underline;
+            text-decoration-color: var(--highlight-underline);
+            text-decoration-thickness: 3px;
+            background-color: var(--highlight-bg);
+        }
+        footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.25rem;
+            border-top: 1px solid var(--border);
+            background-color: var(--background);
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        .footer-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 0.25rem;
+            }
+            #app-container {
+                border-radius: 0.5rem;
+            }
+            .navbar {
+                padding: 0.5rem 0.75rem;
+            }
+            .logo {
+                font-size: 1.15rem;
+            }
+            .nav-pager {
+                padding: 0.125rem;
+            }
+            .select-wrapper select {
+                font-size: 0.85rem;
+                padding: 0.25rem 1.5rem 0.25rem 0.5rem;
+            }
+            .select-q select {
+                max-width: 100px;
+            }
+            .btn-primary, .btn-secondary {
+                padding: 0.375rem 0.65rem;
+                font-size: 0.85rem;
+            }
+            .btn-primary span {
+                display: none;
+            }
+            #quiz-area {
+                padding: 0.75rem;
+                min-height: 200px;
+            }
+            #question-text {
+                font-size: 1.05rem;
+            }
+            .option-item {
+                font-size: 0.95rem;
+                padding: 0.6rem 0.75rem;
+            }
+            footer {
+                padding: 0.5rem 0.75rem;
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+        #preamble-text span:focus-visible, #question-text span.non-option:focus-visible, .option-item:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid #1a73e8; outline-offset: 2px; }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
+        <header class="navbar">
+            <div class="nav-left">
+                <span class="logo">{{考卷名稱}}</span>
+            </div>
+            <div class="nav-right">
+                <div class="nav-pager">
+                    <button id="prev-btn" title="上一題" aria-label="上一題">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
+                    </button>
+                    <div class="select-wrapper select-q">
+                        <select id="question-select" aria-label="選擇題號"></select>
+                    </div>
+                    <button id="next-btn" title="下一題" aria-label="下一題">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+                    </button>
+                </div>
+                <button id="replay-btn" class="btn-primary" title="唸題目">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg>
+                    <span>唸題目</span>
+                </button>
+                <button id="settings-toggle-btn" class="btn-secondary" title="語音設定" aria-label="語音設定" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.17.311c.58.988.006 2.254-1.055 2.502l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.17a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.17-.311a1.464 1.464 0 0 1 1.055-2.502l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.17a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.86z"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <div id="settings-panel" class="settings-panel collapsed">
+            <div class="settings-grid">
+                <div class="control-group">
+                    <label for="voice-select" class="control-label">選擇聲音:</label>
+                    <div class="select-wrapper select-voice">
+                        <select id="voice-select"></select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="speed-control" class="control-label">唸讀速度:</label>
+                    <div class="speed-slider-wrapper">
+                        <input id="speed-control" type="range" min="0.5" max="1.5" step="0.1" value="0.9">
+                        <span id="speed-value">0.9x</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <main id="quiz-area">
+            <div id="preamble-text" style="display: none;"></div>
+            <div class="question-header"><div id="question-text"></div></div>
+            <ul id="options-list" role="list" aria-label="選項"></ul>
+        </main>
+
+        <footer>
+            <p class="footer-text">© 2026 spedmix</p>
+        </footer>
+    </div>
+    <script>
+        const questions = [
+            {{QUESTIONS_DATA}}
+        ];
+        let currentQuestionIndex = 0;
+        let currentPreamble = null;
+        const synth = window.speechSynthesis;
+        if (!synth) { document.addEventListener('DOMContentLoaded', () => { const n = document.getElementById('sr-status'); if (n) n.textContent = '此瀏覽器不支援語音朗讀，請改用 Chrome、Edge 或 Safari。'; alert('此瀏覽器不支援語音朗讀，請改用 Chrome、Edge 或 Safari。'); }); }
+        let voiceRetry = 0;
+        let utterance = null;
+        let voices = [];
+        let preambleEl = document.getElementById('preamble-text');
+        let questionEl = document.getElementById('question-text');
+        const optionsEl = document.getElementById('options-list');
+        const selectEl = document.getElementById('question-select');
+        const voiceSelectEl = document.getElementById('voice-select');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const replayBtn = document.getElementById('replay-btn');
+        const speedControl = document.getElementById('speed-control');
+        const speedValue = document.getElementById('speed-value');
+        const settingsToggleBtn = document.getElementById('settings-toggle-btn');
+        const settingsPanel = document.getElementById('settings-panel');
+
+        const playIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg>`;
+        const stopIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11V5A1.5 1.5 0 0 1 5 3.5z"/></svg>`;
+
+        let activeSequence = [];
+        let activeSequenceIndex = -1;
+
+        function formatMathText(text) {
+            if (!text) return '';
+            let formatted = text.replace(/\$([^$]+)\$/g, (m, inner) => '$' + inner.replace(/\s*[:：]\s*/g, '∶') + '$')
+                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+                .replace(/\\times/g, ' × ')
+                .replace(/\\div/g, ' ÷ ')
+                .replace(/\\pm/g, ' ± ')
+                .replace(/\\leq?(?![a-zA-Z])/g, ' ≤ ')
+                .replace(/\\geq?(?![a-zA-Z])/g, ' ≥ ')
+                .replace(/\\neq/g, ' ≠ ')
+                .replace(/\\approx/g, ' ≈ ')
+                .replace(/\\degree/g, '°')
+                .replace(/\^\\circ/g, '°')
+                .replace(/\\\^/g, '^')
+                .replace(/\\pi/g, 'π')
+                .replace(/\\theta/g, 'θ')
+                .replace(/\\triangle/g, '△')
+                .replace(/\\Delta/g, '△')
+                .replace(/\\angle/g, '∠')
+                .replace(/\\parallel/g, '∥')
+                .replace(/\\perp/g, '⊥')
+                .replace(/\\sim/g, '∽')
+                .replace(/\\cong/g, '≅')
+                .replace(/\\odot/g, '⊙')
+                .replace(/\\sqrt\{([^}]+)\}/g, '√($1)');
+            
+            // Unicode superscript replacements for exponents
+            const superscripts = {
+                '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', 
+                '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
+                '+': '⁺', '-': '⁻', 'n': 'ⁿ', 'x': 'ˣ', 'y': 'ʸ'
+            };
+            formatted = formatted.replace(/\^(?:\{([0-9+\-nxy]+)\}|([0-9]+|[nxy]))/g, (match, braced, plain) => {
+                return (braced || plain).split('').map(char => superscripts[char] || char).join('');
+            });
+            
+            formatted = formatted.replace(/\$/g, '');
+            return formatted;
+        }
+
+        function cleanTextForTTS(text) {
+            if (!text) return '';
+            let cleaned = text;
+            
+            // First handle math symbols
+            cleaned = cleaned
+                .replace(/\\times/g, '乘以')
+                .replace(/\\div/g, '除以')
+                .replace(/×/g, '乘以')
+                .replace(/÷/g, '除以')
+                .replace(/\\pm/g, '正負')
+                .replace(/\\leq?(?![a-zA-Z])/g, '小於或等於')
+                .replace(/\\geq?(?![a-zA-Z])/g, '大於或等於')
+                .replace(/\\neq/g, '不等於')
+                .replace(/\\approx/g, '約等於')
+                .replace(/\\degree/g, '度')
+                .replace(/\^\\circ/g, '度')
+                .replace(/\\pi/g, '圓周率')
+                .replace(/\\theta/g, '西塔')
+                .replace(/\\triangle/g, '三角形')
+                .replace(/\\Delta/g, '三角形')
+                .replace(/\\angle/g, '角')
+                .replace(/\\parallel/g, '平行')
+                .replace(/\\perp/g, '垂直')
+                .replace(/\\sim/g, '相似於')
+                .replace(/\\cong/g, '全等於')
+                .replace(/\\odot/g, '圓')
+                .replace(/\\sqrt\{([^}]+)\}/g, '根號$1')
+                .replace(/=/g, '等於')
+                .replace(/＝/g, '等於');
+
+            // Handle fractions (both LaTeX style and converted style)
+            cleaned = cleaned.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$2分之$1');
+            cleaned = cleaned.replace(/\(([^)]+)\)\/\(([^)]+)\)/g, '$2分之$1');
+            cleaned = cleaned.replace(/(?<![\d\/])(\d+)\/(\d+)(?![\d\/])/g, '$2分之$1');
+
+            // Handle exponents
+            cleaned = cleaned.replace(/\^\{([^}]+)\}/g, '的$1次方');
+            cleaned = cleaned.replace(/\^([a-zA-Z0-9]+)/g, '的$1次方');
+            cleaned = cleaned.replace(/的2次方/g, '平方');
+            cleaned = cleaned.replace(/的3次方/g, '立方');
+
+            // 比：只有 $...$ 內的冒號會在 formatMathText 轉成「∶」；時間（10:30）與英文標籤（Q:）不受影響
+            cleaned = cleaned.replace(/∶/g, '比');
+
+            cleaned = cleaned.replace(/\$/g, '').replace(/\\/g, '');
+            return cleaned;
+        }
+
+        function populateVoiceList() {
+            voices = synth.getVoices().filter(voice => voice.lang.toLowerCase().startsWith('zh'));
+            voiceSelectEl.innerHTML = '';
+            if (voices.length === 0 && voiceRetry < 10) { voiceRetry++; setTimeout(populateVoiceList, 300); }
+            if (voices.length === 0) { const o = document.createElement('option'); o.textContent = '找不到中文語音'; voiceSelectEl.appendChild(o); return; }
+            voices.forEach((voice, i) => { const o = document.createElement('option'); o.textContent = voice.name; o.value = i; voiceSelectEl.appendChild(o); });
+            let idx = voices.findIndex(v => v.name.includes('Yating') && v.lang === 'zh-TW');
+            if (idx === -1) idx = voices.findIndex(v => v.name.includes('Mei-Jia'));
+            if (idx === -1) idx = voices.findIndex(v => v.name === 'Google 國語（臺灣）');
+            if (idx === -1) idx = voices.findIndex(v => v.lang === 'zh-TW');
+            if (idx === -1) idx = 0;
+            if (voices[idx]) { voiceSelectEl.selectedIndex = idx; }
+        }
+        if (synth.onvoiceschanged !== undefined) { synth.onvoiceschanged = populateVoiceList; }
+
+        function speak(text) {
+            synth.cancel();
+            const cleanText = cleanTextForTTS(text);
+            const u = new SpeechSynthesisUtterance(cleanText);
+            u.lang = 'zh-TW';
+            u.rate = parseFloat(speedControl.value);
+            const i = voiceSelectEl.value;
+            if (voices[i]) u.voice = voices[i];
+            utterance = u;
+            synth.speak(u);
+        }
+
+        function stopSequence() {
+            activeSequence = [];
+            activeSequenceIndex = -1;
+            synth.cancel();
+            document.querySelectorAll('.speaking').forEach(el => el.classList.remove('speaking'));
+            updateReplayButtonState(false);
+        }
+
+        function updateReplayButtonState(isPlaying) {
+            if (isPlaying) {
+                replayBtn.innerHTML = stopIcon + '<span>停止</span>';
+                replayBtn.title = "停止唸讀";
+                replayBtn.classList.remove('btn-primary');
+                replayBtn.classList.add('btn-secondary');
+            } else {
+                replayBtn.innerHTML = playIcon + '<span>唸題目</span>';
+                replayBtn.title = "唸題目";
+                replayBtn.classList.remove('btn-secondary');
+                replayBtn.classList.add('btn-primary');
+            }
+        }
+
+        function playNextInSequence() {
+            if (activeSequenceIndex < 0 || activeSequenceIndex >= activeSequence.length) {
+                stopSequence();
+                return;
+            }
+            const item = activeSequence[activeSequenceIndex];
+            document.querySelectorAll('.speaking').forEach(el => el.classList.remove('speaking'));
+            item.element.classList.add('speaking');
+            
+            item.element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            const cleanText = cleanTextForTTS(item.text);
+            const u = new SpeechSynthesisUtterance(cleanText);
+            u.lang = 'zh-TW';
+            u.rate = parseFloat(speedControl.value);
+            const i = voiceSelectEl.value;
+            if (voices[i]) u.voice = voices[i];
+
+            u.onend = () => {
+                activeSequenceIndex++;
+                playNextInSequence();
+            };
+            u.onerror = () => {
+                activeSequenceIndex++;
+                playNextInSequence();
+            };
+            utterance = u;
+            synth.speak(u);
+        }
+
+        function speakAndHighlight(text, element) {
+            stopSequence();
+            element.classList.add('speaking');
+            const cleanText = cleanTextForTTS(text);
+            const u = new SpeechSynthesisUtterance(cleanText);
+            u.lang = 'zh-TW';
+            u.rate = parseFloat(speedControl.value);
+            const i = voiceSelectEl.value;
+            if (voices[i]) u.voice = voices[i];
+
+            const cleanup = () => { element.classList.remove('speaking'); u.onend = null; u.onerror = null; };
+            u.onend = cleanup;
+            u.onerror = cleanup;
+            
+            utterance = u;
+            synth.speak(u);
+        }
+
+        function makeReadable(el) {
+            el.tabIndex = 0;
+            el.setAttribute('role', 'button');
+            el.addEventListener('click', e => speakAndHighlight(e.currentTarget.textContent, e.currentTarget));
+            el.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); speakAndHighlight(e.currentTarget.textContent, e.currentTarget); }
+            });
+        }
+
+        function renderPreamble(text) {
+            preambleEl.innerHTML = '';
+            if (!text) { preambleEl.style.display = 'none'; return; }
+            preambleEl.style.display = 'block';
+            const formattedText = formatMathText(text);
+            formattedText.split('\n').filter(p => p.trim() !== '').forEach(pText => {
+                const pEl = document.createElement('p');
+                (pText.match(/[^。？！…，,]+([。？！…，,]|…{2,})?/g) || [pText]).forEach(sText => {
+                    const span = document.createElement('span');
+                    span.textContent = sText;
+                    makeReadable(span);
+                    pEl.appendChild(span);
+                });
+                preambleEl.appendChild(pEl);
+            });
+        }
+
+        function getActivePreamble(index) {
+            const q = questions[index];
+            if (q.preamble) return q.preamble;
+            if (q.section !== '閱讀題組') return null;
+            for (let i = index - 1; i >= 0; i--) {
+                const prevQ = questions[i];
+                if (prevQ.section !== q.section) break;
+                if (prevQ.preamble) return prevQ.preamble;
+            }
+            return null;
+        }
+
+        function renderQuestion(index) {
+            const q = questions[index];
+            const activePreamble = getActivePreamble(index);
+            if (activePreamble !== currentPreamble) { renderPreamble(activePreamble); currentPreamble = activePreamble; }
+            
+            questionEl.innerHTML = '';
+            const formattedQuestion = formatMathText(q.question);
+            formattedQuestion.split('\n').flatMap(line => line.match(/[^。？！…，,]+([。？！…，,]|…{2,})?/g) || [line]).forEach(sText => {
+                if (sText.trim() === '') return;
+                const span = document.createElement('span');
+                span.className = 'non-option';
+                span.textContent = sText;
+                makeReadable(span);
+                questionEl.appendChild(span);
+            });
+            optionsEl.innerHTML = '';
+            if (q.options && q.options.length > 0) {
+                q.options.forEach(optText => {
+                    const li = document.createElement('li');
+                    li.className = 'option-item';
+                    li.textContent = formatMathText(optText);
+                    makeReadable(li);
+                    optionsEl.appendChild(li);
+                });
+            }
+            selectEl.value = index;
+            document.getElementById('sr-status').textContent = '第 ' + q.displayId + ' 題，共 ' + questions.length + ' 題';
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === questions.length - 1;
+        }
+
+        function speakCurrentQuestion() {
+            if (activeSequence.length > 0) {
+                stopSequence();
+                return;
+            }
+            const q = questions[currentQuestionIndex];
+            const seq = [];
+            if (q.preamble) {
+                preambleEl.querySelectorAll('span').forEach(span => {
+                    seq.push({ text: span.textContent, element: span });
+                });
+            }
+            questionEl.querySelectorAll('span.non-option').forEach(span => {
+                seq.push({ text: span.textContent, element: span });
+            });
+            if (q.options) {
+                optionsEl.querySelectorAll('li.option-item').forEach(li => {
+                    seq.push({ text: li.textContent, element: li });
+                });
+            }
+            if (seq.length === 0) return;
+            activeSequence = seq;
+            activeSequenceIndex = 0;
+            updateReplayButtonState(true);
+            playNextInSequence();
+        }
+
+        selectEl.addEventListener('change', e => { currentQuestionIndex = parseInt(e.target.value); stopSequence(); renderQuestion(currentQuestionIndex); });
+        prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; stopSequence(); renderQuestion(currentQuestionIndex); } });
+        nextBtn.addEventListener('click', () => { if (currentQuestionIndex < questions.length - 1) { currentQuestionIndex++; stopSequence(); renderQuestion(currentQuestionIndex); } });
+        replayBtn.addEventListener('click', speakCurrentQuestion);
+        
+        speedControl.addEventListener('input', e => { 
+            const s = parseFloat(e.target.value); 
+            speedValue.textContent = s.toFixed(1) + 'x'; 
+            if (activeSequence.length > 0) {
+                synth.cancel();
+                playNextInSequence();
+            } else if (synth.speaking && utterance) {
+                const text = utterance.text;
+                synth.cancel();
+                speak(text);
+            }
+        });
+        
+        settingsToggleBtn.addEventListener('click', () => {
+            const collapsed = settingsPanel.classList.toggle('collapsed');
+            settingsToggleBtn.setAttribute('aria-expanded', String(!collapsed));
+        });
+
+        function init() {
+            selectEl.innerHTML = '';
+            let currentSection = "", currentOptgroup = null;
+            questions.forEach((q, index) => {
+                if (q.section !== currentSection) {
+                    currentSection = q.section;
+                    currentOptgroup = document.createElement('optgroup');
+                    currentOptgroup.label = currentSection;
+                    selectEl.appendChild(currentOptgroup);
+                }
+                const o = document.createElement('option');
+                o.value = index;
+                o.textContent = '第 ' + q.displayId + ' 題';
+                if (currentOptgroup) currentOptgroup.appendChild(o);
+            });
+            populateVoiceList();
+            renderQuestion(currentQuestionIndex);
+        }
+        document.addEventListener('keydown', e => {
+            if (e.altKey || e.ctrlKey || e.metaKey) return;
+            const tag = (e.target.tagName || '').toLowerCase();
+            if (tag === 'select' || tag === 'input') return;
+            if (e.key === 'ArrowLeft') { prevBtn.click(); }
+            else if (e.key === 'ArrowRight') { nextBtn.click(); }
+        });
+        init();
+    </script>
+</body>
+</html>
