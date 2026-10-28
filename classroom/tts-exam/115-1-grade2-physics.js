@@ -1,4 +1,5 @@
-{
+// 由同名 JSON 題庫製成；題目文字與選項保持原樣。
+window.examData = Object.assign({ school: '臺南市立新市國中', schoolYear: '115', semester: '1', grade: '2', examNumber: '1', subject: '理化' }, {
   "id": "115-1-grade2-physics",
   "title": "臺南市立新市國民中學115學年度第一學期第一次段考二年級理化科試卷",
   "questions": [
@@ -38,4 +39,4 @@
     {"section":"二、綜合題組（每題2分）","displayId":"34","preamble":null,"question":"34. 他將不規則物體完全浸入量筒水面下時，發現水面刻度從 502.0 毫升上升到 753.0 毫升處，請問此物體體積應為何？","options":["(A)250.0 cm³","(B)500.0 cm³","(C)750.0 cm³","(D)251.0 cm³"]},
     {"section":"二、綜合題組（每題2分）","displayId":"35","preamble":null,"question":"35. 接著他用天平量測此物體的質量，發現必須用五個 50 公克、兩個 20 公克、一個 10 公克、一個 5 公克、三個 1 公克的砝碼才可達到平衡，請問此物體密度為多少 g/cm³？","options":["(A)1.232","(B)1.227","(C)1.235","(D)1.251"]}
   ]
-}
+});

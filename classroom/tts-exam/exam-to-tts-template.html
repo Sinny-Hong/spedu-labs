@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{考卷名稱}}</title>
+    <title>臺南市立新市國中XXX學年度第X學期X年級第X次段考【XX科】試題卷</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap" rel="stylesheet">
@@ -48,6 +48,8 @@
             display: flex;
             flex-direction: column;
         }
+        .placeholder-a { color: #b45309; font-weight: 900; }
+        .placeholder-b { color: #b42349; font-weight: 900; }
         .navbar {
             display: flex;
             align-items: center;
@@ -69,6 +71,28 @@
             align-items: center;
             gap: 0.75rem;
         }
+        .exam-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            background-color: var(--background);
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+        .exam-toolbar .select-wrapper { flex: 1 1 260px; }
+        #exam-select { width: 100%; max-width: none; }
+        .exam-toolbar[hidden] { display: none; }
+        .locked-note {
+            display: none;
+            padding: 0.55rem 1.25rem;
+            background-color: var(--primary-light);
+            color: var(--primary-hover);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        .locked-note.visible { display: block; }
         .nav-pager {
             display: flex;
             align-items: center;
@@ -326,13 +350,13 @@
             #app-container {
                 border-radius: 0.5rem;
             }
-            .navbar {
+        .navbar {
                 padding: 0.5rem 0.75rem;
             }
             .logo {
                 font-size: 1.15rem;
             }
-            .nav-pager {
+        .nav-pager {
                 padding: 0.125rem;
             }
             .select-wrapper select {
@@ -375,7 +399,7 @@
         <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
         <header class="navbar">
             <div class="nav-left">
-                <span class="logo">{{考卷名稱}}</span>
+                <span class="logo" id="exam-title" aria-label="臺南市立新市國中XXX學年度第X學期X年級第X次段考【XX科】試題卷">臺南市立新市國中<strong class="placeholder-a">XXX</strong>學年度第<strong class="placeholder-b">X</strong>學期<strong class="placeholder-a">X</strong>年級第<strong class="placeholder-b">X</strong>次段考【<strong class="placeholder-a">XX</strong>科】試題卷</span>
             </div>
             <div class="nav-right">
                 <div class="nav-pager">
@@ -399,6 +423,16 @@
             </div>
         </header>
 
+        <div id="exam-toolbar" class="exam-toolbar">
+            <label for="exam-select" class="control-label">選擇考卷:</label>
+            <div class="select-wrapper">
+                <select id="exam-select" aria-label="選擇考卷">
+                    <option value="">母版測試題庫</option>
+                </select>
+            </div>
+            <button id="open-dedicated-btn" class="btn-secondary" type="button">開啟專屬頁面</button>
+        </div>
+        <div id="locked-note" class="locked-note">目前為專屬頁面；已隱藏考卷切換，仍可切換題號。</div>
         <div id="settings-panel" class="settings-panel collapsed">
             <div class="settings-grid">
                 <div class="control-group">
@@ -427,9 +461,10 @@
             <p class="footer-text">© 2026 spedmix</p>
         </footer>
     </div>
+    <script src="exam-catalog.js"></script>
     <script>
-        const questions = [
-            {{QUESTIONS_DATA}}
+        let questions = [
+            { section: "測試題庫", displayId: "1", preamble: null, question: "1.段考時應該注意事項如下", options: ["(A)準時進教室並攜帶文具和耳機", "(B)確認試題卷和答案卡上的資料填寫完整", "(C)確認報讀內容和試卷內容一致", "(D)安靜聆聽考題內容"] }
         ];
         let currentQuestionIndex = 0;
         let currentPreamble = null;
@@ -719,7 +754,7 @@
             }
             const q = questions[currentQuestionIndex];
             const seq = [];
-            if (q.preamble) {
+            if (getActivePreamble(currentQuestionIndex)) {
                 preambleEl.querySelectorAll('span').forEach(span => {
                     seq.push({ text: span.textContent, element: span });
                 });
@@ -762,7 +797,84 @@
             settingsToggleBtn.setAttribute('aria-expanded', String(!collapsed));
         });
 
-        function init() {
+        const examSelectEl = document.getElementById('exam-select');
+        const examToolbarEl = document.getElementById('exam-toolbar');
+        const lockedNoteEl = document.getElementById('locked-note');
+        const pageParams = new URLSearchParams(location.search);
+        const selectedFile = pageParams.get('data') || '';
+        (window.examCatalog || []).forEach(exam => {
+            const option = document.createElement('option');
+            option.value = exam.file;
+            option.textContent = exam.title + '（' + exam.count + ' 題）';
+            examSelectEl.appendChild(option);
+        });
+        if (selectedFile && ![...examSelectEl.options].some(option => option.value === selectedFile)) {
+            const option = document.createElement('option');
+            option.value = selectedFile;
+            option.textContent = selectedFile;
+            examSelectEl.appendChild(option);
+        }
+        examSelectEl.value = selectedFile;
+        if (pageParams.get('locked') === '1') {
+            examToolbarEl.hidden = true;
+            lockedNoteEl.classList.add('visible');
+        }
+        examSelectEl.addEventListener('change', event => {
+            const url = new URL(location.href);
+            if (event.target.value) url.searchParams.set('data', event.target.value);
+            else url.searchParams.delete('data');
+            url.searchParams.delete('locked');
+            location.assign(url.href);
+        });
+        document.getElementById('open-dedicated-btn').addEventListener('click', () => {
+            const url = new URL(location.href);
+            url.searchParams.set('locked', '1');
+            window.open(url.href, '_blank', 'noopener');
+        });
+        // 題庫 JS 須與母版位於同一資料夾，並將資料指定給 window.examData。
+        async function loadLinkedExam() {
+            const file = new URLSearchParams(location.search).get('data');
+            if (!file) return;
+            if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\.js$/i.test(file)) {
+                throw new Error('題庫檔名只可使用英文字母、數字、連字號與底線，並以 .js 結尾。');
+            }
+            window.examData = undefined;
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = file;
+                script.onload = resolve;
+                script.onerror = () => reject(new Error('無法載入題庫 JS：' + file));
+                document.head.appendChild(script);
+            });
+            const data = window.examData;
+            if (!data || typeof data !== 'object' || !Array.isArray(data.questions) || data.questions.length === 0) {
+                throw new Error('題庫必須提供非空的 questions 陣列。');
+            }
+            const fields = ['school', 'schoolYear', 'semester', 'grade', 'examNumber', 'subject'];
+            if (fields.some(key => typeof data[key] !== 'string' && typeof data[key] !== 'number') ||
+                fields.some(key => !String(data[key]).trim())) {
+                throw new Error('題庫缺少學校、學年度、學期、年級、考次或科目。');
+            }
+            if (!data.questions.every(q => q && typeof q.section === 'string' && q.section.trim() &&
+                typeof q.displayId === 'string' && q.displayId.trim() &&
+                typeof q.question === 'string' && q.question.trim() &&
+                (q.preamble === null || typeof q.preamble === 'string') &&
+                (q.options === null || (Array.isArray(q.options) && q.options.every(o => typeof o === 'string'))))) {
+                throw new Error('題目格式不正確；請檢查 section、displayId、preamble、question、options。');
+            }
+            questions = data.questions;
+            const title = `${data.school}${data.schoolYear}學年度第${data.semester}學期${data.grade}年級第${data.examNumber}次段考【${data.subject}科】試題卷`;
+            document.title = title;
+            const titleEl = document.getElementById('exam-title');
+            titleEl.textContent = title;
+            titleEl.setAttribute('aria-label', title);
+        }
+        async function init() {
+            try { await loadLinkedExam(); } catch (error) {
+                console.error(error);
+                document.getElementById("sr-status").textContent = error.message + " 已顯示母版測試題。";
+                alert(error.message + " 已顯示母版測試題。");
+            }
             selectEl.innerHTML = '';
             let currentSection = "", currentOptgroup = null;
             questions.forEach((q, index) => {
@@ -787,7 +899,7 @@
             if (e.key === 'ArrowLeft') { prevBtn.click(); }
             else if (e.key === 'ArrowRight') { nextBtn.click(); }
         });
-        init();
+        void init();
     </script>
 </body>
 </html>

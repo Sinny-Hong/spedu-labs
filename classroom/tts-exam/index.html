@@ -32,58 +32,34 @@
     <div class="tools"><a href="../index.html">← 返回班務首頁</a><span id="status" role="status">正在建立考卷目錄……</span></div>
     <div id="exam-list" class="grid"></div>
   </main>
+  <script src="exam-catalog.js"></script>
   <script>
-    (()=>{
+    (() => {
       'use strict';
-      const API='https://api.github.com/repos/Sinny-Hong/spedu-labs/contents/classroom/tts-exam?ref=main';
-      const FALLBACK=['115-1G8s.html','115-1-grade2-physics.json','115-1-grade3-science.json'];
-      const list=document.getElementById('exam-list');
-      const status=document.getElementById('status');
-      const safeHtml=name=>/^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\.html$/i.test(name)&&!['index.html','exam_to_tts.html'].includes(name.toLowerCase());
-      const safeJson=name=>/^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\.json$/i.test(name);
-      const eligible=name=>safeHtml(name)||safeJson(name);
-      const fallbackTitle=name=>name.replace(/\.(html|json)$/i,'').replace(/[-_]/g,' ');
-      async function discover(){
-        if(!/^https?:$/.test(location.protocol))return FALLBACK;
-        try{
-          const response=await fetch(API,{cache:'no-store',headers:{Accept:'application/vnd.github+json'}});
-          if(!response.ok)throw Error(`HTTP ${response.status}`);
-          const entries=await response.json();
-          return entries.filter(item=>item.type==='file'&&eligible(item.name)).map(item=>item.name);
-        }catch(error){console.warn('考卷目錄掃描失敗，使用備援清單。',error);return FALLBACK}
+      const list = document.getElementById('exam-list');
+      const status = document.getElementById('status');
+      const exams = Array.isArray(window.examCatalog) ? window.examCatalog : [];
+      status.textContent = `共 ${exams.length} 份考卷`;
+      if (!exams.length) {
+        list.className = 'empty';
+        list.textContent = '目前沒有可開啟的考卷。';
+        return;
       }
-      async function details(name){
-        let title=fallbackTitle(name),count=null;
-        try{
-          const response=await fetch(encodeURIComponent(name),{cache:'no-store'});
-          if(!response.ok)throw Error(response.status);
-          if(safeJson(name)){
-            const data=await response.json();
-            if(!Array.isArray(data.questions))throw Error('題庫格式不正確');
-            title=String(data.title||title).trim()||title;
-            count=data.questions.length;
-          }else{
-            const html=await response.text();
-            title=new DOMParser().parseFromString(html,'text/html').title.trim()||title;
-          }
-        }catch(error){console.warn('無法讀取考卷標題：',name,error)}
-        const id=name.replace(/\.json$/i,'');
-        const href=safeJson(name)?`115-1G8s.html?exam=${encodeURIComponent(id)}&locked=1`:encodeURIComponent(name);
-        return {name,title,count,href,kind:safeJson(name)?'JSON 題庫':'獨立報讀卷'};
+      for (const exam of exams) {
+        if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\.js$/i.test(exam.file)) continue;
+        const card = document.createElement('a');
+        card.className = 'card';
+        card.href = `exam-to-tts-template.html?data=${encodeURIComponent(exam.file)}&locked=1`;
+        const tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.textContent = '報讀卷';
+        const heading = document.createElement('h2');
+        heading.textContent = exam.title;
+        const foot = document.createElement('small');
+        foot.textContent = `${exam.count} 題・開啟報讀卷 →`;
+        card.append(tag, heading, foot);
+        list.append(card);
       }
-      (async()=>{
-        const files=[...new Set((await discover()).filter(eligible))].sort((a,b)=>a.localeCompare(b,'zh-Hant',{numeric:true}));
-        const items=await Promise.all(files.map(details));
-        status.textContent=`共 ${items.length} 份考卷`;
-        if(!items.length){list.className='empty';list.textContent='資料夾目前沒有可開啟的考卷。';return}
-        for(const item of items){
-          const card=document.createElement('a');card.className='card';card.href=item.href;
-          const tag=document.createElement('span');tag.className='tag';tag.textContent=item.kind;
-          const heading=document.createElement('h2');heading.textContent=item.title;
-          const foot=document.createElement('small');foot.textContent=item.count===null?'開啟報讀卷 →':`${item.count} 題・開啟報讀卷 →`;
-          card.append(tag,heading,foot);list.append(card);
-        }
-      })();
     })();
   </script>
 </body>
