@@ -802,6 +802,26 @@
         const lockedNoteEl = document.getElementById('locked-note');
         const pageParams = new URLSearchParams(location.search);
         const selectedFile = pageParams.get('data') || '';
+        // GitHub Pages 不提供資料夾清單；線上以 GitHub API 掃描，失敗時沿用 exam-catalog.js。
+        async function discoverExamFiles() {
+            if (!/^https?:$/.test(location.protocol)) return;
+            try {
+                const response = await fetch('https://api.github.com/repos/Sinny-Hong/spedu-labs/contents/classroom/tts-exam?ref=main', {
+                    cache: 'no-store', headers: { Accept: 'application/vnd.github+json' }
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const files = await response.json();
+                for (const item of files) {
+                    if (item.type !== 'file' || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\.js$/i.test(item.name)
+                        || item.name.toLowerCase() === 'exam-catalog.js'
+                        || [...examSelectEl.options].some(option => option.value === item.name)) continue;
+                    const option = document.createElement('option');
+                    option.value = item.name;
+                    option.textContent = item.name.replace(/\.js$/i, '').replace(/[-_]/g, ' ');
+                    examSelectEl.appendChild(option);
+                }
+            } catch (error) { console.warn('考卷掃描失敗，保留備援清單。', error); }
+        }
         (window.examCatalog || []).forEach(exam => {
             const option = document.createElement('option');
             option.value = exam.file;
@@ -865,11 +885,14 @@
             questions = data.questions;
             const title = `${data.school}${data.schoolYear}學年度第${data.semester}學期${data.grade}年級第${data.examNumber}次段考【${data.subject}科】試題卷`;
             document.title = title;
+            const currentOption = [...examSelectEl.options].find(option => option.value === file);
+            if (currentOption) currentOption.textContent = `${title}（${questions.length} 題）`;
             const titleEl = document.getElementById('exam-title');
             titleEl.textContent = title;
             titleEl.setAttribute('aria-label', title);
         }
         async function init() {
+            await discoverExamFiles();
             try { await loadLinkedExam(); } catch (error) {
                 console.error(error);
                 document.getElementById("sr-status").textContent = error.message + " 已顯示母版測試題。";

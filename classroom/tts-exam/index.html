@@ -4,63 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>段考報讀卷｜總入口</title>
-  <style>
-    :root{color-scheme:light;--ink:#17324d;--teal:#0f766e;--line:#cbd8e1;--bg:#f1f6f7}
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);font-family:"Microsoft JhengHei","Noto Sans TC",Arial,sans-serif}
-    header{background:linear-gradient(135deg,#0f766e,#176b83);color:#fff;padding:25px max(18px,calc((100vw - 1080px)/2))}
-    header h1{margin:0;font-size:clamp(25px,3vw,34px)}
-    header p{margin:8px 0 0;line-height:1.6}
-    main{max-width:1080px;margin:0 auto;padding:22px 18px 50px}
-    .tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-    .tools a{color:var(--teal);font-weight:800}
-    #status{color:#526a78;font-size:14px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
-    .card{display:block;min-width:0;padding:20px;border:1px solid var(--line);border-top:4px solid var(--teal);border-radius:14px;background:#fff;color:inherit;text-decoration:none;box-shadow:0 4px 14px #17324d12;transition:transform .15s,box-shadow .15s}
-    .card:hover{transform:translateY(-2px);box-shadow:0 7px 18px #17324d22}
-    .card:focus-visible{outline:3px solid #e6aa32;outline-offset:3px}
-    .tag{display:inline-block;margin-bottom:10px;padding:3px 9px;border-radius:999px;background:#e2f3ef;color:#0b625c;font-size:12px;font-weight:800}
-    .card h2{margin:0;font-size:19px;line-height:1.5;overflow-wrap:anywhere}
-    .card small{display:block;margin-top:15px;color:#536b79;font-weight:800}
-    .empty{padding:25px;border:1px solid var(--line);border-radius:12px;background:#fff}
-    @media(max-width:520px){header{padding:20px 16px}main{padding:16px 12px 36px}.card{padding:17px}}
-  </style>
+  <script>location.replace('exam-to-tts-template.html?data=115-1-grade2-social.js'+location.hash)</script>
 </head>
 <body>
-  <header><h1>段考報讀卷｜總入口</h1><p>選擇考卷後，即可逐句點讀、整題播放與切換題號。</p></header>
-  <main>
-    <div class="tools"><a href="../index.html">← 返回班務首頁</a><span id="status" role="status">正在建立考卷目錄……</span></div>
-    <div id="exam-list" class="grid"></div>
-  </main>
-  <script src="exam-catalog.js"></script>
-  <script>
-    (() => {
-      'use strict';
-      const list = document.getElementById('exam-list');
-      const status = document.getElementById('status');
-      const exams = Array.isArray(window.examCatalog) ? window.examCatalog : [];
-      status.textContent = `共 ${exams.length} 份考卷`;
-      if (!exams.length) {
-        list.className = 'empty';
-        list.textContent = '目前沒有可開啟的考卷。';
-        return;
-      }
-      for (const exam of exams) {
-        if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,79}\.js$/i.test(exam.file)) continue;
-        const card = document.createElement('a');
-        card.className = 'card';
-        card.href = `exam-to-tts-template.html?data=${encodeURIComponent(exam.file)}&locked=1`;
-        const tag = document.createElement('span');
-        tag.className = 'tag';
-        tag.textContent = '報讀卷';
-        const heading = document.createElement('h2');
-        heading.textContent = exam.title;
-        const foot = document.createElement('small');
-        foot.textContent = `${exam.count} 題・開啟報讀卷 →`;
-        card.append(tag, heading, foot);
-        list.append(card);
-      }
-    })();
-  </script>
+  <p>正在開啟段考報讀卷……<a href="exam-to-tts-template.html?data=115-1-grade2-social.js">點此開啟</a></p>
 </body>
 </html>
