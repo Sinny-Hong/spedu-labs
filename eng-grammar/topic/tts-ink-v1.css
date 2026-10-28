@@ -6,4 +6,5 @@
 #inkLayer{position:absolute;left:0;top:0;width:100%;z-index:20;pointer-events:none;overflow:hidden}body.ink-enabled .paper{touch-action:none;cursor:crosshair}body.ink-enabled .paper button,body.ink-enabled .paper input,body.ink-enabled .paper select,body.ink-enabled .paper textarea{touch-action:manipulation;cursor:pointer}
 .module-notice{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);max-width:calc(100% - 24px);padding:8px 12px;border-radius:8px;background:#253345;color:white;z-index:80;font-size:14px;pointer-events:none}
 @media(max-width:650px){.toolbar{gap:5px}.toolbar button{padding:5px 8px}.ink-tools{left:3px}}
+@media(max-width:580px){.toolbar{flex-wrap:wrap}.toolbar strong{flex:1 1 100%;margin-right:0}}
 @media print{#inkLayer,.ink-tools,.module-notice{display:none!important}}
