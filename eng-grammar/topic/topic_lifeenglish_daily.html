@@ -1,0 +1,1846 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>《主題式生活英文》</title><style>
+:root{--ink:#253345;--muted:#64748b;--line:#cbd5e1;--blue:#2563eb;--green:#15803d;--red:#be123c;--paper:#fff;--bg:#eef2f7;--en:"Comic Sans MS","Comic Sans","Trebuchet MS",sans-serif;--zh:"Microsoft JhengHei","Noto Sans TC",sans-serif}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);font:16px/1.65 var(--zh);color:var(--ink)}button{font:inherit;cursor:pointer}button:focus-visible,.q:focus-visible{outline:2px solid var(--blue);outline-offset:2px}[hidden]{display:none!important}.en,.choice,.slot,.word-card{font-family:var(--en)}.toolbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:8px;background:#fffffff2;padding:8px 16px;border-bottom:1px solid var(--line);box-shadow:0 2px 8px #0001}.toolbar strong{margin-right:auto}.toolbar button,.actions button,.nav button,.print-menu button{border:1px solid #b9c5d4;background:#fff;border-radius:8px;padding:5px 10px;font-weight:700}.print-wrap{position:relative}.print-menu{position:absolute;right:0;top:calc(100% + 6px);width:135px;background:white;border:1px solid var(--line);border-radius:9px;box-shadow:0 8px 18px #0002;padding:5px}.print-menu button{display:block;width:100%;margin:3px 0;text-align:left}.nav{position:fixed;right:15px;top:55px;z-index:40;width:min(360px,calc(100% - 30px));max-height:70vh;overflow:auto;background:#fff;border:1px solid var(--line);box-shadow:0 8px 24px #0002;padding:12px;border-radius:10px}.nav button{display:block;width:100%;margin:4px 0;text-align:left}.book{width:min(210mm,calc(100% - 22px));margin:18px auto 60px}.paper{padding:13mm;background:var(--paper);border:1px solid #d8dee8;box-shadow:0 5px 18px #0001}.pagehead{display:flex;align-items:end;justify-content:space-between;gap:12px;border-bottom:2px solid #475569;padding-bottom:8px}.kicker{color:var(--muted);font-size:13px;font-weight:bold}.pagehead h1{font-size:25px;line-height:1.35;margin:2px 0}.student{white-space:nowrap;font-size:13px}.chapter-title{font-size:24px;margin:23px 0 6px;scroll-margin-top:74px}.chapter-note{color:var(--muted);margin:0 0 18px}.section{margin:16px 0 23px;scroll-margin-top:75px;break-inside:avoid;page-break-inside:avoid}.section.allow-split{break-inside:auto;page-break-inside:auto}.section-head{display:flex;align-items:center;gap:8px;padding:7px 9px;background:#f8fafc;border:1px solid #aab8ca;border-radius:8px;margin-bottom:9px;break-after:avoid}.section-head h3{font-size:18px;margin:0 auto 0 0}.actions{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.actions button{font-size:12px;padding:4px 9px}.score{font-size:12px;font-weight:800;color:var(--green);min-width:48px;text-align:right}.instruction{font-weight:600;color:#475569;margin:5px 0 8px}.q{display:grid;grid-template-columns:max-content minmax(0,1fr);align-items:start;gap:3px 8px;margin:7px 0;break-inside:avoid;page-break-inside:avoid}.q-prefix{font-weight:800;white-space:pre;min-width:55px}.q-main{min-width:0}.q-text{min-width:0}.options{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin-top:2px}.choice{padding:1px 5px;border:1px solid transparent;background:transparent;border-radius:6px;font-size:inherit;font-weight:400;color:inherit;line-height:1.6}.choice:hover{background:#eff6ff}.choice.selected{background:#dbeafe;border-color:#93c5fd;color:#1d4ed8}.choice.correct{background:#dcfce7;border-color:#86efac;color:var(--green)}.choice.answer{background:#fff1f2;border-color:#fda4af;color:var(--red)}.response{display:inline-block;min-width:3.2em;text-align:center;white-space:pre;color:#334155}.answer-on .response{color:var(--red);font-weight:800}.hint-word{border-radius:3px}.hint-on .hint-word{background:#fde68a;box-shadow:0 0 0 2px #fde68a}.slot{position:relative;display:inline-flex;align-items:center;justify-content:center;vertical-align:baseline;min-width:2.5em;max-width:100%;height:1.65em;border-bottom:1.5px solid #64748b;white-space:nowrap;padding:0 3px;font-weight:800}.slot.medium{min-width:7em}.slot.long{min-width:16em}.slot .solution{color:var(--red);visibility:hidden}.answer-on .slot .solution{visibility:visible}.slot .placeholder{visibility:visible}.answer-on .slot .placeholder{display:none}.answer-on .slot{background:#fff1f2}.plain-table,.rule-table{width:100%;table-layout:fixed;border-collapse:collapse;margin:10px 0;font-size:16px}.plain-table th,.plain-table td,.rule-table th,.rule-table td{border:1px solid #cbd5e1;padding:7px 6px;text-align:center;vertical-align:middle}.plain-table th,.rule-table th{background:#edf2f8}.cell-answer{display:inline-block;min-width:3em;min-height:1.5em;color:var(--red);font-weight:800;visibility:hidden}.answer-on .cell-answer{visibility:visible}.rule-table td{font-family:var(--en)}.rule-table .slot{font-size:15px}.match-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}.match-left{display:grid;gap:5px}.match-row{display:flex;gap:7px;align-items:baseline;padding:2px 5px;border:1px solid transparent;border-radius:6px;cursor:pointer}.match-row.active{background:#eff6ff;border-color:#93c5fd}.match-row.good{background:#dcfce7}.match-code{display:inline-block;min-width:3.3em;white-space:pre;font-weight:800}.match-bank{border:1px solid var(--line);border-radius:8px;padding:8px;display:grid;align-content:start;gap:4px}.bank-opt{text-align:left;border:1px solid transparent;border-radius:6px;background:#fff;padding:4px 6px}.bank-opt:hover,.bank-opt.active{background:#eff6ff;border-color:#93c5fd}.match-row .match-code .correct-code{color:var(--red)}.word-bank,.word-zone{display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-height:39px;margin:5px 0}.word-zone{border-bottom:2px solid #94a3b8}.word-card{border:1px solid #9aa9bb;background:#fff;border-radius:7px;padding:4px 8px;font-size:16px;font-weight:700}.word-card.used{opacity:.35}.word-zone .word-card{background:#dbeafe}.order-row{margin:11px 0;padding:3px 0;break-inside:avoid}.order-row.good .word-zone{border-color:var(--green)}.order-row .sentence-answer{color:var(--red);font-weight:800;display:none}.answer-on .order-row .word-bank,.answer-on .order-row .word-zone{display:none}.answer-on .order-row .sentence-answer{display:block}.sentence-row{margin:12px 0;break-inside:avoid}.sentence-zh{font-size:16px}.sentence-en{min-height:1.8em;border-bottom:1.5px solid #64748b;font:700 17px var(--en);color:var(--red);white-space:normal}.sentence-en .solution{visibility:hidden}.answer-on .sentence-en .solution{visibility:visible}.note{padding:8px 11px;background:#fff7ed;color:#9a3412;border-radius:7px}.sample{margin:7px 0}.footer{color:var(--muted);font-size:12px;margin-top:28px}.print-header{display:none}.print-page-id{display:none}
+@media(max-width:650px){.toolbar{padding:7px;flex-wrap:wrap}.toolbar strong{width:100%;font-size:14px}.book{width:100%;margin:8px auto}.paper{padding:18px 12px}.pagehead{align-items:start}.pagehead h1{font-size:23px}.student{font-size:11px}.section-head{flex-wrap:wrap}.actions{width:100%;justify-content:flex-end}.match-layout{gap:6px;grid-template-columns:1fr 1fr}.plain-table,.rule-table{font-size:13px}.rule-table .slot{font-size:12px}.plain-table th,.plain-table td,.rule-table th,.rule-table td{padding:5px 2px}.q-prefix{min-width:50px}.choice{padding:1px 3px}}
+@page{size:A4 portrait;margin:18mm 12mm 16mm;@bottom-right{content:"《主題式生活英文》　P" counter(page);font:9pt Arial;color:#64748b}}@media print{html,body{background:#fff!important;font-size:12pt;print-color-adjust:exact;-webkit-print-color-adjust:exact}.toolbar,.nav,.actions,.footer,.no-print{display:none!important}.book{width:auto;margin:0}.paper{border:0;box-shadow:none;padding:0}.pagehead h1{font-size:25px!important}.pagehead{margin-bottom:8mm}.section{break-inside:avoid;page-break-inside:avoid}.section.allow-split{break-inside:auto;page-break-inside:auto}.q,.order-row,.sentence-row{break-inside:avoid;page-break-inside:avoid}.section-head{break-after:avoid;page-break-after:avoid}.pagehead{break-inside:avoid}.choice{border-color:transparent!important;background:transparent!important;color:inherit!important}.choice.selected,.choice.correct,.choice.answer{border:0!important;background:transparent!important;color:inherit!important}.response,.match-code{color:#334155!important}.student-print .response{color:#334155!important}.student-print .response .chosen,.student-print .match-code .chosen{visibility:hidden!important}.teacher-print .response .chosen,.teacher-print .response .correct-code,.teacher-print .match-code .chosen{color:var(--red)!important;font-weight:800}.student-print .cell-answer,.student-print .slot .solution,.student-print .sentence-en .solution,.student-print .sentence-answer{visibility:hidden!important;display:none!important}.teacher-print .cell-answer,.teacher-print .slot .solution,.teacher-print .sentence-en .solution{visibility:visible!important}.teacher-print .answer-on .sentence-answer{display:block!important}.student-print .slot{background:transparent!important}.teacher-print .slot{background:#fff1f2!important}.match-row{border:0!important;background:transparent!important}.bank-opt{border:0!important;background:transparent!important}.hint-word{background:transparent!important;box-shadow:none!important}.plain-table,.rule-table{font-size:11pt}.word-bank{display:flex!important}.word-zone{min-height:26px}.student-print .word-zone>*{display:none!important}.teacher-print .order-row .word-bank,.teacher-print .order-row .word-zone{display:none!important}.teacher-print .order-row .sentence-answer{display:block!important}}
+/* v1.3: ○ × share one optical footprint; trailing controls belong to screen only. */
+.tf-choice{display:inline-flex;align-items:center;justify-content:center;width:2em;height:2em;padding:0;margin:0 2px;font-family:Arial,"Noto Sans Symbols 2",sans-serif;font-size:1em;font-weight:400;line-height:1;text-align:center;vertical-align:middle}
+.word-bank-print{display:none}
+.order-row{display:grid;grid-template-columns:minmax(0,max-content) minmax(0,1fr);column-gap:12px;align-items:center}
+.order-row .order-prompt,.sentence-zh{padding-left:2em;text-indent:-2em;line-height:1.9}
+.order-row .word-bank{margin:0;min-width:0}
+.order-row .word-zone,.order-row .sentence-answer{grid-column:1/-1;margin:4px 0 0 2em;min-width:0}
+.word-zone .word-card{color:#1d4ed8;border-color:#93c5fd}
+.sentence-row{display:grid;grid-template-columns:minmax(0,max-content) minmax(12em,1fr);align-items:baseline;column-gap:12px;line-height:1.9}
+.sentence-en{min-width:0;min-height:2em;line-height:1.9}
+.sentence-en .solution{display:none}
+.answer-on .sentence-en .solution{display:inline}
+.sentence-hint{display:none;color:#163f78;font:700 15px/1.5 var(--en)}
+.hint-on .sentence-hint{display:inline}
+@media(max-width:800px){.order-row,.sentence-row{grid-template-columns:minmax(0,1fr)}.order-row .word-bank{margin-left:2em}.sentence-en{margin-left:2em}}
+.order-row .sentence-answer{box-sizing:border-box;min-height:1.8em;border-bottom:1.5px solid #64748b;padding:1px 3px 3px;line-height:1.55;white-space:normal}
+@media print{
+  #tf .tf-choice{display:none!important}
+  .sentence-hint{display:none!important}
+  .teacher-print .sentence-en .solution{display:inline!important}
+  .order-row{display:grid;grid-template-columns:minmax(0,max-content) minmax(0,1fr);column-gap:8px}
+  .word-bank-print{grid-column:2}
+  .order-row .word-zone,.order-row .sentence-answer{grid-column:1/-1}
+  .word-bank{display:none!important}
+  .word-bank-print{display:block!important;font-size:inherit;font-weight:400;line-height:1.6;padding:2px 0;white-space:normal;overflow-wrap:anywhere}
+  .word-zone{border-bottom:1.5px solid #64748b!important;min-height:1.8em!important}
+  .teacher-print .order-row .sentence-answer{display:block!important;border-bottom:1.5px solid #64748b!important}
+  .student-print .order-row .sentence-answer{display:none!important}
+  .teacher-print .word-bank-print,.student-print .word-bank-print{display:block!important}
+}
+
+/* Final v1.3 spacing and clean exam print layout. */
+.q-prefix:not(.response){min-width:1.5em}
+.order-row,.sentence-row{grid-template-columns:fit-content(45%) minmax(0,1fr);align-items:baseline}
+.sentence-en,.order-row .order-prompt,.sentence-zh{overflow-wrap:anywhere;line-height:1.9}
+.answer-on .sentence-hint{display:none}
+@media(max-width:650px){.order-row,.sentence-row{grid-template-columns:minmax(0,1fr)}.order-row .word-bank{margin-left:2em}.sentence-row .sentence-en{margin-left:2em}}
+@media(min-width:651px){.sentence-row .sentence-en{margin-left:0}.order-row .word-bank{margin-left:0}}
+@media print{
+ .section-head{border:0!important;background:transparent!important;border-radius:0;box-shadow:none;padding:0;margin-bottom:9px}
+ .section,.section.allow-split{break-inside:avoid;page-break-inside:avoid}
+ .section-head,.chapter-title{break-after:avoid;page-break-after:avoid}
+ .plain-table,.rule-table{break-inside:avoid;page-break-inside:avoid}
+ .order-row,.sentence-row{grid-template-columns:fit-content(45%) minmax(0,1fr);column-gap:8px}
+ .sentence-row .sentence-en{margin-left:0}
+ .teacher-print [data-type="circle"] .choice.answer{color:var(--red)!important;background:#fff1f2!important;border:1px solid #fda4af!important}
+}
+
+/* Answer codes use the same three visual states as their options. */
+.chosen{display:inline-block;min-width:1.25em;line-height:1.35;border-radius:4px;text-align:center}
+.q:has(.choice.selected) .chosen,.match-row[data-value] .chosen{color:#1d4ed8;background:#dbeafe}
+.q:has(.choice.correct) .chosen,.match-row.good .chosen{color:var(--green);background:#dcfce7}
+.answer-on .q:has(.choice) .chosen,.answer-on .match-row .chosen{color:var(--red);background:#fff1f2}
+@media print{
+ .student-print .chosen{background:transparent!important}
+ .teacher-print .answer-on .chosen{color:var(--red)!important;background:#fff1f2!important}
+}
+
+/* Table multi-select uses the existing selected/correct/answer palette. */
+.multi-choice{font:inherit;color:inherit;border:1px solid transparent;background:transparent;border-radius:6px;padding:4px 6px;cursor:pointer;max-width:100%;overflow-wrap:anywhere}
+.multi-choice.selected{color:#1d4ed8;background:#dbeafe;border-color:#93c5fd}
+.multi-choice.correct{color:var(--green);background:#dcfce7;border-color:#86efac}
+.answer-on .multi-choice[data-correct="true"]{color:var(--red);background:#fff1f2;border-color:#fda4af}
+@media print{.multi-choice{border:0!important;background:transparent!important;color:inherit!important;padding:0}.teacher-print .multi-choice[data-correct="true"]{color:var(--red)!important;background:#fff1f2!important}}
+
+/* Full-cell targets retain the original subject-grid appearance. */
+.subject-table{border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.subject-table td{padding:0;border:0;border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0}
+.subject-table tr:last-child td{border-bottom:0}.subject-table td:last-child{border-right:0}
+.subject-table .multi-choice{display:block;width:100%;height:100%;min-height:46px;margin:0;border:0;border-radius:0;padding:9px 8px;font:800 17px/1.6 var(--en);color:inherit}
+.subject-table td:has(.selected){background:#dbeafe}.subject-table td:has(.correct){background:#dcfce7}
+.answer-on .subject-table td:has([data-correct="true"]){background:#fff1f2}
+.subject-table .multi-choice.selected{color:#1d4ed8}.subject-table .multi-choice.correct{color:var(--green)}.answer-on .subject-table .multi-choice[data-correct="true"]{color:var(--red)}
+@media print{.subject-table td{background:transparent!important}.subject-table .multi-choice{min-height:0;padding:7px 4px;font-size:inherit}.teacher-print .subject-table td:has([data-correct="true"]){background:#fff1f2!important}}
+
+/* Optional rewrite scaffolds and authored-position passage selection. */
+[data-type="rewrite"] .rewrite-q{margin:14px 0;break-inside:avoid}
+[data-type="rewrite"] .qtop{display:flex;justify-content:space-between;gap:12px;margin-bottom:7px}
+[data-type="rewrite"] .zh{font-weight:700;padding-left:2em;text-indent:-2em}
+[data-type="rewrite"] .sidehint{font-size:13px;color:var(--muted)}
+[data-type="rewrite"] .present-hint,[data-type="rewrite"] .word-hint{display:none}
+[data-type="rewrite"] .show-present .present-hint,[data-type="rewrite"] .show-word .word-hint{display:block}
+[data-type="rewrite"] .answerrow{display:grid;grid-template-columns:3em 28px minmax(0,1fr);align-items:baseline;gap:6px;margin:7px 0}
+[data-type="rewrite"] .kind{font-size:14px;font-weight:700}
+[data-type="rewrite"] .line-answer-btn{border:1px solid var(--line);border-radius:5px;background:white;font-size:12px;padding:2px;cursor:pointer}
+[data-type="rewrite"] .answerarea{border-bottom:1.5px solid #64748b;min-height:2em;font:700 17px/1.9 var(--en);min-width:0;overflow-wrap:anywhere}
+[data-type="rewrite"] .scaffold{display:none;min-height:2em}
+[data-type="rewrite"] .level-high .scaffold-high,[data-type="rewrite"] .level-low .scaffold-low,[data-type="rewrite"] .level-none .scaffold-none{display:block}
+[data-type="rewrite"] .trace{color:#9ca3af}
+[data-type="rewrite"] .wordblank{display:inline-block;border-bottom:1px solid #64748b;min-width:3em;margin:0 3px;height:1.5em;vertical-align:baseline}
+[data-type="rewrite"] .wordblank.short{min-width:2em}[data-type="rewrite"] .wordblank.long{min-width:5em}
+[data-type="rewrite"].answer-on .scaffold,[data-type="rewrite"] .show-answer .scaffold{display:none}
+[data-type="rewrite"].answer-on .answer-overlay,[data-type="rewrite"] .show-answer .answer-overlay{display:block;color:var(--red);background:#fff1f2}
+.hunt-text{font:17px/1.9 var(--en);overflow-wrap:anywhere}
+.hunt-word{font:inherit;line-height:inherit;color:inherit;background:transparent;border:1px solid transparent;border-radius:4px;padding:0 1px;cursor:pointer}
+.hunt-word.selected{color:#1d4ed8;background:#dbeafe;border-color:#93c5fd}.hunt-word.correct{color:var(--green);background:#dcfce7;border-color:#86efac}
+.answer-on .hunt-word[data-correct="true"]{color:var(--red);background:#fff1f2;border-color:#fda4af}
+@media(max-width:650px){[data-type="rewrite"] .qtop{display:block}[data-type="rewrite"] .sidehint{margin-left:2em}}
+@media print{[data-type="rewrite"] .answerrow{grid-template-columns:3em minmax(0,1fr)}[data-type="rewrite"] .line-answer-btn{display:none!important}[data-type="rewrite"] .answerarea{grid-column:2}.student-print [data-type="rewrite"] .answer-overlay{display:none!important}.student-print [data-type="rewrite"] .level-high .scaffold-high,.student-print [data-type="rewrite"] .level-low .scaffold-low,.student-print [data-type="rewrite"] .level-none .scaffold-none{display:block!important}.teacher-print [data-type="rewrite"] .scaffold{display:none!important}.teacher-print [data-type="rewrite"] .answer-overlay{display:block!important;color:var(--red);background:#fff1f2}.hunt-word{border:0!important;background:transparent!important;color:inherit!important;padding:0}.teacher-print .hunt-word[data-correct="true"]{color:var(--red)!important;background:#fff1f2!important}}
+
+/* Optional teaching displays; answer-state colors keep their existing meanings. */
+.teaching-note{border:1px solid #f5d898;border-left:5px solid #f59e0b;background:#fffbeb;border-radius:7px;padding:10px 12px;margin:10px 0;break-inside:avoid}
+.teaching-note>strong{display:block;font-size:17px}.teaching-note p{margin:4px 0 0;font-weight:700}
+.teaching-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.teaching-card{border:1px solid var(--line);border-radius:9px;background:#f8fafc;padding:12px 14px;min-width:0;break-inside:avoid}
+.teaching-card h4{font-size:17px;margin:0 0 5px}.teaching-card p{margin:0;line-height:1.6}
+.teaching-key{font-weight:800;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.teaching-clue{font-weight:700;background:#fef3c7;border-radius:3px;padding:0 2px;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:650px){.teaching-cards{grid-template-columns:minmax(0,1fr)}}
+@media print{.teaching-note,.teaching-card{break-inside:avoid;page-break-inside:avoid}.teaching-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.teaching-key,.teaching-clue{color:#000!important;text-decoration:underline}.teaching-clue{background:transparent!important}}
+</style><style id="v14-modules">
+/* v1.4 module: optional speech and independent document-anchored ink. */
+#ttsToggle[aria-pressed="true"],#inkToggle[aria-pressed="true"],.ink-tools button[aria-pressed="true"]{background:#dbeafe;border-color:#60a5fa;color:#163f78}
+.ink-tools{position:fixed;left:6px;top:50%;transform:translateY(-50%);z-index:60;display:grid;gap:5px;padding:5px;background:#fffffff2;border:1px solid var(--line);border-radius:9px;box-shadow:0 3px 12px #0002}
+.ink-tools button{display:grid;place-items:center;width:36px;height:38px;border:1px solid var(--line);border-radius:6px;background:white;font-size:19px;cursor:pointer}.ink-tools button svg{width:21px;height:21px}
+#inkLayer{position:absolute;left:0;top:0;width:100%;z-index:20;pointer-events:none;overflow:hidden}body.ink-enabled #inkLayer{pointer-events:auto;touch-action:none;cursor:crosshair}
+.module-notice{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);max-width:calc(100% - 24px);padding:8px 12px;border-radius:8px;background:#253345;color:white;z-index:80;font-size:14px;pointer-events:none}
+@media(max-width:650px){.toolbar{gap:5px}.toolbar button{padding:5px 8px}.ink-tools{left:3px}}
+@media print{#inkLayer,.ink-tools,.module-notice{display:none!important}}
+
+/* Each authored page contains one ten-question group and its own heading. */
+.paper{padding-top:6mm}.lesson-page{margin-bottom:36px}.lesson-page+.lesson-page{border-top:1px dashed var(--line);padding-top:18px}
+.pagehead{gap:12px}.pagehead h1{min-width:0;flex:1}.pagehead .chapter-title{font:inherit;margin:0;scroll-margin-top:74px}
+.q-text,.source-explanations .q-main{overflow-wrap:anywhere}.options .choice{font-family:var(--en),var(--zh);min-height:44px;text-align:left}
+.source-explanations{display:none;font-size:13pt;line-height:1.35}.answer-on .source-explanations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 18px}.source-explanations .q-main{white-space:pre-line}.source-explanations .q{margin:0;gap:0 5px}.source-explanations .q-prefix{min-width:1.5em}.explanation-section{margin-top:14px}
+[data-type="choice"] .q{font-size:14pt;line-height:1.55}[data-type="choice"] .choice{line-height:1.55}
+@media(max-width:650px){.pagehead{flex-wrap:wrap}.pagehead .student{width:100%}.q-prefix.response{min-width:4em}.options{gap:3px 8px}.options .choice{max-width:100%}.toolbar button,.actions button{min-height:40px}.answer-on .source-explanations{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-auto-flow:row}}
+@page{margin:8mm 8mm 12mm;@bottom-right{content:"主題式生活英文　P" counter(page)}}
+@media print{
+.lesson-page{margin:0;padding:0;break-before:page;page-break-before:always;break-inside:avoid;page-break-inside:avoid}.lesson-page:first-child{break-before:auto;page-break-before:auto}.lesson-page+.lesson-page{border:0;padding:0}
+.pagehead{margin:0 0 3mm;display:flex;flex-wrap:nowrap;align-items:baseline;gap:12px;break-after:avoid}.pagehead h1{font-size:25px!important}.pagehead .chapter-title{font:inherit;margin:0}.student{font-size:13px}
+.section{margin:0;break-inside:avoid;page-break-inside:avoid}.q{margin:8px 0}.options{gap:2px 8px}.options .choice{min-height:0}
+.source-explanations{display:none!important}.teacher-print .source-explanations{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 18px;font-size:13pt;line-height:1.35}.student-print .explanation-section{display:none!important}.source-explanations .q-main{color:var(--red)}.section-head .score{display:none!important}
+.teacher-print .lesson-page{line-height:1.55}.teacher-print [data-type="choice"] .q{margin:3px 0;font-size:14pt;line-height:1.4}.teacher-print .choice{line-height:1.4}.teacher-print .options{margin-top:2px}.teacher-print .explanation-section{margin-top:4mm;padding-top:1mm;border-top:1px solid var(--line)}.teacher-print .explanation-section .section-head{margin-bottom:6px}.teacher-print .explanation-section h3{font-size:13pt}.teacher-print .source-explanations .q{margin:0;line-height:1.35}
+}
+.explanation-column{display:grid;align-content:start;gap:5px}
+@media print{.teacher-print .source-explanations,.teacher-print .source-explanations .q{line-height:1.25}.teacher-print .explanation-column{gap:3px}}
+</style></head><body id="top"><header class="toolbar"><strong>《主題式生活英文》</strong><button id="ttsToggle" type="button" aria-pressed="false" title="TTS：一般英文點讀；互動題內長按點讀">🔇 TTS</button><button id="inkToggle" type="button" aria-pressed="false" aria-controls="inkTools">✎ 手寫</button><button id="navBtn" type="button">章節目錄</button><div class="print-wrap"><button id="printBtn" type="button" aria-expanded="false">列印 ▾</button><div id="printMenu" class="print-menu" hidden=""><button data-print="student">學生版</button><button data-print="teacher">教師版</button></div></div></header><nav id="nav" class="nav" hidden="" aria-label="章節目錄"><strong>章節目錄</strong></nav><main class="book"><article class="paper">
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="chapter-title" id="chapter-1-1">《主題式生活英文》01｜網路與遊戲</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-1-1" data-type="choice"><div class="section-head"><h3>一、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）1.</span><div class="q-main"><div class="q-text">小明在玩手遊時，畫面上出現「<span class="hint-word en">Start</span>」，請問這是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）停止</button>
+<button type="button" class="choice" data-value="2">（2）結束</button>
+<button type="button" class="choice" data-value="3">（3）開始</button>
+<button type="button" class="choice" data-value="4">（4）退出</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）2.</span><div class="q-main"><div class="q-text">小華在電腦上看到「<span class="hint-word en">Login</span>」的按鈕，他應該點進去做什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）登出帳號</button>
+<button type="button" class="choice" data-value="2">（2）登入帳號</button>
+<button type="button" class="choice" data-value="3">（3）關閉電腦</button>
+<button type="button" class="choice" data-value="4">（4）下載遊戲</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）3.</span><div class="q-main"><div class="q-text">阿強玩遊戲時輸了，畫面出現「<span class="hint-word en">Game Over</span>」，請問這句話的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）遊戲結束</button>
+<button type="button" class="choice" data-value="2">（2）開始遊戲</button>
+<button type="button" class="choice" data-value="3">（3）繼續玩</button>
+<button type="button" class="choice" data-value="4">（4）升級成功</button>
+</div></div></div>
+<div class="q" data-correct="4"><span class="q-prefix response">（ <span class="chosen">　</span> ）4.</span><div class="q-main"><div class="q-text"><span class="hint-word en">Tina </span>要在網頁上搜尋資料，請問她應該使用哪一個英文單字？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Save</button>
+<button type="button" class="choice" data-value="2">（2）Play</button>
+<button type="button" class="choice" data-value="3">（3）Exit</button>
+<button type="button" class="choice" data-value="4">（4）Search</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）5.</span><div class="q-main"><div class="q-text">小美在網頁看到「<span class="hint-word en">Download</span>」，請問她按下去會發生什麼事？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）刪除資料</button>
+<button type="button" class="choice" data-value="2">（2）下載資料</button>
+<button type="button" class="choice" data-value="3">（3）儲存進度</button>
+<button type="button" class="choice" data-value="4">（4）登入網站</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）6.</span><div class="q-main"><div class="q-text">當你要離開遊戲時，通常會看到哪個英文單字？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Play</button>
+<button type="button" class="choice" data-value="2">（2）Exit</button>
+<button type="button" class="choice" data-value="3">（3）Start</button>
+<button type="button" class="choice" data-value="4">（4）Win</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）7.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Password</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）密碼</button>
+<button type="button" class="choice" data-value="2">（2）帳號</button>
+<button type="button" class="choice" data-value="3">（3）手機號碼</button>
+<button type="button" class="choice" data-value="4">（4）名字</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）8.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Username</span>」在登入時常會看到，它的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）密碼</button>
+<button type="button" class="choice" data-value="2">（2）照片</button>
+<button type="button" class="choice" data-value="3">（3）使用者名稱</button>
+<button type="button" class="choice" data-value="4">（4）登出</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）9.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Level up</span>」出現在遊戲裡時代表什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）退出</button>
+<button type="button" class="choice" data-value="2">（2）升級</button>
+<button type="button" class="choice" data-value="3">（3）刪除</button>
+<button type="button" class="choice" data-value="4">（4）失敗</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）10.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Save</span>」的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）開啟</button>
+<button type="button" class="choice" data-value="2">（2）關閉</button>
+<button type="button" class="choice" data-value="3">（3）儲存</button>
+<button type="button" class="choice" data-value="4">（4）搜尋</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-1-1" data-type="display"><div class="section-head"><h3>一、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">1.</span><div class="q-main">（3）Start 是遊戲中常看到的「開始」鍵。</div></div>
+<div class="q"><span class="q-prefix">2.</span><div class="q-main">（2）Login 是登入帳號，常見於遊戲或網站。</div></div>
+<div class="q"><span class="q-prefix">3.</span><div class="q-main">（1）Game Over 是遊戲結束時會看到的畫面。</div></div>
+<div class="q"><span class="q-prefix">4.</span><div class="q-main">（4）Search 是搜尋資料或物品的意思。</div></div>
+<div class="q"><span class="q-prefix">5.</span><div class="q-main">（2）Download 是下載檔案、APP、遊戲等。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">6.</span><div class="q-main">（2）Exit 是離開、關閉的意思。</div></div>
+<div class="q"><span class="q-prefix">7.</span><div class="q-main">（1）Password 是登入時要輸入的「密碼」。</div></div>
+<div class="q"><span class="q-prefix">8.</span><div class="q-main">（3）Username 是「使用者名稱」，通常跟密碼一起使用。</div></div>
+<div class="q"><span class="q-prefix">9.</span><div class="q-main">（2）Level up 是「升級」，常在遊戲裡看到。</div></div>
+<div class="q"><span class="q-prefix">10.</span><div class="q-main">（3）Save 是「儲存」進度，玩遊戲時會用到。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="topic-label" id="chapter-1-2">《主題式生活英文》01｜網路與遊戲</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-1-2" data-type="choice"><div class="section-head"><h3>二、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）11.</span><div class="q-main"><div class="q-text">當你想看別人拍的影片，應該去點哪一個網站？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Google</button>
+<button type="button" class="choice" data-value="2">（2）YouTube</button>
+<button type="button" class="choice" data-value="3">（3）Facebook</button>
+<button type="button" class="choice" data-value="4">（4）LINE</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）12.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Play</span>」這個字在遊戲中最常出現，它是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）玩</button>
+<button type="button" class="choice" data-value="2">（2）關</button>
+<button type="button" class="choice" data-value="3">（3）睡</button>
+<button type="button" class="choice" data-value="4">（4）寫</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）13.</span><div class="q-main"><div class="q-text">你在手機上看到「<span class="hint-word en">App</span>」，它是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）照片</button>
+<button type="button" class="choice" data-value="2">（2）應用程式</button>
+<button type="button" class="choice" data-value="3">（3）影片</button>
+<button type="button" class="choice" data-value="4">（4）音樂</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）14.</span><div class="q-main"><div class="q-text">網頁常會寫「<span class="hint-word en">Click here</span>」，請問這是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）點這裡</button>
+<button type="button" class="choice" data-value="2">（2）按退出</button>
+<button type="button" class="choice" data-value="3">（3）寫名字</button>
+<button type="button" class="choice" data-value="4">（4）登入帳號</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）15.</span><div class="q-main"><div class="q-text">想把照片從手機傳給朋友，最常看到的按鈕是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Print</button>
+<button type="button" class="choice" data-value="2">（2）Save</button>
+<button type="button" class="choice" data-value="3">（3）Send</button>
+<button type="button" class="choice" data-value="4">（4）Search</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）16.</span><div class="q-main"><div class="q-text">遊戲中出現「<span class="hint-word en">Win</span>」這個字，請問它是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）失敗</button>
+<button type="button" class="choice" data-value="2">（2）暫停</button>
+<button type="button" class="choice" data-value="3">（3）贏了</button>
+<button type="button" class="choice" data-value="4">（4）重來</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）17.</span><div class="q-main"><div class="q-text">你在手機上看到「<span class="hint-word en">Update</span>」，請問它代表？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）刪除遊戲</button>
+<button type="button" class="choice" data-value="2">（2）升級更新</button>
+<button type="button" class="choice" data-value="3">（3）重新登入</button>
+<button type="button" class="choice" data-value="4">（4）退出</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）18.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Setting</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）設定</button>
+<button type="button" class="choice" data-value="2">（2）開始</button>
+<button type="button" class="choice" data-value="3">（3）結束</button>
+<button type="button" class="choice" data-value="4">（4）存檔</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）19.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Online game</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）網路上玩的遊戲</button>
+<button type="button" class="choice" data-value="2">（2）書本上的遊戲</button>
+<button type="button" class="choice" data-value="3">（3）紙上的遊戲</button>
+<button type="button" class="choice" data-value="4">（4）學校玩的遊戲</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）20.</span><div class="q-main"><div class="q-text">如果你玩遊戲「<span class="hint-word en">Lose</span>」了，代表？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）贏了</button>
+<button type="button" class="choice" data-value="2">（2）升級</button>
+<button type="button" class="choice" data-value="3">（3）輸了</button>
+<button type="button" class="choice" data-value="4">（4）儲存</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-1-2" data-type="display"><div class="section-head"><h3>二、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">11.</span><div class="q-main">（2）YouTube 是可以看影片的網站或APP。</div></div>
+<div class="q"><span class="q-prefix">12.</span><div class="q-main">（1）Play 是「玩」的意思，常見於遊戲按鈕上。</div></div>
+<div class="q"><span class="q-prefix">13.</span><div class="q-main">（2）App 是「應用程式」，手機裡很多都是App。</div></div>
+<div class="q"><span class="q-prefix">14.</span><div class="q-main">（1）Click here 是「點這裡」，常出現在網頁上。</div></div>
+<div class="q"><span class="q-prefix">15.</span><div class="q-main">（3）Send 是「傳送」，可傳照片、訊息。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">16.</span><div class="q-main">（3）Win 是「贏」的意思，打遊戲贏了會看到。</div></div>
+<div class="q"><span class="q-prefix">17.</span><div class="q-main">（2）Update 是「更新」，讓App變得更好用。</div></div>
+<div class="q"><span class="q-prefix">18.</span><div class="q-main">（1）Setting 是「設定」，可調整聲音、語言等。</div></div>
+<div class="q"><span class="q-prefix">19.</span><div class="q-main">（1）Online game 是「連線遊戲」，需要網路才能玩。</div></div>
+<div class="q"><span class="q-prefix">20.</span><div class="q-main">（3）Lose 是「輸了」，遊戲沒贏會看到。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="chapter-title" id="chapter-2-1">《主題式生活英文》02｜食物與菜單</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-2-1" data-type="choice"><div class="section-head"><h3>一、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）1.</span><div class="q-main"><div class="q-text">小明去餐廳看到「<span class="hint-word en">menu</span>」，請問這是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）地圖</button>
+<button type="button" class="choice" data-value="2">（2）菜單</button>
+<button type="button" class="choice" data-value="3">（3）名字</button>
+<button type="button" class="choice" data-value="4">（4）電話</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）2.</span><div class="q-main"><div class="q-text">麥當勞的薯條英文是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）rice</button>
+<button type="button" class="choice" data-value="2">（2）fries</button>
+<button type="button" class="choice" data-value="3">（3）fish</button>
+<button type="button" class="choice" data-value="4">（4）milk</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）3.</span><div class="q-main"><div class="q-text">早餐店常有「<span class="hint-word en">toast</span>」，這是什麼食物？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）蛋餅</button>
+<button type="button" class="choice" data-value="2">（2）吐司</button>
+<button type="button" class="choice" data-value="3">（3）漢堡</button>
+<button type="button" class="choice" data-value="4">（4）飯</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）4.</span><div class="q-main"><div class="q-text">請問「<span class="hint-word en">milk</span>」是什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）果汁</button>
+<button type="button" class="choice" data-value="2">（2）牛奶</button>
+<button type="button" class="choice" data-value="3">（3）汽水</button>
+<button type="button" class="choice" data-value="4">（4）咖啡</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）5.</span><div class="q-main"><div class="q-text"><span class="hint-word en">Tina </span>喜歡吃「<span class="hint-word en">hamburger</span>」，她最可能在吃？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）三明治</button>
+<button type="button" class="choice" data-value="2">（2）漢堡</button>
+<button type="button" class="choice" data-value="3">（3）餅乾</button>
+<button type="button" class="choice" data-value="4">（4）蛋糕</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）6.</span><div class="q-main"><div class="q-text">如果你看到「<span class="hint-word en">juice</span>」，這是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）果汁</button>
+<button type="button" class="choice" data-value="2">（2）牛肉</button>
+<button type="button" class="choice" data-value="3">（3）麵包</button>
+<button type="button" class="choice" data-value="4">（4）糖果</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）7.</span><div class="q-main"><div class="q-text">小美想喝「<span class="hint-word en">coffee</span>」，她應該去？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）書店</button>
+<button type="button" class="choice" data-value="2">（2）加油站</button>
+<button type="button" class="choice" data-value="3">（3）咖啡廳</button>
+<button type="button" class="choice" data-value="4">（4）服飾店</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）8.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">cake</span>」是什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）雞肉</button>
+<button type="button" class="choice" data-value="2">（2）蛋糕</button>
+<button type="button" class="choice" data-value="3">（3）薯條</button>
+<button type="button" class="choice" data-value="4">（4）湯</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）9.</span><div class="q-main"><div class="q-text">早餐常見的「<span class="hint-word en">egg</span>」，是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）麵條</button>
+<button type="button" class="choice" data-value="2">（2）蛋</button>
+<button type="button" class="choice" data-value="3">（3）牛奶</button>
+<button type="button" class="choice" data-value="4">（4）湯</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）10.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">water</span>」是什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）果汁</button>
+<button type="button" class="choice" data-value="2">（2）牛奶</button>
+<button type="button" class="choice" data-value="3">（3）水</button>
+<button type="button" class="choice" data-value="4">（4）汽水</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-2-1" data-type="display"><div class="section-head"><h3>一、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">1.</span><div class="q-main">（2）菜單：menu 是菜單。</div></div>
+<div class="q"><span class="q-prefix">2.</span><div class="q-main">（2）fries：是薯條。</div></div>
+<div class="q"><span class="q-prefix">3.</span><div class="q-main">（2）吐司：toast 是烤吐司。</div></div>
+<div class="q"><span class="q-prefix">4.</span><div class="q-main">（2）牛奶：milk 是牛奶。</div></div>
+<div class="q"><span class="q-prefix">5.</span><div class="q-main">（2）漢堡：hamburger 就是漢堡。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">6.</span><div class="q-main">（1）果汁：juice 是果汁。</div></div>
+<div class="q"><span class="q-prefix">7.</span><div class="q-main">（3）咖啡廳：coffee 是咖啡。</div></div>
+<div class="q"><span class="q-prefix">8.</span><div class="q-main">（2）蛋糕：cake 是蛋糕。</div></div>
+<div class="q"><span class="q-prefix">9.</span><div class="q-main">（2）蛋：egg 是雞蛋。</div></div>
+<div class="q"><span class="q-prefix">10.</span><div class="q-main">（3）水：water 是水。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="topic-label" id="chapter-2-2">《主題式生活英文》02｜食物與菜單</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-2-2" data-type="choice"><div class="section-head"><h3>二、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）11.</span><div class="q-main"><div class="q-text">餐廳菜單上看到「<span class="hint-word en">beef</span>」，這是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）豬肉</button>
+<button type="button" class="choice" data-value="2">（2）雞肉</button>
+<button type="button" class="choice" data-value="3">（3）牛肉</button>
+<button type="button" class="choice" data-value="4">（4）魚肉</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）12.</span><div class="q-main"><div class="q-text">小強在吃「<span class="hint-word en">noodles</span>」，他吃的是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）飯</button>
+<button type="button" class="choice" data-value="2">（2）麵</button>
+<button type="button" class="choice" data-value="3">（3）湯</button>
+<button type="button" class="choice" data-value="4">（4）餅乾</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）13.</span><div class="q-main"><div class="q-text">如果你要點飲料，應該找哪一區？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Drink</button>
+<button type="button" class="choice" data-value="2">（2）Dessert</button>
+<button type="button" class="choice" data-value="3">（3）Main course</button>
+<button type="button" class="choice" data-value="4">（4）Soup</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）14.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">ice cream</span>」是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）蛋糕</button>
+<button type="button" class="choice" data-value="2">（2）湯</button>
+<button type="button" class="choice" data-value="3">（3）冰淇淋</button>
+<button type="button" class="choice" data-value="4">（4）牛奶</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）15.</span><div class="q-main"><div class="q-text"><span class="hint-word en">Tina </span>喜歡甜點，她應該點？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）salad</button>
+<button type="button" class="choice" data-value="2">（2）dessert</button>
+<button type="button" class="choice" data-value="3">（3）steak</button>
+<button type="button" class="choice" data-value="4">（4）sandwich</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）16.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">fish</span>」是什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）豬肉</button>
+<button type="button" class="choice" data-value="2">（2）雞肉</button>
+<button type="button" class="choice" data-value="3">（3）魚</button>
+<button type="button" class="choice" data-value="4">（4）牛肉</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）17.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">rice</span>」是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）蛋糕</button>
+<button type="button" class="choice" data-value="2">（2）飯</button>
+<button type="button" class="choice" data-value="3">（3）麵</button>
+<button type="button" class="choice" data-value="4">（4）餅乾</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）18.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">salad</span>」的中文意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）沙拉</button>
+<button type="button" class="choice" data-value="2">（2）飲料</button>
+<button type="button" class="choice" data-value="3">（3）熱湯</button>
+<button type="button" class="choice" data-value="4">（4）冰淇淋</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）19.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">chicken</span>」是什麼肉？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）豬肉</button>
+<button type="button" class="choice" data-value="2">（2）雞肉</button>
+<button type="button" class="choice" data-value="3">（3）魚肉</button>
+<button type="button" class="choice" data-value="4">（4）牛肉</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）20.</span><div class="q-main"><div class="q-text">菜單上「<span class="hint-word en">dessert</span>」通常出現在哪裡？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）開胃菜前面</button>
+<button type="button" class="choice" data-value="2">（2）主餐後面</button>
+<button type="button" class="choice" data-value="3">（3）飲料旁邊</button>
+<button type="button" class="choice" data-value="4">（4）湯的下面</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-2-2" data-type="display"><div class="section-head"><h3>二、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">11.</span><div class="q-main">（3）牛肉：beef 是牛肉。</div></div>
+<div class="q"><span class="q-prefix">12.</span><div class="q-main">（2）麵：noodles 是麵條。</div></div>
+<div class="q"><span class="q-prefix">13.</span><div class="q-main">（1）Drink：飲料的區域。</div></div>
+<div class="q"><span class="q-prefix">14.</span><div class="q-main">（3）冰淇淋：ice cream 是冰淇淋。</div></div>
+<div class="q"><span class="q-prefix">15.</span><div class="q-main">（2）dessert：甜點。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">16.</span><div class="q-main">（3）魚：fish 是魚。</div></div>
+<div class="q"><span class="q-prefix">17.</span><div class="q-main">（2）飯：rice 是米飯。</div></div>
+<div class="q"><span class="q-prefix">18.</span><div class="q-main">（1）沙拉：salad 是沙拉。</div></div>
+<div class="q"><span class="q-prefix">19.</span><div class="q-main">（2）雞肉：chicken 是雞肉。</div></div>
+<div class="q"><span class="q-prefix">20.</span><div class="q-main">（2）主餐後面：dessert 是飯後甜點。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="chapter-title" id="chapter-3-1">《主題式生活英文》03｜招牌與路標</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-3-1" data-type="choice"><div class="section-head"><h3>一、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）1.</span><div class="q-main"><div class="q-text">小明看到超商門口寫著「<span class="hint-word en">Open</span>」，請問這表示？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）關門</button>
+<button type="button" class="choice" data-value="2">（2）打開</button>
+<button type="button" class="choice" data-value="3">（3）停止</button>
+<button type="button" class="choice" data-value="4">（4）請排隊</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）2.</span><div class="q-main"><div class="q-text">路邊的標誌寫「<span class="hint-word en">Stop</span>」，意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）開始</button>
+<button type="button" class="choice" data-value="2">（2）跑步</button>
+<button type="button" class="choice" data-value="3">（3）停止</button>
+<button type="button" class="choice" data-value="4">（4）左轉</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）3.</span><div class="q-main"><div class="q-text">在藥局門口看到「<span class="hint-word en">Pharmacy</span>」，這是哪一種店？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）文具店</button>
+<button type="button" class="choice" data-value="2">（2）藥局</button>
+<button type="button" class="choice" data-value="3">（3）麵包店</button>
+<button type="button" class="choice" data-value="4">（4）玩具店</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）4.</span><div class="q-main"><div class="q-text">你在路上看到「<span class="hint-word en">Hospital</span>」的指標，這是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）學校</button>
+<button type="button" class="choice" data-value="2">（2）郵局</button>
+<button type="button" class="choice" data-value="3">（3）醫院</button>
+<button type="button" class="choice" data-value="4">（4）餐廳</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）5.</span><div class="q-main"><div class="q-text">如果看到招牌寫「<span class="hint-word en">Bakery</span>」，裡面賣的是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）藥品</button>
+<button type="button" class="choice" data-value="2">（2）衣服</button>
+<button type="button" class="choice" data-value="3">（3）麵包</button>
+<button type="button" class="choice" data-value="4">（4）水</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）6.</span><div class="q-main"><div class="q-text">招牌寫「<span class="hint-word en">Library</span>」是什麼地方？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）圖書館</button>
+<button type="button" class="choice" data-value="2">（2）咖啡店</button>
+<button type="button" class="choice" data-value="3">（3）鞋店</button>
+<button type="button" class="choice" data-value="4">（4）餐廳</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）7.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Exit</span>」的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）入口</button>
+<button type="button" class="choice" data-value="2">（2）廁所</button>
+<button type="button" class="choice" data-value="3">（3）出口</button>
+<button type="button" class="choice" data-value="4">（4）樓梯</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）8.</span><div class="q-main"><div class="q-text">停車場常看到「<span class="hint-word en">Parking</span>」，這表示？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）洗車區</button>
+<button type="button" class="choice" data-value="2">（2）停車場</button>
+<button type="button" class="choice" data-value="3">（3）公車站</button>
+<button type="button" class="choice" data-value="4">（4）紅綠燈</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）9.</span><div class="q-main"><div class="q-text">便利商店門口寫「24<span class="hint-word en">H</span>」，表示？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）24分鐘</button>
+<button type="button" class="choice" data-value="2">（2）只有白天營業</button>
+<button type="button" class="choice" data-value="3">（3）一天24小時都開</button>
+<button type="button" class="choice" data-value="4">（4）星期天公休</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）10.</span><div class="q-main"><div class="q-text">店門口寫「<span class="hint-word en">Close</span>」，代表？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）有開</button>
+<button type="button" class="choice" data-value="2">（2）請進來</button>
+<button type="button" class="choice" data-value="3">（3）打烊了</button>
+<button type="button" class="choice" data-value="4">（4）特價</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-3-1" data-type="display"><div class="section-head"><h3>一、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">1.</span><div class="q-main">（2）Open 是「打開」，表示店有營業。</div></div>
+<div class="q"><span class="q-prefix">2.</span><div class="q-main">（3）Stop 是「停止」，常見於紅綠燈或斑馬線旁。</div></div>
+<div class="q"><span class="q-prefix">3.</span><div class="q-main">（2）Pharmacy 是「藥局」。</div></div>
+<div class="q"><span class="q-prefix">4.</span><div class="q-main">（3）Hospital 是「醫院」。</div></div>
+<div class="q"><span class="q-prefix">5.</span><div class="q-main">（3）Bakery 是「麵包店」。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">6.</span><div class="q-main">（1）Library 是「圖書館」。</div></div>
+<div class="q"><span class="q-prefix">7.</span><div class="q-main">（3）Exit 是「出口」。</div></div>
+<div class="q"><span class="q-prefix">8.</span><div class="q-main">（2）Parking 表示「停車場」。</div></div>
+<div class="q"><span class="q-prefix">9.</span><div class="q-main">（3）24H 是「24小時營業」。</div></div>
+<div class="q"><span class="q-prefix">10.</span><div class="q-main">（3）Close 是「關門、打烊」。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="topic-label" id="chapter-3-2">《主題式生活英文》03｜招牌與路標</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-3-2" data-type="choice"><div class="section-head"><h3>二、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）11.</span><div class="q-main"><div class="q-text">如果你看到「<span class="hint-word en">Toilet</span>」的標誌，應該走去哪裡？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）餐廳</button>
+<button type="button" class="choice" data-value="2">（2）廁所</button>
+<button type="button" class="choice" data-value="3">（3）門口</button>
+<button type="button" class="choice" data-value="4">（4）櫃台</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）12.</span><div class="q-main"><div class="q-text">郵局的英文是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Market</button>
+<button type="button" class="choice" data-value="2">（2）Post Office</button>
+<button type="button" class="choice" data-value="3">（3）Clinic</button>
+<button type="button" class="choice" data-value="4">（4）Hotel</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）13.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Supermarket</span>」是什麼店？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）藥局</button>
+<button type="button" class="choice" data-value="2">（2）大賣場</button>
+<button type="button" class="choice" data-value="3">（3）冰店</button>
+<button type="button" class="choice" data-value="4">（4）咖啡廳</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）14.</span><div class="q-main"><div class="q-text">招牌寫「<span class="hint-word en">Restaurant</span>」是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）餐廳</button>
+<button type="button" class="choice" data-value="2">（2）銀行</button>
+<button type="button" class="choice" data-value="3">（3）書店</button>
+<button type="button" class="choice" data-value="4">（4）便利商店</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）15.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Bus Stop</span>」的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）火車站</button>
+<button type="button" class="choice" data-value="2">（2）公車站</button>
+<button type="button" class="choice" data-value="3">（3）加油站</button>
+<button type="button" class="choice" data-value="4">（4）停車場</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）16.</span><div class="q-main"><div class="q-text">如果招牌上寫「<span class="hint-word en">Clinic</span>」，你會去看？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）醫生</button>
+<button type="button" class="choice" data-value="2">（2）老師</button>
+<button type="button" class="choice" data-value="3">（3）廚師</button>
+<button type="button" class="choice" data-value="4">（4）司機</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）17.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">No Entry</span>」的標誌是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）歡迎進入</button>
+<button type="button" class="choice" data-value="2">（2）禁止進入</button>
+<button type="button" class="choice" data-value="3">（3）左轉</button>
+<button type="button" class="choice" data-value="4">（4）請排隊</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）18.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">School</span>」的標示是什麼地方？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）醫院</button>
+<button type="button" class="choice" data-value="2">（2）學校</button>
+<button type="button" class="choice" data-value="3">（3）百貨公司</button>
+<button type="button" class="choice" data-value="4">（4）公園</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）19.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Hotel</span>」是指？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）便利商店</button>
+<button type="button" class="choice" data-value="2">（2）學校</button>
+<button type="button" class="choice" data-value="3">（3）旅館</button>
+<button type="button" class="choice" data-value="4">（4）郵局</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）20.</span><div class="q-main"><div class="q-text">餐廳外貼著「<span class="hint-word en">Take Out</span>」，這表示？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）內用</button>
+<button type="button" class="choice" data-value="2">（2）可以外帶</button>
+<button type="button" class="choice" data-value="3">（3）今天休息</button>
+<button type="button" class="choice" data-value="4">（4）不能點餐</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-3-2" data-type="display"><div class="section-head"><h3>二、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">11.</span><div class="q-main">（2）Toilet 是「廁所」。</div></div>
+<div class="q"><span class="q-prefix">12.</span><div class="q-main">（2）Post Office 是「郵局」。</div></div>
+<div class="q"><span class="q-prefix">13.</span><div class="q-main">（2）Supermarket 是「超市、大賣場」。</div></div>
+<div class="q"><span class="q-prefix">14.</span><div class="q-main">（1）Restaurant 是「餐廳」。</div></div>
+<div class="q"><span class="q-prefix">15.</span><div class="q-main">（2）Bus Stop 是「公車站」。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">16.</span><div class="q-main">（1）Clinic 是「診所」，可看醫生。</div></div>
+<div class="q"><span class="q-prefix">17.</span><div class="q-main">（2）No Entry 是「禁止進入」。</div></div>
+<div class="q"><span class="q-prefix">18.</span><div class="q-main">（2）School 是「學校」。</div></div>
+<div class="q"><span class="q-prefix">19.</span><div class="q-main">（3）Hotel 是「旅館」。</div></div>
+<div class="q"><span class="q-prefix">20.</span><div class="q-main">（2）Take Out 是「外帶」。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="chapter-title" id="chapter-4-1">《主題式生活英文》04｜手機操作</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-4-1" data-type="choice"><div class="section-head"><h3>一、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）1.</span><div class="q-main"><div class="q-text">小偉看到手機設定裡有個「<span class="hint-word en">Wi-Fi</span>」，這是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）打電話功能</button>
+<button type="button" class="choice" data-value="2">（2）照相機</button>
+<button type="button" class="choice" data-value="3">（3）無線網路</button>
+<button type="button" class="choice" data-value="4">（4）地圖</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）2.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Bluetooth</span>」的功能可以用來做什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）藍牙連線</button>
+<button type="button" class="choice" data-value="2">（2）看電影</button>
+<button type="button" class="choice" data-value="3">（3）關手機</button>
+<button type="button" class="choice" data-value="4">（4）玩遊戲</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）3.</span><div class="q-main"><div class="q-text">當你按到「<span class="hint-word en">Settings</span>」，你進入了哪個功能？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）設定</button>
+<button type="button" class="choice" data-value="2">（2）拍照</button>
+<button type="button" class="choice" data-value="3">（3）下載</button>
+<button type="button" class="choice" data-value="4">（4）刪除</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）4.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Airplane Mode</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）地圖模式</button>
+<button type="button" class="choice" data-value="2">（2）靜音模式</button>
+<button type="button" class="choice" data-value="3">（3）飛航模式</button>
+<button type="button" class="choice" data-value="4">（4）遊戲模式</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）5.</span><div class="q-main"><div class="q-text">在手機裡看到「<span class="hint-word en">Camera</span>」，這是哪個功能？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）玩遊戲</button>
+<button type="button" class="choice" data-value="2">（2）相機拍照</button>
+<button type="button" class="choice" data-value="3">（3）鬧鐘</button>
+<button type="button" class="choice" data-value="4">（4）音樂</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）6.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Battery</span>」的意思是什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）螢幕</button>
+<button type="button" class="choice" data-value="2">（2）網路</button>
+<button type="button" class="choice" data-value="3">（3）電池</button>
+<button type="button" class="choice" data-value="4">（4）訊息</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）7.</span><div class="q-main"><div class="q-text">要設定手機鬧鐘，應該選哪個單字？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Gallery</button>
+<button type="button" class="choice" data-value="2">（2）Alarm</button>
+<button type="button" class="choice" data-value="3">（3）File</button>
+<button type="button" class="choice" data-value="4">（4）Clock</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）8.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">App Store</span>」是做什麼的？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）賣衣服</button>
+<button type="button" class="choice" data-value="2">（2）買食物</button>
+<button type="button" class="choice" data-value="3">（3）下載應用程式</button>
+<button type="button" class="choice" data-value="4">（4）看天氣</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）9.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Volume</span>」代表手機的哪個部分？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）螢幕大小</button>
+<button type="button" class="choice" data-value="2">（2）聲音大小</button>
+<button type="button" class="choice" data-value="3">（3）字體顏色</button>
+<button type="button" class="choice" data-value="4">（4）記憶體</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）10.</span><div class="q-main"><div class="q-text">手機上的「<span class="hint-word en">Message</span>」是什麼功能？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）傳簡訊</button>
+<button type="button" class="choice" data-value="2">（2）播音樂</button>
+<button type="button" class="choice" data-value="3">（3）看圖片</button>
+<button type="button" class="choice" data-value="4">（4）錄影</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-4-1" data-type="display"><div class="section-head"><h3>一、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">1.</span><div class="q-main">（3）Wi-Fi 是「無線網路」，手機連網會用到。</div></div>
+<div class="q"><span class="q-prefix">2.</span><div class="q-main">（1）Bluetooth 是「藍牙」，可以連耳機或傳檔案。</div></div>
+<div class="q"><span class="q-prefix">3.</span><div class="q-main">（1）Settings 是「設定」。</div></div>
+<div class="q"><span class="q-prefix">4.</span><div class="q-main">（3）Airplane Mode 是「飛航模式」，飛機上要用。</div></div>
+<div class="q"><span class="q-prefix">5.</span><div class="q-main">（2）Camera 是「相機」，用來拍照。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">6.</span><div class="q-main">（3）Battery 是「電池」，顯示電量。</div></div>
+<div class="q"><span class="q-prefix">7.</span><div class="q-main">（2）Alarm 是「鬧鐘」。</div></div>
+<div class="q"><span class="q-prefix">8.</span><div class="q-main">（3）App Store 是「應用程式商店」，可以下載App。</div></div>
+<div class="q"><span class="q-prefix">9.</span><div class="q-main">（2）Volume 是「音量」。</div></div>
+<div class="q"><span class="q-prefix">10.</span><div class="q-main">（1）Message 是「簡訊」。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="topic-label" id="chapter-4-2">《主題式生活英文》04｜手機操作</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-4-2" data-type="choice"><div class="section-head"><h3>二、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）11.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Download</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）上傳</button>
+<button type="button" class="choice" data-value="2">（2）刪除</button>
+<button type="button" class="choice" data-value="3">（3）下載</button>
+<button type="button" class="choice" data-value="4">（4）鎖定</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）12.</span><div class="q-main"><div class="q-text">如果你想刪掉<span class="hint-word en">App</span>，要按哪一個？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Open</button>
+<button type="button" class="choice" data-value="2">（2）Share</button>
+<button type="button" class="choice" data-value="3">（3）Delete</button>
+<button type="button" class="choice" data-value="4">（4）Play</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）13.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Update</span>」表示什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）關閉</button>
+<button type="button" class="choice" data-value="2">（2）更新</button>
+<button type="button" class="choice" data-value="3">（3）拍照</button>
+<button type="button" class="choice" data-value="4">（4）複製</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）14.</span><div class="q-main"><div class="q-text">手機裡看到「<span class="hint-word en">Gallery</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）音樂播放</button>
+<button type="button" class="choice" data-value="2">（2）圖片相簿</button>
+<button type="button" class="choice" data-value="3">（3）鬧鐘提醒</button>
+<button type="button" class="choice" data-value="4">（4）計算機</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）15.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Hotspot</span>」可以用來？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）掃描條碼</button>
+<button type="button" class="choice" data-value="2">（2）分享網路</button>
+<button type="button" class="choice" data-value="3">（3）記錄電話</button>
+<button type="button" class="choice" data-value="4">（4）設定鬧鐘</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）16.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Lock Screen</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）主畫面</button>
+<button type="button" class="choice" data-value="2">（2）下載區</button>
+<button type="button" class="choice" data-value="3">（3）鎖定畫面</button>
+<button type="button" class="choice" data-value="4">（4）鬧鐘頁面</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）17.</span><div class="q-main"><div class="q-text">如果你要用<span class="hint-word en">Google</span>地圖導航，會看到哪一個字？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Maps</button>
+<button type="button" class="choice" data-value="2">（2）Photo</button>
+<button type="button" class="choice" data-value="3">（3）Weather</button>
+<button type="button" class="choice" data-value="4">（4）Music</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）18.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Share</span>」代表的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）儲存</button>
+<button type="button" class="choice" data-value="2">（2）下載</button>
+<button type="button" class="choice" data-value="3">（3）分享</button>
+<button type="button" class="choice" data-value="4">（4）編輯</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）19.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Profile</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）個人資料</button>
+<button type="button" class="choice" data-value="2">（2）手機桌布</button>
+<button type="button" class="choice" data-value="3">（3）藍牙連線</button>
+<button type="button" class="choice" data-value="4">（4）電池狀態</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）20.</span><div class="q-main"><div class="q-text">如果<span class="hint-word en">App</span>上寫「<span class="hint-word en">Free</span>」，意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）免費的</button>
+<button type="button" class="choice" data-value="2">（2）壞掉的</button>
+<button type="button" class="choice" data-value="3">（3）試用的</button>
+<button type="button" class="choice" data-value="4">（4）關閉的</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-4-2" data-type="display"><div class="section-head"><h3>二、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">11.</span><div class="q-main">（3）Download 是「下載」。</div></div>
+<div class="q"><span class="q-prefix">12.</span><div class="q-main">（3）Delete 是「刪除」。</div></div>
+<div class="q"><span class="q-prefix">13.</span><div class="q-main">（2）Update 是「更新」。</div></div>
+<div class="q"><span class="q-prefix">14.</span><div class="q-main">（2）Gallery 是「相簿」。</div></div>
+<div class="q"><span class="q-prefix">15.</span><div class="q-main">（2）Hotspot 是「行動熱點」，可分享網路。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">16.</span><div class="q-main">（3）Lock Screen 是「鎖定畫面」。</div></div>
+<div class="q"><span class="q-prefix">17.</span><div class="q-main">（1）Maps 是「地圖」。</div></div>
+<div class="q"><span class="q-prefix">18.</span><div class="q-main">（3）Share 是「分享」。</div></div>
+<div class="q"><span class="q-prefix">19.</span><div class="q-main">（1）Profile 是「個人資料」。</div></div>
+<div class="q"><span class="q-prefix">20.</span><div class="q-main">（1）Free 是「免費的」。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="chapter-title" id="chapter-5-1">《主題式生活英文》05｜包裝標示</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-5-1" data-type="choice"><div class="section-head"><h3>一、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）1.</span><div class="q-main"><div class="q-text">我們常可以看到金錢的書寫方式，在數字前經常會加上<span class="hint-word en">NT</span>(如<span class="hint-word en">NT 1,000</span>)，請問「<span class="hint-word en">NT</span>」代表？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）人民幣</button>
+<button type="button" class="choice" data-value="2">（2）新台幣</button>
+<button type="button" class="choice" data-value="3">（3）歐元</button>
+<button type="button" class="choice" data-value="4">（4）美金</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）2.</span><div class="q-main"><div class="q-text">飲料瓶上寫「<span class="hint-word en">EXP. 2025.05.01</span>」，「<span class="hint-word en">EXP.</span>」的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）容量</button>
+<button type="button" class="choice" data-value="2">（2）保存期限</button>
+<button type="button" class="choice" data-value="3">（3）價格</button>
+<button type="button" class="choice" data-value="4">（4）製造商</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）3.</span><div class="q-main"><div class="q-text">食品包裝上寫「<span class="hint-word en">Sugar Free</span>」，表示什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）含糖</button>
+<button type="button" class="choice" data-value="2">（2）沒加糖</button>
+<button type="button" class="choice" data-value="3">（3）很甜</button>
+<button type="button" class="choice" data-value="4">（4）加很多鹽</button>
+</div></div></div>
+<div class="q" data-correct="4"><span class="q-prefix response">（ <span class="chosen">　</span> ）4.</span><div class="q-main"><div class="q-text">餅乾包裝上寫「<span class="hint-word en">Keep in a cool place</span>」，應該怎麼保存？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）冰箱</button>
+<button type="button" class="choice" data-value="2">（2）陽光下</button>
+<button type="button" class="choice" data-value="3">（3）熱水裡</button>
+<button type="button" class="choice" data-value="4">（4）冷的地方</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）5.</span><div class="q-main"><div class="q-text">一瓶牛奶上寫「<span class="hint-word en">Shake well before use</span>」，這是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）先加熱</button>
+<button type="button" class="choice" data-value="2">（2）喝之前搖一搖</button>
+<button type="button" class="choice" data-value="3">（3）放冰箱</button>
+<button type="button" class="choice" data-value="4">（4）不能喝</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）6.</span><div class="q-main"><div class="q-text">在瓶子上看到「<span class="hint-word en">Made in Taiwan</span>」，意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）台灣做的</button>
+<button type="button" class="choice" data-value="2">（2）美國做的</button>
+<button type="button" class="choice" data-value="3">（3）大陸做的</button>
+<button type="button" class="choice" data-value="4">（4）日本做的</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）7.</span><div class="q-main"><div class="q-text">食品包裝上寫「<span class="hint-word en">Do not eat</span>」，這句話是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）可以吃</button>
+<button type="button" class="choice" data-value="2">（2）非常好吃</button>
+<button type="button" class="choice" data-value="3">（3）不能吃</button>
+<button type="button" class="choice" data-value="4">（4）趁熱吃</button>
+</div></div></div>
+<div class="q" data-correct="4"><span class="q-prefix response">（ <span class="chosen">　</span> ）8.</span><div class="q-main"><div class="q-text">巧克力包裝上寫「<span class="hint-word en">Store in a dry place</span>」，這代表什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）放濕的地方</button>
+<button type="button" class="choice" data-value="2">（2）放冰箱</button>
+<button type="button" class="choice" data-value="3">（3）放熱水中</button>
+<button type="button" class="choice" data-value="4">（4）放乾燥的地方</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）9.</span><div class="q-main"><div class="q-text">麥片包裝上寫「<span class="hint-word en">Nutrition Facts</span>」，這是什麼資訊？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）營養資訊</button>
+<button type="button" class="choice" data-value="2">（2）保存期限</button>
+<button type="button" class="choice" data-value="3">（3）購買發票</button>
+<button type="button" class="choice" data-value="4">（4）價錢</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）10.</span><div class="q-main"><div class="q-text">包裝上寫「<span class="hint-word en">Open Here</span>」，這句話的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）這裡打開</button>
+<button type="button" class="choice" data-value="2">（2）這裡丟掉</button>
+<button type="button" class="choice" data-value="3">（3）這裡保存</button>
+<button type="button" class="choice" data-value="4">（4）這裡寫名字</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-5-1" data-type="display"><div class="section-head"><h3>一、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">1.</span><div class="q-main">（2）NT 是新台幣（New Taiwan Dollar）</div></div>
+<div class="q"><span class="q-prefix">2.</span><div class="q-main">（2）EXP 是「有效期限」（Expiration date）</div></div>
+<div class="q"><span class="q-prefix">3.</span><div class="q-main">（2）Sugar Free 是「無糖」的意思</div></div>
+<div class="q"><span class="q-prefix">4.</span><div class="q-main">（4）「Keep in a cool place」是「放在陰涼處」</div></div>
+<div class="q"><span class="q-prefix">5.</span><div class="q-main">（2）「Shake well before use」是「使用前請搖勻」</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">6.</span><div class="q-main">（1）「Made in Taiwan」是「台灣製造」</div></div>
+<div class="q"><span class="q-prefix">7.</span><div class="q-main">（3）「Do not eat」是「不要吃」的警告</div></div>
+<div class="q"><span class="q-prefix">8.</span><div class="q-main">（4）「Store in a dry place」是「放在乾燥處」</div></div>
+<div class="q"><span class="q-prefix">9.</span><div class="q-main">（1）「Nutrition Facts」是「營養成分表」</div></div>
+<div class="q"><span class="q-prefix">10.</span><div class="q-main">（1）「Open Here」是「這裡打開」</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="topic-label" id="chapter-5-2">《主題式生活英文》05｜包裝標示</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-5-2" data-type="choice"><div class="section-head"><h3>二、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）11.</span><div class="q-main"><div class="q-text">餅乾盒上看到「<span class="hint-word en">Net Weight: 150g</span>」，這代表？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）盒子大小</button>
+<button type="button" class="choice" data-value="2">（2）價格</button>
+<button type="button" class="choice" data-value="3">（3）重量150克</button>
+<button type="button" class="choice" data-value="4">（4）生產地</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）12.</span><div class="q-main"><div class="q-text">包裝上寫「<span class="hint-word en">Use By 2025.01.10</span>」，這表示？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）製造日</button>
+<button type="button" class="choice" data-value="2">（2）最後使用日</button>
+<button type="button" class="choice" data-value="3">（3）價格</button>
+<button type="button" class="choice" data-value="4">（4）保存方法</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）13.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Recycle</span>」這個單字是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）吃掉它</button>
+<button type="button" class="choice" data-value="2">（2）丟垃圾桶</button>
+<button type="button" class="choice" data-value="3">（3）回收利用</button>
+<button type="button" class="choice" data-value="4">（4）放冰箱</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）14.</span><div class="q-main"><div class="q-text">看到「<span class="hint-word en">Price</span>」這個單字，它是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）產品名稱</button>
+<button type="button" class="choice" data-value="2">（2）價格</button>
+<button type="button" class="choice" data-value="3">（3）製作方法</button>
+<button type="button" class="choice" data-value="4">（4）成分、原料</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）15.</span><div class="q-main"><div class="q-text">食品包裝上看到「<span class="hint-word en">Hot</span>」，表示？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）冰的</button>
+<button type="button" class="choice" data-value="2">（2）冷的</button>
+<button type="button" class="choice" data-value="3">（3）熱的</button>
+<button type="button" class="choice" data-value="4">（4）不能吃</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）16.</span><div class="q-main"><div class="q-text">包裝袋寫「<span class="hint-word en">Tear Here</span>」，應該怎麼做？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）在這裡撕開</button>
+<button type="button" class="choice" data-value="2">（2）這裡放冰箱</button>
+<button type="button" class="choice" data-value="3">（3）這裡放水</button>
+<button type="button" class="choice" data-value="4">（4）這裡加熱</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）17.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Best Before</span>」的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）製造日期</button>
+<button type="button" class="choice" data-value="2">（2）最便宜</button>
+<button type="button" class="choice" data-value="3">（3）最佳賞味期</button>
+<button type="button" class="choice" data-value="4">（4）使用方式</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）18.</span><div class="q-main"><div class="q-text">如果產品上寫「<span class="hint-word en">Frozen</span>」，應該放哪裡？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）桌上</button>
+<button type="button" class="choice" data-value="2">（2）微波爐</button>
+<button type="button" class="choice" data-value="3">（3）冷凍庫</button>
+<button type="button" class="choice" data-value="4">（4）抽屜</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）19.</span><div class="q-main"><div class="q-text">包裝上寫「<span class="hint-word en">Caution: Hot</span>」，這表示？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）冰冰的</button>
+<button type="button" class="choice" data-value="2">（2）注意，很燙！</button>
+<button type="button" class="choice" data-value="3">（3）可以冷藏</button>
+<button type="button" class="choice" data-value="4">（4）很好吃</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）20.</span><div class="q-main"><div class="q-text">食品包裝上寫「<span class="hint-word en">No Preservatives</span>」，是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）沒有添加防腐劑</button>
+<button type="button" class="choice" data-value="2">（2）沒有糖</button>
+<button type="button" class="choice" data-value="3">（3）沒有鹽</button>
+<button type="button" class="choice" data-value="4">（4）不能吃</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-5-2" data-type="display"><div class="section-head"><h3>二、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">11.</span><div class="q-main">（3）Net Weight 是「淨重」，150g 表示 150 公克</div></div>
+<div class="q"><span class="q-prefix">12.</span><div class="q-main">（2）「Use By」是「請在這日期前使用」</div></div>
+<div class="q"><span class="q-prefix">13.</span><div class="q-main">（3）Recycle 是「回收」的意思</div></div>
+<div class="q"><span class="q-prefix">14.</span><div class="q-main">（2）Price 是「價格」</div></div>
+<div class="q"><span class="q-prefix">15.</span><div class="q-main">（3）Hot 是「熱的」意思</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">16.</span><div class="q-main">（1）Tear Here 是「從這裡撕開」</div></div>
+<div class="q"><span class="q-prefix">17.</span><div class="q-main">（3）Best Before 是「最佳賞味期限」</div></div>
+<div class="q"><span class="q-prefix">18.</span><div class="q-main">（3）Frozen 是「冷凍的」，需放冷凍庫</div></div>
+<div class="q"><span class="q-prefix">19.</span><div class="q-main">（2）Caution: Hot 是「小心燙」的意思</div></div>
+<div class="q"><span class="q-prefix">20.</span><div class="q-main">（1）No Preservatives 是「不含防腐劑」</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="chapter-title" id="chapter-6-1">《主題式生活英文》06｜日常問候</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-6-1" data-type="choice"><div class="section-head"><h3>一、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）1.</span><div class="q-main"><div class="q-text">當你早上見到老師，應該說：</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Good night</button>
+<button type="button" class="choice" data-value="2">（2）Good morning</button>
+<button type="button" class="choice" data-value="3">（3）Goodbye</button>
+<button type="button" class="choice" data-value="4">（4）Sorry</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）2.</span><div class="q-main"><div class="q-text">當朋友對你說「<span class="hint-word en">Hello</span>」，你可以怎麼回？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）No!</button>
+<button type="button" class="choice" data-value="2">（2）Goodbye</button>
+<button type="button" class="choice" data-value="3">（3）Hello</button>
+<button type="button" class="choice" data-value="4">（4）Yes</button>
+</div></div></div>
+<div class="q" data-correct="4"><span class="q-prefix response">（ <span class="chosen">　</span> ）3.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">How are you?</span>」是在問什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）你幾歲？</button>
+<button type="button" class="choice" data-value="2">（2）你吃了嗎？</button>
+<button type="button" class="choice" data-value="3">（3）你在哪裡？</button>
+<button type="button" class="choice" data-value="4">（4）你好嗎？</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）4.</span><div class="q-main"><div class="q-text">當別人說「<span class="hint-word en">Thank you</span>」時，你可以怎麼回答？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Good morning</button>
+<button type="button" class="choice" data-value="2">（2）You’re welcome</button>
+<button type="button" class="choice" data-value="3">（3）Nice to meet you</button>
+<button type="button" class="choice" data-value="4">（4）Good job</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）5.</span><div class="q-main"><div class="q-text">如果朋友對你說「<span class="hint-word en">Goodbye</span>」，你該怎麼回？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Goodbye</button>
+<button type="button" class="choice" data-value="2">（2）Hi</button>
+<button type="button" class="choice" data-value="3">（3）Sorry</button>
+<button type="button" class="choice" data-value="4">（4）Thanks</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）6.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Nice to meet you</span>」的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）我喜歡你</button>
+<button type="button" class="choice" data-value="2">（2）再見</button>
+<button type="button" class="choice" data-value="3">（3）很高興認識你</button>
+<button type="button" class="choice" data-value="4">（4）謝謝你</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）7.</span><div class="q-main"><div class="q-text">當你打噴嚏，別人說「<span class="hint-word en">Bless you!</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）你好可愛</button>
+<button type="button" class="choice" data-value="2">（2）祝你健康</button>
+<button type="button" class="choice" data-value="3">（3）再見</button>
+<button type="button" class="choice" data-value="4">（4）加油</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）8.</span><div class="q-main"><div class="q-text">如果你晚到學校，應該說？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Good night</button>
+<button type="button" class="choice" data-value="2">（2）I’m sorry</button>
+<button type="button" class="choice" data-value="3">（3）Thank you</button>
+<button type="button" class="choice" data-value="4">（4）Good job</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）9.</span><div class="q-main"><div class="q-text">當你準備睡覺，會跟家人說什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Goodbye</button>
+<button type="button" class="choice" data-value="2">（2）Good night</button>
+<button type="button" class="choice" data-value="3">（3）Hello</button>
+<button type="button" class="choice" data-value="4">（4）I’m hungry</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）10.</span><div class="q-main"><div class="q-text">別人說「<span class="hint-word en">See you later!</span>」，你可以怎麼回？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Thank you</button>
+<button type="button" class="choice" data-value="2">（2）Yes!</button>
+<button type="button" class="choice" data-value="3">（3）See you</button>
+<button type="button" class="choice" data-value="4">（4）No!</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-6-1" data-type="display"><div class="section-head"><h3>一、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">1.</span><div class="q-main">（2）Good morning：早上好</div></div>
+<div class="q"><span class="q-prefix">2.</span><div class="q-main">（3）Hello：是對「Hello」的回應</div></div>
+<div class="q"><span class="q-prefix">3.</span><div class="q-main">（4）How are you 是「你好嗎？」</div></div>
+<div class="q"><span class="q-prefix">4.</span><div class="q-main">（2）You’re welcome 是回應「Thank you」</div></div>
+<div class="q"><span class="q-prefix">5.</span><div class="q-main">（1）Goodbye：再見</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">6.</span><div class="q-main">（3）Nice to meet you：很高興認識你</div></div>
+<div class="q"><span class="q-prefix">7.</span><div class="q-main">（2）Bless you 是祝福打噴嚏的人健康</div></div>
+<div class="q"><span class="q-prefix">8.</span><div class="q-main">（2）I’m sorry：表示對遲到的抱歉</div></div>
+<div class="q"><span class="q-prefix">9.</span><div class="q-main">（2）Good night：晚安</div></div>
+<div class="q"><span class="q-prefix">10.</span><div class="q-main">（3）See you：再見</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="topic-label" id="chapter-6-2">《主題式生活英文》06｜日常問候</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-6-2" data-type="choice"><div class="section-head"><h3>二、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）11.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Excuse me</span>」常用在哪裡？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）請讓我過一下</button>
+<button type="button" class="choice" data-value="2">（2）晚安</button>
+<button type="button" class="choice" data-value="3">（3）你吃了嗎</button>
+<button type="button" class="choice" data-value="4">（4）我很餓</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）12.</span><div class="q-main"><div class="q-text">當你遇到老師，要有禮貌地說：</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Yo!</button>
+<button type="button" class="choice" data-value="2">（2）Hi！</button>
+<button type="button" class="choice" data-value="3">（3）Good morning, teacher！</button>
+<button type="button" class="choice" data-value="4">（4）Bye</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）13.</span><div class="q-main"><div class="q-text">當你幫助朋友後，他說「<span class="hint-word en">Thanks!</span>」，你可以說：</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）I’m sorry</button>
+<button type="button" class="choice" data-value="2">（2）No problem</button>
+<button type="button" class="choice" data-value="3">（3）See you</button>
+<button type="button" class="choice" data-value="4">（4）Hi!</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）14.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">How old are you?</span>」是在問？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）你叫什麼名字？</button>
+<button type="button" class="choice" data-value="2">（2）你住哪裡？</button>
+<button type="button" class="choice" data-value="3">（3）你幾歲？</button>
+<button type="button" class="choice" data-value="4">（4）你餓不餓？</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）15.</span><div class="q-main"><div class="q-text">如果有人說「<span class="hint-word en">I’m fine, thank you</span>」，他是表示？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）他肚子餓</button>
+<button type="button" class="choice" data-value="2">（2）他很好，謝謝</button>
+<button type="button" class="choice" data-value="3">（3）他生氣了</button>
+<button type="button" class="choice" data-value="4">（4）他在玩手機</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）16.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Good afternoon</span>」通常用在什麼時間？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）早上</button>
+<button type="button" class="choice" data-value="2">（2）下午</button>
+<button type="button" class="choice" data-value="3">（3）晚上</button>
+<button type="button" class="choice" data-value="4">（4）半夜</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）17.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Sorry</span>」可以在什麼時候說？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）你晚到了</button>
+<button type="button" class="choice" data-value="2">（2）你吃飯</button>
+<button type="button" class="choice" data-value="3">（3）你在笑</button>
+<button type="button" class="choice" data-value="4">（4）你很高興</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）18.</span><div class="q-main"><div class="q-text">你要進別人房間前，應該說什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Come in！</button>
+<button type="button" class="choice" data-value="2">（2）Go away！</button>
+<button type="button" class="choice" data-value="3">（3）Can I come in？</button>
+<button type="button" class="choice" data-value="4">（4）Hi!</button>
+</div></div></div>
+<div class="q" data-correct="4"><span class="q-prefix response">（ <span class="chosen">　</span> ）19.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Hi</span>」和下面哪一個意思最接近？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）對不起</button>
+<button type="button" class="choice" data-value="2">（2）謝謝</button>
+<button type="button" class="choice" data-value="3">（3）再見</button>
+<button type="button" class="choice" data-value="4">（4）Hello</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）20.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Take care!</span>」常在什麼時候說？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）吃飯時</button>
+<button type="button" class="choice" data-value="2">（2）早上好</button>
+<button type="button" class="choice" data-value="3">（3）告別時關心對方</button>
+<button type="button" class="choice" data-value="4">（4）想打招呼</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-6-2" data-type="display"><div class="section-head"><h3>二、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">11.</span><div class="q-main">（1）Excuse me 用來請別人讓路或引起注意</div></div>
+<div class="q"><span class="q-prefix">12.</span><div class="q-main">（3）Good morning, teacher：禮貌問候老師</div></div>
+<div class="q"><span class="q-prefix">13.</span><div class="q-main">（2）No problem：沒問題，回應謝謝</div></div>
+<div class="q"><span class="q-prefix">14.</span><div class="q-main">（3）How old are you 是問年齡</div></div>
+<div class="q"><span class="q-prefix">15.</span><div class="q-main">（2）I’m fine 表示我很好</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">16.</span><div class="q-main">（2）Good afternoon 是下午用語</div></div>
+<div class="q"><span class="q-prefix">17.</span><div class="q-main">（1）Sorry 表示道歉</div></div>
+<div class="q"><span class="q-prefix">18.</span><div class="q-main">（3）Can I come in？是有禮貌的進門方式</div></div>
+<div class="q"><span class="q-prefix">19.</span><div class="q-main">（4）Hi 和 Hello 意思相近</div></div>
+<div class="q"><span class="q-prefix">20.</span><div class="q-main">（3）Take care：離開時對對方表示關心</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="chapter-title" id="chapter-7-1">《主題式生活英文》07｜校園英文</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-7-1" data-type="choice"><div class="section-head"><h3>一、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）1.</span><div class="q-main"><div class="q-text">老師會在 <span class="hint-word en">whiteboard </span>上寫字，請問 <span class="hint-word en">whiteboard </span>是什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）黑板</button>
+<button type="button" class="choice" data-value="2">（2）白板</button>
+<button type="button" class="choice" data-value="3">（3）地板</button>
+<button type="button" class="choice" data-value="4">（4）窗戶</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）2.</span><div class="q-main"><div class="q-text">看到教室門上寫「<span class="hint-word en">Push</span>」，請問應該？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）拉</button>
+<button type="button" class="choice" data-value="2">（2）關</button>
+<button type="button" class="choice" data-value="3">（3）推</button>
+<button type="button" class="choice" data-value="4">（4）開</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）3.</span><div class="q-main"><div class="q-text">在學校裡可以借書、看書的地方叫？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）office</button>
+<button type="button" class="choice" data-value="2">（2）library</button>
+<button type="button" class="choice" data-value="3">（3）gym</button>
+<button type="button" class="choice" data-value="4">（4）classroom</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）4.</span><div class="q-main"><div class="q-text">老師說「<span class="hint-word en">Sit down, please</span>」，你應該？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）站起來</button>
+<button type="button" class="choice" data-value="2">（2）走出去</button>
+<button type="button" class="choice" data-value="3">（3）坐下來</button>
+<button type="button" class="choice" data-value="4">（4）舉手</button>
+</div></div></div>
+<div class="q" data-correct="4"><span class="q-prefix response">（ <span class="chosen">　</span> ）5.</span><div class="q-main"><div class="q-text">老師上課常用 <span class="hint-word en">marker </span>寫字，<span class="hint-word en">marker </span>是什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）粉筆</button>
+<button type="button" class="choice" data-value="2">（2）鉛筆</button>
+<button type="button" class="choice" data-value="3">（3）螢光筆</button>
+<button type="button" class="choice" data-value="4">（4）白板筆</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）6.</span><div class="q-main"><div class="q-text">上課鐘響了，老師說「<span class="hint-word en">Time for class</span>」，意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）下課</button>
+<button type="button" class="choice" data-value="2">（2）上課時間到</button>
+<button type="button" class="choice" data-value="3">（3）休息</button>
+<button type="button" class="choice" data-value="4">（4）吃飯時間</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）7.</span><div class="q-main"><div class="q-text">學生肚子痛，可以去哪裡？英文是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）gym</button>
+<button type="button" class="choice" data-value="2">（2）cafeteria</button>
+<button type="button" class="choice" data-value="3">（3）nurse’s office</button>
+<button type="button" class="choice" data-value="4">（4）playground</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）8.</span><div class="q-main"><div class="q-text">老師說「<span class="hint-word en">Please line up</span>」，你應該？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）坐下</button>
+<button type="button" class="choice" data-value="2">（2）排隊</button>
+<button type="button" class="choice" data-value="3">（3）舉手</button>
+<button type="button" class="choice" data-value="4">（4）收書包</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）9.</span><div class="q-main"><div class="q-text">上課要使用的 <span class="hint-word en">book </span>是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）書</button>
+<button type="button" class="choice" data-value="2">（2）紙</button>
+<button type="button" class="choice" data-value="3">（3）椅子</button>
+<button type="button" class="choice" data-value="4">（4）桌子</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）10.</span><div class="q-main"><div class="q-text">.學生問問題，老師會說「<span class="hint-word en">Raise your hand</span>」，意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）安靜</button>
+<button type="button" class="choice" data-value="2">（2）起立</button>
+<button type="button" class="choice" data-value="3">（3）舉手</button>
+<button type="button" class="choice" data-value="4">（4）坐好</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-7-1" data-type="display"><div class="section-head"><h3>一、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">1.</span><div class="q-main">（2）Whiteboard 是「白板」，常用白板筆書寫。</div></div>
+<div class="q"><span class="q-prefix">2.</span><div class="q-main">（3）Push 是「推」，開門時推門進入。</div></div>
+<div class="q"><span class="q-prefix">3.</span><div class="q-main">（2）Library 是「圖書館」，可以借書看書。</div></div>
+<div class="q"><span class="q-prefix">4.</span><div class="q-main">（3）Sit down 是「坐下」。</div></div>
+<div class="q"><span class="q-prefix">5.</span><div class="q-main">（4）Marker 是「白板筆」。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">6.</span><div class="q-main">（2）Time for class 是「上課時間到了」。</div></div>
+<div class="q"><span class="q-prefix">7.</span><div class="q-main">（3）Nurse’s office 是「保健室」。</div></div>
+<div class="q"><span class="q-prefix">8.</span><div class="q-main">（2）Line up 是「排隊」。</div></div>
+<div class="q"><span class="q-prefix">9.</span><div class="q-main">（1）Book 是「書」。</div></div>
+<div class="q"><span class="q-prefix">10.</span><div class="q-main">（3）Raise your hand 是「舉手」。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="topic-label" id="chapter-7-2">《主題式生活英文》07｜校園英文</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-7-2" data-type="choice"><div class="section-head"><h3>二、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）11.</span><div class="q-main"><div class="q-text">上體育課的地方叫？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）library</button>
+<button type="button" class="choice" data-value="2">（2）gym</button>
+<button type="button" class="choice" data-value="3">（3）classroom</button>
+<button type="button" class="choice" data-value="4">（4）office</button>
+</div></div></div>
+<div class="q" data-correct="4"><span class="q-prefix response">（ <span class="chosen">　</span> ）12.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Good morning</span>」的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）午安</button>
+<button type="button" class="choice" data-value="2">（2）晚安</button>
+<button type="button" class="choice" data-value="3">（3）再見</button>
+<button type="button" class="choice" data-value="4">（4）早安</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）13.</span><div class="q-main"><div class="q-text">老師上課說「<span class="hint-word en">Open your book</span>」，你應該做什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）拿出便當</button>
+<button type="button" class="choice" data-value="2">（2）關書</button>
+<button type="button" class="choice" data-value="3">（3）打開書</button>
+<button type="button" class="choice" data-value="4">（4）玩手機</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）14.</span><div class="q-main"><div class="q-text">教室裡看到「<span class="hint-word en">clock</span>」，這是什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）筆</button>
+<button type="button" class="choice" data-value="2">（2）時鐘</button>
+<button type="button" class="choice" data-value="3">（3）椅子</button>
+<button type="button" class="choice" data-value="4">（4）包包</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）15.</span><div class="q-main"><div class="q-text">每天上課都要帶的 <span class="hint-word en">bag </span>是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）帽子</button>
+<button type="button" class="choice" data-value="2">（2）便當盒</button>
+<button type="button" class="choice" data-value="3">（3）書包</button>
+<button type="button" class="choice" data-value="4">（4）水壺</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）16.</span><div class="q-main"><div class="q-text">中午吃飯的地方叫 <span class="hint-word en">cafeteria</span>，這是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）操場</button>
+<button type="button" class="choice" data-value="2">（2）教室</button>
+<button type="button" class="choice" data-value="3">（3）餐廳</button>
+<button type="button" class="choice" data-value="4">（4）圖書館</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）17.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Goodbye</span>」的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）你好</button>
+<button type="button" class="choice" data-value="2">（2）再見</button>
+<button type="button" class="choice" data-value="3">（3）謝謝</button>
+<button type="button" class="choice" data-value="4">（4）對不起</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）18.</span><div class="q-main"><div class="q-text">老師說「<span class="hint-word en">Be quiet</span>」，是叫你？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）站起來</button>
+<button type="button" class="choice" data-value="2">（2）安靜</button>
+<button type="button" class="choice" data-value="3">（3）打掃</button>
+<button type="button" class="choice" data-value="4">（4）吃飯</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）19.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Teacher</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）學生</button>
+<button type="button" class="choice" data-value="2">（2）爸爸</button>
+<button type="button" class="choice" data-value="3">（3）老師</button>
+<button type="button" class="choice" data-value="4">（4）朋友</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）20.</span><div class="q-main"><div class="q-text">放學回家前要跟老師說？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Thank you</button>
+<button type="button" class="choice" data-value="2">（2）Goodbye</button>
+<button type="button" class="choice" data-value="3">（3）Welcome</button>
+<button type="button" class="choice" data-value="4">（4）Sorry</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-7-2" data-type="display"><div class="section-head"><h3>二、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">11.</span><div class="q-main">（2）Gym 是「體育館」。</div></div>
+<div class="q"><span class="q-prefix">12.</span><div class="q-main">（4）Good morning 是「早安」。</div></div>
+<div class="q"><span class="q-prefix">13.</span><div class="q-main">（3）Open your book 是「打開書」。</div></div>
+<div class="q"><span class="q-prefix">14.</span><div class="q-main">（2）Clock 是「時鐘」。</div></div>
+<div class="q"><span class="q-prefix">15.</span><div class="q-main">（3）Bag 是「書包」。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">16.</span><div class="q-main">（3）Cafeteria 是「學校餐廳」。</div></div>
+<div class="q"><span class="q-prefix">17.</span><div class="q-main">（2）Goodbye 是「再見」。</div></div>
+<div class="q"><span class="q-prefix">18.</span><div class="q-main">（2）Be quiet 是「保持安靜」。</div></div>
+<div class="q"><span class="q-prefix">19.</span><div class="q-main">（3）Teacher 是「老師」。</div></div>
+<div class="q"><span class="q-prefix">20.</span><div class="q-main">（2）放學道別時說 Goodbye 是「再見」。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="chapter-title" id="chapter-8-1">《主題式生活英文》08｜節日慶祝</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-8-1" data-type="choice"><div class="section-head"><h3>一、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）1.</span><div class="q-main"><div class="q-text">農曆新年我們會說「新年快樂」，英文是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Good night</button>
+<button type="button" class="choice" data-value="2">（2）Happy New Year</button>
+<button type="button" class="choice" data-value="3">（3）Good morning</button>
+<button type="button" class="choice" data-value="4">（4）See you</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）2.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Christmas</span>」是什麼節日？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）情人節</button>
+<button type="button" class="choice" data-value="2">（2）聖誕節</button>
+<button type="button" class="choice" data-value="3">（3）母親節</button>
+<button type="button" class="choice" data-value="4">（4）中秋節</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）3.</span><div class="q-main"><div class="q-text">情人節英文叫什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Mother’s Day</button>
+<button type="button" class="choice" data-value="2">（2）Valentine’s Day</button>
+<button type="button" class="choice" data-value="3">（3）Teacher’s Day</button>
+<button type="button" class="choice" data-value="4">（4）Halloween</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）4.</span><div class="q-main"><div class="q-text">誰來送聖誕禮物？英文是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Santa Claus</button>
+<button type="button" class="choice" data-value="2">（2）Snowman</button>
+<button type="button" class="choice" data-value="3">（3）Pumpkin</button>
+<button type="button" class="choice" data-value="4">（4）Angel</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）5.</span><div class="q-main"><div class="q-text">過生日時會吃什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）pizza</button>
+<button type="button" class="choice" data-value="2">（2）birthday cake</button>
+<button type="button" class="choice" data-value="3">（3）rice</button>
+<button type="button" class="choice" data-value="4">（4）chocolate</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）6.</span><div class="q-main"><div class="q-text">母親節常會送什麼花？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）rose</button>
+<button type="button" class="choice" data-value="2">（2）carnation</button>
+<button type="button" class="choice" data-value="3">（3）sunflower</button>
+<button type="button" class="choice" data-value="4">（4）tulip</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）7.</span><div class="q-main"><div class="q-text">過年時，長輩會給小朋友什麼紅紅的？英文是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）gift bag</button>
+<button type="button" class="choice" data-value="2">（2）red envelope</button>
+<button type="button" class="choice" data-value="3">（3）lucky card</button>
+<button type="button" class="choice" data-value="4">（4）pink box</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）8.</span><div class="q-main"><div class="q-text">萬聖節時常說的話是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Give me a kiss</button>
+<button type="button" class="choice" data-value="2">（2）Trick or treat</button>
+<button type="button" class="choice" data-value="3">（3）See you soon</button>
+<button type="button" class="choice" data-value="4">（4）Merry Christmas</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）9.</span><div class="q-main"><div class="q-text">我們在聖誕節、生日或情人節時常會「送禮物」，這個英文是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）present</button>
+<button type="button" class="choice" data-value="2">（2）fish</button>
+<button type="button" class="choice" data-value="3">（3）balloon</button>
+<button type="button" class="choice" data-value="4">（4）dinner</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）10.</span><div class="q-main"><div class="q-text">過節的時候，常常會掛什麼東西來裝飾家裡？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）chair</button>
+<button type="button" class="choice" data-value="2">（2）box</button>
+<button type="button" class="choice" data-value="3">（3）decorations</button>
+<button type="button" class="choice" data-value="4">（4）lamp</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-8-1" data-type="display"><div class="section-head"><h3>一、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">1.</span><div class="q-main">（2）Happy New Year 是新年快樂的英文。</div></div>
+<div class="q"><span class="q-prefix">2.</span><div class="q-main">（2）Christmas 是聖誕節，大家會說 Merry Christmas。</div></div>
+<div class="q"><span class="q-prefix">3.</span><div class="q-main">（2）Valentine’s Day 是情人節。</div></div>
+<div class="q"><span class="q-prefix">4.</span><div class="q-main">（1）Santa Claus 就是聖誕老公公。</div></div>
+<div class="q"><span class="q-prefix">5.</span><div class="q-main">（2）Birthday cake 是生日蛋糕。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">6.</span><div class="q-main">（2）Carnation 是康乃馨，母親節會送的花。</div></div>
+<div class="q"><span class="q-prefix">7.</span><div class="q-main">（2）Red envelope 是紅包，過年時會收到。</div></div>
+<div class="q"><span class="q-prefix">8.</span><div class="q-main">（2）Trick or treat 是萬聖節常說的話。</div></div>
+<div class="q"><span class="q-prefix">9.</span><div class="q-main">（1）Present 是禮物，過節或生日會送。</div></div>
+<div class="q"><span class="q-prefix">10.</span><div class="q-main">（3）Decorations 是裝飾品，過節會用。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="topic-label" id="chapter-8-2">《主題式生活英文》08｜節日慶祝</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-8-2" data-type="choice"><div class="section-head"><h3>二、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）11.</span><div class="q-main"><div class="q-text">萬聖節常看到一種橘色的「南瓜燈」，請問「南瓜」英文是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）apple</button>
+<button type="button" class="choice" data-value="2">（2）banana</button>
+<button type="button" class="choice" data-value="3">（3）pumpkin</button>
+<button type="button" class="choice" data-value="4">（4）candle</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）12.</span><div class="q-main"><div class="q-text">聖誕節常唱什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Christmas card</button>
+<button type="button" class="choice" data-value="2">（2）Christmas song</button>
+<button type="button" class="choice" data-value="3">（3）Christmas dance</button>
+<button type="button" class="choice" data-value="4">（4）Christmas food</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）13.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Happy Birthday</span>」的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）早安</button>
+<button type="button" class="choice" data-value="2">（2）生日快樂</button>
+<button type="button" class="choice" data-value="3">（3）晚安</button>
+<button type="button" class="choice" data-value="4">（4）新年快樂</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）14.</span><div class="q-main"><div class="q-text">情人節會送的東西是什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）shoes</button>
+<button type="button" class="choice" data-value="2">（2）hamburger</button>
+<button type="button" class="choice" data-value="3">（3）chocolate</button>
+<button type="button" class="choice" data-value="4">（4）cookie</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）15.</span><div class="q-main"><div class="q-text">生日派對時，在蛋糕上插的細長東西叫什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）pencil</button>
+<button type="button" class="choice" data-value="2">（2）straw</button>
+<button type="button" class="choice" data-value="3">（3）candles</button>
+<button type="button" class="choice" data-value="4">（4）cookies</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）16.</span><div class="q-main"><div class="q-text">聖誕節會看到一棵裝飾的樹叫「<span class="hint-word en">Christmas tree</span>」，上面常常掛？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）cup</button>
+<button type="button" class="choice" data-value="2">（2）light bulbs</button>
+<button type="button" class="choice" data-value="3">（3）lights（燈飾）</button>
+<button type="button" class="choice" data-value="4">（4）socks</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）17.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Teacher’s Day</span>」是什麼節日？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）老師節</button>
+<button type="button" class="choice" data-value="2">（2）兒童節</button>
+<button type="button" class="choice" data-value="3">（3）爸爸節</button>
+<button type="button" class="choice" data-value="4">（4）感恩節</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）18.</span><div class="q-main"><div class="q-text"><span class="hint-word en">Easter </span>這個節日通常會看到什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）月亮</button>
+<button type="button" class="choice" data-value="2">（2）聖誕老人</button>
+<button type="button" class="choice" data-value="3">（3）兔子和彩蛋</button>
+<button type="button" class="choice" data-value="4">（4）紅包</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）19.</span><div class="q-main"><div class="q-text">新年倒數時，天空會出現「煙火」，英文是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）fireplace</button>
+<button type="button" class="choice" data-value="2">（2）fireworks</button>
+<button type="button" class="choice" data-value="3">（3）fireman</button>
+<button type="button" class="choice" data-value="4">（4）firetruck</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）20.</span><div class="q-main"><div class="q-text">過生日時朋友會對你說？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Happy New Year</button>
+<button type="button" class="choice" data-value="2">（2）How old are you</button>
+<button type="button" class="choice" data-value="3">（3）Happy Birthday</button>
+<button type="button" class="choice" data-value="4">（4）Good luck</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-8-2" data-type="display"><div class="section-head"><h3>二、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">11.</span><div class="q-main">（3）Pumpkin 是南瓜，萬聖節常見。</div></div>
+<div class="q"><span class="q-prefix">12.</span><div class="q-main">（2）Christmas song 是聖誕節的歌曲。</div></div>
+<div class="q"><span class="q-prefix">13.</span><div class="q-main">（2）Happy Birthday 是生日快樂。</div></div>
+<div class="q"><span class="q-prefix">14.</span><div class="q-main">（3）Chocolate 是巧克力，情人節常送。</div></div>
+<div class="q"><span class="q-prefix">15.</span><div class="q-main">（3）Candles 是蠟燭，生日蛋糕上會插。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">16.</span><div class="q-main">（3）Lights 是燈飾，裝飾在 Christmas tree 上。</div></div>
+<div class="q"><span class="q-prefix">17.</span><div class="q-main">（1）Teacher’s Day 是教師節。</div></div>
+<div class="q"><span class="q-prefix">18.</span><div class="q-main">（3）復活節會看到兔子和彩蛋（Easter eggs）。</div></div>
+<div class="q"><span class="q-prefix">19.</span><div class="q-main">（2）Fireworks 是煙火，新年常會放。</div></div>
+<div class="q"><span class="q-prefix">20.</span><div class="q-main">（3）Happy Birthday 是生日祝福語。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="chapter-title" id="chapter-9-1">《主題式生活英文》09｜自我介紹</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-9-1" data-type="choice"><div class="section-head"><h3>一、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）1.</span><div class="q-main"><div class="q-text">下列哪一個英文單字是「名字」的意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）age</button>
+<button type="button" class="choice" data-value="2">（2）name</button>
+<button type="button" class="choice" data-value="3">（3）tall</button>
+<button type="button" class="choice" data-value="4">（4）boy</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）2.</span><div class="q-main"><div class="q-text">當別人問你「<span class="hint-word en">How are you?</span>」，你可以回答：</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）My name is Tim.</button>
+<button type="button" class="choice" data-value="2">（2）I’m fine.</button>
+<button type="button" class="choice" data-value="3">（3）I’m ten.</button>
+<button type="button" class="choice" data-value="4">（4）Goodbye.</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）3.</span><div class="q-main"><div class="q-text">下列哪一個是「年齡」的英文？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）name</button>
+<button type="button" class="choice" data-value="2">（2）age</button>
+<button type="button" class="choice" data-value="3">（3）height</button>
+<button type="button" class="choice" data-value="4">（4）school</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）4.</span><div class="q-main"><div class="q-text"><span class="hint-word en">I am a </span>______.（我是男生）</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）girl</button>
+<button type="button" class="choice" data-value="2">（2）tall</button>
+<button type="button" class="choice" data-value="3">（3）boy</button>
+<button type="button" class="choice" data-value="4">（4）student</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）5.</span><div class="q-main"><div class="q-text">下列哪一個是「我是學生」的正確英文？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）I student</button>
+<button type="button" class="choice" data-value="2">（2）I am student</button>
+<button type="button" class="choice" data-value="3">（3）I am a student</button>
+<button type="button" class="choice" data-value="4">（4）Am I student</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）6.</span><div class="q-main"><div class="q-text"><span class="hint-word en">My </span>______ <span class="hint-word en">is Lily.</span>（我的名字是 <span class="hint-word en">Lily</span>）</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）age</button>
+<button type="button" class="choice" data-value="2">（2）name</button>
+<button type="button" class="choice" data-value="3">（3）class</button>
+<button type="button" class="choice" data-value="4">（4）tall</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）7.</span><div class="q-main"><div class="q-text">當我們說「<span class="hint-word en">Nice to meet you.</span>」，意思是：</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）再見</button>
+<button type="button" class="choice" data-value="2">（2）謝謝</button>
+<button type="button" class="choice" data-value="3">（3）很高興認識你</button>
+<button type="button" class="choice" data-value="4">（4）對不起</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）8.</span><div class="q-main"><div class="q-text">當別人說「<span class="hint-word en">Thank you</span>」，我們可以回答：</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Goodbye</button>
+<button type="button" class="choice" data-value="2">（2）See you</button>
+<button type="button" class="choice" data-value="3">（3）You’re welcome</button>
+<button type="button" class="choice" data-value="4">（4）Hello</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）9.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">I am ten years old.</span>」的意思是：</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）我十歲了</button>
+<button type="button" class="choice" data-value="2">（2）我十點要回家</button>
+<button type="button" class="choice" data-value="3">（3）我家有十個人</button>
+<button type="button" class="choice" data-value="4">（4）我有十塊錢</button>
+</div></div></div>
+<div class="q" data-correct="4"><span class="q-prefix response">（ <span class="chosen">　</span> ）10.</span><div class="q-main"><div class="q-text">下列哪一句是「我來自台灣」？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）I from Taiwan</button>
+<button type="button" class="choice" data-value="2">（2）I am Taiwan</button>
+<button type="button" class="choice" data-value="3">（3）I come Taiwan</button>
+<button type="button" class="choice" data-value="4">（4）I am from Taiwan</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-9-1" data-type="display"><div class="section-head"><h3>一、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">1.</span><div class="q-main">（2）name 是名字的意思。</div></div>
+<div class="q"><span class="q-prefix">2.</span><div class="q-main">（2）I’m fine 是回答「你還好嗎？」的常見句。</div></div>
+<div class="q"><span class="q-prefix">3.</span><div class="q-main">（2）age 是年齡的英文。</div></div>
+<div class="q"><span class="q-prefix">4.</span><div class="q-main">（3）boy 是男生的意思。</div></div>
+<div class="q"><span class="q-prefix">5.</span><div class="q-main">（3）正確的句子是 I am a student。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">6.</span><div class="q-main">（2）My name is Lily 意思是我叫 Lily。</div></div>
+<div class="q"><span class="q-prefix">7.</span><div class="q-main">（3）Nice to meet you 是「很高興認識你」。</div></div>
+<div class="q"><span class="q-prefix">8.</span><div class="q-main">（3）回應 Thank you 用 You’re welcome。</div></div>
+<div class="q"><span class="q-prefix">9.</span><div class="q-main">（1）I am ten years old 是我十歲。</div></div>
+<div class="q"><span class="q-prefix">10.</span><div class="q-main">（4）I am from Taiwan 是正確用法。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="topic-label" id="chapter-9-2">《主題式生活英文》09｜自我介紹</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-9-2" data-type="choice"><div class="section-head"><h3>二、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）11.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">boy</span>」是指？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）女生</button>
+<button type="button" class="choice" data-value="2">（2）學生</button>
+<button type="button" class="choice" data-value="3">（3）男生</button>
+<button type="button" class="choice" data-value="4">（4）小孩</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）12.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">girl</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）男生</button>
+<button type="button" class="choice" data-value="2">（2）女孩</button>
+<button type="button" class="choice" data-value="3">（3）媽媽</button>
+<button type="button" class="choice" data-value="4">（4）朋友</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）13.</span><div class="q-main"><div class="q-text"><span class="hint-word en">What is your </span>______?（你叫什麼名字？）</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）age</button>
+<button type="button" class="choice" data-value="2">（2）name</button>
+<button type="button" class="choice" data-value="3">（3）height</button>
+<button type="button" class="choice" data-value="4">（4）food</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）14.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">classroom</span>」的意思是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）教室</button>
+<button type="button" class="choice" data-value="2">（2）課本</button>
+<button type="button" class="choice" data-value="3">（3）午餐</button>
+<button type="button" class="choice" data-value="4">（4）操場</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）15.</span><div class="q-main"><div class="q-text">當我們說「<span class="hint-word en">I like music</span>」，意思是：</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）我不喜歡音樂</button>
+<button type="button" class="choice" data-value="2">（2）我喜歡音樂</button>
+<button type="button" class="choice" data-value="3">（3）我會唱歌</button>
+<button type="button" class="choice" data-value="4">（4）我聽不懂音樂</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）16.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">student</span>」的意思是：</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）老師</button>
+<button type="button" class="choice" data-value="2">（2）校長</button>
+<button type="button" class="choice" data-value="3">（3）學生</button>
+<button type="button" class="choice" data-value="4">（4）父母</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）17.</span><div class="q-main"><div class="q-text">當你說「<span class="hint-word en">Good morning</span>」，你是在什麼時候說？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）晚上</button>
+<button type="button" class="choice" data-value="2">（2）清晨或早上</button>
+<button type="button" class="choice" data-value="3">（3）午餐時間</button>
+<button type="button" class="choice" data-value="4">（4）放學後</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）18.</span><div class="q-main"><div class="q-text">當別人說「<span class="hint-word en">Good night</span>」，表示：</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）早安</button>
+<button type="button" class="choice" data-value="2">（2）祝你好運</button>
+<button type="button" class="choice" data-value="3">（3）晚安</button>
+<button type="button" class="choice" data-value="4">（4）很高興</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）19.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">school</span>」是指？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）學校</button>
+<button type="button" class="choice" data-value="2">（2）球場</button>
+<button type="button" class="choice" data-value="3">（3）辦公室</button>
+<button type="button" class="choice" data-value="4">（4）房子</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）20.</span><div class="q-main"><div class="q-text">下列哪一句最適合用來自我介紹？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Where are you going?</button>
+<button type="button" class="choice" data-value="2">（2）This is my dog.</button>
+<button type="button" class="choice" data-value="3">（3）I am Andy.</button>
+<button type="button" class="choice" data-value="4">（4）Give me five.</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-9-2" data-type="display"><div class="section-head"><h3>二、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">11.</span><div class="q-main">（3）boy 是男生。</div></div>
+<div class="q"><span class="q-prefix">12.</span><div class="q-main">（2）girl 是女生。</div></div>
+<div class="q"><span class="q-prefix">13.</span><div class="q-main">（2）What is your name 是你叫什麼名字。</div></div>
+<div class="q"><span class="q-prefix">14.</span><div class="q-main">（1）classroom 是教室。</div></div>
+<div class="q"><span class="q-prefix">15.</span><div class="q-main">（2）I like music 是我喜歡音樂。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">16.</span><div class="q-main">（3）student 是學生。</div></div>
+<div class="q"><span class="q-prefix">17.</span><div class="q-main">（2）Good morning 是早上說的。</div></div>
+<div class="q"><span class="q-prefix">18.</span><div class="q-main">（3）Good night 是說晚安。</div></div>
+<div class="q"><span class="q-prefix">19.</span><div class="q-main">（1）school 是學校。</div></div>
+<div class="q"><span class="q-prefix">20.</span><div class="q-main">（3）I am Andy 是正確的自我介紹句。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="chapter-title" id="chapter-10-1">《主題式生活英文》10｜日期與時間</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-10-1" data-type="choice"><div class="section-head"><h3>一、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）1.</span><div class="q-main"><div class="q-text">下列哪一個是英文的「星期天」？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Monday</button>
+<button type="button" class="choice" data-value="2">（2）Tuesday</button>
+<button type="button" class="choice" data-value="3">（3）Sunday</button>
+<button type="button" class="choice" data-value="4">（4）Friday</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）2.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">There are 12 months in a year.</span>」這句話中，「<span class="hint-word en">months</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）星期</button>
+<button type="button" class="choice" data-value="2">（2）月份</button>
+<button type="button" class="choice" data-value="3">（3）小時</button>
+<button type="button" class="choice" data-value="4">（4）分鐘</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）3.</span><div class="q-main"><div class="q-text">英文的「<span class="hint-word en">January</span>」是指哪一個月份？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）三月</button>
+<button type="button" class="choice" data-value="2">（2）十二月</button>
+<button type="button" class="choice" data-value="3">（3）一月</button>
+<button type="button" class="choice" data-value="4">（4）六月</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）4.</span><div class="q-main"><div class="q-text">「7:30」的英文唸法是什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）seven thirty</button>
+<button type="button" class="choice" data-value="2">（2）seven hundred</button>
+<button type="button" class="choice" data-value="3">（3）thirty seven</button>
+<button type="button" class="choice" data-value="4">（4）thirteen seven</button>
+</div></div></div>
+<div class="q" data-correct="4"><span class="q-prefix response">（ <span class="chosen">　</span> ）5.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">year</span>」這個單字是指什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）月</button>
+<button type="button" class="choice" data-value="2">（2）週</button>
+<button type="button" class="choice" data-value="3">（3）日</button>
+<button type="button" class="choice" data-value="4">（4）年</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）6.</span><div class="q-main"><div class="q-text">如果今天是「<span class="hint-word en">Friday</span>」，那明天是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Monday</button>
+<button type="button" class="choice" data-value="2">（2）Saturday</button>
+<button type="button" class="choice" data-value="3">（3）Wednesday</button>
+<button type="button" class="choice" data-value="4">（4）Thursday</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）7.</span><div class="q-main"><div class="q-text">在英文中，生日常說「<span class="hint-word en">Happy </span>___!」</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）New Year</button>
+<button type="button" class="choice" data-value="2">（2）Holiday</button>
+<button type="button" class="choice" data-value="3">（3）Birthday</button>
+<button type="button" class="choice" data-value="4">（4）Today</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）8.</span><div class="q-main"><div class="q-text">哪一個英文是「星期三」？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）Wednesday</button>
+<button type="button" class="choice" data-value="2">（2）Tuesday</button>
+<button type="button" class="choice" data-value="3">（3）Friday</button>
+<button type="button" class="choice" data-value="4">（4）Monday</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）9.</span><div class="q-main"><div class="q-text">英文中的「<span class="hint-word en">minute</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）小時</button>
+<button type="button" class="choice" data-value="2">（2）分鐘</button>
+<button type="button" class="choice" data-value="3">（3）秒</button>
+<button type="button" class="choice" data-value="4">（4）週</button>
+</div></div></div>
+<div class="q" data-correct="1"><span class="q-prefix response">（ <span class="chosen">　</span> ）10.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">month</span>」和「<span class="hint-word en">months</span>」差別是什麼？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）months 是很多月</button>
+<button type="button" class="choice" data-value="2">（2）month 是星期</button>
+<button type="button" class="choice" data-value="3">（3）month 是分鐘</button>
+<button type="button" class="choice" data-value="4">（4）month 是日曆</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-10-1" data-type="display"><div class="section-head"><h3>一、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">1.</span><div class="q-main">（3）Sunday 是星期天。</div></div>
+<div class="q"><span class="q-prefix">2.</span><div class="q-main">（2）months 是「月份」的意思。</div></div>
+<div class="q"><span class="q-prefix">3.</span><div class="q-main">（3）January 是一月。</div></div>
+<div class="q"><span class="q-prefix">4.</span><div class="q-main">（1）7:30 念作 seven thirty。</div></div>
+<div class="q"><span class="q-prefix">5.</span><div class="q-main">（4）year 是「年」的意思。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">6.</span><div class="q-main">（2）Friday 後一天是 Saturday。</div></div>
+<div class="q"><span class="q-prefix">7.</span><div class="q-main">（3）生日常說 Happy Birthday！</div></div>
+<div class="q"><span class="q-prefix">8.</span><div class="q-main">（1）Wednesday 是星期三。</div></div>
+<div class="q"><span class="q-prefix">9.</span><div class="q-main">（2）minute 是「分鐘」。</div></div>
+<div class="q"><span class="q-prefix">10.</span><div class="q-main">（1）months 是 month 的複數，代表很多月。</div></div>
+</div></div>
+</section>
+</div>
+<div class="lesson-page question-page"><header class="pagehead"><h1><span class="topic-label" id="chapter-10-2">《主題式生活英文》10｜日期與時間</span></h1><div class="student">班級：______　姓名：____________</div></header>
+<section class="section quiz" id="life-10-2" data-type="choice"><div class="section-head"><h3>二、選選看</h3><div class="actions">
+<span class="score" aria-live="polite"></span><button data-act="hint">提示</button><button data-act="grade">批改</button>
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）11.</span><div class="q-main"><div class="q-text">下列哪一個英文是「十二月」？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）October</button>
+<button type="button" class="choice" data-value="2">（2）November</button>
+<button type="button" class="choice" data-value="3">（3）December</button>
+<button type="button" class="choice" data-value="4">（4）September</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）12.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">today</span>」是什麼意思？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）昨天</button>
+<button type="button" class="choice" data-value="2">（2）今天</button>
+<button type="button" class="choice" data-value="3">（3）明天</button>
+<button type="button" class="choice" data-value="4">（4）下星期</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）13.</span><div class="q-main"><div class="q-text">哪一個是「9:15」的正確英文？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）nine fifty</button>
+<button type="button" class="choice" data-value="2">（2）ninety fifteen</button>
+<button type="button" class="choice" data-value="3">（3）nine fifteen</button>
+<button type="button" class="choice" data-value="4">（4）five ninety</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）14.</span><div class="q-main"><div class="q-text">一週有幾天？英文是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）six days</button>
+<button type="button" class="choice" data-value="2">（2）seven days</button>
+<button type="button" class="choice" data-value="3">（3）five days</button>
+<button type="button" class="choice" data-value="4">（4）eight days</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）15.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">Monday</span>」是星期幾？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）星期天</button>
+<button type="button" class="choice" data-value="2">（2）星期五</button>
+<button type="button" class="choice" data-value="3">（3）星期一</button>
+<button type="button" class="choice" data-value="4">（4）星期三</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）16.</span><div class="q-main"><div class="q-text">如果現在是「<span class="hint-word en">noon</span>」，代表什麼時間？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）早上</button>
+<button type="button" class="choice" data-value="2">（2）中午</button>
+<button type="button" class="choice" data-value="3">（3）晚上</button>
+<button type="button" class="choice" data-value="4">（4）半夜</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）17.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">weekend</span>」是指什麼時候？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）週一</button>
+<button type="button" class="choice" data-value="2">（2）週末</button>
+<button type="button" class="choice" data-value="3">（3）週三</button>
+<button type="button" class="choice" data-value="4">（4）一個月</button>
+</div></div></div>
+<div class="q" data-correct="4"><span class="q-prefix response">（ <span class="chosen">　</span> ）18.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">April</span>」是指幾月？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）三月</button>
+<button type="button" class="choice" data-value="2">（2）五月</button>
+<button type="button" class="choice" data-value="3">（3）六月</button>
+<button type="button" class="choice" data-value="4">（4）四月</button>
+</div></div></div>
+<div class="q" data-correct="3"><span class="q-prefix response">（ <span class="chosen">　</span> ）19.</span><div class="q-main"><div class="q-text">英文中，「<span class="hint-word en">a.m.</span>」指的是？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）下午</button>
+<button type="button" class="choice" data-value="2">（2）中午</button>
+<button type="button" class="choice" data-value="3">（3）早上</button>
+<button type="button" class="choice" data-value="4">（4）晚上</button>
+</div></div></div>
+<div class="q" data-correct="2"><span class="q-prefix response">（ <span class="chosen">　</span> ）20.</span><div class="q-main"><div class="q-text">「<span class="hint-word en">p.m.</span>」指的是什麼時間？</div><div class="options">
+<button type="button" class="choice" data-value="1">（1）凌晨</button>
+<button type="button" class="choice" data-value="2">（2）晚上或下午</button>
+<button type="button" class="choice" data-value="3">（3）中午以前</button>
+<button type="button" class="choice" data-value="4">（4）清晨</button>
+</div></div></div>
+</section>
+<section class="section quiz explanation-section" id="explanation-10-2" data-type="display"><div class="section-head"><h3>二、解答與詳解</h3><div class="actions">
+<button data-act="clear">清空</button><button data-act="answer">解答</button></div></div>
+<div class="source-explanations"><div class="explanation-column">
+<div class="q"><span class="q-prefix">11.</span><div class="q-main">（3）December 是十二月。</div></div>
+<div class="q"><span class="q-prefix">12.</span><div class="q-main">（2）today 是「今天」。</div></div>
+<div class="q"><span class="q-prefix">13.</span><div class="q-main">（3）9:15 念作 nine fifteen。</div></div>
+<div class="q"><span class="q-prefix">14.</span><div class="q-main">（2）一週 seven days。</div></div>
+<div class="q"><span class="q-prefix">15.</span><div class="q-main">（3）Monday 是星期一。</div></div>
+</div><div class="explanation-column">
+<div class="q"><span class="q-prefix">16.</span><div class="q-main">（2）noon 是中午。</div></div>
+<div class="q"><span class="q-prefix">17.</span><div class="q-main">（2）weekend 是週末。</div></div>
+<div class="q"><span class="q-prefix">18.</span><div class="q-main">（4）April 是四月。</div></div>
+<div class="q"><span class="q-prefix">19.</span><div class="q-main">（3）a.m. 是早上。</div></div>
+<div class="q"><span class="q-prefix">20.</span><div class="q-main">（2）p.m. 是下午或晚上。</div></div>
+</div></div>
+</section>
+</div>
+</article></main>
+<script>
+'use strict';const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const nav=$('#nav'),menu=$('#printMenu');$('#navBtn').onclick=()=>nav.hidden=!nav.hidden;$('#printBtn').onclick=()=>{menu.hidden=!menu.hidden;$('#printBtn').setAttribute('aria-expanded',String(!menu.hidden))};$$('.chapter-title,.section-head h3').forEach(h=>{let b=document.createElement('button');b.textContent=h.textContent;b.onclick=()=>{(h.closest('.section')||h).scrollIntoView({behavior:'smooth',block:'start'});nav.hidden=true};nav.append(b)});
+$$('.order-row').forEach(row=>{const printed=$('.word-bank-print',row);if(printed)printed.textContent=$$('.word-bank .word-card',row).map(b=>b.dataset.token).join(' / ')});
+function resetGrade(sec){ $$('.correct,.good',sec).forEach(el=>el.classList.remove('correct','good'));$('.score',sec)&&( $('.score',sec).textContent='');}
+function choose(q,b){if(q.closest('.answer-on'))q.closest('.answer-on').classList.remove('answer-on');$$('.choice',q).forEach(x=>x.classList.remove('selected','answer','correct'));b.classList.add('selected');let c=$('.chosen',q);if(c)c.textContent=b.dataset.value;resetGrade(q.closest('.quiz'))}
+$$('.q .choice').forEach(b=>b.onclick=()=>choose(b.closest('.q'),b));
+
+$$('.multi-choice').forEach(b=>b.onclick=()=>{const sec=b.closest('.quiz');if(sec.classList.contains('answer-on'))showAnswer(sec,false);resetGrade(sec);b.classList.toggle('selected');b.setAttribute('aria-pressed',String(b.classList.contains('selected')))});
+let activeMatch=null;function selectMatch(row){const sec=row.closest('.quiz');sec.classList.remove('answer-on');$$('.match-row',sec).forEach(r=>r.classList.remove('active'));activeMatch=row;row.classList.add('active');resetGrade(sec)}$$('.match-row').forEach(r=>{r.onclick=()=>selectMatch(r);r.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectMatch(r)}}});$$('.bank-opt').forEach(b=>b.onclick=()=>{const sec=b.closest('.quiz');if(!activeMatch||!sec.contains(activeMatch))return;$('.chosen',activeMatch).textContent=b.dataset.value;activeMatch.dataset.value=b.dataset.value;activeMatch.classList.remove('active','good');activeMatch=null;resetGrade(sec)});
+$$('.word-bank .word-card').forEach(b=>b.onclick=()=>{const row=b.closest('.order-row'),sec=row.closest('.quiz');sec.classList.remove('answer-on');const copy=b.cloneNode(true);copy.onclick=()=>{b.classList.remove('used');copy.remove();resetGrade(sec);row.classList.remove('good')};b.classList.add('used');$('.word-zone',row).append(copy);resetGrade(sec);row.classList.remove('good')});
+function clearRow(row){$$('.word-bank .word-card',row).forEach(b=>b.classList.remove('used'));$('.word-zone',row).replaceChildren();row.classList.remove('good')}
+function clear(sec){sec.classList.remove('answer-on','hint-on');$$('.multi-choice',sec).forEach(b=>{b.classList.remove('selected','correct');b.setAttribute('aria-pressed','false')});$$('.choice',sec).forEach(b=>b.classList.remove('selected','correct','answer'));$$('.chosen',sec).forEach(x=>x.textContent='　');$$('.match-row',sec).forEach(r=>{r.removeAttribute('data-value');r.classList.remove('active','good')});if(activeMatch&&sec.contains(activeMatch))activeMatch=null;$$('.order-row',sec).forEach(clearRow);resetGrade(sec);let btn=$('[data-act="answer"]',sec);if(btn)btn.textContent='解答'}
+function showAnswer(sec,force){const on=force===undefined?!sec.classList.contains('answer-on'):force;sec.classList.toggle('answer-on',on);$$('.q[data-correct]',sec).forEach(q=>{if(sec.dataset.type==='choice'||sec.dataset.type==='circle'){$$('.choice',q).forEach(b=>b.classList.toggle('answer',on&&b.dataset.value===q.dataset.correct));const c=$('.chosen',q);if(c){if(on){c.dataset.previous=c.textContent;c.textContent=q.dataset.correct}else if(c.hasAttribute('data-previous')){c.textContent=c.dataset.previous;delete c.dataset.previous}}}});$$('.match-row',sec).forEach(r=>{const c=$('.chosen',r);if(on){c.dataset.previous=c.textContent;c.textContent=r.dataset.correct}else if(c.hasAttribute('data-previous')){c.textContent=c.dataset.previous;delete c.dataset.previous}});let btn=$('[data-act="answer"]',sec);if(btn)btn.textContent=on?'隱藏解答':'解答'}
+function grade(sec){let right=0,total=0;if(['choice','circle'].includes(sec.dataset.type)){$$('.q[data-correct]',sec).forEach(q=>{const selected=$('.choice.selected',q);if(!selected)return;total++;if(selected.dataset.value===q.dataset.correct){right++;selected.classList.add('correct')}else{selected.classList.remove('selected');const c=$('.chosen',q);if(c)c.textContent='　'}})}else if(sec.dataset.type==='multi'){$$('.multi-choice.selected',sec).forEach(b=>{total++;if(b.dataset.correct==='true'){right++;b.classList.add('correct')}else{b.classList.remove('selected','correct');b.setAttribute('aria-pressed','false')}})}else if(sec.dataset.type==='match'){$$('.match-row',sec).forEach(row=>{if(!row.dataset.value)return;total++;if(row.dataset.value===row.dataset.correct){right++;row.classList.add('good')}else{row.removeAttribute('data-value');$('.chosen',row).textContent='　';row.classList.remove('good')}})}else if(sec.dataset.type==='order'){$$('.order-row',sec).forEach(row=>{const got=$$('.word-zone .word-card',row).map(b=>b.dataset.token);if(!got.length)return;total++;if(got.join('|')===row.dataset.correct){right++;row.classList.add('good')}else clearRow(row)})}let s=$('.score',sec);if(s)s.textContent=total?`正確 ${right}／${total}`:'尚未作答'}
+$$('.quiz').forEach(sec=>sec.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;if(a==='grade')grade(sec);if(a==='clear')clear(sec);if(a==='answer')showAnswer(sec);if(a==='hint')sec.classList.toggle('hint-on')}));
+let printing=false;function printLesson(mode){if(printing)return;printing=true;menu.hidden=true;$('#printBtn').setAttribute('aria-expanded','false');const state=$$('.quiz').map(sec=>({sec,on:sec.classList.contains('answer-on')}));document.body.classList.toggle('teacher-print',mode==='teacher');document.body.classList.toggle('student-print',mode==='student');if(mode==='teacher')$$('.quiz').forEach(sec=>{if(!sec.classList.contains('answer-on'))showAnswer(sec,true)});else $$('.quiz').forEach(sec=>sec.classList.remove('answer-on'));let done=false;const restore=()=>{if(done)return;done=true;state.forEach(({sec,on})=>{if(sec.classList.contains('answer-on')!==on)showAnswer(sec,on)});document.body.classList.remove('teacher-print','student-print');printing=false;window.removeEventListener('afterprint',restore)};window.addEventListener('afterprint',restore);try{window.print()}catch(e){restore();throw e}setTimeout(()=>{if(printing&&!window.matchMedia('print').matches)restore()},2000)}$$('[data-print]').forEach(b=>b.onclick=()=>printLesson(b.dataset.print));
+
+// Optional local components; existing v1.3 question handlers remain unchanged.
+$$('[data-type="rewrite"]').forEach(sec=>{const rows=$$('.rewrite-q',sec);const setLevel=(q,l)=>{q.classList.remove('level-high','level-low','level-none');q.classList.add('level-'+l)};sec.addEventListener('click',ev=>{const b=ev.target.closest('[data-act]');if(!b)return;const act=b.dataset.act;if(act==='line-answer')b.closest('.answerrow').classList.toggle('show-answer');if(act==='present-hint'||act==='word-hint'){const cls=act==='present-hint'?'show-present':'show-word',on=rows.every(q=>q.classList.contains(cls));rows.forEach(q=>q.classList.toggle(cls,!on));b.setAttribute('aria-pressed',String(!on))}if(act.startsWith('level-')){const level=act.slice(6);rows.forEach((q,i)=>{setLevel(q,level==='fade'?(i===0?'high':i===1?'high':i===2?'low':'none'):level);if(level==='fade'){q.classList.toggle('show-present',i===0);q.classList.toggle('show-word',i<3)}})}if(act==='clear'){rows.forEach(q=>{setLevel(q,'high');q.classList.add('show-present','show-word')});$$('.show-answer',sec).forEach(q=>q.classList.remove('show-answer'));$$('[aria-pressed]',sec).forEach(q=>q.removeAttribute('aria-pressed'))}})});
+$$('[data-type="hunt"]').forEach(sec=>{const words=$$('.hunt-word',sec);words.forEach(w=>w.onclick=()=>{if(sec.classList.contains('answer-on'))showAnswer(sec,false);resetGrade(sec);w.classList.toggle('selected');w.setAttribute('aria-pressed',String(w.classList.contains('selected')))});sec.addEventListener('click',ev=>{const act=ev.target.closest('[data-act]')?.dataset.act;if(act==='clear')words.forEach(w=>{w.classList.remove('selected','correct');w.setAttribute('aria-pressed','false')});if(act==='grade'){let total=0,right=0;words.forEach(w=>{if(!w.classList.contains('selected'))return;total++;if(w.dataset.correct==='true'){right++;w.classList.add('correct')}else{w.classList.remove('selected','correct');w.setAttribute('aria-pressed','false')}});$('.score',sec).textContent=total?'正確 '+right+'／'+total:'尚未作答'}})});
+</script>
+<aside id="inkTools" class="ink-tools" hidden aria-label="手寫工具"><button type="button" data-ink="close" title="關閉手寫" aria-label="關閉手寫">×</button><button type="button" data-ink="pen" aria-pressed="true" title="紅筆" aria-label="紅筆"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16 16 5l3 3L8 19l-4 1z" fill="none" stroke="#d62828" stroke-width="2.5"/></svg></button><button type="button" data-ink="highlight" aria-pressed="false" title="螢光筆" aria-label="螢光筆"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 8-10 6 5-8 10z" fill="#fde047" stroke="#806700"/><path d="M4 21h13" stroke="#e5bd00" stroke-width="3"/></svg></button><button type="button" data-ink="eraser" aria-pressed="false" title="橡皮擦" aria-label="橡皮擦">▱</button><button type="button" data-ink="undo" title="復原上一步" aria-label="復原上一步">↶</button><button type="button" data-ink="clear" title="全部清除筆跡" aria-label="全部清除筆跡">⌫</button></aside><svg id="inkLayer" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg><div id="moduleNotice" class="module-notice" role="status" hidden></div><script id="v14-modules-script">
+/* v1.4 module — Speech: no dependency, no replacement of existing answer handlers. */
+(()=>{'use strict';const tts=document.getElementById('ttsToggle'),inkButton=document.getElementById('inkToggle'),notice=document.getElementById('moduleNotice'),paper=document.querySelector('.paper');let noticeTimer;
+function inform(text){notice.textContent=text;notice.hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>notice.hidden=true,4200)}
+let speechOn=false,hold=null,holdStart=null,suppressClick=null;
+const interactive='button,input,select,textarea,.match-row,.word-card,.hunt-word,.multi-choice';
+function englishAt(target){const base=target.closest('.q-text,.sample,.sentence-answer,.sentence-en,.rule-en,.hunt-text,.q-main,.en,.choice,.bank-opt,.word-card,.multi-choice,.hint-word,td');if(!base||!paper.contains(base))return '';if(target.closest('button')){const text=target.closest('button').innerText;return /[A-Za-z]/.test(text)?text.replace(/^\s*\([A-D]\)\s*/,''):''}const clone=base.cloneNode(true);clone.querySelectorAll('button,input,.q-prefix,.chosen,.actions,.word-zone,.sentence-hint').forEach(x=>x.remove());clone.querySelectorAll('.solution,.cell-answer').forEach(x=>{if(!base.closest('.answer-on'))x.remove()});const text=clone.innerText||clone.textContent;const chunks=text.match(/[A-Za-z][A-Za-z0-9’' ,.!?:;()\/–-]*/g)||[];return chunks.map(x=>x.trim()).filter(x=>/[A-Za-z]{2}/.test(x)).join(' ').replace(/\s+/g,' ').trim()}
+function speak(target){if(!speechOn)return;const text=englishAt(target);if(!text)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';const voices=speechSynthesis.getVoices();u.voice=voices.find(v=>v.lang.toLowerCase()==='en-us')||voices.find(v=>/^en/i.test(v.lang))||null;u.onerror=e=>{if(!['canceled','interrupted'].includes(e.error))inform('目前無法播放英文語音，請檢查裝置語音服務。')};speechSynthesis.speak(u)}catch{inform('目前無法使用語音點讀。')}}
+tts.addEventListener('click',()=>{if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){inform('此瀏覽器無法使用語音點讀。');return}clearTimeout(hold);hold=null;holdStart=null;suppressClick=null;speechOn=!speechOn;speechSynthesis.cancel();tts.setAttribute('aria-pressed',String(speechOn));tts.textContent=speechOn?'🔊 TTS':'🔇 TTS';if(speechOn)inform('英文可點讀；選項、字卡與圈選單字請長按點讀。')});
+paper.addEventListener('pointerdown',ev=>{if(!speechOn||document.body.classList.contains('ink-enabled')||!ev.target.closest(interactive))return;holdStart={x:ev.clientX,y:ev.clientY};const target=ev.target;hold=setTimeout(()=>{hold=null;suppressClick={target,time:Date.now()};speak(target)},650)},true);
+paper.addEventListener('pointermove',ev=>{if(holdStart&&Math.hypot(ev.clientX-holdStart.x,ev.clientY-holdStart.y)>8){clearTimeout(hold);hold=null}},true);
+for(const event of ['pointerup','pointercancel','pointerleave'])paper.addEventListener(event,()=>{clearTimeout(hold);hold=null;holdStart=null},true);
+paper.addEventListener('click',ev=>{if(suppressClick&&Date.now()-suppressClick.time<1000&&suppressClick.target===ev.target){ev.preventDefault();ev.stopImmediatePropagation();suppressClick=null;return}if(speechOn&&!ev.target.closest(interactive))speak(ev.target)},true);
+paper.addEventListener('contextmenu',ev=>{if(speechOn&&ev.target.closest(interactive))ev.preventDefault()});
+paper.addEventListener('keydown',ev=>{if(speechOn&&ev.altKey&&ev.key==='Enter'){ev.preventDefault();speak(ev.target)}});
+/* v1.4 module — Ink: reference is exam-board-v4.html, 4px × .75 = 3 CSS px. */
+const layer=document.getElementById('inkLayer'),tools=document.getElementById('inkTools'),NS='http://www.w3.org/2000/svg';let enabled=false,tool='pen',strokes=[],history=[],active=null,frame=0,printing=false;
+const create=(tag,attrs={})=>{const node=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>node.setAttribute(k,v));return node};
+function snapshot(){history.push(strokes.slice());if(history.length>60)history.shift()}
+function chooseTool(value){tool=value;tools.querySelectorAll('[aria-pressed]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.ink===value)))}
+function mode(on){if(active)finish();enabled=on;tools.hidden=!on;inkButton.setAttribute('aria-pressed',String(on));document.body.classList.toggle('ink-enabled',on);if(on)chooseTool('pen');schedule()}
+inkButton.addEventListener('click',()=>mode(!enabled));tools.addEventListener('click',ev=>{const action=ev.target.closest('[data-ink]')?.dataset.ink;if(!action)return;if(action==='close')mode(false);else if(action==='undo'){if(active)finish();if(history.length){strokes=history.pop();schedule()}}else if(action==='clear'){if(active)finish();if(strokes.length){snapshot();strokes=[];schedule()}}else chooseTool(action)});
+const anchorSelector='.q,.order-row,.sentence-row,.rewrite-q,tr,.teaching-card,.sample,.instruction,.note,.teaching-note,.section-head,.chapter-title,.hunt-text,p';
+function stableText(el){const clone=el.cloneNode(true);clone.querySelectorAll('.chosen,.score,.word-zone').forEach(x=>x.remove());return clone.textContent}
+function signature(el){const r=el.getBoundingClientRect();return {width:r.width,height:r.height,text:stableText(el)}}
+function valid(s){if(!s.anchor.isConnected)return false;const r=s.anchor.getBoundingClientRect();return Math.abs(r.width-s.layout.width)<1&&Math.abs(r.height-s.layout.height)<1&&stableText(s.anchor)===s.layout.text}
+function pathFor(s){const r=s.anchor.getBoundingClientRect(),points=s.points.map(p=>({x:r.left+scrollX+p.x,y:r.top+scrollY+p.y}));if(points.length===1)return 'M'+points[0].x+' '+points[0].y+' l.01 .01';let path='M'+points[0].x+' '+points[0].y;for(let i=1;i<points.length-1;i++){const a=points[i],b=points[i+1];path+=' Q'+a.x+' '+a.y+' '+(a.x+b.x)/2+' '+(a.y+b.y)/2}const last=points[points.length-1];return path+' L'+last.x+' '+last.y}
+function render(){frame=0;if(printing)return;const book=document.querySelector('.book').getBoundingClientRect();layer.setAttribute('height',Math.ceil(book.bottom+scrollY+60));layer.replaceChildren();const yellow=create('g',{opacity:'.24'}),red=create('g');layer.append(yellow,red);for(const s of strokes){if(!valid(s))continue;const path=create('path',{d:pathFor(s),fill:'none',stroke:s.tool==='highlight'?'#facc15':'#d62828','stroke-width':s.tool==='highlight'?18:3,'stroke-linecap':'round','stroke-linejoin':'round'});(s.tool==='highlight'?yellow:red).append(path)}}
+function schedule(){if(!frame)frame=requestAnimationFrame(render)}
+function point(ev,anchor){const r=anchor.getBoundingClientRect();return {x:ev.clientX-r.left,y:ev.clientY-r.top}}
+function hit(s,x,y){if(!valid(s))return false;const r=s.anchor.getBoundingClientRect(),p={x:x-r.left,y:y-r.top},radius=s.tool==='highlight'?16:10;for(let i=0;i<s.points.length;i++){const a=s.points[Math.max(0,i-1)],b=s.points[i],dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));if(Math.hypot(p.x-a.x-t*dx,p.y-a.y-t*dy)<radius)return true}return false}
+function erase(ev){strokes=strokes.filter(s=>!hit(s,ev.clientX,ev.clientY));schedule()}
+layer.addEventListener('pointerdown',ev=>{if(!enabled||ev.button!==0)return;ev.preventDefault();layer.style.pointerEvents='none';const under=document.elementFromPoint(ev.clientX,ev.clientY);layer.style.pointerEvents='';if(!under||!paper.contains(under))return;const anchor=under.closest(anchorSelector)||under.closest('.section')||paper;snapshot();layer.setPointerCapture(ev.pointerId);active={pointer:ev.pointerId,tool};if(tool==='eraser')erase(ev);else{const stroke={anchor,layout:signature(anchor),tool,points:[point(ev,anchor)]};strokes.push(stroke);active.stroke=stroke;schedule()}});
+layer.addEventListener('pointermove',ev=>{if(!active||active.pointer!==ev.pointerId)return;ev.preventDefault();if(active.tool==='eraser')erase(ev);else{const events=ev.getCoalescedEvents?.()||[];for(const e of events.length?events:[ev])active.stroke.points.push(point(e,active.stroke.anchor));schedule()}});
+function finish(){if(!active)return;if(active.stroke)active.stroke.points=active.stroke.points.slice();active=null;schedule()}
+layer.addEventListener('pointerup',finish);layer.addEventListener('pointercancel',finish);
+new ResizeObserver(schedule).observe(paper);new MutationObserver(schedule).observe(paper,{subtree:true,childList:true,characterData:true,attributes:true});addEventListener('resize',()=>{if(strokes.length)inform('版面已改變；無法確認對位的筆跡暫時隱藏，恢復原版面即可顯示。');schedule()});addEventListener('scroll',schedule,{passive:true});document.fonts?.ready.then(schedule);
+addEventListener('beforeprint',()=>{printing=true;clearTimeout(hold);if('speechSynthesis'in window)speechSynthesis.cancel()});addEventListener('afterprint',()=>{printing=false;schedule()});schedule();
+})();
+</script></body></html>
