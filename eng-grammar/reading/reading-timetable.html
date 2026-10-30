@@ -160,9 +160,10 @@ button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-
 .question{border-bottom:1px dashed var(--gray-blue);padding:4px 0 5px;}
 .question:last-child{border-bottom:none;}
 .question-line{display:flex;align-items:baseline;gap:4px;font-size:11pt;font-weight:bold;cursor:pointer;line-height:1.25;}
-.answer-blank{color:var(--blue);white-space:nowrap;min-width:2.5em;text-align:right;}
-.answer-blank.good{color:var(--green)}
-.answer-blank.reveal{color:var(--red)}
+.answer-blank{color:#000;white-space:nowrap;min-width:2.5em;text-align:right;flex-shrink:0;}
+.answer-blank .answer-letter{display:inline-block;width:3.5mm;text-align:center;color:var(--blue);}
+.answer-blank.good .answer-letter{color:var(--green)}
+.answer-blank.reveal .answer-letter{color:var(--red)}
 
 .options{
   margin-left: 2.8em; 
@@ -205,16 +206,18 @@ button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-
 /* =========================================================
    TEACHER ANSWER MODE
 ========================================================= */
-body.teacher-mode .answer-blank{
+body.teacher-mode .answer-blank .answer-letter{
   color: transparent !important;
   font-weight: 900 !important;
   position:relative;
 }
-body.teacher-mode .answer-blank::after{
-  content: "（" attr(data-ans) "）";
+body.teacher-mode .answer-blank .answer-letter::after{
+  content: attr(data-ans);
   color:var(--red);
   position:absolute;
-  inset-inline-start:0;
+  inset:0;
+  width:3.5mm;
+  text-align:center;
   white-space:nowrap;
 }
 
@@ -560,7 +563,7 @@ function createLevel(data, levelIndex){
     return `
       <div class="question">
         <div class="question-line">
-          <span class="answer-blank" id="answer-${levelIndex}-${qIndex}" data-ans="${ansLetter}">（ ）</span>
+          <span class="answer-blank" id="answer-${levelIndex}-${qIndex}" data-ans="${ansLetter}">（<span class="answer-letter" data-ans="${ansLetter}">&nbsp;</span>）</span>
           <span>${qIndex+1}. ${highlightText(q.stem, data.hints)}</span>
         </div>
         <div class="options">
@@ -683,7 +686,7 @@ function chooseAnswer(levelIndex, qIndex, optIndex, element){
   element.classList.add("selected");
 
   const slot = getAnswerSlot(levelIndex, qIndex);
-  slot.textContent = `（${String.fromCharCode(65 + optIndex)}）`;
+  slot.querySelector('.answer-letter').textContent = String.fromCharCode(65 + optIndex);
   slot.className = "answer-blank";
   document.getElementById(`score-${levelIndex}`).textContent = "";
 }
@@ -704,7 +707,7 @@ function gradeLevel(levelIndex){
     }else{
       options[chosen].classList.remove("selected");
       selections[levelIndex][qIndex] = null;
-      getAnswerSlot(levelIndex, qIndex).textContent = "（ ）";
+      getAnswerSlot(levelIndex, qIndex).querySelector('.answer-letter').textContent = '\u00a0';
     }
   });
   document.getElementById(`score-${levelIndex}`).textContent = `${correctCount} / ${all16Levels[levelIndex].questions.length}`;
@@ -715,7 +718,7 @@ function clearLevel(levelIndex){
   all16Levels[levelIndex].questions.forEach((_, qIndex) => {
     getOptions(levelIndex, qIndex).forEach(el => el.classList.remove("selected", "correct"));
     const slot = getAnswerSlot(levelIndex, qIndex);
-    slot.textContent = "（ ）";
+    slot.querySelector('.answer-letter').textContent = '\u00a0';
     slot.className = "answer-blank";
   });
   document.getElementById(`score-${levelIndex}`).textContent = "";
@@ -725,7 +728,7 @@ function showAnswers(levelIndex){
   all16Levels[levelIndex].questions.forEach((q, qIndex) => {
     getOptions(levelIndex, qIndex).forEach(el => el.classList.remove("selected", "correct"));
     const slot = getAnswerSlot(levelIndex, qIndex);
-    slot.textContent = `（${String.fromCharCode(65 + q.answer)}）`;
+    slot.querySelector('.answer-letter').textContent = String.fromCharCode(65 + q.answer);
     slot.className = "answer-blank reveal";
   });
   document.getElementById(`score-${levelIndex}`).textContent = "解答";
