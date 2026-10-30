@@ -11,8 +11,8 @@
   const publicShareUrl = "https://sinny-hong.github.io/spedu-labs/share/";
   const brand = document.createElement("a");
   brand.href = publicShareUrl;
-  brand.textContent = "Sinny’s Spedu Labs";
-  brand.setAttribute("aria-label", "前往 Sinny’s Spedu Labs 公開教學資源");
+  brand.textContent = "Sinny Spedu Labs";
+  brand.setAttribute("aria-label", "前往 Sinny Spedu Labs 公開教學資源");
   const shortText = script.dataset.footerShort === "true";
   footer.append("© ", brand);
   if (!shortText) footer.append("｜歡迎教學分享，請保留出處與原始連結。");

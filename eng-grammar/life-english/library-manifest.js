@@ -1,7 +1,7 @@
 window.LIBRARY_MANIFEST = [
   {
-    "file": "vocabulary-1250.html",
-    "title": "1250 單字小考題本｜點讀、批改與列印"
+    "file": "vocabulary-1200-lesson.html",
+    "title": "1200 單字選擇題題本｜連續講義（1250 題）"
   },
   {
     "file": "topic_lifeenglish_daily.html",
@@ -12,3 +12,6 @@ window.LIBRARY_MANIFEST = [
     "title": "英文提示卡(綠卡)"
   }
 ];
+
+// Keep the superseded screen-paged version out of the public directory.
+window.LIBRARY_HIDDEN_FILES = ["vocabulary-1250.html"];

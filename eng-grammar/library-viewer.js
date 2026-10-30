@@ -5,13 +5,14 @@
   const base = `${folder}/`;
   const key = `spedu-${folder}-last-file`;
   const fallback = window.LIBRARY_MANIFEST || [];
+  const hiddenFiles = new Set(window.LIBRARY_HIDDEN_FILES || []);
   const picker = document.getElementById("topic-picker");
   const frame = document.getElementById("topic-frame");
   const title = document.querySelector("#current-title span");
   const notice = document.getElementById("notice");
   const download = document.querySelector('[data-action="download"]');
   const isPdf = file => /\.pdf$/i.test(file);
-  const eligible = file => /\.(html|pdf)$/i.test(file) && !/[/\\]/.test(file) &&
+  const eligible = file => !hiddenFiles.has(file) && /\.(html|pdf)$/i.test(file) && !/[/\\]/.test(file) &&
     !/^(index|library|[._~])/i.test(file) && !/(backup|temp|tmp|備份)/i.test(file);
   const url = item => base + encodeURIComponent(item.file);
   let items = fallback.filter(item => eligible(item.file));
