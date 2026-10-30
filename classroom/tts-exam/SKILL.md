@@ -3,7 +3,7 @@ name: exam-to-tts-js
 description: 將教師提供的 PDF、DOCX、圖片或文字考卷忠實轉為 spedu-labs 段考報讀母版可載入的單一題庫 JS。僅處理考卷轉換與題庫驗證，不製作 HTML 或修改朗讀引擎。
 ---
 
-# exam-to-tts-js｜考卷轉報讀題庫
+# 段考報讀
 
 ## 角色與任務
 

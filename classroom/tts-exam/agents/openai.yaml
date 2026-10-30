@@ -1,0 +1,3 @@
+interface:
+  display_name: "段考報讀"
+  short_description: "將段考試卷忠實轉為報讀母版可載入的題庫 JS"
