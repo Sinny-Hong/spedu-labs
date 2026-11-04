@@ -6,7 +6,7 @@ window.TOPIC_MANIFEST = [
   {"file":"topic_a05_a06_nouns.html","title":"《文法講義》名詞與單複數"},
   {"file":"topic_a12_imperatives.html","title":"《文法講義》祈使句"},
   {"file":"topic_a14_there_is_there_are.html","title":"《文法講義》There is / There are"},
-  {"file":"topic_b05_telling_time.html","title":"《文法講義》時間表達 Telling Time"},
+  {"file":"topic_b05_telling_time.html","title":"《文法講義》時間表達"},
   {"file":"topic_c01_present-continuous.html","title":"《文法講義》現在進行式"},
   {"file":"topic_c02_present-simple.html","title":"《文法講義》現在簡單式"},
   {"file":"topic_c05_past-simple.html","title":"《文法講義》過去簡單式"},
