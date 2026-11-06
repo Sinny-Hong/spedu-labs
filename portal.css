@@ -209,7 +209,7 @@ button{cursor:pointer}
 .widget-card b{font-size:12px;line-height:1.3;white-space:nowrap}
 .widget-visual{display:block;width:34px;height:34px;flex:none}
 .widget-visual svg{display:block;width:100%;height:100%}
-.fortune-card{color:#7044a0;background:#f3effa}.tug-card{color:#9a650b;background:#fff6df}.island-card{color:#477149;background:#edf6e8}
+.fortune-card{color:#7044a0;background:#f3effa}.tug-card{color:#9a650b;background:#fff6df}.island-card{color:#477149;background:#edf6e8}.ecity-hub-card{color:#855718;background:#fff4dd}
 .widget-slot{pointer-events:none}
 .fortune-modal{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(6,25,50,.78);backdrop-filter:blur(5px)}
 .fortune-modal[hidden]{display:none}

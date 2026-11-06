@@ -2,6 +2,7 @@
 (() => {
   "use strict";
   const folder = document.body.dataset.libraryFolder;
+  const scanFolder = document.body.dataset.libraryScanFolder || `eng-grammar/${folder}`;
   const base = `${folder}/`;
   const key = `spedu-${folder}-last-file`;
   const fallback = window.LIBRARY_MANIFEST || [];
@@ -73,7 +74,7 @@
   (async () => {
     const version = selectionVersion;
     try {
-      const response = await fetch(`https://api.github.com/repos/Sinny-Hong/spedu-labs/contents/eng-grammar/${folder}?ref=main`, { signal: AbortSignal.timeout(8000) });
+      const response = await fetch(`https://api.github.com/repos/Sinny-Hong/spedu-labs/contents/${scanFolder}?ref=main`, { signal: AbortSignal.timeout(8000) });
       if (!response.ok) return;
       const entries = await response.json();
       if (!Array.isArray(entries)) return;
