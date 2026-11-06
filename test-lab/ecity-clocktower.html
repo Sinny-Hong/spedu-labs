@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>E-City｜異想鐘樓</title>
+<style>
+:root{--ink:#263b50;--muted:#65798b;--cream:#fff9ec;--paper:#fffefb;--border:#deded5;--accent:#2a7e9b;--warm:#f4b25f;--past:#df6575;--to:#5e9ed9;--shadow:0 9px 24px rgba(44,70,89,.10)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:linear-gradient(145deg,#edf7f5 0%,#f9f3e8 58%,#f1ebdf 100%)}button,select{font:inherit}button{cursor:pointer;touch-action:manipulation}button:focus-visible,select:focus-visible,[role=button]:focus-visible{outline:3px solid #ffbd5a;outline-offset:2px}.app{height:100dvh;min-height:540px;max-width:1700px;margin:auto;padding:clamp(8px,1.2vh,15px);display:grid;grid-template-rows:auto minmax(0,1fr);gap:9px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;background:transparent;border:0;border-bottom:2px solid #dde7e1;border-radius:0;padding:2px 6px 8px;min-height:52px;box-shadow:none}.brand{display:flex;align-items:center;gap:10px;min-width:0}.brandmark{width:37px;height:37px;border-radius:12px;background:#fde6a9;display:grid;place-items:center;font-size:23px}.brand h1{font-size:clamp(19px,2vw,28px);line-height:1.1;margin:0;letter-spacing:.03em}.brand small{display:none}.mode-tabs{display:flex;gap:8px;background:transparent;padding:0;border-radius:0}.mode-tabs button{border:1px solid #d8e2dd;background:#eef4f1;padding:9px 18px;border-radius:14px;font-weight:800;color:var(--muted);white-space:nowrap;box-shadow:none}.mode-tabs button.active{background:white;color:#196f84;border-color:#d3ded9;box-shadow:0 2px 7px #223b4c12}.body{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:10px;min-height:0}.panel{background:rgba(255,254,251,.95);border:2px solid #e6dfd3;border-radius:18px;box-shadow:var(--shadow);min-height:0;overflow:hidden}.clockpanel{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:3px;padding:9px 12px}.panelhead{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:26px}.panelhead b{font-size:clamp(15px,1.45vw,20px)}.muted{font-size:clamp(11px,1vw,13px);color:var(--muted)}.clockstage{display:flex;align-items:center;justify-content:center;min-height:0;position:relative;gap:8px}.clockbox{height:min(100%,calc((100vw - 60px)*.42));max-width:min(100%,570px);aspect-ratio:1;position:relative;flex:0 1 auto;min-width:0}.clockbox svg{width:100%;height:100%;overflow:visible;display:block;filter:drop-shadow(0 7px 11px #39506814)}.clockNumber{font-weight:900;user-select:none;cursor:pointer}.clockNumber.outer{font-size:13px;fill:#5c7382}.clockNumber.inner{font-size:20px;fill:#243c4c}.clockNumber:focus{outline:none;stroke:#f9aa2e;stroke-width:.8}.tick{stroke:#a2b5bf;stroke-width:1.4}.handhour{stroke:#233f63;stroke-width:9;stroke-linecap:round}.handminute{stroke:#f1a126;stroke-width:6;stroke-linecap:round}.micro{display:flex;flex-direction:column;gap:7px;align-self:end;margin-bottom:clamp(15px,6vh,55px)}.micro button{border:2px solid #c3d7d9;background:#e7f6f3;border-radius:13px;min-width:58px;min-height:51px;color:#226a76;font-weight:900;font-size:21px;box-shadow:0 3px 0 #b8d1d2}.micro small{font-size:12px;display:block;font-weight:700}.keywords{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;align-items:stretch}.keyword{min-width:0;border:1.5px solid #d7dedb;background:#f2f6f3;border-radius:12px;padding:6px 2px;min-height:55px;font-size:clamp(12px,1.2vw,17px);font-weight:900;color:#476173}.keyword.active{background:#ffecb8;border-color:#e7ac42;color:#794e17;box-shadow:inset 0 0 0 1px #edc35a}.keyword.past.active{background:#ffdee2;color:#9b3548;border-color:#d97585}.keyword.to.active{background:#e0efff;color:#2a69a5;border-color:#72a4d8}.keyword span{display:block;font-weight:500;font-size:clamp(9px,.87vw,12px);margin-top:3px;white-space:nowrap}.rightpanel{display:grid;grid-template-rows:auto minmax(0,1fr);gap:7px;padding:9px 11px}.board{display:grid;grid-template-rows:1.08fr 1fr 1fr 1.15fr;min-height:0;border:2px solid #d5e0db;border-radius:16px;overflow:hidden;background:#eff5f1;gap:2px}.boardrow{min-height:0;display:flex;flex-direction:column;align-items:stretch;justify-content:center;position:relative;border:0;background:#f8fbf9;padding:8px 15px;color:#234353;text-align:center}.boardrow:nth-child(1){background:#edf4f0}.boardrow:nth-child(2),.boardrow:nth-child(4){background:#f4f8f6}.boardrow.reveal{cursor:pointer}.boardrow.reveal:hover{background:#eef5f2}.boardlabel{font-size:clamp(10px,1.05vw,14px);font-weight:800;color:#68818d;text-align:left;letter-spacing:.08em;position:absolute;left:13px;top:8px}.boardcontent{font-weight:900;letter-spacing:.03em;font-size:clamp(20px,2.25vw,34px);line-height:1.15;padding:14px 30px 1px;word-break:normal;color:#244153}.boardcontent.digits{font-size:clamp(34px,4.3vw,66px);font-variant-numeric:tabular-nums;letter-spacing:.045em;color:#1f5064}.boardcontent.explain{font-size:clamp(13px,1.45vw,21px);font-weight:650;line-height:1.4;letter-spacing:0}.placeholder{opacity:.5;font-size:clamp(14px,1.45vw,20px);font-weight:500;color:#7e8d92}.speak{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:1px solid #c9d7d9;color:#23506a;background:#ecf5f4;border-radius:11px;padding:6px 9px;font-size:18px}.boardfootnote{position:absolute;bottom:3px;right:10px;font-size:10px;color:#82a5b5}.rightheadtools{display:flex;gap:5px;align-items:center}.smallbtn{border:1px solid #cddbdc;background:#eaf3f1;border-radius:9px;color:#426478;font-size:12px;font-weight:800;padding:7px 9px}.smallbtn:hover{background:#dcece9}.settings{display:none;position:fixed;top:70px;right:14px;width:min(360px,calc(100vw - 28px));z-index:30;background:white;border:2px solid #d7dfdb;border-radius:15px;box-shadow:0 12px 35px #203b4d40;padding:14px}.settings.open{display:grid;gap:12px}.settings label{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px}.settings select,.settings input{padding:6px;max-width:190px}.challengePanel{display:none;grid-template-rows:auto minmax(0,1fr);gap:10px;padding:11px}.challengeSetup{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}.challengeSetup label{display:grid;gap:4px;font-weight:800;font-size:12px}.challengeSetup select{min-width:0;width:100%;border:1.5px solid #cddbd9;background:#fff;border-radius:10px;padding:10px 8px;font-size:clamp(12px,1vw,15px);color:var(--ink)}.dice{height:48px;min-width:52px;border:0;border-radius:14px;background:#e6b668;font-size:24px;box-shadow:0 3px 0 #cb9750}.challengeGame{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:'qhead qhead' 'prompt answers' 'prompt feedback';gap:10px;min-height:0}.qhead{grid-area:qhead;display:flex;justify-content:space-between;align-items:center;color:#627687;font-size:14px;font-weight:800}.qprompt{grid-area:prompt;background:#faf9f2;border:2px solid #e4e6d7;border-radius:16px;min-height:0;display:grid;place-items:center;padding:18px;overflow:hidden}.qprompt .qbig{font-weight:900;font-size:clamp(24px,2.6vw,42px);line-height:1.2;text-align:center}.qprompt .qsmall{font-size:12px;color:#7a8987}.answers{grid-area:answers;display:grid;grid-template-columns:1fr;grid-auto-rows:minmax(90px,1fr);gap:10px;align-self:start;min-height:0}.answer{border:2px solid #cdd8d9;background:#fffefa;border-radius:16px;padding:10px 10px;min-width:0;min-height:96px;display:grid;place-items:center;font-weight:900;font-size:clamp(16px,1.45vw,24px);word-break:break-word;line-height:1.2;text-align:center}.answer:hover{background:#edf5f2}.answer.correct{background:#dcf5e2;border-color:#52a36c}.answer.wrong{background:#ffe4e5;border-color:#d86b7b}.feedback{grid-area:feedback;min-height:74px;padding:10px 12px;border-radius:14px;background:#eef3f0;font-size:clamp(13px,1.1vw,17px);font-weight:750;display:flex;align-items:center;gap:10px;justify-content:space-between}.feedback .smallbtn{flex-shrink:0}.miniclock{display:block;width:min(100%,140px);max-height:120px;aspect-ratio:1}.qprompt .miniclock{width:min(42vh,310px);max-height:100%;height:auto}.answer .miniclock{width:min(100%,126px);height:auto}.hide{display:none!important}.app.challenge .clockpanel,.app.challenge .rightpanel{display:none}.app.challenge .body{grid-template-columns:1fr}.app.challenge .challengePanel{display:grid}.app.challenge .challengeGame{max-width:1400px;width:100%;margin:0 auto}.app.challenge .challengeSetup{max-width:1400px;width:100%;margin:0 auto}.tipmark{transition:opacity .15s}.toast{position:fixed;z-index:40;bottom:12px;left:50%;transform:translateX(-50%);background:#244758;color:white;padding:8px 14px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s}.toast.show{opacity:1}
+@media (min-width:720px) and (max-height:740px){.app{min-height:0;padding:5px;gap:5px}.topbar{min-height:44px;padding:0 6px 6px}.brandmark{width:30px;height:30px;font-size:19px}.brand h1{font-size:19px}.mode-tabs button{padding:6px 12px}.clockpanel,.rightpanel{padding:5px 8px}.keyword{min-height:43px;padding:3px 1px}.micro button{min-height:43px}.boardlabel{top:4px}.boardrow{padding:3px 10px}.boardcontent{padding-top:13px}.clockbox{max-width:100%}.challengeGame{grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr)}}
+@media (max-width:719px),(orientation:portrait) and (max-width:900px){.app{height:auto;min-height:100dvh;display:block;padding:8px}.topbar{gap:5px;padding:0 4px 6px}.brandmark{width:31px;height:31px;font-size:20px}.brand h1{font-size:19px}.mode-tabs button{padding:9px 10px;font-size:12px}.body{display:flex;flex-direction:column;margin-top:9px;gap:9px}.clockpanel{grid-template-rows:auto auto auto;min-height:0}.clockstage{min-height:0;gap:3px}.clockbox{width:min(calc(100vw - 90px),440px);height:auto;max-width:none;flex:0 1 auto}.micro{margin-bottom:17px}.micro button{min-height:44px;min-width:45px;font-size:18px}.keyword{min-height:53px;font-size:12px}.keyword span{font-size:9px}.rightpanel{min-height:480px;grid-template-rows:auto 450px}.boardcontent{font-size:clamp(20px,5vw,27px)}.boardcontent.digits{font-size:47px}.boardcontent.explain{font-size:15px}.boardlabel{font-size:12px}.challengePanel{min-height:calc(100dvh - 72px)}.challengeSetup{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 50px}.challengeSetup select{font-size:12px;padding:9px 3px}.challengeGame{min-height:calc(100dvh - 170px);display:grid;grid-template-columns:1fr;grid-template-rows:auto auto auto auto;grid-template-areas:'qhead' 'prompt' 'answers' 'feedback'}.answers{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(104px,1fr)}.answer{min-height:105px;font-size:13px}.qprompt .qbig{font-size:26px}.qprompt{min-height:240px}.feedback{min-height:56px;padding:8px 10px}}
+@media (max-width:370px){.brand h1{font-size:17px}.mode-tabs button{padding:7px 6px;font-size:11px}.micro button{min-width:39px}.clockbox{width:calc(100vw - 80px)}.keyword{font-size:10px}.keyword span{font-size:8px}}
+@media (prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+
+/* v1.2 - unified E-City header, single ring clock, left question/right answers */
+:root{--shadow:0 3px 12px rgba(45,75,93,.06)}
+.topbar{border:0!important;border-bottom:0!important;background:transparent!important;padding:2px 3px 6px!important;box-shadow:none!important}
+.brand h1{font-size:clamp(24px,2.2vw,34px);font-weight:850}
+.mode-tabs button{font-size:clamp(15px,1.12vw,19px);border-radius:12px}
+.clockNumber.inner{font-size:25px;fill:#1e3e5c;font-weight:850}
+.clockNumber.outer{font-size:15px;fill:#42677e;font-weight:650}
+.handhour{stroke:#224a75;stroke-width:10}
+.handminute{stroke:#f2a227;stroke-width:7}
+.clockbox{height:min(100%,calc((100vw - 60px)*.42));max-width:min(100%,590px)}
+.boardcontent:not(.digits){font-size:clamp(23px,2.45vw,39px)}
+.boardcontent.explain{font-size:clamp(17px,1.65vw,25px)}
+.speak{font-size:21px;border:0;background:#e1f0ed;color:#226a82;border-radius:50%;width:38px;height:38px;display:grid;place-items:center}
+.challengePanel{display:none;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:13px;padding:12px;min-height:0}
+.challengeLeft,.challengeRight{min-width:0;min-height:0;display:grid;gap:10px}.challengeLeft>.qhead,.challengeLeft>.qprompt,.challengeLeft>.feedback,.challengeRight>.answers{grid-area:auto}
+.challengeLeft{grid-template-rows:auto minmax(0,1fr) minmax(75px,.22fr)}
+.challengeRight{grid-template-rows:auto minmax(0,1fr) auto}
+.challengeSetup{grid-template-columns:1fr 1fr;gap:8px}
+.challengeSetup label{font-size:clamp(13px,1vw,17px)}
+.challengeSetup select{font-size:clamp(14px,1.1vw,18px);padding:10px}
+.qhead{font-size:clamp(14px,1.1vw,19px)}
+.qprompt{min-height:0;background:#f8f9f4;border:1.5px solid #dce6e2}
+.qprompt .qbig{font-size:clamp(30px,3.4vw,55px);line-height:1.24}
+.qprompt .miniclock{width:min(47vh,390px);max-height:100%}
+.audioReplay{margin-top:14px;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;padding:0;background:#e5f2ee;border:1px solid #c5dddb}
+.answers{display:grid;grid-template-columns:1fr;grid-template-rows:repeat(3,minmax(0,1fr));gap:10px;min-height:0;align-self:stretch}
+.answer{min-height:0;padding:8px 12px;font-size:clamp(20px,1.75vw,30px)}
+.answers.clockOptions{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+.answers.clockOptions .answer:first-child{grid-column:1 / 3;justify-self:center;width:48%}
+.answers.clockOptions .answer{min-height:0}
+.answer .miniclock{width:min(100%,26vh,205px);max-height:none;height:auto}
+.feedback{min-height:0;font-size:clamp(16px,1.35vw,23px);justify-content:center;text-align:center;background:#eaf4f1}
+.nextDice{width:100%;font-size:clamp(17px,1.4vw,22px);min-height:51px;box-shadow:0 3px 0 #c89448}
+.app.challenge .challengePanel{display:grid}
+.app.challenge .body{grid-template-columns:1fr}
+.app.challenge .clockpanel,.app.challenge .rightpanel{display:none}
+@media (min-width:720px) and (max-height:740px){
+ .challengePanel{gap:7px;padding:7px}.challengeLeft,.challengeRight{gap:6px}
+ .challengeSetup select{padding:7px}.nextDice{min-height:40px}.answer .miniclock{width:min(100%,23vh,165px)}
+ .boardcontent:not(.digits){font-size:clamp(19px,2.2vw,32px)}
+}
+@media (max-width:719px),(orientation:portrait) and (max-width:900px){
+ .brand h1{font-size:19px}.mode-tabs button{font-size:12px;padding:9px 8px}
+ .clockbox{width:min(calc(100vw - 90px),440px);height:auto;max-width:none}
+ .boardcontent:not(.digits){font-size:clamp(20px,5vw,29px)}.boardcontent.explain{font-size:clamp(15px,3.6vw,19px)}
+ .app.challenge .challengePanel{display:flex;flex-direction:column;gap:10px;min-height:0}
+ .challengeLeft,.challengeRight{display:contents}
+ .challengeSetup{order:0;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ .qhead{order:1}.qprompt{order:2;min-height:250px;max-height:350px;padding:12px}
+ .qprompt .qbig{font-size:clamp(25px,6vw,36px)}.qprompt .miniclock{width:min(65vw,260px)}
+ .answers{order:3;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:1fr;min-height:110px;gap:6px}
+ .answers.clockOptions{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:1fr}
+ .answers.clockOptions .answer:first-child{grid-column:auto;width:100%;justify-self:stretch}
+ .answer{min-height:110px;font-size:clamp(13px,3.5vw,19px);padding:6px}
+ .answer .miniclock{width:100%;max-width:150px;max-height:none}
+ .feedback{order:4;min-height:70px;padding:12px;font-size:clamp(14px,4vw,18px)}
+ .nextDice{order:5;min-height:53px}
+}
+
+
+/* v1.3: classroom TV proportions and responsive answer layouts */
+@media (min-width:720px) and (orientation:landscape){
+ .app.challenge .challengePanel{grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:12px}
+ .challengeLeft{grid-template-rows:auto minmax(0,1.7fr) minmax(0,1fr)}
+ .challengeRight{grid-template-rows:auto minmax(0,1fr) auto}
+ .qprompt{position:relative;padding:20px 20px 30px;display:flex;align-items:center;justify-content:center;flex-direction:column}
+ .qprompt .qbig{font-size:clamp(35px,3.6vw,66px)}
+ .qprompt .miniclock{width:min(100%,36vh,300px);max-height:100%}
+ .audioReplay{position:absolute;right:12px;top:12px;width:41px;height:41px;margin:0;padding:8px}
+ .audioReplay svg{width:23px;height:23px}
+ .feedback{display:flex;align-items:center;justify-content:center;flex-direction:column;padding:14px 18px;gap:7px;overflow:hidden}
+ .feedbackMain{font-size:clamp(20px,2vw,34px);font-weight:900;line-height:1.2}
+ .feedbackEnglish{font-size:clamp(24px,2.35vw,42px);font-weight:900;line-height:1.2;overflow-wrap:anywhere}
+ .feedbackDigits{font-size:clamp(24px,2.75vw,46px);font-weight:850;font-variant-numeric:tabular-nums;line-height:1.15}
+ .answers{min-height:0;align-self:stretch}
+ .answers.numberOptions,.answers.clockOptions{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,1fr)}
+ .answers.numberOptions .answer{font-size:clamp(25px,2.3vw,44px)}
+ .answers.clockOptions .answer:first-child{grid-column:auto;width:auto;justify-self:stretch}
+ .answers.clockOptions .answer{min-width:0;min-height:0;padding:6px}
+ .answers.clockOptions .answer .miniclock{width:min(100%,32vh);max-width:100%;height:auto;max-height:100%;aspect-ratio:1}
+ .answers.englishOptions{grid-template-columns:1fr;grid-template-rows:repeat(3,minmax(0,1fr))}
+ .answers.englishOptions .answer{font-size:clamp(22px,2vw,36px);line-height:1.25}
+}
+@media (min-width:720px) and (orientation:landscape) and (max-height:740px){
+ .challengeLeft{grid-template-rows:auto minmax(0,1.7fr) minmax(0,1fr)}
+ .qprompt .miniclock{width:min(100%,32vh,245px)}
+ .answers.clockOptions .answer .miniclock{width:min(100%,29vh)}
+ .feedbackMain{font-size:clamp(19px,1.65vw,27px)}
+ .feedbackEnglish{font-size:clamp(22px,2vw,34px)}
+ .feedbackDigits{font-size:clamp(24px,2.2vw,38px)}
+}
+/* Keep the original phone layout: prompt -> answers -> feedback -> dice. */
+@media (max-width:719px),(orientation:portrait) and (max-width:900px){
+ .boardcontent:not(.digits){font-size:clamp(23px,5.8vw,33px)}
+ .boardcontent.explain{font-size:clamp(17px,4.2vw,22px)}
+ .answers.englishOptions,.answers.numberOptions,.answers.clockOptions{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:1fr}
+ .answers.englishOptions .answer{font-size:clamp(12px,3.3vw,18px)}
+ .feedback{display:flex;flex-direction:column;gap:4px;justify-content:center}
+ .feedbackMain{font-size:clamp(16px,4vw,20px);font-weight:900}
+ .feedbackEnglish{font-size:clamp(18px,4.6vw,24px);font-weight:850}
+ .feedbackDigits{font-size:clamp(20px,5vw,27px);font-weight:850}
+ .audioReplay{position:absolute;right:10px;top:10px;width:43px;height:43px;margin:0}
+ .qprompt{position:relative}
+}
+@media (min-width:720px) and (orientation:landscape){
+ .boardcontent:not(.digits){font-size:clamp(29px,2.95vw,49px)}
+ .boardcontent.explain{font-size:clamp(21px,2.05vw,33px);line-height:1.35}
+}
+
+
+/* v1.4: continuous teaching reveal and maximal, legible answer clocks */
+@media (min-width:720px) and (orientation:landscape){
+ .qprompt .miniclock{width:min(100%,min(65vh,530px));max-width:100%;max-height:100%;height:auto;flex:0 1 auto}
+ .answers.clockOptions .answer{padding:3px;min-width:0;overflow:hidden}
+ .answers.clockOptions .answer .miniclock{width:min(100%,min(47vh,390px));max-width:100%;max-height:100%;height:auto;aspect-ratio:1;flex:0 1 auto}
+}
+@media (min-width:720px) and (orientation:landscape) and (max-height:740px){
+ .qprompt .miniclock{width:min(100%,min(57vh,460px))}
+ .answers.clockOptions .answer .miniclock{width:min(100%,min(43vh,330px))}
+}
+@media (max-width:719px),(orientation:portrait) and (max-width:900px){
+ .qprompt .miniclock{width:min(74vw,320px);max-width:100%;max-height:100%}
+ .answers.clockOptions .answer .miniclock{width:100%;max-width:100%;max-height:none}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header class="topbar"><div class="brand"><span class="brandmark" aria-hidden="true">🕰️</span><div><h1>E-City｜異想鐘樓</h1><small></small></div></div><nav class="mode-tabs" aria-label="學習模式"><button id="teachTab" class="active" type="button">🕰 教學模式</button><button id="quizTab" type="button">🎯 挑戰模式</button></nav></header>
+<main class="body">
+<section class="panel clockpanel"><div class="panelhead"><b>鐘樓時鐘</b><span class="muted">點內圈選小時 · 點外圈選分鐘</span></div><div class="clockstage"><div class="clockbox"><svg id="bigClock" role="group" aria-label="可點擊調整時間的時鐘" viewBox="0 0 360 360"></svg></div><div class="micro"><button id="plusMinute" aria-label="加一分鐘">＋<small>1 分</small></button><button id="minusMinute" aria-label="減一分鐘">－<small>1 分</small></button></div></div><div class="keywords" aria-label="英文時間關鍵字"><button class="keyword" data-tip="oclock">o'clock<span>整點</span></button><button class="keyword" data-tip="half">half<span>半小時</span></button><button class="keyword" data-tip="quarter">quarter<span>一刻鐘</span></button><button class="keyword past" data-tip="past">past<span>過了幾分</span></button><button class="keyword to" data-tip="to">to<span>還差幾分</span></button></div></section>
+<section class="panel rightpanel"><div class="panelhead"><b>時間教學看板</b><div class="rightheadtools"><button class="smallbtn" id="resetReveal" type="button">↶ 顯示／隱藏</button><button class="smallbtn" id="settingsBtn" type="button" aria-expanded="false">⚙ 設定</button></div></div><div class="board" aria-label="電子時間教學看板"><div class="boardrow"><span class="boardlabel">數位時間</span><span class="boardcontent digits" id="digital">09:45</span></div><button class="boardrow reveal" data-row="common" aria-label="顯示或隱藏常用念法"><span class="boardlabel">常用念法</span><span class="boardcontent" id="commonText"><span class="placeholder">點一下揭曉</span></span><span class="speak hide" data-speak="common" title="朗讀常用念法">♫</span></button><button class="boardrow reveal" data-row="alternate" aria-label="顯示或隱藏其他念法"><span class="boardlabel">其他念法</span><span class="boardcontent" id="alternateText"><span class="placeholder">點一下揭曉</span></span><span class="speak hide" data-speak="alternate" title="朗讀其他念法">♫</span></button><button class="boardrow reveal" data-row="explain" aria-label="顯示或隱藏解析"><span class="boardlabel">解析</span><span class="boardcontent explain" id="explainText"><span class="placeholder">點一下揭曉</span></span></button></div></section>
+<section class="panel challengePanel" aria-label="時間挑戰">
+  <div class="challengeLeft">
+    <div class="qhead"><span id="qCounter" class="hide">第 1 題</span><span id="qDescription">請選出正確答案</span></div>
+    <div class="qprompt" id="questionView"></div>
+    <div class="feedback" id="feedback"><span>選擇一個答案開始。</span></div>
+  </div>
+  <div class="challengeRight">
+    <div class="challengeSetup">
+      <label>關卡進度<select id="levelSelect"><option value="L1">L1｜整點 o'clock</option><option value="L2">L2｜半點</option><option value="L3">L3｜直接讀法</option><option value="L4">L4｜past</option><option value="L5">L5｜to</option><option value="L6">L6｜quarter</option><option value="MIX">MIX｜全部混合</option></select></label>
+      <label>題型呈現<select id="formatSelect"><option value="en-num">英文 → 數字</option><option value="num-en">數字 → 英文</option><option value="clock-en">指針 → 英文</option><option value="en-clock">英文 → 指針</option><option value="clock-num">指針 → 數字</option><option value="num-clock">數字 → 指針</option><option value="mixed">隨機混合題型</option></select></label>
+    </div>
+    <div class="answers" id="answers"></div>
+    <button type="button" class="dice nextDice" id="nextBtn" title="隨機換下一題" aria-label="下一題">🎲 下一題</button>
+  </div>
+</section>
+</main></div>
+<div class="settings" id="settings" role="dialog" aria-label="鐘樓設定"><strong>⚙ 鐘樓設定</strong><label>語音速度 <select id="speechRate"><option value="0.7">慢 0.70</option><option value="0.82" selected>標準慢速 0.82</option><option value="1">正常 1.00</option></select></label><label>顯示鐘面顏色 <input id="colorSwitch" type="checkbox" checked></label><label>顯示分鐘刻度 <input id="minuteSwitch" type="checkbox" checked></label><button class="smallbtn" id="closeSettings">完成</button></div><div id="toast" class="toast" role="status"></div>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id), svgNS='http://www.w3.org/2000/svg', state={hour:9,minute:45,tip:null,reveal:{common:true,alternate:true,explain:false},qIndex:0,question:null,selected:null,seen:new Set(),deckSeed:0};
+const words=['twelve','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];const tens={20:'twenty',30:'thirty',40:'forty',50:'fifty'};const pad=n=>String(n).padStart(2,'0');const hword=h=>words[h===12?12:h];
+function numberWord(n){if(n<20)return words[n];if(n%10===0)return tens[n];return tens[Math.floor(n/10)*10]+'-'+words[n%10]}
+function direct(h,m){if(m===0)return hword(h)+" o'clock";return hword(h)+' '+(m<10?'oh '+numberWord(m):numberWord(m))}
+function alternate(h,m){if(m===0)return '—';if(m===30)return 'half past '+hword(h);if(m<=30)return (m===15?'a quarter':numberWord(m))+' past '+hword(h);const next=h===12?1:h+1;return (m===45?'a quarter':numberWord(60-m))+' to '+hword(next)}
+function explanation(h,m){if(m===0)return '分鐘是 00，整點使用 o’clock。';if(m===30)return '30 分鐘是半小時：half past ＋ 目前小時。';if(m===15)return '15 分鐘是一刻鐘：a quarter past ＋ 目前小時。';if(m===45)return '還差 15 分鐘到下一個小時：a quarter to ＋ 下一個小時。';if(m<30)return '過了 '+m+' 分鐘：分鐘 ＋ past ＋ 目前小時。';return '還差 '+(60-m)+' 分鐘到下一個整點：分鐘 ＋ to ＋ 下一個小時。'}
+function node(tag,attrs={},text=null){const n=document.createElementNS(svgNS,tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);if(text!==null)n.textContent=text;return n}
+function xy(cx,cy,r,degree){const a=(degree-90)*Math.PI/180;return [cx+Math.cos(a)*r,cy+Math.sin(a)*r]}
+function clockSVG(svg,h,m,interactive=false,small=false){
+ svg.replaceChildren(); const cx=200,cy=200,r=145; svg.setAttribute('viewBox','0 0 400 400');
+ const color=$('colorSwitch').checked;
+ const outerCircle=node('circle',{cx,cy,r:small?167:r,fill:'#fffdfa',stroke:'#bdced3','stroke-width':3}); svg.append(outerCircle);
+ if(color){
+  const right=node('path',{d:`M200 ${small?33:55} A${small?167:145} ${small?167:145} 0 0 1 200 ${small?367:345} L200 200Z`,fill:'#fce8ed'});
+  const left=node('path',{d:`M200 ${small?367:345} A${small?167:145} ${small?167:145} 0 0 1 200 ${small?33:55} L200 200Z`,fill:'#e6f3ff'});
+  svg.append(right,left);
+ }
+ // A single circumference; only subtle minute guides on its inside edge.
+ for(let i=0;i<60;i++){
+  const major=i%5===0;
+  const [x1,y1]=xy(cx,cy,small?(major?154:162):(major?132:140),i*6),[x2,y2]=xy(cx,cy,small?168:146,i*6);
+  svg.append(node('line',{x1,y1,x2,y2,stroke:major?'#68869a':'#b8cdd1','stroke-width':major?2.3:1}));
+ }
+ for(let i=0;i<12;i++){
+  const minute=i*5, angle=i*30, hour=i===0?12:i;
+  const [mx,my]=xy(cx,cy,170,angle),[hx,hy]=xy(cx,cy,small?131:107,angle);
+  const minuteLabel=node('text',{x:mx,y:my+5,'text-anchor':'middle',class:'clockNumber outer',opacity:$('minuteSwitch').checked?1:0},pad(minute));
+  const hourLabel=node('text',{x:hx,y:hy+7,'text-anchor':'middle',class:'clockNumber inner'},String(hour));
+  if(!small)svg.append(minuteLabel);svg.append(hourLabel);
+  if(interactive){
+   const mHit=node('circle',{cx:mx,cy:my,r:20,fill:'transparent',tabindex:'0',role:'button','aria-label':'設定分鐘 '+pad(minute)});
+   const hHit=node('circle',{cx:hx,cy:hy,r:23,fill:'transparent',tabindex:'0',role:'button','aria-label':'設定小時 '+hour});
+   mHit.addEventListener('click',()=>setTime(state.hour,minute));
+   hHit.addEventListener('click',()=>setTime(hour,state.minute));
+   mHit.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setTime(state.hour,minute)}});
+   hHit.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setTime(hour,state.minute)}});
+   svg.append(mHit,hHit);
+  }
+ }
+ if(interactive&&state.tip){
+  const t=state.tip;let mins=[];
+  if(t==='oclock')mins=[0];if(t==='half')mins=[30];if(t==='quarter')mins=[15,45];
+  if(t==='past')mins=[5,10,15,20,25,30];if(t==='to')mins=[35,40,45,50,55];
+  for(const mm of mins){
+   const [x,y]=xy(cx,cy,170,mm*6);
+   svg.append(node('circle',{cx:x,cy:y,r:20,fill:t==='past'?'#e799a7':t==='to'?'#98c5eb':'#f7c364',opacity:0.5}));
+   svg.append(node('text',{x,y:y+5,'text-anchor':'middle','font-size':15,'font-weight':850,fill:'#25435a'},pad(mm)));
+  }
+ }
+ const [hx,hy]=xy(cx,cy,small?105:80,(h%12+m/60)*30),[mx,my]=xy(cx,cy,small?148:126,m*6);
+ svg.append(node('line',{x1:cx,y1:cy,x2:hx,y2:hy,class:'handhour'}),node('line',{x1:cx,y1:cy,x2:mx,y2:my,class:'handminute'}),node('circle',{cx,cy,r:8,fill:'#f7ae38',stroke:'#274665','stroke-width':2.5}));
+}
+function resetReveal(){state.reveal={common:false,alternate:false,explain:false};renderBoard()}
+function setTime(h,m){const total=((h%12)*60+m+720)%720;state.hour=Math.floor(total/60)||12;state.minute=total%60;renderBoard();clockSVG($('bigClock'),state.hour,state.minute,true);}
+function renderBoard(){const h=state.hour,m=state.minute;$('digital').textContent=pad(h)+':'+pad(m);const values={common:direct(h,m),alternate:alternate(h,m),explain:explanation(h,m)};for(const k of Object.keys(values)){const el=$(k+'Text');el.textContent='';if(state.reveal[k])el.textContent=values[k];else{const p=document.createElement('span');p.className='placeholder';p.textContent='點一下揭曉';el.append(p)}document.querySelector('[data-row="'+k+'"]').setAttribute('aria-pressed',String(state.reveal[k]));const speaker=document.querySelector('[data-speak="'+k+'"]');if(speaker)speaker.classList.toggle('hide',!state.reveal[k]||values[k]==='—')}}
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('show'),1700)}
+function speak(t){if(!('speechSynthesis'in window)){toast('目前瀏覽器不支援英文朗讀');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=Number($('speechRate').value);speechSynthesis.speak(u)}
+$('plusMinute').onclick=()=>setTime(state.hour,state.minute+1);$('minusMinute').onclick=()=>setTime(state.hour,state.minute-1);document.querySelectorAll('.keyword').forEach(b=>b.onclick=()=>{state.tip=state.tip===b.dataset.tip?null:b.dataset.tip;document.querySelectorAll('.keyword').forEach(x=>x.classList.toggle('active',x.dataset.tip===state.tip));clockSVG($('bigClock'),state.hour,state.minute,true)});
+document.querySelectorAll('[data-row]').forEach(b=>b.onclick=(e)=>{const k=b.dataset.row;if(e.target.closest('[data-speak]')){const phrase=k==='common'?direct(state.hour,state.minute):alternate(state.hour,state.minute);if(phrase!=='—')speak(phrase);return}state.reveal[k]=!state.reveal[k];renderBoard()});$('resetReveal').onclick=()=>{const any=Object.values(state.reveal).some(Boolean);state.reveal=any?{common:false,alternate:false,explain:false}:{common:true,alternate:true,explain:false};renderBoard()};$('settingsBtn').onclick=()=>{$('settings').classList.toggle('open');$('settingsBtn').setAttribute('aria-expanded',String($('settings').classList.contains('open')))};$('closeSettings').onclick=()=>{$('settings').classList.remove('open');$('settingsBtn').setAttribute('aria-expanded','false')};$('colorSwitch').onchange=$('minuteSwitch').onchange=()=>clockSVG($('bigClock'),state.hour,state.minute,true);
+const levels=['L1','L2','L3','L4','L5','L6'];const formats=['en-num','num-en','clock-en','en-clock','clock-num','num-clock'];
+function rand(max){return Math.floor(Math.random()*max)}
+function generateTime(level){const h=rand(12)+1;let m=0;if(level==='L1')m=0;if(level==='L2')m=30;if(level==='L3'){const options=[5,10,15,20,25,30,35,40,45,50,55,1,2,8,12,18,27,38,42,58];m=options[rand(options.length)]}if(level==='L4')m=rand(30)+1;if(level==='L5')m=rand(29)+31;if(level==='L6')m=rand(2)?15:45;return {h,m,level}}
+function generateQuestion(){const selectedLevel=$('levelSelect').value,selectedFormat=$('formatSelect').value;let level=selectedLevel==='MIX'?levels[rand(levels.length)]:selectedLevel;let format=selectedFormat==='mixed'?formats[rand(formats.length)]:selectedFormat;let x;for(let i=0;i<120;i++){x=generateTime(level);if(!state.seen.has(`${level}:${x.h}:${x.m}`))break}if(!x)return;state.seen.add(`${level}:${x.h}:${x.m}`);if(state.seen.size>220)state.seen.clear();const correct={...x,format,phrase:phraseByLevel(x.h,x.m,level)};const incorrect=[];const used=new Set([`${x.h}:${x.m}`]);const proposed=[{h:x.h===12?1:x.h+1,m:x.m},{h:x.h===1?12:x.h-1,m:x.m},{h:x.h,m:(x.m+30)%60},{h:x.h,m:(60-x.m)%60},{h:x.h,m:(x.m+15)%60},{h:x.h,m:(x.m+45)%60}];for(const p of proposed){const key=p.h+':'+p.m;if(!used.has(key)){used.add(key);incorrect.push({...p,phrase:phraseByLevel(p.h,p.m,level)})}if(incorrect.length===2)break}while(incorrect.length<2){const p=generateTime(level);const key=p.h+':'+p.m;if(!used.has(key)){used.add(key);incorrect.push({...p,phrase:phraseByLevel(p.h,p.m,level)})}}let options=[correct,...incorrect];for(let i=options.length-1;i>0;i--){const j=rand(i+1);[options[i],options[j]]=[options[j],options[i]];}state.qIndex++;state.question={...correct,options,correctIndex:options.indexOf(correct)};state.selected=null;renderQuestion()}
+function phraseByLevel(h,m,level){if(level==='L1')return direct(h,0);if(level==='L2')return 'half past '+hword(h);if(level==='L3')return direct(h,m);if(level==='L4'||level==='L5'||level==='L6')return alternate(h,m);return direct(h,m)}
+function miniClock(h,m){const svg=node('svg',{viewBox:'0 0 360 360',class:'miniclock','aria-label':'指針時間'});clockSVG(svg,h,m,false,true);return svg}
+function optionKind(format){return format.split('-')[1]}
+function promptKind(format){return format.split('-')[0]}
+function renderContent(container,type,obj){container.replaceChildren();if(type==='clock'){container.append(miniClock(obj.h,obj.m));return}if(type==='en'){const b=document.createElement('div');b.className='qbig';b.textContent=obj.phrase;container.append(b);return}const b=document.createElement('div');b.className='qbig';b.textContent=pad(obj.h)+':'+pad(obj.m);container.append(b)}
+function renderQuestion(){const q=state.question;if(!q)return;$('qCounter').textContent='';$('qDescription').textContent='看題目，選出正確答案';const prompt=promptKind(q.format);renderContent($('questionView'),prompt,q);if(prompt==='en'){const replay=document.createElement('button');replay.type='button';replay.className='smallbtn';replay.classList.add('audioReplay');replay.innerHTML='<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5a10 10 0 0 1 0 14"/></svg>';replay.setAttribute('aria-label','朗讀英文題目');replay.onclick=()=>speak(q.phrase);$('questionView').append(replay)}const answers=$('answers');answers.replaceChildren();const answerKind=optionKind(q.format);answers.classList.toggle('clockOptions',answerKind==='clock');answers.classList.toggle('numberOptions',answerKind==='num');answers.classList.toggle('englishOptions',answerKind==='en');q.options.forEach((opt,i)=>{const b=document.createElement('button');b.type='button';b.className='answer';const kind=optionKind(q.format);if(kind==='clock')b.append(miniClock(opt.h,opt.m));else b.textContent=kind==='en'?opt.phrase:pad(opt.h)+':'+pad(opt.m);b.setAttribute('aria-label','選項 '+String.fromCharCode(65+i)+(kind==='clock'?' 時鐘': ' '+b.textContent));b.onclick=()=>choose(i);answers.append(b)});$('feedback').replaceChildren();const hint=document.createElement('div');hint.className='feedbackMain';hint.textContent='選擇一個答案開始。';$('feedback').append(hint);$('nextBtn').textContent='🎲 下一題'}
+function choose(i){const q=state.question;if(state.selected!==null)return;state.selected=i;const right=i===q.correctIndex;const kind=optionKind(q.format);document.querySelectorAll('.answer').forEach((b,j)=>{b.disabled=true;if(j===q.correctIndex)b.classList.add('correct');else if(j===i)b.classList.add('wrong')});const feedback=$('feedback');feedback.replaceChildren();const verdict=document.createElement('div');verdict.className='feedbackMain';verdict.textContent=right?'✓ 答對！':'✗ 正確答案';const english=document.createElement('div');english.className='feedbackEnglish';english.textContent=q.phrase;const digits=document.createElement('div');digits.className='feedbackDigits';digits.textContent=pad(q.h)+':'+pad(q.m);feedback.append(verdict,english,digits);$('nextBtn').textContent='🎲 下一題'}
+$('nextBtn').onclick=generateQuestion;$('levelSelect').onchange=()=>{state.seen.clear();generateQuestion()};$('formatSelect').onchange=()=>{state.seen.clear();generateQuestion()};
+function setMode(m){const quiz=m==='quiz';$('app').classList.toggle('challenge',quiz);$('teachTab').classList.toggle('active',!quiz);$('quizTab').classList.toggle('active',quiz);$('teachTab').setAttribute('aria-pressed',String(!quiz));$('quizTab').setAttribute('aria-pressed',String(quiz));if(quiz&&!state.question)generateQuestion();if(window.innerWidth<720)window.scrollTo({top:0,behavior:'instant'})} $('teachTab').onclick=()=>setMode('teach');$('quizTab').onclick=()=>setMode('quiz');
+setTime(9,45);setMode('teach');
+})();
+</script>
+</body></html>

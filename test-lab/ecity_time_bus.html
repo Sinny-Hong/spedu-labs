@@ -32,7 +32,91 @@
 .quickbar{display:none!important}.center-mode{width:100%;max-width:230px}.center-mode .field{font-size:12px}.center-mode select{width:100%;min-width:0;padding:9px;border-radius:10px;border:1px solid #b9d0dc;background:white;font-weight:800;color:#21475e}
 .center-start{padding:13px 20px;font-size:19px;border-radius:14px}.center-start.end-game{padding:8px 12px;font-size:14px;background:#fff;color:#b7454b;border-color:#df989c;box-shadow:none;order:3}.arena.idle .keypad-section{visibility:hidden;pointer-events:none}.arena.idle .center .prompt,.arena.idle .center .notice{display:none}.arena.idle .side{min-height:265px}.arena.idle .center{min-height:265px}
 @media(max-width:780px){.top{align-items:center}.actions>.field select{max-width:130px}.arena.idle .side{min-height:125px}.arena.idle .center{min-height:185px}.arena.idle .keypad-section{display:none}.center-mode{max-width:280px}.center-start{font-size:20px}}
-.arena:not(.idle):not(.results) .center .prompt{order:2}.arena:not(.idle):not(.results) .center .notice{order:3}.arena:not(.idle):not(.results) .center .center-start{order:4}.center-start.end-game{align-self:center}</style>
+.arena:not(.idle):not(.results) .center .prompt{order:2}.arena:not(.idle):not(.results) .center .notice{order:3}.arena:not(.idle):not(.results) .center .center-start{order:4}.center-start.end-game{align-self:center}
+/* v5: 參照原版時光列車的固定三欄骨架（不另建待機頁） */
+:root{--header-h:64px}
+html,body{height:100%;overflow:hidden}
+.wrap{height:100vh;height:100dvh;max-width:1920px;display:flex;flex-direction:column;padding:8px 12px 10px;overflow:hidden}
+.top{flex:0 0 auto;min-height:52px;margin:0 0 8px;flex-wrap:nowrap}
+.brand{flex:0 1 auto;min-width:0}.brand h1{white-space:nowrap;font-size:clamp(22px,2.25vw,35px)}
+.actions{flex:0 0 auto;flex-wrap:nowrap;align-items:center;gap:7px}.actions>.field{display:flex;align-items:center;gap:6px;white-space:nowrap}.actions>.field select{width:172px;max-width:172px;min-height:43px}.actions .btn{white-space:nowrap;min-height:43px}
+.game{flex:1;min-height:0;padding:10px;display:flex;flex-direction:column;border-radius:20px}
+.arena,.arena.idle,.results .arena{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.94fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:10px;align-items:stretch}
+.side.blue,.arena.idle .side.blue,.results .side.blue{grid-column:1;grid-row:1}
+.center,.arena.idle .center,.results .center{grid-column:2;grid-row:1}
+.side.red,.arena.idle .side.red,.results .side.red{grid-column:3;grid-row:1}
+.side,.arena.idle .side,.results .side{min-height:0;padding:9px 10px;display:flex;flex-direction:column;overflow:hidden}
+.route{flex:0 0 auto;justify-content:center;height:25px}.teamname{font-size:clamp(15px,1.2vw,19px)}
+.stop,.results .stop{flex:0 0 auto;height:clamp(100px,19vh,180px);min-height:0}
+.sign{transform:scale(.82);transform-origin:top left}.queue{height:100%;padding-bottom:9px;align-items:end}
+.animal{font-size:clamp(25px,3.1vw,43px)}
+.keypad-section,.arena.idle .keypad-section{display:flex!important;visibility:visible!important;pointer-events:auto;flex:1;min-height:0;flex-direction:column;gap:7px}
+.screen{flex:0 0 auto;margin:0;font-size:clamp(31px,3.1vw,52px);line-height:1.14;padding:7px 4px;letter-spacing:.035em}
+.padgrid{max-width:none;margin:0;flex:1;min-height:0;grid-template-rows:repeat(4,minmax(0,1fr));gap:7px}
+.num{min-height:0;height:100%;font-size:clamp(25px,2.45vw,42px)}.num.submit{font-size:clamp(16px,1.8vw,25px)}.num.del{font-size:clamp(15px,1.5vw,22px)}
+.sidefeedback{flex:0 0 18px;margin:0;min-height:0;font-size:13px}
+.center,.arena.idle .center{min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:clamp(8px,2vh,18px);padding:11px}
+.center .timer{font-size:clamp(44px,5vw,84px);flex:0 0 auto}
+.center-mode{max-width:250px;flex:0 0 auto}.center-mode .field{font-size:12px}
+.center .prompt{order:0!important;min-height:clamp(86px,18vh,175px);align-items:center}
+.center .english{font-size:clamp(27px,3vw,53px);line-height:1.25}
+.center-start{order:0!important;flex:0 0 auto;min-height:49px}
+.center .notice{order:0!important}
+.arena.idle .center .prompt{display:flex!important;min-height:clamp(55px,10vh,100px)}
+.arena.idle .center .english{display:none}.arena.idle .center .speak{display:none}
+.arena.idle .center .notice{display:none}
+.arena.idle .side{min-height:0}.arena.idle .center{min-height:0}
+.arena.idle .padgrid button{opacity:.42;pointer-events:none}
+.arena.idle .screen{opacity:.75}
+/* 結算：上排仍為三欄，答題紀錄作為第二列；不重排左右位置 */
+.results .arena{grid-template-rows:minmax(155px,29%) minmax(0,1fr)}
+.results .side{min-height:0}.results .stop{height:clamp(112px,22vh,190px);flex:1}
+.results .center{gap:6px}.results .center .timer{display:none}
+.results .summary{grid-column:1/-1;grid-row:2;display:flex;flex-direction:column;min-height:0;padding:7px 9px}
+.record-list{flex:1;min-height:0;max-height:none;overflow:auto}
+.record-head,.record{grid-template-columns:minmax(0,1fr) minmax(0,1.12fr) minmax(0,1fr);gap:6px}
+.record-head>div:nth-child(2){font-size:clamp(16px,1.4vw,22px)}
+.record{min-height:clamp(42px,6.3vh,61px);font-size:clamp(16px,1.35vw,22px)}
+.record .res{font-size:clamp(23px,2vw,32px)}
+.record .mid{display:flex;align-items:center;justify-content:center;gap:clamp(10px,1vw,22px);white-space:normal;line-height:1.25}
+.record .mid strong{font-size:clamp(17px,1.6vw,26px)}.record .mid span{font-size:clamp(17px,1.5vw,25px)}
+.foot{margin-top:7px}.foot .btn{min-height:42px}
+.results .center .scoreline{font-size:clamp(30px,3vw,55px)}
+.results .bus{height:clamp(115px,19vh,174px);bottom:0}
+.results .busbody{height:75%;bottom:12%;border-radius:25px 24px 12px 12px}
+.results .window{height:35%;top:7px}
+.results .wheel{width:clamp(29px,3vw,43px);height:clamp(29px,3vw,43px);bottom:4%}
+.results .buslabel{font-size:clamp(24px,2.8vw,43px);padding-top:clamp(24px,4vh,50px)}
+.results .crown{font-size:clamp(27px,2.8vw,44px);top:-5px}
+@media(min-width:781px) and (max-height:760px){.top{min-height:43px}.brand h1{font-size:26px}.stop{height:clamp(80px,17vh,125px)}.sign{transform:scale(.68)}.side,.center{padding:6px}.screen{padding:5px}.padgrid{gap:5px}.center .prompt{min-height:80px}.center .english{font-size:clamp(25px,2.8vw,41px)}.results .arena{grid-template-rows:minmax(124px,26%) minmax(0,1fr)}.results .stop{height:120px}.record{min-height:37px}.results .bus{height:115px}}
+/* 手機仍維持題目置上、兩側鍵盤並排，結算時恢復三欄紀錄 */
+@media(max-width:780px){html,body{overflow:auto}.wrap{height:auto;min-height:100dvh;overflow:visible;padding:8px}.top{flex-wrap:wrap;gap:5px}.brand h1{font-size:22px}.actions{width:100%;justify-content:space-between;gap:4px}.actions>.field select{width:128px;max-width:128px}.actions .btn{padding:7px 9px}.game{min-height:0;display:block}.arena,.arena.idle,.results .arena{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto;gap:8px}.center,.arena.idle .center,.results .center{grid-column:1/-1;grid-row:1;min-height:0;padding:11px;gap:8px}.side.blue,.arena.idle .side.blue{grid-column:1;grid-row:2}.side.red,.arena.idle .side.red{grid-column:2;grid-row:2}.stop{height:110px}.keypad-section{min-height:330px}.padgrid{grid-template-rows:repeat(4,61px)}.num{font-size:26px}.center .prompt{min-height:50px}.center .english{font-size:clamp(23px,5vw,32px)}.arena.idle .center .prompt{min-height:0;display:none!important}.results .side.blue{grid-column:1;grid-row:1}.results .side.red{grid-column:2;grid-row:1}.results .center{grid-column:1/-1;grid-row:2}.results .summary{grid-column:1/-1;grid-row:3}.results .arena{grid-template-rows:auto auto auto}.results .bus{height:105px}.results .buslabel{font-size:23px}.record-head,.record{grid-template-columns:32px minmax(0,1fr) 32px}.record .mid{flex-wrap:wrap;gap:5px}.record .mid strong,.record .mid span{font-size:15px}.record{min-height:48px}}
+
+.result-score .winner-icon{font-style:normal;font-size:clamp(17px,2vw,29px);align-self:flex-start}.result-score .winner-icon[hidden]{display:none!important}
+/* v6: 獨立結算浮層。絕不縮放/重排底下的三欄遊戲。 */
+.result-back{position:fixed;inset:0;z-index:150;background:#132e43a0;display:grid;place-items:center;padding:clamp(8px,2vh,20px)}
+.result-back[hidden]{display:none!important}
+.result-dialog{position:relative;width:min(990px,96vw);height:min(680px,calc(100dvh - 24px));max-height:calc(100dvh - 16px);min-height:0;display:flex;flex-direction:column;gap:10px;padding:clamp(12px,2vh,24px);border-radius:22px;background:#fffdfa;box-shadow:0 20px 80px #08243a62;overflow:hidden}
+.result-close{position:absolute;right:12px;top:9px;border:0;background:transparent;font-size:34px;font-weight:800;color:#1b4860;line-height:1;min-width:48px;min-height:48px;cursor:pointer;z-index:1}
+.result-summary{text-align:center;flex:none;padding:0 45px 3px}
+.result-reason{font-size:clamp(14px,1.5vw,19px);font-weight:800;color:#778b91}
+.result-score{display:flex;align-items:center;justify-content:center;gap:clamp(8px,2vw,24px);line-height:1.12;padding:3px 0}
+.result-score span:not(.result-crown){display:flex;align-items:baseline;gap:8px}
+.result-score small{font-weight:800;font-size:clamp(13px,1.5vw,18px)}
+.result-score strong,.result-colon{font-size:clamp(42px,5.6vw,70px);font-weight:950;font-variant-numeric:tabular-nums}
+.result-blue{color:#2387b7}.result-red{color:#d85d63}.result-crown{font-size:clamp(15px,2.2vw,25px);font-weight:900;color:#d85d63;white-space:nowrap}
+.result-records{display:flex!important;flex-direction:column;flex:1;min-height:0;border:1px solid #dce9ed;border-radius:14px;padding:8px}
+.result-records .record-head{flex:none;grid-template-columns:70px minmax(0,1fr) 70px;padding:10px;font-size:16px}
+.result-records .record-head>div:nth-child(2){font-size:clamp(17px,2vw,24px)}
+.result-records .record-list{flex:1;min-height:0;overflow-y:auto;max-height:none;scrollbar-gutter:stable}
+.result-records .record{grid-template-columns:70px minmax(0,1fr) 70px;min-height:clamp(42px,6.3vh,62px);font-size:18px}
+.result-records .record .mid{justify-content:center;gap:clamp(8px,1.8vw,25px);flex-wrap:wrap}
+.result-records .record .mid strong{font-size:clamp(16px,2vw,24px)}.result-records .record .mid span{font-size:clamp(16px,1.9vw,23px)}
+.result-records .record .res{font-size:clamp(24px,2.5vw,32px)}
+.result-bottom{display:flex;justify-content:center;flex:none;padding:0 0 2px}
+.result-bottom .btn{font-size:17px;padding:10px 20px}
+@media(max-width:600px){.result-dialog{height:calc(100dvh - 16px);padding:12px 8px;gap:8px}.result-summary{padding:0 42px 0 2px}.result-score{gap:6px}.result-score strong,.result-colon{font-size:42px}.result-score small{font-size:12px}.result-crown{font-size:13px}.result-records .record-head,.result-records .record{grid-template-columns:28px minmax(0,1fr) 28px;gap:3px}.result-records .record-head{padding:8px 3px}.result-records .record{padding:8px 3px;min-height:54px}.result-records .record .mid strong,.result-records .record .mid span{font-size:15px}.result-records .record .res{font-size:25px}.result-records .record .mid{gap:5px}}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -56,10 +140,24 @@
  <section class="side blue" id="side-blue" aria-label="藍幹線候車區"><div class="route"><div class="teamname">🔵 藍幹線</div></div><div class="stop"><div class="sign"><div class="head">BUS STOP</div><div class="num" id="stop-blue">0 / 5</div></div><div class="queue" id="queue-blue"></div><div class="bus" id="bus-blue"><div class="crown">👑</div><div class="busbody"><div class="window"></div><div class="buslabel" id="buslabel-blue">BLUE 0</div></div><div class="wheel w1"></div><div class="wheel w2"></div></div></div><div class="keypad-section"><div class="screen" id="screen-blue" aria-live="polite">__ : __</div><div class="padgrid" id="pad-blue"></div><div class="sidefeedback" id="feedback-blue"></div></div></section>
  <section class="center"><div class="sub" id="phase"></div><div class="timer" id="timer">01:00</div><div class="center-mode" id="centerMode"><label class="field">競賽<select id="mode"><option value="5">1 分鐘／5 人</option><option value="8">2 分鐘／8 人</option><option value="10">3 分鐘／10 人</option><option value="unlimited">30 秒／不限人數</option></select></label></div><button class="btn primary center-start" id="start">▶ 開始遊戲</button><div class="prompt"><div class="english" id="question">Ready to go?</div><button class="speak" id="speak" aria-label="英文朗讀" title="重播英文">🎵</button></div><div class="notice" id="notice"></div><div class="scoreline" id="scoreline" hidden>0 : 0</div></section>
  <section class="side red" id="side-red" aria-label="紅幹線候車區"><div class="route"><div class="teamname">🔴 紅幹線</div></div><div class="stop"><div class="sign"><div class="head">BUS STOP</div><div class="num" id="stop-red">0 / 5</div></div><div class="queue" id="queue-red"></div><div class="bus" id="bus-red"><div class="crown">👑</div><div class="busbody"><div class="window"></div><div class="buslabel" id="buslabel-red">RED 0</div></div><div class="wheel w1"></div><div class="wheel w2"></div></div></div><div class="keypad-section"><div class="screen" id="screen-red" aria-live="polite">__ : __</div><div class="padgrid" id="pad-red"></div><div class="sidefeedback" id="feedback-red"></div></div></section>
- <section class="summary" id="summary"><div class="record-head"><div style="text-align:center;color:#2387b7">●</div><div style="text-align:center">英文時間　／　答案</div><div style="text-align:center;color:#d85d63">●</div></div><div class="record-list" id="records"></div><div class="foot"><button class="btn primary" id="again">↻ 再試一次</button></div></section>
+ 
 </div>
 
 </main>
+</div>
+<div class="result-back" id="resultOverlay" hidden>
+ <section class="result-dialog" role="dialog" aria-modal="true" aria-labelledby="resultHeading">
+  <button class="result-close" id="closeResult" aria-label="關閉結算並返回待機">×</button>
+  <div class="result-summary">
+   <div class="result-reason" id="resultHeading">本局結束</div>
+   <div class="result-score"><span class="result-blue"><small>藍隊</small><strong id="resultBlue">0</strong><i class="winner-icon" id="winBlue" hidden>👑</i></span><span class="result-colon">:</span><span class="result-red"><strong id="resultRed">0</strong><small>紅隊</small><i class="winner-icon" id="winRed" hidden>👑</i></span></div>
+  </div>
+  <section class="summary result-records" id="summary" aria-label="本局全部答題紀錄">
+   <div class="record-head"><div style="text-align:center;color:#2387b7">●</div><div style="text-align:center">英文時間　／　答案</div><div style="text-align:center;color:#d85d63">●</div></div>
+   <div class="record-list" id="records"></div>
+  </section>
+  <div class="result-bottom"><button class="btn primary" id="again">↻ 再試一次</button></div>
+ </section>
 </div>
 <div class="modal-back" id="modal" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="end"><button class="btn" id="closeModal">✕ 關閉</button></div><h2 id="modalTitle"></h2><div id="modalContent"></div></div></div>
 <script>
@@ -97,20 +195,33 @@ if(key==='刪除')p.input=p.input.slice(0,-1);else if(key==='送出'){if(p.input
 else if(p.input.length<4)p.input+=key;renderInput(color);}
 function validTime(code){let h=Number(code.slice(0,2)),m=Number(code.slice(2));return h>=1&&h<=12&&m<=59}
 function renderInput(color){const p=s.players[color],display=(p.input+'____').slice(0,4);$('screen-'+color).textContent=display.slice(0,2)+' : '+display.slice(2);Array.from($('pad-'+color).children).forEach(b=>{let key=b.dataset.key;b.disabled=s.phase!=='playing'||p.submitted||(key==='送出'&&(p.input.length!==4||!validTime(p.input)))||(key!=='送出'&&key!=='刪除'&&p.input.length===4)});$('feedback-'+color).textContent=p.submitted?'✓ 已送出':'';}
-function renderQueues(){for(let color of ['blue','red']){const p=s.players[color];let q=$('queue-'+color);q.replaceChildren();let show=p.queue.slice(-7);for(let a of show){let el=document.createElement('span');el.className='animal';el.textContent=a;q.appendChild(el)}if(p.queue.length>7){let el=document.createElement('span');el.className='more';el.textContent='+'+(p.queue.length-7);q.appendChild(el)}$('stop-'+color).textContent=p.score+(Number.isFinite(s.target)?' / '+s.target:'');$('buslabel-'+color).textContent=(color==='blue'?'BLUE ':'RED ')+p.score;}}
+function renderQueues(){for(let color of ['blue','red']){const p=s.players[color];let q=$('queue-'+color);q.replaceChildren();let show=p.queue.slice(-7);for(let a of show){let el=document.createElement('span');el.className='animal';el.textContent=a;q.appendChild(el)}if(p.queue.length>7){let el=document.createElement('span');el.className='more';el.textContent='+'+(p.queue.length-7);q.appendChild(el)}$('stop-'+color).textContent=p.score+(Number.isFinite(s.target)?' / '+s.target:'');$('buslabel-'+color).textContent=p.score+' 人';}}
 function setQuestion(){if(!s.pool.length)s.pool=shuffle(makePool($('level').value));s.question=s.pool.pop();s.round++;s.phase='playing';for(let color of ['blue','red']){let p=s.players[color];p.input='';p.submitted=false;p.answer=null;renderInput(color)}s.firstDelay=null;s.revealDelay=0;s.phase='playing';$('phase').textContent='';$('question').textContent=s.question.en;$('notice').textContent='';$('scoreline').hidden=true;if($('autoSpeak').checked)say();}
 function say(){if(!('speechSynthesis' in window)||!s.question)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(s.question.en);u.lang='en-US';u.rate=Number($('rate').value);u.pitch=1;const voices=speechSynthesis.getVoices();const en=voices.find(v=>v.lang.toLowerCase().startsWith('en'));if(en)u.voice=en;speechSynthesis.speak(u)}catch(e){$('notice').textContent='此瀏覽器無法播放語音，仍可閱讀英文題目。'}}
 function settle(){if(s.phase!=='playing')return;s.phase='reveal';const item={en:s.question.en,value:s.question.value};for(let color of ['blue','red']){let p=s.players[color];item[color]=p.submitted?(p.answer===s.question.value?'correct':'wrong'):'none';if(item[color]==='correct'){successBell();p.score++;p.queue.push(animals[Math.floor(Math.random()*animals.length)]);$('feedback-'+color).textContent='✓';$('feedback-'+color).style.color='#14856e'}else{$('feedback-'+color).textContent=item[color]==='wrong'?'✕':'—';$('feedback-'+color).style.color='#bd5057'}renderInput(color)}s.past.push(item);renderQueues();$('notice').textContent=s.question.value.slice(0,2)+':'+s.question.value.slice(2);s.revealDelay=850;}
-function finish(){if(s.phase==='done')return;busArrival();if(s.phase==='playing')settle();s.phase='done';$('game').classList.add('results');$('start').hidden=true;clearInterval(ticker);ticker=null;try{speechSynthesis.cancel()}catch(e){}
-let b=s.players.blue.score,r=s.players.red.score;let why=s.remaining<=0?'時間到':'人數達標';$('phase').textContent=why;$('question').textContent='';$('scoreline').textContent=b+' : '+r;$('scoreline').hidden=false;for(let color of ['blue','red']){$('side-'+color).classList.add('buson');$('bus-'+color).classList.add('arrived')}if(b!==r)$('side-'+(b>r?'blue':'red')).classList.add('winner');renderRecords();}
+function finish(){
+ if(s.phase==='done')return;
+ if(s.phase==='playing')settle();
+ s.phase='done';clearInterval(ticker);ticker=null;
+ try{speechSynthesis.cancel()}catch(e){}
+ const b=s.players.blue.score,r=s.players.red.score;
+ $('resultHeading').textContent=s.remaining<=0?'時間到':'人數達標';
+ $('resultBlue').textContent=b;$('resultRed').textContent=r;
+ $('winBlue').hidden=b<=r;$('winRed').hidden=r<=b;
+ renderRecords();
+ // 結算只覆蓋遊戲，不改動原有三欄版型、車子、鍵盤和題目。
+ $('resultOverlay').hidden=false;
+ document.querySelectorAll('.num').forEach(btn=>btn.disabled=true);
+ busArrival();$('closeResult').focus();
+}
 function renderRecords(){let holder=$('records');holder.replaceChildren();for(let i=0;i<s.past.length;i++){const r=s.past[i];const row=document.createElement('div');row.className='record';const node=(cls,txt)=>{const d=document.createElement('div');d.className=cls;d.textContent=txt;return d};const symbol=v=>v==='correct'?'○':v==='wrong'?'×':'—';const css=v=>v==='correct'?'ok':v==='wrong'?'bad':'none';row.append(node('res '+css(r.blue),symbol(r.blue)));const mid=document.createElement('div');mid.className='mid';let strong=document.createElement('strong');strong.textContent=r.en;let time=document.createElement('span');time.textContent=r.value.slice(0,2)+':'+r.value.slice(2);mid.append(strong,time);row.append(mid,node('res '+css(r.red),symbol(r.red)));holder.appendChild(row)}}
 function tick(){let now=performance.now(),delta=Math.min(500,now-s.lastTick);s.lastTick=now;if(!['playing','reveal'].includes(s.phase))return;s.remaining=Math.max(0,s.remaining-delta);$('timer').textContent=fmt(s.remaining);if(s.phase==='playing'&&s.firstDelay!==null){s.firstDelay-=delta;if(s.firstDelay<=0)settle();}if(s.phase==='reveal'){s.revealDelay-=delta;let reached=Number.isFinite(s.target)&&(s.players.blue.score>=s.target||s.players.red.score>=s.target);if(reached||s.remaining<=0){if(s.revealDelay<=0)finish();}else if(s.revealDelay<=0)setQuestion();}else if(s.remaining<=0){settle();s.revealDelay=400;}}
-function start(){unlockAudio();$('arena').classList.remove('idle');$('centerMode').hidden=true;$('start').hidden=false;$('start').textContent='■ 終止遊戲';$('start').classList.add('end-game');$('settings').hidden=true;$('level').disabled=true;$('mode').disabled=true;try{speechSynthesis.cancel()}catch(e){}clearInterval(ticker);const cfg=gameConfig();s.remaining=cfg.seconds*1000;s.target=cfg.target;s.phase='playing';s.round=0;s.past=[];s.pool=shuffle(makePool($('level').value));s.firstDelay=null;$('game').classList.remove('results');for(let color of ['blue','red']){s.players[color]={input:'',submitted:false,answer:null,score:0,queue:[]};$('side-'+color).classList.remove('winner','buson');$('bus-'+color).classList.remove('arrived');$('feedback-'+color).textContent='';$('feedback-'+color).style.color='';}renderQueues();$('timer').textContent=fmt(s.remaining);setQuestion();s.lastTick=performance.now();ticker=setInterval(tick,50);}
+function start(){unlockAudio();$('arena').classList.remove('idle');$('centerMode').hidden=true;$('start').hidden=false;$('start').textContent='■ 終止遊戲';$('start').classList.add('end-game');$('settings').hidden=true;$('level').disabled=true;$('mode').disabled=true;try{speechSynthesis.cancel()}catch(e){}clearInterval(ticker);const cfg=gameConfig();s.remaining=cfg.seconds*1000;s.target=cfg.target;s.phase='playing';s.round=0;s.past=[];s.pool=shuffle(makePool($('level').value));s.firstDelay=null;$('resultOverlay').hidden=true;$('game').classList.remove('results');for(let color of ['blue','red']){s.players[color]={input:'',submitted:false,answer:null,score:0,queue:[]};$('side-'+color).classList.remove('winner','buson');$('bus-'+color).classList.remove('arrived');$('feedback-'+color).textContent='';$('feedback-'+color).style.color='';}renderQueues();$('timer').textContent=fmt(s.remaining);setQuestion();s.lastTick=performance.now();ticker=setInterval(tick,50);}
 function resetToStandby(){
  clearInterval(ticker);ticker=null;try{speechSynthesis.cancel()}catch(e){}
  s.phase='idle';s.question=null;s.past=[];s.pool=[];s.round=0;s.firstDelay=null;s.revealDelay=0;
  const cfg=gameConfig();s.remaining=cfg.seconds*1000;s.target=cfg.target;
- $('game').classList.remove('results');$('arena').classList.add('idle');$('centerMode').hidden=false;$('start').hidden=false;$('start').textContent='▶ 開始遊戲';$('start').classList.remove('end-game');
+ $('resultOverlay').hidden=true;$('game').classList.remove('results');$('arena').classList.add('idle');$('centerMode').hidden=false;$('start').hidden=false;$('start').textContent='▶ 開始遊戲';$('start').classList.remove('end-game');
  $('level').disabled=false;$('mode').disabled=false;$('settings').hidden=true;
  $('timer').textContent=fmt(s.remaining);$('phase').textContent='';$('question').textContent='';$('notice').textContent='';
  $('scoreline').hidden=true;
@@ -124,8 +235,8 @@ function resetToStandby(){
 function modal(title,html){$('modalTitle').textContent=title;$('modalContent').innerHTML=html;$('modal').hidden=false}
 const posters=`<h3>整點、半點、直接讀法</h3><div class="poster-grid"><div class="poster-item"><b>o'clock＝整點</b><span>seven o'clock → 07:00</span></div><div class="poster-item"><b>half past＝半點</b><span>half past six → 06:30</span></div><div class="poster-item"><b>直接讀法＝小時＋分鐘</b><span>seven twenty → 07:20</span></div><div class="poster-item"><b>oh＝分鐘不足 10</b><span>nine oh five → 09:05</span></div></div><h3>past、to、quarter</h3><div class="poster-grid"><div class="poster-item"><b>past＝過了幾分</b><span>ten past eight → 08:10</span></div><div class="poster-item"><b>to＝還差幾分（下一個小時）</b><span>ten to eight → 07:50</span></div><div class="poster-item"><b>a quarter＝15 分鐘</b><span>a quarter past three → 03:15</span></div><div class="poster-item"><b>a quarter to＝還差 15 分</b><span>a quarter to nine → 08:45</span></div></div><h3>MIX 混合</h3><p>整點、半點、直接讀法、past、to、quarter 隨機混合。</p>`;
 const how=`<p>兩隊共用中央英文時間題目；藍、紅隊分別使用自己的數字鍵盤，將英文轉換成四碼數位時間。</p><div class="poster-grid"><div class="poster-item"><b>① 聽題目</b><span>可以按 🔊 重聽英文。</span></div><div class="poster-item"><b>② 輸入四碼</b><span>例如 7:45 輸入 0745，畫面自動顯示冒號。</span></div><div class="poster-item"><b>③ 搶票</b><span>第一隊送出後，不論對錯，另一隊仍可在 1 秒內送出。</span></div><div class="poster-item"><b>④ 搭巴士</b><span>答對的隊伍各得一票、增加一位動物。達標或時間到，公車進站並顯示總人數。</span></div></div><p class="helpnote">每隊每題只能提交一次。時間不合法或未輸滿四碼不能送出。結算畫面列出全部題目，以及兩隊的 ○ 答對、× 答錯、— 未作答。</p>`;
-$('posterBtn').addEventListener('click',()=>modal('📖 英文時間小提示',posters));$('howBtn').addEventListener('click',()=>modal('🚌 異想時光巴士｜玩法',how));$('closeModal').addEventListener('click',()=>{$('modal').hidden=true});$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').hidden=true});window.addEventListener('keydown',e=>{if(e.key==='Escape')$('modal').hidden=true});
-$('settingsBtn').addEventListener('click',()=>{$('settings').hidden=!$('settings').hidden});$('mode').addEventListener('change',()=>{if(s.phase==='idle')$('timer').textContent=fmt(gameConfig().seconds*1000)});$('start').addEventListener('click',()=>{if(s.phase==='idle')start();else if(['playing','reveal'].includes(s.phase)){if(window.confirm('確定終止本局？目前成績不會保留。'))resetToStandby();}});$('speak').addEventListener('click',say);$('again').addEventListener('click',resetToStandby);
+$('posterBtn').addEventListener('click',()=>modal('📖 英文時間小提示',posters));$('howBtn').addEventListener('click',()=>modal('🚌 異想時光巴士｜玩法',how));$('closeModal').addEventListener('click',()=>{$('modal').hidden=true});$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').hidden=true});window.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('resultOverlay').hidden)resetToStandby();else $('modal').hidden=true}});
+$('settingsBtn').addEventListener('click',()=>{$('settings').hidden=!$('settings').hidden});$('mode').addEventListener('change',()=>{if(s.phase==='idle')$('timer').textContent=fmt(gameConfig().seconds*1000)});$('start').addEventListener('click',()=>{if(s.phase==='idle')start();else if(['playing','reveal'].includes(s.phase)){if(window.confirm('確定終止本局？目前成績不會保留。'))resetToStandby();}});$('speak').addEventListener('click',say);$('again').addEventListener('click',resetToStandby);$('closeResult').addEventListener('click',resetToStandby);$('resultOverlay').addEventListener('click',e=>{if(e.target===$('resultOverlay'))resetToStandby()});
 for(let color of ['blue','red'])drawPad(color);resetToStandby();
 })();
 </script>

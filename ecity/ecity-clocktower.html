@@ -70,6 +70,71 @@
  .nextDice{order:5;min-height:53px}
 }
 
+
+/* v1.3: classroom TV proportions and responsive answer layouts */
+@media (min-width:720px) and (orientation:landscape){
+ .app.challenge .challengePanel{grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:12px}
+ .challengeLeft{grid-template-rows:auto minmax(0,1.7fr) minmax(0,1fr)}
+ .challengeRight{grid-template-rows:auto minmax(0,1fr) auto}
+ .qprompt{position:relative;padding:20px 20px 30px;display:flex;align-items:center;justify-content:center;flex-direction:column}
+ .qprompt .qbig{font-size:clamp(35px,3.6vw,66px)}
+ .qprompt .miniclock{width:min(100%,36vh,300px);max-height:100%}
+ .audioReplay{position:absolute;right:12px;top:12px;width:41px;height:41px;margin:0;padding:8px}
+ .audioReplay svg{width:23px;height:23px}
+ .feedback{display:flex;align-items:center;justify-content:center;flex-direction:column;padding:14px 18px;gap:7px;overflow:hidden}
+ .feedbackMain{font-size:clamp(20px,2vw,34px);font-weight:900;line-height:1.2}
+ .feedbackEnglish{font-size:clamp(24px,2.35vw,42px);font-weight:900;line-height:1.2;overflow-wrap:anywhere}
+ .feedbackDigits{font-size:clamp(24px,2.75vw,46px);font-weight:850;font-variant-numeric:tabular-nums;line-height:1.15}
+ .answers{min-height:0;align-self:stretch}
+ .answers.numberOptions,.answers.clockOptions{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,1fr)}
+ .answers.numberOptions .answer{font-size:clamp(25px,2.3vw,44px)}
+ .answers.clockOptions .answer:first-child{grid-column:auto;width:auto;justify-self:stretch}
+ .answers.clockOptions .answer{min-width:0;min-height:0;padding:6px}
+ .answers.clockOptions .answer .miniclock{width:min(100%,32vh);max-width:100%;height:auto;max-height:100%;aspect-ratio:1}
+ .answers.englishOptions{grid-template-columns:1fr;grid-template-rows:repeat(3,minmax(0,1fr))}
+ .answers.englishOptions .answer{font-size:clamp(22px,2vw,36px);line-height:1.25}
+}
+@media (min-width:720px) and (orientation:landscape) and (max-height:740px){
+ .challengeLeft{grid-template-rows:auto minmax(0,1.7fr) minmax(0,1fr)}
+ .qprompt .miniclock{width:min(100%,32vh,245px)}
+ .answers.clockOptions .answer .miniclock{width:min(100%,29vh)}
+ .feedbackMain{font-size:clamp(19px,1.65vw,27px)}
+ .feedbackEnglish{font-size:clamp(22px,2vw,34px)}
+ .feedbackDigits{font-size:clamp(24px,2.2vw,38px)}
+}
+/* Keep the original phone layout: prompt -> answers -> feedback -> dice. */
+@media (max-width:719px),(orientation:portrait) and (max-width:900px){
+ .boardcontent:not(.digits){font-size:clamp(23px,5.8vw,33px)}
+ .boardcontent.explain{font-size:clamp(17px,4.2vw,22px)}
+ .answers.englishOptions,.answers.numberOptions,.answers.clockOptions{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:1fr}
+ .answers.englishOptions .answer{font-size:clamp(12px,3.3vw,18px)}
+ .feedback{display:flex;flex-direction:column;gap:4px;justify-content:center}
+ .feedbackMain{font-size:clamp(16px,4vw,20px);font-weight:900}
+ .feedbackEnglish{font-size:clamp(18px,4.6vw,24px);font-weight:850}
+ .feedbackDigits{font-size:clamp(20px,5vw,27px);font-weight:850}
+ .audioReplay{position:absolute;right:10px;top:10px;width:43px;height:43px;margin:0}
+ .qprompt{position:relative}
+}
+@media (min-width:720px) and (orientation:landscape){
+ .boardcontent:not(.digits){font-size:clamp(29px,2.95vw,49px)}
+ .boardcontent.explain{font-size:clamp(21px,2.05vw,33px);line-height:1.35}
+}
+
+
+/* v1.4: continuous teaching reveal and maximal, legible answer clocks */
+@media (min-width:720px) and (orientation:landscape){
+ .qprompt .miniclock{width:min(100%,min(65vh,530px));max-width:100%;max-height:100%;height:auto;flex:0 1 auto}
+ .answers.clockOptions .answer{padding:3px;min-width:0;overflow:hidden}
+ .answers.clockOptions .answer .miniclock{width:min(100%,min(47vh,390px));max-width:100%;max-height:100%;height:auto;aspect-ratio:1;flex:0 1 auto}
+}
+@media (min-width:720px) and (orientation:landscape) and (max-height:740px){
+ .qprompt .miniclock{width:min(100%,min(57vh,460px))}
+ .answers.clockOptions .answer .miniclock{width:min(100%,min(43vh,330px))}
+}
+@media (max-width:719px),(orientation:portrait) and (max-width:900px){
+ .qprompt .miniclock{width:min(74vw,320px);max-width:100%;max-height:100%}
+ .answers.clockOptions .answer .miniclock{width:100%;max-width:100%;max-height:none}
+}
 </style>
 </head>
 <body>
@@ -77,7 +142,7 @@
 <header class="topbar"><div class="brand"><span class="brandmark" aria-hidden="true">🕰️</span><div><h1>E-City｜異想鐘樓</h1><small></small></div></div><nav class="mode-tabs" aria-label="學習模式"><button id="teachTab" class="active" type="button">🕰 教學模式</button><button id="quizTab" type="button">🎯 挑戰模式</button></nav></header>
 <main class="body">
 <section class="panel clockpanel"><div class="panelhead"><b>鐘樓時鐘</b><span class="muted">點內圈選小時 · 點外圈選分鐘</span></div><div class="clockstage"><div class="clockbox"><svg id="bigClock" role="group" aria-label="可點擊調整時間的時鐘" viewBox="0 0 360 360"></svg></div><div class="micro"><button id="plusMinute" aria-label="加一分鐘">＋<small>1 分</small></button><button id="minusMinute" aria-label="減一分鐘">－<small>1 分</small></button></div></div><div class="keywords" aria-label="英文時間關鍵字"><button class="keyword" data-tip="oclock">o'clock<span>整點</span></button><button class="keyword" data-tip="half">half<span>半小時</span></button><button class="keyword" data-tip="quarter">quarter<span>一刻鐘</span></button><button class="keyword past" data-tip="past">past<span>過了幾分</span></button><button class="keyword to" data-tip="to">to<span>還差幾分</span></button></div></section>
-<section class="panel rightpanel"><div class="panelhead"><b>時間教學看板</b><div class="rightheadtools"><button class="smallbtn" id="resetReveal" type="button">↶ 隱藏答案</button><button class="smallbtn" id="settingsBtn" type="button" aria-expanded="false">⚙ 設定</button></div></div><div class="board" aria-label="電子時間教學看板"><div class="boardrow"><span class="boardlabel">數位時間</span><span class="boardcontent digits" id="digital">09:45</span></div><button class="boardrow reveal" data-row="common" aria-label="顯示或隱藏常用念法"><span class="boardlabel">常用念法</span><span class="boardcontent" id="commonText"><span class="placeholder">點一下揭曉</span></span><span class="speak hide" data-speak="common" title="朗讀常用念法">♫</span></button><button class="boardrow reveal" data-row="alternate" aria-label="顯示或隱藏其他念法"><span class="boardlabel">其他念法</span><span class="boardcontent" id="alternateText"><span class="placeholder">點一下揭曉</span></span><span class="speak hide" data-speak="alternate" title="朗讀其他念法">♫</span></button><button class="boardrow reveal" data-row="explain" aria-label="顯示或隱藏解析"><span class="boardlabel">解析</span><span class="boardcontent explain" id="explainText"><span class="placeholder">點一下揭曉</span></span></button></div></section>
+<section class="panel rightpanel"><div class="panelhead"><b>時間教學看板</b><div class="rightheadtools"><button class="smallbtn" id="resetReveal" type="button">↶ 顯示／隱藏</button><button class="smallbtn" id="settingsBtn" type="button" aria-expanded="false">⚙ 設定</button></div></div><div class="board" aria-label="電子時間教學看板"><div class="boardrow"><span class="boardlabel">數位時間</span><span class="boardcontent digits" id="digital">09:45</span></div><button class="boardrow reveal" data-row="common" aria-label="顯示或隱藏常用念法"><span class="boardlabel">常用念法</span><span class="boardcontent" id="commonText"><span class="placeholder">點一下揭曉</span></span><span class="speak hide" data-speak="common" title="朗讀常用念法">♫</span></button><button class="boardrow reveal" data-row="alternate" aria-label="顯示或隱藏其他念法"><span class="boardlabel">其他念法</span><span class="boardcontent" id="alternateText"><span class="placeholder">點一下揭曉</span></span><span class="speak hide" data-speak="alternate" title="朗讀其他念法">♫</span></button><button class="boardrow reveal" data-row="explain" aria-label="顯示或隱藏解析"><span class="boardlabel">解析</span><span class="boardcontent explain" id="explainText"><span class="placeholder">點一下揭曉</span></span></button></div></section>
 <section class="panel challengePanel" aria-label="時間挑戰">
   <div class="challengeLeft">
     <div class="qhead"><span id="qCounter" class="hide">第 1 題</span><span id="qDescription">請選出正確答案</span></div>
@@ -97,7 +162,7 @@
 <div class="settings" id="settings" role="dialog" aria-label="鐘樓設定"><strong>⚙ 鐘樓設定</strong><label>語音速度 <select id="speechRate"><option value="0.7">慢 0.70</option><option value="0.82" selected>標準慢速 0.82</option><option value="1">正常 1.00</option></select></label><label>顯示鐘面顏色 <input id="colorSwitch" type="checkbox" checked></label><label>顯示分鐘刻度 <input id="minuteSwitch" type="checkbox" checked></label><button class="smallbtn" id="closeSettings">完成</button></div><div id="toast" class="toast" role="status"></div>
 <script>
 (()=>{'use strict';
-const $=id=>document.getElementById(id), svgNS='http://www.w3.org/2000/svg', state={hour:9,minute:45,tip:null,reveal:{common:false,alternate:false,explain:false},qIndex:0,question:null,selected:null,seen:new Set(),deckSeed:0};
+const $=id=>document.getElementById(id), svgNS='http://www.w3.org/2000/svg', state={hour:9,minute:45,tip:null,reveal:{common:true,alternate:true,explain:false},qIndex:0,question:null,selected:null,seen:new Set(),deckSeed:0};
 const words=['twelve','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];const tens={20:'twenty',30:'thirty',40:'forty',50:'fifty'};const pad=n=>String(n).padStart(2,'0');const hword=h=>words[h===12?12:h];
 function numberWord(n){if(n<20)return words[n];if(n%10===0)return tens[n];return tens[Math.floor(n/10)*10]+'-'+words[n%10]}
 function direct(h,m){if(m===0)return hword(h)+" o'clock";return hword(h)+' '+(m<10?'oh '+numberWord(m):numberWord(m))}
@@ -108,24 +173,24 @@ function xy(cx,cy,r,degree){const a=(degree-90)*Math.PI/180;return [cx+Math.cos(
 function clockSVG(svg,h,m,interactive=false,small=false){
  svg.replaceChildren(); const cx=200,cy=200,r=145; svg.setAttribute('viewBox','0 0 400 400');
  const color=$('colorSwitch').checked;
- const outerCircle=node('circle',{cx,cy,r,fill:'#fffdfa',stroke:'#bdced3','stroke-width':3}); svg.append(outerCircle);
+ const outerCircle=node('circle',{cx,cy,r:small?167:r,fill:'#fffdfa',stroke:'#bdced3','stroke-width':3}); svg.append(outerCircle);
  if(color){
-  const right=node('path',{d:'M200 55 A145 145 0 0 1 200 345 L200 200Z',fill:'#fce8ed'});
-  const left=node('path',{d:'M200 345 A145 145 0 0 1 200 55 L200 200Z',fill:'#e6f3ff'});
+  const right=node('path',{d:`M200 ${small?33:55} A${small?167:145} ${small?167:145} 0 0 1 200 ${small?367:345} L200 200Z`,fill:'#fce8ed'});
+  const left=node('path',{d:`M200 ${small?367:345} A${small?167:145} ${small?167:145} 0 0 1 200 ${small?33:55} L200 200Z`,fill:'#e6f3ff'});
   svg.append(right,left);
  }
  // A single circumference; only subtle minute guides on its inside edge.
  for(let i=0;i<60;i++){
   const major=i%5===0;
-  const [x1,y1]=xy(cx,cy,major?132:140,i*6),[x2,y2]=xy(cx,cy,146,i*6);
+  const [x1,y1]=xy(cx,cy,small?(major?154:162):(major?132:140),i*6),[x2,y2]=xy(cx,cy,small?168:146,i*6);
   svg.append(node('line',{x1,y1,x2,y2,stroke:major?'#68869a':'#b8cdd1','stroke-width':major?2.3:1}));
  }
  for(let i=0;i<12;i++){
   const minute=i*5, angle=i*30, hour=i===0?12:i;
-  const [mx,my]=xy(cx,cy,170,angle),[hx,hy]=xy(cx,cy,107,angle);
+  const [mx,my]=xy(cx,cy,170,angle),[hx,hy]=xy(cx,cy,small?131:107,angle);
   const minuteLabel=node('text',{x:mx,y:my+5,'text-anchor':'middle',class:'clockNumber outer',opacity:$('minuteSwitch').checked?1:0},pad(minute));
   const hourLabel=node('text',{x:hx,y:hy+7,'text-anchor':'middle',class:'clockNumber inner'},String(hour));
-  svg.append(minuteLabel,hourLabel);
+  if(!small)svg.append(minuteLabel);svg.append(hourLabel);
   if(interactive){
    const mHit=node('circle',{cx:mx,cy:my,r:20,fill:'transparent',tabindex:'0',role:'button','aria-label':'設定分鐘 '+pad(minute)});
    const hHit=node('circle',{cx:hx,cy:hy,r:23,fill:'transparent',tabindex:'0',role:'button','aria-label':'設定小時 '+hour});
@@ -146,16 +211,16 @@ function clockSVG(svg,h,m,interactive=false,small=false){
    svg.append(node('text',{x,y:y+5,'text-anchor':'middle','font-size':15,'font-weight':850,fill:'#25435a'},pad(mm)));
   }
  }
- const [hx,hy]=xy(cx,cy,80,(h%12+m/60)*30),[mx,my]=xy(cx,cy,126,m*6);
+ const [hx,hy]=xy(cx,cy,small?105:80,(h%12+m/60)*30),[mx,my]=xy(cx,cy,small?148:126,m*6);
  svg.append(node('line',{x1:cx,y1:cy,x2:hx,y2:hy,class:'handhour'}),node('line',{x1:cx,y1:cy,x2:mx,y2:my,class:'handminute'}),node('circle',{cx,cy,r:8,fill:'#f7ae38',stroke:'#274665','stroke-width':2.5}));
 }
 function resetReveal(){state.reveal={common:false,alternate:false,explain:false};renderBoard()}
-function setTime(h,m){const total=((h%12)*60+m+720)%720;state.hour=Math.floor(total/60)||12;state.minute=total%60;resetReveal();clockSVG($('bigClock'),state.hour,state.minute,true);}
+function setTime(h,m){const total=((h%12)*60+m+720)%720;state.hour=Math.floor(total/60)||12;state.minute=total%60;renderBoard();clockSVG($('bigClock'),state.hour,state.minute,true);}
 function renderBoard(){const h=state.hour,m=state.minute;$('digital').textContent=pad(h)+':'+pad(m);const values={common:direct(h,m),alternate:alternate(h,m),explain:explanation(h,m)};for(const k of Object.keys(values)){const el=$(k+'Text');el.textContent='';if(state.reveal[k])el.textContent=values[k];else{const p=document.createElement('span');p.className='placeholder';p.textContent='點一下揭曉';el.append(p)}document.querySelector('[data-row="'+k+'"]').setAttribute('aria-pressed',String(state.reveal[k]));const speaker=document.querySelector('[data-speak="'+k+'"]');if(speaker)speaker.classList.toggle('hide',!state.reveal[k]||values[k]==='—')}}
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('show'),1700)}
 function speak(t){if(!('speechSynthesis'in window)){toast('目前瀏覽器不支援英文朗讀');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=Number($('speechRate').value);speechSynthesis.speak(u)}
 $('plusMinute').onclick=()=>setTime(state.hour,state.minute+1);$('minusMinute').onclick=()=>setTime(state.hour,state.minute-1);document.querySelectorAll('.keyword').forEach(b=>b.onclick=()=>{state.tip=state.tip===b.dataset.tip?null:b.dataset.tip;document.querySelectorAll('.keyword').forEach(x=>x.classList.toggle('active',x.dataset.tip===state.tip));clockSVG($('bigClock'),state.hour,state.minute,true)});
-document.querySelectorAll('[data-row]').forEach(b=>b.onclick=(e)=>{const k=b.dataset.row;if(e.target.closest('[data-speak]')){const phrase=k==='common'?direct(state.hour,state.minute):alternate(state.hour,state.minute);if(phrase!=='—')speak(phrase);return}state.reveal[k]=!state.reveal[k];renderBoard()});$('resetReveal').onclick=resetReveal;$('settingsBtn').onclick=()=>{$('settings').classList.toggle('open');$('settingsBtn').setAttribute('aria-expanded',String($('settings').classList.contains('open')))};$('closeSettings').onclick=()=>{$('settings').classList.remove('open');$('settingsBtn').setAttribute('aria-expanded','false')};$('colorSwitch').onchange=$('minuteSwitch').onchange=()=>clockSVG($('bigClock'),state.hour,state.minute,true);
+document.querySelectorAll('[data-row]').forEach(b=>b.onclick=(e)=>{const k=b.dataset.row;if(e.target.closest('[data-speak]')){const phrase=k==='common'?direct(state.hour,state.minute):alternate(state.hour,state.minute);if(phrase!=='—')speak(phrase);return}state.reveal[k]=!state.reveal[k];renderBoard()});$('resetReveal').onclick=()=>{const any=Object.values(state.reveal).some(Boolean);state.reveal=any?{common:false,alternate:false,explain:false}:{common:true,alternate:true,explain:false};renderBoard()};$('settingsBtn').onclick=()=>{$('settings').classList.toggle('open');$('settingsBtn').setAttribute('aria-expanded',String($('settings').classList.contains('open')))};$('closeSettings').onclick=()=>{$('settings').classList.remove('open');$('settingsBtn').setAttribute('aria-expanded','false')};$('colorSwitch').onchange=$('minuteSwitch').onchange=()=>clockSVG($('bigClock'),state.hour,state.minute,true);
 const levels=['L1','L2','L3','L4','L5','L6'];const formats=['en-num','num-en','clock-en','en-clock','clock-num','num-clock'];
 function rand(max){return Math.floor(Math.random()*max)}
 function generateTime(level){const h=rand(12)+1;let m=0;if(level==='L1')m=0;if(level==='L2')m=30;if(level==='L3'){const options=[5,10,15,20,25,30,35,40,45,50,55,1,2,8,12,18,27,38,42,58];m=options[rand(options.length)]}if(level==='L4')m=rand(30)+1;if(level==='L5')m=rand(29)+31;if(level==='L6')m=rand(2)?15:45;return {h,m,level}}
@@ -165,8 +230,8 @@ function miniClock(h,m){const svg=node('svg',{viewBox:'0 0 360 360',class:'minic
 function optionKind(format){return format.split('-')[1]}
 function promptKind(format){return format.split('-')[0]}
 function renderContent(container,type,obj){container.replaceChildren();if(type==='clock'){container.append(miniClock(obj.h,obj.m));return}if(type==='en'){const b=document.createElement('div');b.className='qbig';b.textContent=obj.phrase;container.append(b);return}const b=document.createElement('div');b.className='qbig';b.textContent=pad(obj.h)+':'+pad(obj.m);container.append(b)}
-function renderQuestion(){const q=state.question;if(!q)return;$('qCounter').textContent='';$('qDescription').textContent='看題目，選出正確答案';const prompt=promptKind(q.format);renderContent($('questionView'),prompt,q);if(prompt==='en'){const replay=document.createElement('button');replay.type='button';replay.className='smallbtn';replay.classList.add('audioReplay');replay.innerHTML='<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5a10 10 0 0 1 0 14"/></svg>';replay.setAttribute('aria-label','朗讀英文題目');replay.onclick=()=>speak(q.phrase);$('questionView').append(replay)}const answers=$('answers');answers.replaceChildren();answers.classList.toggle('clockOptions',optionKind(q.format)==='clock');q.options.forEach((opt,i)=>{const b=document.createElement('button');b.type='button';b.className='answer';const kind=optionKind(q.format);if(kind==='clock')b.append(miniClock(opt.h,opt.m));else b.textContent=kind==='en'?opt.phrase:pad(opt.h)+':'+pad(opt.m);b.setAttribute('aria-label','選項 '+String.fromCharCode(65+i)+(kind==='clock'?' 時鐘': ' '+b.textContent));b.onclick=()=>choose(i);answers.append(b)});$('feedback').querySelector('span').textContent='選擇一個答案開始。';$('nextBtn').textContent='🎲 下一題'}
-function choose(i){const q=state.question;if(state.selected!==null)return;state.selected=i;const right=i===q.correctIndex;const kind=optionKind(q.format);document.querySelectorAll('.answer').forEach((b,j)=>{b.disabled=true;if(j===q.correctIndex)b.classList.add('correct');else if(j===i)b.classList.add('wrong')});$('feedback').querySelector('span').textContent=(right?'✓ 答對！':'✗ 再看看：')+q.phrase+' = '+pad(q.h)+':'+pad(q.m);$('nextBtn').textContent='🎲 下一題'}
+function renderQuestion(){const q=state.question;if(!q)return;$('qCounter').textContent='';$('qDescription').textContent='看題目，選出正確答案';const prompt=promptKind(q.format);renderContent($('questionView'),prompt,q);if(prompt==='en'){const replay=document.createElement('button');replay.type='button';replay.className='smallbtn';replay.classList.add('audioReplay');replay.innerHTML='<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5a10 10 0 0 1 0 14"/></svg>';replay.setAttribute('aria-label','朗讀英文題目');replay.onclick=()=>speak(q.phrase);$('questionView').append(replay)}const answers=$('answers');answers.replaceChildren();const answerKind=optionKind(q.format);answers.classList.toggle('clockOptions',answerKind==='clock');answers.classList.toggle('numberOptions',answerKind==='num');answers.classList.toggle('englishOptions',answerKind==='en');q.options.forEach((opt,i)=>{const b=document.createElement('button');b.type='button';b.className='answer';const kind=optionKind(q.format);if(kind==='clock')b.append(miniClock(opt.h,opt.m));else b.textContent=kind==='en'?opt.phrase:pad(opt.h)+':'+pad(opt.m);b.setAttribute('aria-label','選項 '+String.fromCharCode(65+i)+(kind==='clock'?' 時鐘': ' '+b.textContent));b.onclick=()=>choose(i);answers.append(b)});$('feedback').replaceChildren();const hint=document.createElement('div');hint.className='feedbackMain';hint.textContent='選擇一個答案開始。';$('feedback').append(hint);$('nextBtn').textContent='🎲 下一題'}
+function choose(i){const q=state.question;if(state.selected!==null)return;state.selected=i;const right=i===q.correctIndex;const kind=optionKind(q.format);document.querySelectorAll('.answer').forEach((b,j)=>{b.disabled=true;if(j===q.correctIndex)b.classList.add('correct');else if(j===i)b.classList.add('wrong')});const feedback=$('feedback');feedback.replaceChildren();const verdict=document.createElement('div');verdict.className='feedbackMain';verdict.textContent=right?'✓ 答對！':'✗ 正確答案';const english=document.createElement('div');english.className='feedbackEnglish';english.textContent=q.phrase;const digits=document.createElement('div');digits.className='feedbackDigits';digits.textContent=pad(q.h)+':'+pad(q.m);feedback.append(verdict,english,digits);$('nextBtn').textContent='🎲 下一題'}
 $('nextBtn').onclick=generateQuestion;$('levelSelect').onchange=()=>{state.seen.clear();generateQuestion()};$('formatSelect').onchange=()=>{state.seen.clear();generateQuestion()};
 function setMode(m){const quiz=m==='quiz';$('app').classList.toggle('challenge',quiz);$('teachTab').classList.toggle('active',!quiz);$('quizTab').classList.toggle('active',quiz);$('teachTab').setAttribute('aria-pressed',String(!quiz));$('quizTab').setAttribute('aria-pressed',String(quiz));if(quiz&&!state.question)generateQuestion();if(window.innerWidth<720)window.scrollTo({top:0,behavior:'instant'})} $('teachTab').onclick=()=>setMode('teach');$('quizTab').onclick=()=>setMode('quiz');
 setTime(9,45);setMode('teach');
