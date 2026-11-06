@@ -20,6 +20,28 @@
 /* 手機與窄平板：真正直向單欄、允許往下捲動 */
 @media(max-width:900px){html,body{width:100%;height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto}.app{display:flex;flex-direction:column;width:100%;height:auto;min-height:100dvh;padding:10px;gap:12px}.main,.workspace{display:contents}.topbar{order:1;display:flex;flex-direction:column;align-items:stretch;gap:14px;width:100%;padding:16px}.focus-line1{font-size:clamp(21px,5.5vw,32px);white-space:normal;line-height:1.25}.focus-line2{font-size:clamp(25px,6.5vw,40px);white-space:normal;line-height:1.3;margin-top:6px}.digital-clock{width:100%;margin-top:0;min-width:0;font-size:clamp(43px,11vw,72px);padding:8px 8px;border:4px solid var(--navy);border-radius:16px;line-height:1.1}.rooms{flex-wrap:wrap;justify-content:center;gap:8px}.room-btn{font-size:16px;padding:9px 12px}.schedule{order:2;display:block;width:100%;padding:14px 10px}.exam-title{font-size:clamp(17px,4.5vw,24px);white-space:normal;margin-bottom:12px}.schedule-table{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:52px repeat(7,62px);width:100%}.tcell,.tcell.period,.tcell.head{font-size:clamp(13px,3.6vw,18px);padding:4px 2px;overflow-wrap:anywhere}.students{order:3;display:block;width:100%;padding:16px;overflow:visible}.room-title{font-size:26px;white-space:normal}.room-teacher{font-size:19px;white-space:normal}.student-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;overflow:visible}.student{font-size:clamp(14px,3.6vw,18px);padding:8px 5px;white-space:normal;overflow-wrap:anywhere}.panel{order:4;display:flex;flex-direction:column;width:100%;padding:12px;min-height:0;overflow:visible}.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}.tab,.reset-btn{font-size:14px;padding:9px 10px;white-space:nowrap}.canvas-area{position:relative;display:block;width:100%;height:520px;min-height:520px;overflow:hidden}.view{position:absolute;inset:0}.seatmap{width:100%;height:100%}.small-seat{width:13%;height:11%;font-size:clamp(13px,3.7vw,19px);padding:2px;overflow-wrap:anywhere}.teacher-desk{width:17%;height:11%;left:36%;font-size:clamp(13px,3.7vw,19px)}.big-desk-seat{font-size:clamp(12px,3.4vw,18px);overflow-wrap:anywhere}.big-desk{width:30%;height:12%}.big1{left:4%;top:76%}.big2{left:66%;top:76%}}
 @media(max-width:390px){.app{padding:7px;gap:9px}.topbar{padding:12px}.panel{padding:8px}.canvas-area{height:470px;min-height:470px}.student-list{gap:4px}.student{font-size:13px}.small-seat,.teacher-desk{font-size:13px}.big-desk-seat{font-size:12px}}
+/* 考試資訊與時鐘各自留白，教室切換集中於座位及備註工具列。 */
+:root{--navy:#173b5c;--navy2:#486780;--orange:#c47b1b;--orange-soft:#fff3df;--bg:#f2f5f7;--line:#dce5eb;--muted:#748897;--soft:#edf2f6;--placed:#edf2f5}
+.app{grid-template-columns:minmax(0,1fr) minmax(0,3fr)}
+.workspace{grid-template-columns:minmax(0,3fr) minmax(0,7fr)}
+.topbar{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;padding:20px 24px}
+.focus-line1{font-size:clamp(23px,2.5vw,46px);line-height:1.2}
+.focus-line2{font-size:clamp(28px,3vw,56px);line-height:1.2;white-space:normal}
+.digital-clock{min-width:0;width:100%;padding:12px 8px;border:1px solid #dce6ed;border-radius:18px;background:#edf3f7;color:var(--navy);font-size:clamp(46px,5.6vw,112px);letter-spacing:-.035em;line-height:1.1}
+.panel{grid-template-rows:auto auto minmax(0,1fr)}
+.tabs{flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.rooms{margin-left:auto;flex-wrap:wrap;gap:6px}
+.room-btn{padding:8px 12px;border-color:#d2dfe8;background:#f8fafb;font-size:clamp(14px,1vw,18px)}
+.room-btn:hover{background:#edf3f7;border-color:#9ab4c7}
+.room-btn.active{background:#e0edf5;border-color:#89abc2;color:var(--navy)}
+.tab{background:#fff;border-color:#d2dfe8}
+.tab.active{background:var(--navy);border-color:var(--navy)}
+.canvas-tools{display:flex;justify-content:flex-end;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;min-height:32px}
+.reset-btn,.note-clear{margin-left:0}
+.note-action{font-size:14px}
+@media(min-width:901px) and (max-width:1280px){.app{grid-template-columns:minmax(0,1fr) minmax(0,2.85fr)}.workspace{grid-template-columns:minmax(0,3fr) minmax(0,6.7fr)}.topbar{padding:16px;gap:16px}.digital-clock{font-size:5.4vw}.focus-line1{font-size:2.45vw}.focus-line2{font-size:2.9vw}.room-btn,.tab{padding:8px 10px}}
+@media(max-width:900px){.topbar{padding:18px;gap:16px}.focus-line1{font-size:clamp(21px,5.5vw,32px)}.focus-line2{font-size:clamp(25px,6.5vw,40px)}.digital-clock{font-size:clamp(52px,14vw,96px);padding:12px 8px;border:1px solid #dce6ed}.tabs{gap:8px}.rooms{margin-left:auto;justify-content:flex-end}.room-btn{font-size:14px;padding:8px 10px}.canvas-tools{margin-bottom:10px}.tab{padding:8px 10px}}
+@media(max-width:480px){.rooms{flex-basis:100%;justify-content:flex-start;margin-top:2px}.canvas-tools{justify-content:flex-end}}
 </style>
 </head>
 <body>
@@ -35,7 +57,6 @@
         <div class="focus-line2" id="focusLine2"><span class="exam-time">11:05–11:50</span>｜<span class="subject-name">國文</span></div>
       </div>
       <div class="digital-clock" id="digitalClock" aria-label="現在時間">--:--:--</div>
-      <div class="rooms" id="roomButtons"></div>
     </section>
     <section class="workspace">
       <aside class="students card">
@@ -47,6 +68,9 @@
         <div class="tabs">
           <button class="tab active" data-view="seatView">座位表</button>
           <button class="tab" data-view="noteView">手寫備註</button>
+          <div class="rooms" id="roomButtons" aria-label="切換教室"></div>
+        </div>
+        <div class="canvas-tools">
           <button class="reset-btn" id="resetSeats">全部退回</button>
           <button class="note-action active" id="redPen" type="button" hidden>🖊 紅色畫筆</button>
           <button class="note-action note-clear" id="clearNotes" type="button" hidden>全部清除</button>
@@ -125,7 +149,7 @@ for(let p=1;p<=7;p++){
     const item=day.periods.find(x=>x.period===p)||{subject:''};
     const muted=['自習','上課','講座',''].includes(item.subject);
     let html=item.subject||'—';
-    if(item.subject==='作文')html='<span class="subject-two-line">作文<br>（50分鐘）</span>';
+    if(item.subject==='作文')html='<span class="subject-two-line">作文<br><small style="font-size:.78em;white-space:nowrap">50分鐘</small></span>';
     if(item.subject==='英聽／數手寫')html='<span class="subject-two-line">英聽<br>數手寫</span>';
     const c=cell(html,'subject '+(muted?'muted':''));
     if(!muted){c.dataset.subject=item.subject;c.dataset.period=p;c.dataset.day=di;c.onclick=()=>selectSubject(item.subject,p,di,c)}
@@ -155,7 +179,7 @@ function renderRooms(){
     renderSeatMap();return;
   }
   Object.entries(data.rooms).forEach(([room,info],i)=>{
-    const b=document.createElement('button');b.className='room-btn';b.textContent=`${room}（${info.students.length}人）`;
+    const b=document.createElement('button');b.className='room-btn';b.textContent=room;
     b.onclick=()=>selectRoom(room,info,b);roomButtons.appendChild(b);
     if(i===0)setTimeout(()=>{if(b.isConnected)b.click()},0);
   });
