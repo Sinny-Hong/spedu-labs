@@ -11,7 +11,7 @@
 .schedule{padding:18px 18px 16px;display:grid;grid-template-rows:auto 1fr;min-height:0}.exam-title{font-size:clamp(18px,1.45vw,28px);font-weight:950;white-space:nowrap;margin:0 0 14px;letter-spacing:.01em}.schedule-table{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:48px repeat(7,82px);min-height:0;border:1.5px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}.tcell{display:flex;align-items:center;justify-content:center;text-align:center;min-width:0;padding:5px 4px;font-size:clamp(17px,1.28vw,24px);font-weight:850;line-height:1.05;border-left:1px solid var(--line);border-top:1px solid var(--line)}.tcell:nth-child(3n+1){border-left:none}.tcell:nth-child(-n+3){border-top:none}.tcell.head{font-size:clamp(16px,1.12vw,21px);font-weight:950;background:#f8fbfd;line-height:1.05;flex-direction:column;gap:3px}.tcell.head small{display:block;font-size:.86em;color:var(--muted);font-weight:850;margin:0}.tcell.period{background:var(--soft);font-size:clamp(16px,1.12vw,21px);font-weight:950}.tcell.subject{cursor:pointer;transition:.12s;background:#fff}.tcell.subject:hover{background:#fff9ee}.tcell.subject.selected{background:var(--orange-soft);color:#6e4300;box-shadow:inset 0 0 0 2px var(--orange)}.tcell.muted{color:#7d8b9a;background:#fbfcfd;cursor:default;font-weight:750}.subject-two-line{line-height:1}
 .main{display:grid;grid-template-rows:clamp(155px,21%,190px) minmax(0,1fr);gap:14px;min-width:0;min-height:0}.topbar{padding:10px 18px;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:12px;min-width:0}.focus{min-width:0;align-self:center}.focus-line1{font-size:clamp(28px,2.5vw,48px);font-weight:950;line-height:1.05;white-space:nowrap;letter-spacing:.01em}.focus-line2{font-size:clamp(38px,3.3vw,62px);font-weight:950;line-height:1.02;white-space:nowrap;margin-top:8px}.focus-line2 .exam-time{color:var(--orange)}.focus-line2 .subject-name{color:var(--navy)}
 .digital-clock{display:flex;align-items:center;justify-content:center;min-width:275px;padding:3px 12px;border:4px solid var(--navy);border-radius:16px;background:#fff0d7;color:var(--navy);font-family:Arial,sans-serif;font-size:clamp(48px,4vw,78px);font-weight:900;font-variant-numeric:tabular-nums;line-height:1.06;white-space:nowrap}.rooms{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:nowrap;max-width:100%}.room-btn{border:1.5px solid #bfd0df;background:#fff;color:var(--navy);border-radius:12px;padding:8px 12px;font-size:clamp(14px,1vw,18px);font-weight:900;cursor:pointer;white-space:nowrap}.room-btn.active{background:var(--orange);border-color:var(--orange);color:#fff}
-.workspace{display:grid;grid-template-columns:30% 70%;gap:14px;min-height:0}.students{padding:18px 20px;min-height:0;display:grid;grid-template-rows:auto auto 1fr;overflow:hidden}.room-title{font-size:clamp(23px,1.7vw,32px);font-weight:950;color:var(--navy);margin:0 0 4px;white-space:nowrap}.room-teacher{font-size:clamp(17px,1.15vw,22px);font-weight:700;color:var(--navy2);margin:0 0 14px;white-space:nowrap}.student-list{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;align-content:start;min-height:0;overflow:hidden}.student{border:1.5px solid transparent;border-radius:10px;padding:8px;font-size:clamp(17px,1.12vw,22px);font-weight:900;white-space:nowrap;background:#fff;cursor:pointer;transition:.12s}.student:hover{border-color:#c7d7e5;background:#f9fbfd}.student.selected{background:var(--orange-soft);border-color:var(--orange);color:#6e4300}.student.placed{background:var(--placed);color:#8a9aab;font-weight:800}.student.placed::before{content:"✓ ";color:#6d8aa5}.empty{grid-column:1/-1;color:var(--muted);font-weight:700;padding-top:12px}
+.workspace{display:grid;grid-template-columns:30% 70%;gap:14px;min-height:0}.students{padding:18px 20px;min-height:0;display:grid;grid-template-rows:auto auto auto 1fr;overflow:hidden}.room-title{font-size:clamp(23px,1.7vw,32px);font-weight:950;color:var(--navy);margin:0 0 4px;white-space:nowrap}.room-teacher{font-size:clamp(17px,1.15vw,22px);font-weight:700;color:var(--navy2);margin:0 0 14px;white-space:nowrap}.student-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px;align-content:start;min-height:0;overflow:hidden}.student{border:1.5px solid transparent;border-radius:10px;padding:8px;font-size:clamp(17px,1.12vw,22px);font-weight:900;white-space:normal;overflow-wrap:anywhere;background:#fff;cursor:pointer;transition:.12s}.student:hover{border-color:#c7d7e5;background:#f9fbfd}.student.selected{background:var(--orange-soft);border-color:var(--orange);color:#6e4300}.student.placed{background:var(--placed);color:#8a9aab;font-weight:800}.student.placed::before{content:"✓ ";color:#6d8aa5}.empty{grid-column:1/-1;color:var(--muted);font-weight:700;padding-top:12px}
 .panel{padding:14px 16px;display:grid;grid-template-rows:auto 1fr;min-height:0}.tabs{display:flex;align-items:center;gap:8px;margin-bottom:10px}.tab{border:1.5px solid #c7d5e3;background:#fff;color:var(--navy);border-radius:12px;padding:8px 15px;font-size:clamp(14px,1vw,18px);font-weight:900;cursor:pointer}.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}.reset-btn{margin-left:auto;border:1px solid #d7e1ea;background:#fff;color:#7a8da1;border-radius:10px;padding:7px 11px;font-size:clamp(12px,.85vw,15px);font-weight:800;cursor:pointer}.reset-btn:hover{border-color:var(--orange);color:#8a5a00}.canvas-area{position:relative;min-height:0;border:1.5px solid #d9e5ef;border-radius:18px;background:#fff;overflow:hidden}.view{position:absolute;inset:0;display:none}.view.active{display:block}.note-view{background:#fff}.note-canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}.note-action{border:1.5px solid #d9b0b0;background:#fff6f6;color:#bd2424;border-radius:10px;padding:7px 11px;font-size:clamp(12px,.85vw,15px);font-weight:900;cursor:pointer}.note-action.active{background:#c62828;color:#fff;border-color:#c62828}.note-clear{margin-left:auto}
 .seatmap{position:relative;width:100%;height:100%}.small-seat,.big-desk-seat{position:absolute;cursor:pointer;user-select:none}.small-seat{width:10%;height:13%;border:2px solid #7d91a6;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;color:var(--navy);font-size:clamp(22px,1.65vw,32px);font-weight:950;line-height:1}.small-seat:hover,.big-desk-seat:hover{outline:2px solid #f7c45d;outline-offset:2px}.small-seat.available::after,.big-desk-seat.available::after{content:"";position:absolute;inset:3px;border:2px dashed #f6bd4b;border-radius:4px;pointer-events:none}.small-seat.occupied{background:#f8fbfd}.teacher-desk{position:absolute;left:36%;top:5%;width:12%;height:13%;border:2px solid #7d91a6;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:clamp(22px,1.65vw,32px);font-weight:950}.s1{left:5%;top:5%}.s2{left:5%;top:25%}.s3{left:31%;top:25%}.s4{left:57%;top:25%}.s5{left:85%;top:25%}.s6{left:5%;top:45%}.s7{left:31%;top:45%}.s8{left:57%;top:45%}.s9{left:85%;top:45%}.big-desk{position:absolute;width:24%;height:13%;border:2.5px solid #72879d;border-radius:5px;background:#fff}.big1{left:7%;top:76%}.big2{left:69%;top:76%}.big-desk-seat{width:44%;height:34%;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--navy);font-size:clamp(22px,1.65vw,32px);font-weight:950;line-height:1;border-radius:5px;background:transparent}.big-desk-seat.top-left{left:3%;top:-33%}.big-desk-seat.top-right{right:3%;top:-33%}.big-desk-seat.bottom-left{left:3%;bottom:-33%}.big-desk-seat.bottom-right{right:3%;bottom:-33%}.big-desk-seat.occupied{background:#f8fbfd}
 @media(max-width:1280px) and (min-width:901px){.topbar{gap:7px}.focus-line1{font-size:clamp(20px,2.15vw,32px)}.focus-line2{font-size:clamp(26px,2.7vw,42px)}.app{grid-template-columns:26% 74%;gap:10px;padding:10px}.main{gap:10px}.workspace{gap:10px;grid-template-columns:31% 69%}.topbar{padding:10px 12px}.students,.panel{padding:12px}.student{padding:6px}.room-btn{padding:7px 9px}.digital-clock{font-size:clamp(38px,3.2vw,56px);min-width:205px;padding:3px 8px}}
@@ -25,14 +25,14 @@
 <body>
 <div class="app">
   <aside class="schedule card">
-    <h1 class="exam-title" id="examTitle">115學年度上學期 第一次段考</h1>
+    <h1 class="exam-title" id="examTitle">115學年度上學期 第二次段考</h1>
     <div class="schedule-table" id="scheduleTable"></div>
   </aside>
   <main class="main">
     <section class="topbar card">
       <div class="focus">
-        <div class="focus-line1" id="focusLine1">10/13 星期二｜第3節</div>
-        <div class="focus-line2" id="focusLine2"><span class="exam-time">10:10–10:55</span>｜<span class="subject-name">國文</span></div>
+        <div class="focus-line1" id="focusLine1">11/27 星期五｜第4節</div>
+        <div class="focus-line2" id="focusLine2"><span class="exam-time">11:05–11:50</span>｜<span class="subject-name">國文</span></div>
       </div>
       <div class="digital-clock" id="digitalClock" aria-label="現在時間">--:--:--</div>
       <div class="rooms" id="roomButtons"></div>
@@ -41,7 +41,7 @@
       <aside class="students card">
         <div class="room-title" id="roomTitle">異想教室 E</div>
         <div class="room-teacher" id="roomTeacher">監考老師 洪欣怡</div>
-        <div class="student-list" id="studentList"></div>
+        <div id="studentCount" style="font-size:16px;margin-bottom:10px"></div><div class="student-list" id="studentList"></div>
       </aside>
       <section class="panel card">
         <div class="tabs">
@@ -69,31 +69,32 @@
 </div>
 <script>
 const EXAM_DATA={
-  title:"115學年度上學期 第一次段考",
+  id:"115-1-exam-2",
+  title:"115學年度上學期 第二次段考",
   dates:[
-    {date:"10/13",weekday:"星期二",periods:[{period:1,subject:"作文"},{period:2,subject:"自習"},{period:3,subject:"國文"},{period:4,subject:"自習"},{period:5,subject:"英聽／數手寫"},{period:6,subject:"自習"},{period:7,subject:"自然"}]},
-    {date:"10/14",weekday:"星期三",periods:[{period:1,subject:"自習"},{period:2,subject:"英文"},{period:3,subject:"自習"},{period:4,subject:"數學"},{period:5,subject:"自習"},{period:6,subject:"社會"},{period:7,subject:"上課"}]}
+    {date:"11/26",weekday:"星期四",periods:[{period:1,subject:"作文",time:"08:20–09:10"},{period:2,subject:"自習"},{period:3,subject:"自然"},{period:4,subject:"自習"},{period:5,subject:"英聽／數手寫"},{period:6,subject:"自習"},{period:7,subject:"社會"}]},
+    {date:"11/27",weekday:"星期五",periods:[{period:1,subject:"自習"},{period:2,subject:"英文"},{period:3,subject:"自習"},{period:4,subject:"國文"},{period:5,subject:"數學"},{period:6,subject:"講座"},{period:7,subject:"講座"}]}
   ],
   periodTimes:{1:"08:20–09:05",2:"09:15–10:00",3:"10:10–10:55",4:"11:05–11:50",5:"13:15–14:00",6:"14:10–14:55",7:"15:05–15:50",8:"16:00–16:45"},
   subjects:{
-    "作文":{rooms:{"異想 M":{teacher:"許杏凰",students:["106 鍾啟玄"]}}},
+    "作文":{rooms:{"異想 C":{teacher:"陳秋錡",students:["106 鍾啟玄（打字）","105 鍾佩璇（延長）"]}}},
     "國文":{rooms:{
-      "異想 C":{teacher:"陳秋錡",students:["102 何芃穎","104 翁凡喬","104 蔡欣蒨","105 林宸仰","105 鍾佩璇","108 陳建凱","205 吳柏翰","207 洪裔宸","207 黃湛晉","208 傅子豪"]},
+      "異想 C":{teacher:"陳秋錡",students:["205 吳柏翰","207 洪裔宸","207 黃湛晉","208 傅子豪","102 何芃穎","104 翁凡喬","104 蔡欣蒨","105 林宸仰","105 鍾佩璇"]},
       "異想 L":{teacher:"洪羽晶",students:["301 程品涵","303 吳幸穎","303 呂雅菁","304 林獻堂","309 葉秀甄"]},
-      "異想 E":{teacher:"洪欣怡",students:["302 陳炯浩","305 潘正貴","305 陳暐澄","307 周晉全","307 鄭佩雯","308 劉濬紳","310 陳軒琛","201 朱昱慈","201 莊証翔","202 吳至浩"]}
+      "異想 E":{teacher:"許杏凰",students:["302 陳炯浩","305 潘正貴","305 陳暐澄","307 周晉全","307 鄭佩雯","308 劉濬紳","310 陳軒琛","201 朱昱慈","201 莊証翔","202 吳至浩"]}
     }},
     "英文":{rooms:{
-      "異想 E":{teacher:"洪欣怡",students:["205 吳柏翰","207 洪裔宸","207 黃湛晉","208 傅子豪","201 莊証翔","202 吳至浩","102 何芃穎","104 翁凡喬","104 蔡欣蒨","105 林宸仰","105 鍾佩璇","108 陳建凱"]},
+      "異想 E":{teacher:"洪欣怡",students:["205 吳柏翰","207 洪裔宸","207 黃湛晉","208 傅子豪","201 莊証翔","202 吳至浩","102 何芃穎","104 翁凡喬","103 郭芓駒","104 蔡欣蒨","105 林宸仰","105 鍾佩璇"]},
       "異想 C":{teacher:"陳秋錡",students:["201 朱昱慈","204 李禹衡","305 潘正貴","305 陳暐澄","306 吳奕翰","307 周晉全","307 鄭佩雯","308 劉濬紳","310 林晟銘","310 陳軒琛"]},
-      "異想 M":{teacher:"許杏凰",students:["301 程品涵","303 吳幸穎","303 呂雅菁","304 林獻堂","309 葉秀甄"]}
+      "異想 L":{teacher:"洪羽晶",students:["301 程品涵","303 吳幸穎","303 呂雅菁","304 林獻堂","309 葉秀甄"]}
     }},
     "數學":{rooms:{
-      "異想 E":{teacher:"洪雨晶",students:["301 程品涵","303 吳幸穎","303 呂雅菁","304 林獻堂","309 葉秀甄","205 吳柏翰","207 洪裔宸","207 黃湛晉","208 傅子豪","102 何芃穎","104 翁凡喬","104 蔡欣蒨"]},
-      "異想 C":{teacher:"陳秋錡",students:["302 陳炯浩","304 黃佳羽","305 潘正貴","306 吳奕翰","307 周晉全","307 鄭佩雯","308 劉濬紳","310 陳軒琛","201 朱昱慈","105 鍾佩璇"]},
-      "異想 L":{teacher:"洪欣怡",students:["201 莊証翔","204 李禹衡","105 林宸仰","108 陳建凱","302 李孟頫","305 陳暐澄"]}
+      "異想 C":{teacher:"洪雨晶",students:["301 程品涵","303 吳幸穎","303 呂雅菁","304 林獻堂","309 葉秀甄","205 吳柏翰","207 洪裔宸","207 黃湛晉","208 傅子豪","102 何芃穎","104 翁凡喬","104 蔡欣蒨"]},
+      "異想 E":{teacher:"洪欣怡",students:["302 陳炯浩","304 黃佳羽","305 潘正貴","306 吳奕翰","307 周晉全","307 鄭佩雯","308 劉濬紳","310 陳軒琛","201 莊証翔"]},
+      "異想 M":{teacher:"許杏凰",students:["201 朱昱慈","105 鍾佩璇","202 吳至浩","204 李禹衡","105 林宸仰","302 李孟頫","305 陳暐澄"]}
     }},
-    "社會":{rooms:{"異想 E":{teacher:"洪欣怡",students:["305 潘正貴","307 周晉全","310 陳軒琛"]},"異想 L":{teacher:"洪羽晶",students:["207 洪裔宸"]}}},
-    "自然":{rooms:{"異想 C":{teacher:"陳秋錡",students:["305 潘正貴","307 周晉全","310 陳軒琛"]},"異想 M":{teacher:"許杏凰",students:["207 洪裔宸"]}}}
+    "社會":{rooms:{"異想 E":{teacher:"洪欣怡",students:["305 潘正貴","307 周晉全","310 陳軒琛"]},"異想 L":{teacher:"洪羽晶",students:["207 洪裔宸","105 鍾佩璇（延長）"]}}},
+    "自然":{rooms:{"異想 C":{teacher:"陳秋錡",students:["305 潘正貴","307 周晉全","310 陳軒琛"]},"異想 M":{teacher:"許杏凰",students:["207 洪裔宸","105 鍾佩璇（延長）"]}}}
   }
 };
 const scheduleTable=document.getElementById('scheduleTable');
@@ -112,7 +113,7 @@ const clockFormatter=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Taipei',hou
 function updateDigitalClock(){digitalClock.textContent=clockFormatter.format(new Date())}
 updateDigitalClock();setInterval(updateDigitalClock,1000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateDigitalClock()});
-let selectedSubject='國文',selectedDisplaySubject='國文',selectedPeriod=3,selectedDay=0;
+let selectedSubject='國文',selectedDisplaySubject='國文',selectedPeriod=4,selectedDay=1;
 let selectedRoom='',selectedStudent='',currentRoomInfo=null,seatAssignments={};
 examTitle.textContent=EXAM_DATA.title;
 function cell(text,cls=''){const d=document.createElement('div');d.className='tcell '+cls;d.innerHTML=text;return d}
@@ -122,12 +123,13 @@ for(let p=1;p<=7;p++){
   scheduleTable.appendChild(cell(`第${p}節`,'period'));
   EXAM_DATA.dates.forEach((day,di)=>{
     const item=day.periods.find(x=>x.period===p)||{subject:''};
-    const muted=['自習','上課',''].includes(item.subject);
+    const muted=['自習','上課','講座',''].includes(item.subject);
     let html=item.subject||'—';
+    if(item.subject==='作文')html='<span class="subject-two-line">作文<br>（50分鐘）</span>';
     if(item.subject==='英聽／數手寫')html='<span class="subject-two-line">英聽<br>數手寫</span>';
     const c=cell(html,'subject '+(muted?'muted':''));
     if(!muted){c.dataset.subject=item.subject;c.dataset.period=p;c.dataset.day=di;c.onclick=()=>selectSubject(item.subject,p,di,c)}
-    if(item.subject==='國文'&&p===3&&di===0)c.classList.add('selected');
+    if(item.subject==='國文'&&p===4&&di===1)c.classList.add('selected');
     scheduleTable.appendChild(c);
   });
 }
@@ -140,10 +142,12 @@ function selectSubject(subject,period,dayIndex,el){
 function renderHeader(){
   const day=EXAM_DATA.dates[selectedDay];
   focusLine1.textContent=`${day.date} ${day.weekday}｜第${selectedPeriod}節`;
-  focusLine2.innerHTML=`<span class="exam-time">${EXAM_DATA.periodTimes[selectedPeriod]}</span>｜<span class="subject-name">${selectedDisplaySubject}</span>`;
+  const item=day.periods.find(x=>x.period===selectedPeriod);
+  focusLine2.innerHTML=`<span class="exam-time">${item?.time||EXAM_DATA.periodTimes[selectedPeriod]}</span>｜<span class="subject-name">${selectedDisplaySubject}</span>`;
 }
 function renderRooms(){
   roomButtons.innerHTML='';studentList.innerHTML='';selectedStudent='';selectedRoom='';currentRoomInfo=null;seatAssignments={};
+  document.getElementById('studentCount').textContent='';
   const data=EXAM_DATA.subjects[selectedSubject];
   if(!data){
     roomTitle.textContent=selectedSubject==='英聽／數手寫'?'英聽／數手寫':'此考科目前沒有設定教室名單';
@@ -151,19 +155,21 @@ function renderRooms(){
     renderSeatMap();return;
   }
   Object.entries(data.rooms).forEach(([room,info],i)=>{
-    const b=document.createElement('button');b.className='room-btn';b.textContent=room;
+    const b=document.createElement('button');b.className='room-btn';b.textContent=`${room}（${info.students.length}人）`;
     b.onclick=()=>selectRoom(room,info,b);roomButtons.appendChild(b);
     if(i===0)setTimeout(()=>{if(b.isConnected)b.click()},0);
   });
 }
-function storageKey(){return `exam-board-v4|${selectedSubject}|${selectedRoom}`}
+function storageKey(){return `exam-board-v4|${EXAM_DATA.id}|${selectedSubject}|${selectedRoom}`}
 function loadSeats(){try{seatAssignments=JSON.parse(localStorage.getItem(storageKey())||'{}')||{}}catch{seatAssignments={}}}
 function saveSeats(){localStorage.setItem(storageKey(),JSON.stringify(seatAssignments))}
 function selectRoom(room,info,button){
   document.querySelectorAll('.room-btn').forEach(x=>x.classList.remove('active'));button.classList.add('active');
   selectedRoom=room;currentRoomInfo=info;selectedStudent='';loadSeats();
   roomTitle.textContent=`異想教室 ${room.replace('異想 ','')}`;
+  const total=Object.values(EXAM_DATA.subjects[selectedSubject].rooms).reduce((sum,r)=>sum+r.students.length,0);
   roomTeacher.textContent=`監考老師 ${info.teacher||''}`;
+  document.getElementById('studentCount').textContent=`本教室 ${info.students.length} 人｜本科合計 ${total} 人`;
   renderStudents();renderSeatMap();
 }
 function placedStudents(){return new Set(Object.values(seatAssignments).filter(Boolean))}
@@ -182,7 +188,7 @@ function renderStudents(){
     studentList.appendChild(d);
   });
 }
-function rawName(full){return full.replace(/^\d+\s*/,'')}
+function rawName(full){return full.replace(/^\d+\s*/,'').replace(/（[^）]*）/g,'')}
 function seatLabel(full){
   const names=currentRoomInfo?currentRoomInfo.students.map(rawName):[];
   const short=rawName(full).slice(-2);
