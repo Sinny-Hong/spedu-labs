@@ -306,170 +306,18 @@
     function updateConnectionStatus(type,message){$("#syncBadge").className=`sync-badge ${type}`;$("#syncText").textContent=message;$("#teacherCount").textContent=new Set(groups().map(group=>group.teacher)).size;$("#studentCount").textContent=filteredRecords().length;}
     async function loadData(){updateConnectionStatus("connecting","正在連線至雲端試算表 A7 抽課分頁……");try{records=await fetchA7SheetData();refreshResourceTeacherOptions();refreshTeacherOptions();render();renderStudentFilters();updateConnectionStatus("success","雲端連線成功！已同步國文資料。");}catch(error){console.warn("雲端讀取失敗，載入測試資料：",error);records=FALLBACK_RECORDS.map(record=>({...record}));refreshResourceTeacherOptions();refreshTeacherOptions();render();renderStudentFilters();updateConnectionStatus("fallback",`連線失敗，目前顯示測試資料。原因：${error.message}`);}}
 
-    async function downloadWord(){
-      const button=$("#downloadWord");
-      const visible=visibleGroups();
-      if(!visible.length){alert("目前沒有可輸出的通知單資料。");return;}
-      button.disabled=true;button.textContent="正在產生 Word…";
-      try{
-        const {
-          AlignmentType, BorderStyle, Document, HighlightColor, Packer, Paragraph, Table, TableCell, TableLayoutType,
-          TableRow, TextRun, VerticalAlign, WidthType
-        }=await import("https://cdn.jsdelivr.net/npm/docx@9.5.1/+esm");
-
-        const FONT="DFKai-SB";
-        const mainWidths=[10,14,9,10,15,19,23];
-        const border={style:BorderStyle.SINGLE,size:4,color:"000000"};
-        const borders={top:border,bottom:border,left:border,right:border};
-        const noBorder={style:BorderStyle.NONE,size:0,color:"FFFFFF"};
-        const noBorders={top:noBorder,bottom:noBorder,left:noBorder,right:noBorder};
-
-        const text=(value,size=28,bold=false)=>new TextRun({text:String(value??""),font:FONT,size,bold});
-        const para=(value,{size=28,bold=false,align=AlignmentType.CENTER,spacingAfter=0,pageBreakBefore=false}={})=>new Paragraph({
-          alignment:align,
-          pageBreakBefore,
-          spacing:{after:spacingAfter},
-          children:[text(value,size,bold)]
-        });
-        const cell=(value,width,{size=28,bold=false,borderSet=borders,align=AlignmentType.CENTER}={})=>new TableCell({
-          width:{size:width,type:WidthType.PERCENTAGE},
-          verticalAlign:VerticalAlign.CENTER,
-          borders:borderSet,
-          children:[para(value,{size,bold,align})]
-        });
-
-        function wordRatioGuide(dailyRatio){
-          const guideCell=(label,width)=>new TableCell({
-            width:{size:width,type:WidthType.PERCENTAGE},
-            verticalAlign:VerticalAlign.CENTER,
-            borders:noBorders,
-            children:label?[
-              para(`${label}%`,{size:26,bold:true,align:AlignmentType.CENTER}),
-              para("↓",{size:30,bold:true,align:AlignmentType.CENTER})
-            ]:[para("",{size:10})]
-          });
-          const labels=["","","","",dailyRatio,100,""];
-          return new Table({
-            width:{size:100,type:WidthType.PERCENTAGE},
-            layout:TableLayoutType.FIXED,
-            borders:noBorders,
-            rows:[new TableRow({
-              cantSplit:true,
-              children:labels.map((label,index)=>guideCell(label,mainWidths[index]))
-            })]
-          });
-        }
-
-        function wordMainTable(students,mode){
-          const headers=["班級","姓名","座號","科目","日常評量","定期評量","異想教室老師"];
-          const rows=[
-            new TableRow({cantSplit:true,tableHeader:true,children:headers.map((header,index)=>cell(header,mainWidths[index],{size:28}))}),
-            ...students.map(student=>new TableRow({cantSplit:true,children:[
-              cell(student.className,mainWidths[0]),
-              cell(student.name,mainWidths[1]),
-              cell(student.seat,mainWidths[2]),
-              cell("國文",mainWidths[3]),
-              cell(mode==="compact"&&studentRatio(student)===50?"50%":"",mainWidths[4],{size:22}),
-              cell("＋作文分數",mainWidths[5],{size:20}),
-              cell(student.resourceTeacher,mainWidths[6])
-            ]}))
-          ];
-          return new Table({width:{size:100,type:WidthType.PERCENTAGE},layout:TableLayoutType.FIXED,rows});
-        }
-
-        function wordReceiptTable(students){
-          const teachers=[...new Set(students.map(student=>student.resourceTeacher).filter(Boolean))],mixed=teachers.length>1;
-          const widths=mixed?[11,17,10,11,16,18,17]:[13,18,12,12,18,27];
-          const headers=mixed?["班級","姓名","座號","科目","作文分","定期評量","交回老師"]:["班級","姓名","座號","科目","作文分","定期評量"];
-          const rows=[
-            new TableRow({cantSplit:true,tableHeader:true,children:headers.map((header,index)=>cell(header,widths[index],{size:26}))}),
-            ...students.map(student=>new TableRow({cantSplit:true,children:[
-              cell(student.className,widths[0],{size:26}),
-              cell(student.name,widths[1],{size:26}),
-              cell(student.seat,widths[2],{size:26}),
-              cell("國文",widths[3],{size:26}),
-              cell("",widths[4],{size:26}),
-              cell("",widths[5],{size:26}),
-              ...(mixed?[cell(student.resourceTeacher,widths[6],{size:24})]:[])
-            ]}))
-          ];
-          return new Table({width:{size:100,type:WidthType.PERCENTAGE},layout:TableLayoutType.FIXED,rows});
-        }
-
-        const [year,semester,period]=$("#exam").value.split("|");
-        const children=[];
-        visible.forEach((group,groupIndex)=>{
-          children.push(para(`${year} ${semester} 異想教室${period}成績`,{size:36,align:AlignmentType.CENTER,pageBreakBefore:groupIndex>0,spacingAfter:160}));
-          children.push(para(`${group.teacher} 老師：`,{size:38,bold:true,align:AlignmentType.LEFT,spacingAfter:120}));
-
-          const mode=$("#viewMode").value;
-          if(mode==="compact"){
-            children.push(wordMainTable(group.students,"compact"));
-          }else{
-            const wordChunks=[50,100].map(ratio=>({ratio,students:group.students.filter(student=>studentRatio(student)===ratio)})).filter(chunk=>chunk.students.length);
-            wordChunks.forEach(chunk=>{
-              children.push(wordRatioGuide(chunk.ratio));
-              children.push(wordMainTable(chunk.students,mode));
-              children.push(para("",{size:10,spacingAfter:80}));
-            });
-          }
-
-          children.push(para("☆依據 104.1.7 特推會決議，請老師參閱此分數作為上傳成績之依據：",{size:24,align:AlignmentType.LEFT,spacingAfter:30}));
-          children.push(para("1. 課程科目與原班符合，定期評量成績須加上作文分數後登記。",{size:24,align:AlignmentType.LEFT,spacingAfter:30}));
-          children.push(para("2. 異想教室上課節數超過原班 50%者，由異想教室評定 100%日常成績。",{size:24,align:AlignmentType.LEFT,spacingAfter:30}));
-          children.push(para("3. 異想教室上課節數未達原班 50%者，請老師參閱此成績依 50%比例評定該生日常成績。",{size:24,align:AlignmentType.LEFT,spacingAfter:180}));
-
-          children.push(para("────────────────────────────────",{size:18,align:AlignmentType.CENTER,spacingAfter:80}));
-          children.push(para("定期評量成績回條",{size:32,bold:true,align:AlignmentType.CENTER,spacingAfter:60}));
-          const teachers=[...new Set(group.students.map(student=>student.resourceTeacher).filter(Boolean))];
-          const target=teachers.length>1?"異想教室任課老師":`${teachers[0]||"異想教室任課"}老師`;
-          children.push(new Paragraph({
-            alignment:AlignmentType.LEFT,
-            spacing:{after:80},
-            children:[
-              new TextRun({text:"☆ ",font:FONT,size:24}),
-              new TextRun({text:"定期評量成績加上作文分數後",font:FONT,size:24,highlight:HighlightColor.YELLOW}),
-              new TextRun({text:`，請將回條交給${target}，以利成績登記，感謝。`,font:FONT,size:24})
-            ]
-          }));
-          children.push(wordReceiptTable(group.students));
-        });
-
-        const doc=new Document({
-          styles:{default:{document:{run:{font:FONT,size:28},paragraph:{spacing:{line:360}}}}},
-          sections:[{
-            properties:{page:{size:{width:11906,height:16838},margin:{top:907,right:680,bottom:907,left:680}}},
-            children
-          }]
-        });
-
-        const blob=await Packer.toBlob(doc);
-        const url=URL.createObjectURL(blob);
-        const link=document.createElement("a");
-        link.href=url;
-        link.download=`${year}_${semester}_${period}_國文段考成績通知單.docx`;
-        document.body.appendChild(link);link.click();link.remove();
-        setTimeout(()=>URL.revokeObjectURL(url),1000);
-      }catch(error){
-        console.error(error);
-        alert(`Word 產生失敗：${error.message}`);
-      }finally{
-        button.disabled=false;button.textContent="下載 Word (.docx)";
-      }
-    }
-
     $("#teacher").addEventListener("change",()=>{render();renderStudentFilters();});
     $("#resourceTeacher").addEventListener("change",()=>{refreshTeacherOptions(true);render();renderStudentFilters();updateConnectionStatus("success","已套用異想教室國文老師篩選。");});
     $("#exam").addEventListener("change",render);
     $("#viewMode").addEventListener("change",render);
     $("#studentSearch").addEventListener("input",renderStudentFilters);
     $("#restoreStudents").addEventListener("click",()=>{selectedStudents().forEach(student=>excluded.delete(student.id));saveExcluded();render();renderStudentFilters();});
-    $("#downloadWord").addEventListener("click",downloadWord);
     $("#printPage").addEventListener("click",()=>window.print());
     $("#reload").addEventListener("click",loadData);
 
     window.__chineseNoticeTest={parseCsv,buildRecordsFromA7Rows,receiptHtml,mainTableHtml,studentRatio};
     loadData();
   </script>
+  <script src="./report-card-word.js?v=2"></script>
 </body>
 </html>
