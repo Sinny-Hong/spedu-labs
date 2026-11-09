@@ -167,6 +167,7 @@
         <h2>🖨️ 操作與輸出</h2>
         <div class="button-stack">
           <button id="printPage" class="button green" type="button">列印通知單 (A4)</button>
+          <button id="downloadWord" class="button word" type="button">下載 Word (.docx)</button>
           <button id="reload" class="button slate" type="button">即時同步雲端資料</button>
         </div>
         <p class="tip">班級集中不拆 50%／100%；比例分區模式依 50%／100% 分開顯示箭頭。</p>
@@ -463,6 +464,7 @@
     $("#viewMode").addEventListener("change",render);
     $("#studentSearch").addEventListener("input",renderStudentFilters);
     $("#restoreStudents").addEventListener("click",()=>{selectedStudents().forEach(student=>excluded.delete(student.id));saveExcluded();render();renderStudentFilters();});
+    $("#downloadWord").addEventListener("click",downloadWord);
     $("#printPage").addEventListener("click",()=>window.print());
     $("#reload").addEventListener("click",loadData);
 

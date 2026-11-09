@@ -254,7 +254,8 @@
       .notice { break-inside: avoid-page !important; page-break-inside: avoid !important; }
       .notice + .notice { margin-top: 12mm; }
     }
-  </style>
+    .button.word { background:#2563eb; color:#fff; }
+</style>
 </head>
 <body>
   <header class="topbar no-print">
@@ -296,6 +297,7 @@
         <h2>🖨️ 列印與資料</h2>
         <div class="button-stack">
           <button id="printPage" class="button green" type="button">列印本頁</button>
+          <button id="downloadWord" class="button word" type="button">下載 Word (.docx)</button>
           <button id="reload" class="button slate" type="button">重新載入資料</button>
         </div>
         <p class="tip" style="margin-top:12px"><strong>請使用單面列印。</strong><br>列印設定：A4、直向、比例 100%。畫面顯示什麼就列印什麼，功能列會自動隱藏。</p>
@@ -574,5 +576,6 @@
     $("#reload").addEventListener("click", loadData);
     loadData();
   </script>
+  <script src="./report-card-word.js"></script>
 </body>
 </html>
