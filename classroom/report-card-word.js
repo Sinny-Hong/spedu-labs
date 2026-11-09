@@ -49,7 +49,7 @@
         });
       }
 
-      function paragraph(element, options = {}) {
+      function paragraph(element, { extraBefore = 0, ...options } = {}) {
         const css = getComputedStyle(element);
         const heading = element.matches("h2,h3,h4");
         const parentSpacing = element === element.parentElement.firstElementChild &&
@@ -64,7 +64,7 @@
           indent: { left: twips(css.marginLeft) },
           keepNext: heading || element.matches(".teacher-name"),
           spacing: {
-            before: twips(css.marginTop) + parentSpacing,
+            before: twips(css.marginTop) + parentSpacing + extraBefore,
             after: twips(css.marginBottom),
             line: twips(lineHeight),
             lineRule: "exact",
@@ -80,7 +80,7 @@
         return widths.map(width => Math.round(contentWidth * width / total));
       }
 
-      function table(element) {
+      function table(element, keepWithNextBlock) {
         const columnWidths = columns(element);
         return new Table({
           width: { size: contentWidth, type: WidthType.DXA },
@@ -97,7 +97,9 @@
                 width: { size: columnWidths[index], type: WidthType.DXA },
                 verticalAlign: cell.querySelector(".daily-ratio,.ratio-corner,.composition-note") ?
                   VerticalAlign.BOTTOM : VerticalAlign.CENTER,
-                children: [paragraph(cell)],
+                children: [paragraph(cell, {
+                  keepNext: keepWithNextBlock || row.rowIndex < element.rows.length - 1,
+                })],
               })),
             });
           }),
@@ -156,18 +158,25 @@
         });
       }
 
-      const children = notices.flatMap((notice, index) =>
-        [...notice.querySelectorAll("h2,h3,h4,p,table,.ratio-guide,.cut-line")].map((element, position) => {
-          if (element.tagName === "TABLE") return table(element);
+      const children = notices.flatMap((notice, index) => {
+        const blocks = [...notice.querySelectorAll("h2,h3,h4,p,table,.ratio-guide,.cut-line")];
+        const noticeGap = notice.matches(".notice") ? 680 : 567;
+        return blocks.map((element, position) => {
+          const keepNext = position < blocks.length - 1;
+          if (element.tagName === "TABLE") return table(element, keepNext);
           if (element.matches(".ratio-guide")) return guide(element);
           if (element.matches(".cut-line")) return new Paragraph({
             alignment: AlignmentType.CENTER,
-            keepNext: true,
+            keepNext,
             spacing: { before: 110, after: 110 },
             children: [new TextRun("✂ ────────────────────────────────")],
           });
-          return paragraph(element, { pageBreakBefore: index > 0 && position === 0 });
-        }));
+          return paragraph(element, {
+            keepNext,
+            extraBefore: index > 0 && position === 0 ? noticeGap : 0,
+          });
+        });
+      });
 
       const documentFile = new Document({
         sections: [{
