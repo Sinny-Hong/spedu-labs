@@ -51,6 +51,39 @@
       border-bottom: 1px solid #e2e8f0;
     }
 
+    .write-word-row {
+      flex: none;
+      height: 33px;
+      padding-block: 2px;
+    }
+    .write-prompt {
+      display: flex;
+      align-items: center;
+      flex: 0 0 105px;
+      width: 105px;
+      padding-right: 4px;
+    }
+    .write-prompt-number { flex: 0 0 24px; }
+    .write-meaning-window {
+      flex: 1 1 0;
+      min-width: 0;
+      max-height: 28px;
+      overflow: hidden;
+      letter-spacing: 0;
+    }
+    .write-meaning-window .vocab-meaning {
+      display: block;
+      font-size: 14px;
+      line-height: 14px;
+      overflow-wrap: anywhere;
+    }
+    /* Compress the annotated glyphs horizontally while keeping two 14px lines. */
+    body.show-zhuyin .write-meaning-window .vocab-meaning {
+      width: 113.636%;
+      transform: scaleX(.88);
+      transform-origin: left top;
+    }
+
     #print-all-container { display: none; }
     .write-print-hint { display: flex; position: absolute; z-index: 2; left: 0.5rem; right: 0; align-items: center; height: 1.25rem; line-height: 1; white-space: nowrap; overflow: visible; pointer-events: none; color: #334155; font-weight: 500; }
     .write-print-hint:not(.write-hint-trace) { transform: translateY(4px); }
@@ -104,7 +137,6 @@
       <div class="flex gap-2">
         <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
         <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除</button>
-        <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
         <button onclick="printAllLessons(false)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印學生版 (6頁)</button>
         <button onclick="printAllLessons(true)" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印教師版 (6頁)</button>
       </div>
@@ -290,7 +322,7 @@
     }
 
     // 完美對照聽力卷骨架：高度鎖定在 h-5，縮小中文、擴大英文、絕不超頁
-    function buildGroupHtml(groupData, groupIndex, isPrintMode = false) {
+    function buildGroupHtml(groupData, groupIndex, isPrintMode = false, includeAnswers = false) {
       let rowsHtml = '';
       
       for (let i = 0; i < 12; i++) {
@@ -299,18 +331,17 @@
           const cleanedEnglish = cleanPastTense(wordItem.eng);
           
           rowsHtml += `
-            <div class="flex items-center px-1 py-1.5 row-border-style transition hover:bg-slate-50/50 cursor-pointer" onclick="speakWord('${wordItem.eng.replace(/'/g, "\\'")}')">
-              <!-- 中文向左看齊：固定寬度 105px，字太長會貼心自動折行，完全不影響右邊書寫區 -->
-              <div class="text-slate-800 font-chinese font-medium tracking-wide text-[14px] shrink-0 flex items-start leading-tight pr-1" style="width: 105px;">
-                <span class="font-bold text-slate-400 mr-1.5 font-english text-[13px]">${流水題號計數器}.</span>
-                <span class="break-all"><span class="vocab-meaning">${wordItem.ch}</span></span>
+            <div class="flex items-center px-1 write-word-row row-border-style transition hover:bg-slate-50/50 cursor-pointer" onclick="speakWord('${wordItem.eng.replace(/'/g, "\\'")}')">
+              <div class="write-prompt text-slate-800 font-chinese font-medium>
+                <span class="write-prompt-number font-bold text-slate-400 font-english text-[13px]">${流水題號計數器}.</span>
+                <span class="write-meaning-window"><span class="vocab-meaning">${wordItem.ch}</span></span>
               </div>
               
               <!-- 右側英文空間：完全釋放寬度，採用固定 h-5 水平置中，徹底防止超格 -->
               <div class="flex-grow relative font-english pl-2 h-5 flex items-center">
                 <input type="text" data-ans="${cleanedEnglish}" class="spelling-input no-print w-full bg-transparent focus:outline-none text-[15px] font-bold text-slate-800 tracking-wide">
                 <span class="ans-text-span hidden text-red-600 font-extrabold text-[15px] tracking-wide absolute left-2 leading-none">${cleanedEnglish}</span>
-                ${buildWriteHintHtml(cleanedEnglish)}
+                ${includeAnswers ? '' : buildWriteHintHtml(cleanedEnglish)}
               </div>
             </div>
           `;
@@ -318,8 +349,8 @@
         } else {
           // 均分留白預留格：維持高度物理結構，固定版面
           rowsHtml += `
-            <div class="flex items-center px-1 py-1.5 row-border-style opacity-0 pointer-events-none select-none">
-              <div style="width: 105px;"><span class="text-[14px]">Empty</span></div>
+            <div class="flex items-center px-1 write-word-row row-border-style opacity-0 pointer-events-none select-none">
+              <div class="write-prompt"></div>
               <div class="flex-grow h-5"></div>
             </div>
           `;
@@ -490,7 +521,7 @@
         const groups = database[lessonKey];
         
         流水題號計數器 = 1;
-        const groupHtml = groups.map((groupData, idx) => buildGroupHtml(groupData, idx, true));
+        const groupHtml = groups.map((groupData, idx) => buildGroupHtml(groupData, idx, true, includeAnswers));
         const leftColumnHtml = groupHtml[0] + groupHtml[2];
         const rightColumnHtml = groupHtml[1] + groupHtml[3];
 
@@ -499,7 +530,7 @@
         page.innerHTML = `
           <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
             <div class="flex justify-between items-end">
-              <h1 class="title-large text-slate-800 tracking-wider font-chinese">${currentWriteBookShortLabel} ${lessonKey} 英文科講義 單字拼寫卷${includeAnswers ? '（教師版）' : ''}</h1>
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">${currentWriteBookShortLabel} ${lessonKey} 英文科講義 單字拼寫卷${includeAnswers ? '（教）' : ''}</h1>
               <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
                 <div class="flex items-end">
                   <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>

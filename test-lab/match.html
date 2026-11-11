@@ -96,7 +96,6 @@
       <div class="flex gap-2">
         <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
         <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除</button>
-        <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
         <button onclick="printAllLessons(false)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印學生版 (6頁)</button>
         <button onclick="printAllLessons(true)" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印教師版 (6頁)</button>
       </div>
@@ -551,7 +550,7 @@
         page.innerHTML = `
           <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
             <div class="flex justify-between items-end">
-              <h1 class="title-large text-slate-800 tracking-wider font-chinese">${currentBookShortLabel} ${lessonKey} 英文科講義 中英文配對卷${includeAnswers ? '（教師版）' : ''}</h1>
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">${currentBookShortLabel} ${lessonKey} 英文科講義 中英文配對卷${includeAnswers ? '（教）' : ''}</h1>
               <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
                 <div class="flex items-end">
                   <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>

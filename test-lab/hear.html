@@ -5,14 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>單字學習講義－聽力選擇卷</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: "Hear GenSen Rounded";
+      src: local("GenSenRounded2 TW R"), local("GenSenRounded TW R"), local("GenSenRounded R"),
+           url("https://sonar-inc.github.io/gensen-font/GenSenRounded-R.woff2") format("woff2");
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Hear GenSen Rounded Bopomofo";
+      src: local("Bpmf GenSen Rounded R"), local("ㄅ源泉注音圓體 R"),
+           url("https://cdn.jsdelivr.net/gh/tadlearn/webfonts/BpmfGenSenRounded-R.woff2") format("woff2");
+      font-display: swap;
+    }
+    :root {
+      --hear-font-en: "Comic Sans MS", "Comic Sans", "Trebuchet MS";
+      --hear-font-zh: "Hear GenSen Rounded", "Microsoft JhengHei", sans-serif;
+    }
+    html body.show-zhuyin .vocab-meaning {
+      font-family: "Hear GenSen Rounded Bopomofo", VocabBpmf, var(--hear-font-zh) !important;
+    }
     body {
-      font-family: 'Noto Sans TC', sans-serif;
+      font-family: var(--hear-font-en), var(--hear-font-zh);
       background-color: #f1f5f9;
     }
-    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
-    .font-english { font-family: 'Lexend', sans-serif; }
+    .font-chinese { font-family: var(--hear-font-en), var(--hear-font-zh); }
+    .font-english { font-family: var(--hear-font-en), var(--hear-font-zh); }
     
     /* 嚴格 A4 滿版尺寸 */
     .page-a4 {
@@ -81,7 +99,6 @@
       <div class="flex gap-2">
         <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
         <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除</button>
-        <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
         <button onclick="printAllLessons(false)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印學生版 (6頁)</button>
         <button onclick="printAllLessons(true)" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印教師版 (6頁)</button>
       </div>
@@ -469,7 +486,7 @@
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     }
 
-    function printAllLessons(includeAnswers = false) {
+    async function printAllLessons(includeAnswers = false) {
       const printContainer = document.getElementById('print-all-container');
       printContainer.innerHTML = '';
 
@@ -487,7 +504,7 @@
         page.innerHTML = `
           <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
             <div class="flex justify-between items-end">
-              <h1 class="title-large text-slate-800 tracking-wider font-chinese">${currentHearBookShortLabel} ${lessonKey} 英文科講義 聽力選擇卷${includeAnswers ? '（教師版）' : ''}</h1>
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">${currentHearBookShortLabel} ${lessonKey} 英文科講義 聽力選擇卷${includeAnswers ? '（教）' : ''}</h1>
               <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
                 <div class="flex items-end">
                   <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
@@ -521,12 +538,19 @@
         }
       });
 
-      setTimeout(() => {
-        applyMicroScaling();
-        document.body.classList.add('printing-all');
-        window.print();
-        setTimeout(() => { document.body.classList.remove('printing-all'); }, 600);
-      }, 50);
+      if (document.fonts) {
+        const fonts = [document.fonts.load('14px "Hear GenSen Rounded"')];
+        if (document.body.classList.contains('show-zhuyin')) {
+          fonts.push(document.fonts.load('14px "Hear GenSen Rounded Bopomofo"').catch(
+            () => document.fonts.load('14px VocabBpmf')
+          ));
+        }
+        await Promise.allSettled(fonts);
+      }
+      applyMicroScaling();
+      document.body.classList.add('printing-all');
+      window.print();
+      setTimeout(() => { document.body.classList.remove('printing-all'); }, 600);
     }
 
     window.onload = initApp;
