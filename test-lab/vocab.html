@@ -30,6 +30,7 @@
     .tools { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
     .tab-menu { position: relative; }
     .menu { position: absolute; top: 42px; left: 0; z-index: 40; min-width: 100%; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 6px 18px #0002; padding: 4px; display: flex; flex-direction: column; gap: 2px; }
+    .menu.right { left: auto; right: 0; }
     .menu[hidden] { display: none; }
     .menu button { height: 40px; padding: 0 16px; border: 0; border-radius: 6px; background: #fff; text-align: left; font-size: 14px; font-family: var(--font-zh); color: #334155; cursor: pointer; white-space: nowrap; }
     .menu button:hover { background: #f1f5f9; }
@@ -91,8 +92,17 @@
     .write-hint-space { display: inline-block; width: .7em; flex: 0 0 .7em; }
     .write-hint-trace { color: #aeb7c3; font-family: var(--font-en-trace); font-size: 17pt; font-style: normal; font-weight: 700; line-height: .82; letter-spacing: .01em; overflow: visible; transform: scaleX(var(--write-trace-scale, 1)); transform-origin: left center; }
 
+    /* ---- 本冊列印：頁面先排在畫面外（讓字型載入），列印時才顯示 ---- */
+    #printRoot { position: absolute; left: -10000px; top: 0; width: 210mm; }
+    .teacher-tag { margin-bottom: 4px; padding: 2px 14px; border: 2px solid var(--pink-ink); border-radius: 8px; color: var(--pink-ink); font-size: 16px; font-weight: 700; font-family: var(--font-zh); }
+
     @media print {
       @page { size: A4; margin: 0; }
+      body.batch #stage { display: none !important; }
+      body.batch #printRoot { position: static; width: 210mm; }
+      #printRoot .page-a4 { margin: 0; break-after: page; page-break-after: always; }
+      #printRoot .page-a4:last-child { break-after: auto; page-break-after: auto; }
+      input.v-answer { background: transparent; }
       body { background: #fff; display: block; min-height: 0; }
       .no-print, .toolbar, #inkLayer, .ink-tools, .module-notice { display: none !important; }
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -126,12 +136,21 @@
       <div class="tools">
         <button type="button" class="tool" id="zhuyinBtn" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 8h6M12 8v4.5a3 3 0 0 1-3 3"/></svg><span>注音</span></button>
         <button type="button" class="tool" id="inkBtn" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>手寫</span></button>
-        <button type="button" class="tool" id="printBtn" title="目前只列印畫面上這一頁；整冊與自選列印之後再做"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg><span>列印本頁</span></button>
+        <div class="tab-menu">
+          <button type="button" class="tool" id="printBtn" aria-haspopup="true" aria-expanded="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg><span>列印 ▾</span></button>
+          <div class="menu right" id="printMenu" role="menu" hidden>
+            <button type="button" role="menuitem" data-print="page">列印本頁</button>
+            <button type="button" role="menuitem" data-print="student">列印本冊(學生版36頁)</button>
+            <button type="button" role="menuitem" data-print="zhuyin">列印本冊(注音版36頁)</button>
+            <button type="button" role="menuitem" data-print="teacher">列印本冊(教師版12頁)</button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
 
   <main id="stage" class="paper"><div id="page" class="page-a4"></div></main>
+  <div id="printRoot" aria-hidden="true"></div>
 
   <script src="../eng-115/vocab-data.js"></script>
   <script src="vocab-app.js"></script>

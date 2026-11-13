@@ -82,12 +82,12 @@
   }
 
   /* ---------- 共用頁首 ---------- */
-  function headerHtml(title, barHtml) {
+  function headerHtml(title, barHtml, teacher) {
     return `
       <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
         <div class="hdr-title">
           <h1 class="title-large text-slate-800 tracking-wider font-chinese">${esc(title)}</h1>
-          <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
+          ${teacher ? '<div class="teacher-tag">教師版・解答</div>' : `<div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
             <div class="flex items-end">
               <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
               <span class="ml-1 shrink-0">班</span>
@@ -96,7 +96,7 @@
               <span class="shrink-0">姓名：</span>
               <span class="border-b-2 border-slate-400 w-28 text-center h-7 inline-block"></span>
             </div>
-          </div>
+          </div>`}
         </div>
         ${barHtml}
       </div>`;
@@ -220,6 +220,12 @@
         return `<div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups">${db[key].map((g, i) => groupHtml(g, i, false)).join('')}</div><div class="h-1 shrink-0"></div>`;
       },
       after() { scale(); },
+      fill(root, key) {
+        root.querySelectorAll('.answer-input').forEach(i => {
+          i.value = String(orders[`${key}-${i.dataset.gidx}`].indexOf(i.dataset.eng) + 1);
+          i.classList.add('v-answer');
+        });
+      },
       actions: {
         'hear-preview': el => { previewLoop(db[lessonKey][+el.dataset.g].words.map(w => w.eng), 0, 1500); },
         'hear-quiz': el => {
@@ -326,6 +332,9 @@
         return `<div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups">${db[key].map((g, i) => groupHtml(g, i)).join('')}</div><div class="h-1 shrink-0"></div>`;
       },
       after() { scale(); },
+      fill(root) {
+        root.querySelectorAll('.match-input').forEach(i => { i.value = i.dataset.ans; i.classList.add('v-answer'); });
+      },
       actions: {
         'match-row'(el) {
           document.querySelectorAll('.quiz-row').forEach(r => r.classList.remove('active-row'));
@@ -473,6 +482,65 @@
     store.set('vocab-app-hint', hint);
   }
 
+  /* ---------- 列印本冊 ---------- */
+  const PRINT_MODES = [['hear', null], ['match', null], ['write', 'blank'], ['write', 'count'], ['write', 'initial'], ['write', 'trace']];
+  const TEACHER_MODES = [['hear', null], ['match', null]];
+  const printKinds = { student: PRINT_MODES, zhuyin: PRINT_MODES, teacher: TEACHER_MODES };
+  function paintPrintLabels() {
+    const n = Object.keys(db).length;
+    printMenu.querySelectorAll('[data-print]').forEach(b => {
+      const kind = b.dataset.print;
+      if (kind === 'page') return;
+      const label = { student: '學生版', zhuyin: '注音版', teacher: '教師版' }[kind];
+      b.textContent = `列印本冊(${label}${n * printKinds[kind].length}頁)`;
+    });
+  }
+  function buildPage(key, md, hn, teacher) {
+    const savedLesson = lessonKey, savedHint = hint;
+    lessonKey = key; hint = hn || hint;
+    const m = M[md];
+    const body = m.render(key);
+    lessonKey = savedLesson; hint = savedHint;
+    const el = document.createElement('div');
+    el.className = 'page-a4';
+    el.innerHTML = headerHtml(`${shortLabel} ${key} 英文科講義 ${m.title}`, m.bar, teacher)
+      + body.replace(/ id="groups"/g, '').replace(/ id="score-/g, ' data-id="score-');
+    if (teacher) m.fill(el, key);
+    return el;
+  }
+  let printing = false;
+  async function printBook(kind) {
+    if (printing || !printKinds[kind]) return;
+    printing = true;
+    stopSpeech(); ink.finish();
+    const teacher = kind === 'teacher';
+    const frag = document.createDocumentFragment();
+    Object.keys(db).forEach(key => printKinds[kind].forEach(([md, hn]) => frag.append(buildPage(key, md, hn, teacher))));
+    printRoot.replaceChildren(frag);
+    const hadZhuyin = document.body.classList.contains('show-zhuyin');
+    document.body.classList.toggle('show-zhuyin', kind === 'zhuyin');
+    document.body.classList.add('batch');
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      document.body.classList.remove('batch');
+      document.body.classList.toggle('show-zhuyin', hadZhuyin);
+      printRoot.replaceChildren();
+      printing = false;
+      render();
+    };
+    window.addEventListener('afterprint', finish, { once: true });
+    try {
+      void printRoot.offsetHeight;
+      const wait = [document.fonts.ready];
+      if (kind === 'zhuyin') wait.push(document.fonts.load('400 16px "Bpmf GenSen Rounded"', '中ㄅ').catch(() => {}));
+      await Promise.race([Promise.all(wait), new Promise(r => setTimeout(r, 5000))]);
+      await new Promise(r => setTimeout(r, 150));
+      window.print();
+    } catch (err) { finish(); }
+  }
+
   /* ---------- 事件 ---------- */
   stage.addEventListener('click', e => {
     const el = e.target.closest('[data-action]');
@@ -483,16 +551,24 @@
     const fn = M[mode].actions[name];
     if (fn) fn(el);
   });
-  bookSelect.addEventListener('change', () => { setBook(bookSelect.value); render(); });
+  bookSelect.addEventListener('change', () => { setBook(bookSelect.value); paintPrintLabels(); render(); });
   lessonSelect.addEventListener('change', () => { lessonKey = lessonSelect.value; render(); });
   document.querySelectorAll('.tab[data-mode]').forEach(b => b.addEventListener('click', () => {
     closeMenu();
     if (mode !== b.dataset.mode) { mode = b.dataset.mode; render(); }
   }));
-  function closeMenu() { hintMenu.hidden = true; writeTab.setAttribute('aria-expanded', 'false'); }
+  const printBtn = $('printBtn');
+  const printMenu = $('printMenu');
+  const printRoot = $('printRoot');
+  function closeMenu() {
+    hintMenu.hidden = true; writeTab.setAttribute('aria-expanded', 'false');
+    printMenu.hidden = true; printBtn.setAttribute('aria-expanded', 'false');
+  }
   writeTab.addEventListener('click', e => {
     e.stopPropagation();
-    hintMenu.hidden = !hintMenu.hidden;
+    const open = hintMenu.hidden;
+    closeMenu();
+    hintMenu.hidden = !open;
     writeTab.setAttribute('aria-expanded', String(!hintMenu.hidden));
   });
   hintMenu.addEventListener('click', e => {
@@ -505,7 +581,20 @@
   });
   document.addEventListener('click', e => { if (!e.target.closest('.tab-menu')) closeMenu(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
-  $('printBtn').addEventListener('click', () => window.print());
+  printBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = printMenu.hidden;
+    closeMenu();
+    printMenu.hidden = !open;
+    printBtn.setAttribute('aria-expanded', String(open));
+  });
+  printMenu.addEventListener('click', e => {
+    const b = e.target.closest('[data-print]');
+    if (!b) return;
+    closeMenu();
+    if (b.dataset.print === 'page') window.print();
+    else printBook(b.dataset.print);
+  });
   $('zhuyinBtn').addEventListener('click', e => {
     const on = document.body.classList.toggle('show-zhuyin');
     e.currentTarget.setAttribute('aria-pressed', String(on));
@@ -570,6 +659,7 @@
   hint = pick(params.get('hint'), Object.keys(HINTS), pick(store.get('vocab-app-hint'), Object.keys(HINTS), 'blank'));
   bookSelect.value = bookKey;
   setBook(bookKey);
+  paintPrintLabels();
   ink = mountInk(stage, $('inkBtn'));
   render();
 })();
