@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>單字講義（測試）</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../shared/css/fonts.css">
+  <style>
+    body { font-family: var(--font-zh); background-color: #f1f5f9; margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: flex-start; }
+    body[data-mode="hear"] { font-family: var(--font-en); }
+    .font-chinese { font-family: var(--font-zh); }
+    .font-english { font-family: var(--font-en); }
+    html body.show-zhuyin .vocab-meaning { font-family: var(--font-bpmf) !important; font-weight: 400; }
+
+    /* ---- 功能列 ---- */
+    .toolbar { position: sticky; top: 0; left: 0; z-index: 30; width: 100%; max-width: 100vw; box-sizing: border-box; background: #fff; border-bottom: 1px solid #cbd5e1; padding: 8px max(12px, calc((100vw - 210mm) / 2)); display: flex; flex-direction: column; gap: 8px; }
+    .tb-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 10px; }
+    .field { display: flex; flex-direction: column; gap: 3px; }
+    .field > span { font-size: 12px; font-weight: 700; color: #475569; }
+    .field select { height: 38px; padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; font-size: 14px; font-family: var(--font-zh); }
+    #bookSelect { width: 230px; max-width: 60vw; }
+    #lessonSelect { width: 90px; }
+    .tabs { display: flex; gap: 6px; }
+    .tab, .tool { height: 38px; padding: 0 14px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; font-size: 14px; font-weight: 700; font-family: var(--font-zh); color: #334155; cursor: pointer; white-space: nowrap; }
+    .tab[aria-pressed="true"] { background: #dc2626; border-color: #dc2626; color: #fff; }
+    .tool { padding: 0 11px; font-size: 13px; font-weight: 400; }
+    .tool[aria-pressed="true"] { background: #dbeafe; border-color: #2563eb; color: #1e40af; }
+    .tools { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+    .tab-menu { position: relative; }
+    .menu { position: absolute; top: 42px; left: 0; z-index: 40; min-width: 100%; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 6px 18px #0002; padding: 4px; display: flex; flex-direction: column; gap: 2px; }
+    .menu[hidden] { display: none; }
+    .menu button { height: 40px; padding: 0 16px; border: 0; border-radius: 6px; background: #fff; text-align: left; font-size: 14px; font-family: var(--font-zh); color: #334155; cursor: pointer; white-space: nowrap; }
+    .menu button:hover { background: #f1f5f9; }
+    .menu button[aria-checked="true"] { background: #fee2e2; color: #b91c1c; font-weight: 700; }
+
+    @media (max-width: 600px) { .toolbar { position: static; } #bookSelect { max-width: calc(100vw - 130px); } }
+
+    /* ---- A4 頁面 ---- */
+    #stage { width: 210mm; flex: none; margin-left: auto; margin-right: auto; }
+    .page-a4 { width: 210mm; height: 297mm; background: #fff; box-shadow: 0 10px 25px -5px rgba(0,0,0,.1); margin: 15px 0; padding: 6mm 8mm; box-sizing: border-box; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-start; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .title-large { font-size: 24px; font-weight: 700; }
+    .info-text { font-size: 16px; font-weight: 500; }
+
+    .answer-input:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.3); background-color: #fef2f2; }
+    .match-input:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.3); background-color: #fef2f2; }
+    .row-item { height: 34px; }
+    .active-row { background-color: #fef08a !important; }
+    .match-option-selected { background-color: #bae6fd !important; outline: 3px solid #0284c7; outline-offset: -2px; }
+
+    .spelling-input:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.3); background-color: #fef2f2; z-index: 3; }
+    .spelling-input { position: relative; z-index: 1; }
+    .row-border-style { border-bottom: 1px solid #e2e8f0; }
+    .write-word-row { flex: none; height: 33px; padding-block: 2px; }
+    .write-prompt { display: flex; align-items: center; flex: 0 0 105px; width: 105px; padding-right: 4px; }
+    .write-prompt-number { flex: 0 0 24px; }
+    .write-meaning-window { flex: 1 1 0; min-width: 0; max-height: 28px; overflow: hidden; letter-spacing: 0; }
+    .write-meaning-window .vocab-meaning { display: block; font-size: 14px; line-height: 14px; overflow-wrap: anywhere; }
+    body.show-zhuyin .write-meaning-window .vocab-meaning { width: 113.636%; transform: scaleX(.88); transform-origin: left top; }
+    .write-print-hint { display: flex; position: absolute; z-index: 2; left: .5rem; right: 0; align-items: center; height: 1.25rem; line-height: 1; white-space: nowrap; overflow: visible; pointer-events: none; color: #334155; font-weight: 500; }
+    .write-print-hint:not(.write-hint-trace) { transform: translateY(4px); }
+    .write-hint-content { display: flex; align-items: baseline; gap: 2px; min-width: 0; white-space: nowrap; transform: scaleX(var(--write-hint-scale, 1)); transform-origin: left center; }
+    .write-hint-token { flex: 0 0 auto; }
+    .write-hint-space { display: inline-block; width: .7em; flex: 0 0 .7em; }
+    .write-hint-trace { color: #aeb7c3; font-family: var(--font-en-trace); font-size: 17pt; font-style: normal; font-weight: 700; line-height: .82; letter-spacing: .01em; overflow: visible; transform: scaleX(var(--write-trace-scale, 1)); transform-origin: left center; }
+
+    @media print {
+      @page { size: A4; margin: 0; }
+      body { background: #fff; display: block; min-height: 0; }
+      .no-print, .toolbar, #inkLayer, .ink-tools, .module-notice { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #stage { margin: 0; }
+      .page-a4 { box-shadow: none; margin: 0; }
+      .write-print-hint { display: flex !important; }
+      .row-border-style { border-bottom: .65px solid #475569 !important; }
+    }
+  </style>
+</head>
+<body data-mode="hear">
+  <header class="toolbar no-print">
+    <div class="tb-row">
+      <label class="field"><span>冊別／年級</span><select id="bookSelect"></select></label>
+      <label class="field"><span>課次</span><select id="lessonSelect"></select></label>
+    </div>
+    <div class="tb-row">
+      <nav class="tabs" aria-label="題型">
+        <button type="button" class="tab" data-mode="hear" aria-pressed="false">聽力</button>
+        <button type="button" class="tab" data-mode="match" aria-pressed="false">配對</button>
+        <div class="tab-menu">
+          <button type="button" class="tab" id="writeTab" aria-pressed="false" aria-haspopup="true" aria-expanded="false">拼寫 ▾</button>
+          <div class="menu" id="hintMenu" role="menu" hidden>
+            <button type="button" role="menuitemradio" data-hint="blank" aria-checked="false">空白</button>
+            <button type="button" role="menuitemradio" data-hint="count" aria-checked="false">字數</button>
+            <button type="button" role="menuitemradio" data-hint="initial" aria-checked="false">字首</button>
+            <button type="button" role="menuitemradio" data-hint="trace" aria-checked="false">描寫</button>
+          </div>
+        </div>
+      </nav>
+      <div class="tools">
+        <button type="button" class="tool" id="ansBtn">答案</button>
+        <button type="button" class="tool" id="resetBtn">重設</button>
+        <button type="button" class="tool" id="zhuyinBtn" aria-pressed="false">注音</button>
+        <button type="button" class="tool" id="inkBtn" aria-pressed="false">手寫</button>
+        <button type="button" class="tool" id="printBtn" title="目前只列印畫面上這一頁；整冊與自選列印之後再做">列印本頁</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="stage" class="paper"><div id="page" class="page-a4"></div></main>
+
+  <script src="../eng-115/vocab-data.js"></script>
+  <script src="vocab-app.js"></script>
+</body>
+</html>
