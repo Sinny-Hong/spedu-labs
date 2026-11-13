@@ -170,7 +170,7 @@
           rows += `
             <div class="flex items-center px-1 py-1.5 hover:bg-slate-50/80 rounded transition cursor-pointer single-row-item" data-action="speak" data-w="${esc(w.eng)}">
               <span class="text-slate-800 font-bold mr-1 shrink-0 text-[15px]">(</span>
-              <input type="text" maxlength="2" data-gidx="${gi}" data-eng="${esc(w.eng)}" class="answer-input w-7 h-5 text-center font-bold text-slate-800 border-b-2 border-slate-400 focus:outline-none bg-transparent shrink-0 text-[15px]">
+              <input type="text" readonly tabindex="-1" maxlength="2" data-gidx="${gi}" data-eng="${esc(w.eng)}" class="answer-input w-7 h-5 text-center font-bold text-slate-800 border-b-2 border-slate-400 focus:outline-none bg-transparent shrink-0 text-[15px] pointer-events-none">
               <span class="text-slate-800 font-bold ml-1 shrink-0 text-[15px]">)</span>
               <span class="ml-2 font-medium font-english truncate flex-grow tracking-tight text-slate-800 word-eng-span" style="max-width: 155px;">${esc(w.eng)}</span>
               <span class="font-chinese text-slate-500 text-[14px] pl-2 truncate text-right shrink-0 font-medium" style="max-width: 125px;"><span class="vocab-meaning">${esc(w.ch)}</span></span>
@@ -185,11 +185,10 @@
       const buttons = forPrint ? '' :
         gbtn('hear-preview', '預習', 'play', `data-g="${gi}"`) +
         gbtn('hear-quiz', '小考', 'mic', `data-g="${gi}"`) +
-        checkBtn('hear-check', gi, group.words.length) +
         ansBtn('hear-ans', gi);
       return `
         <div class="bg-white flex flex-col justify-start flex-grow">
-          ${grpBar(group.gTitle, buttons, forPrint ? undefined : gi)}
+          ${grpBar(group.gTitle, buttons)}
           <div class="flex flex-col flex-grow justify-start pl-1">${rows}</div>
         </div>`;
     }
@@ -200,21 +199,6 @@
         else if (n > 18) { span.style.fontSize = '12.5px'; span.style.letterSpacing = '-0.5px'; }
         else if (n > 12) span.style.fontSize = '14px';
         else span.style.fontSize = '16px';
-      });
-    }
-    function bind() {
-      const all = Array.from(document.querySelectorAll('.answer-input'));
-      all.forEach((input, index) => {
-        input.addEventListener('input', () => {
-          input.value = input.value.replace(/[^0-9]/g, '');
-          const v = parseInt(input.value, 10);
-          if (v < 1 || v > 12) input.value = '';
-          setState(input, input.value ? 'student' : null);
-          if (input.value !== '' && index < all.length - 1) all[index + 1].focus();
-        });
-        input.addEventListener('keydown', e => {
-          if (e.key === 'Backspace' && input.value === '' && index > 0) all[index - 1].focus();
-        });
       });
     }
     function runQuiz(orderKey, index) {
@@ -235,31 +219,19 @@
         initOrders(key);
         return `<div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups">${db[key].map((g, i) => groupHtml(g, i, false)).join('')}</div><div class="h-1 shrink-0"></div>`;
       },
-      after() { bind(); scale(); },
+      after() { scale(); },
       actions: {
         'hear-preview': el => { previewLoop(db[lessonKey][+el.dataset.g].words.map(w => w.eng), 0, 1500); },
         'hear-quiz': el => {
           stopSpeech();
-          inputs(el.dataset.g).forEach(i => { i.value = ''; setState(i, null); });
-          hideScore(el.dataset.g);
+          groupShown[`${lessonKey}-${el.dataset.g}`] = false;
+          inputs(el.dataset.g).forEach(i => paint(i, false));
           runQuiz(`${lessonKey}-${el.dataset.g}`, 0);
-        },
-        'hear-check': el => {
-          const g = +el.dataset.g;
-          let right = 0;
-          inputs(g).forEach(i => {
-            if (i.value === '') return;
-            if (i.value === String(answerOf(i))) { right++; setState(i, 'right'); }
-            else { i.value = ''; setState(i, null); }
-          });
-          groupShown[`${lessonKey}-${g}`] = false;
-          showScore(g, right, +el.dataset.total);
         },
         'hear-ans': el => {
           const g = +el.dataset.g, k = `${lessonKey}-${g}`;
           groupShown[k] = !groupShown[k];
           inputs(g).forEach(i => paint(i, groupShown[k]));
-          hideScore(g);
         }
       }
     };
@@ -407,7 +379,6 @@
      ===================================================================== */
   const write = (() => {
     let qNo = 1, groupShown = {};
-    const norm = s => s.trim().replace(/\s+/g, ' ');
     const traceScale = a => { const n = Array.from(a).length; return n > 28 ? 0.44 : n > 22 ? 0.6 : n > 17 ? 0.76 : 1; };
     const hintScale = a => { const n = Array.from(a).length; return n > 28 ? 0.44 : n > 22 ? 0.6 : n > 17 ? 0.76 : n > 13 ? 0.88 : 1; };
     const inputs = g => document.querySelectorAll(`.spelling-input[data-gidx="${g}"]`);
@@ -439,7 +410,7 @@
                 <span class="write-meaning-window"><span class="vocab-meaning">${esc(w.ch)}</span></span>
               </div>
               <div class="write-cell flex-grow relative font-english pl-2 h-5 flex items-center">
-                <input type="text" data-gidx="${gi}" data-ans="${esc(clean)}" autocomplete="off" autocapitalize="off" spellcheck="false" class="spelling-input no-print w-full bg-transparent focus:outline-none text-[15px] font-bold text-slate-800 tracking-wide">
+                <input type="text" readonly tabindex="-1" data-gidx="${gi}" data-ans="${esc(clean)}" class="spelling-input no-print pointer-events-none w-full bg-transparent focus:outline-none text-[15px] font-bold text-slate-800 tracking-wide">
                 ${hintHtml(clean)}
               </div>
             </div>`;
@@ -451,21 +422,12 @@
             </div>`;
         }
       }
-      const buttons = gbtn('write-preview', '預習', 'play', `data-g="${gi}"`) + checkBtn('write-check', gi, group.words.length) + ansBtn('write-ans', gi);
+      const buttons = gbtn('write-preview', '預習', 'play', `data-g="${gi}"`) + ansBtn('write-ans', gi);
       return `
         <div class="bg-white flex flex-col justify-start flex-grow">
-          ${grpBar(group.gTitle, buttons, gi)}
+          ${grpBar(group.gTitle, buttons)}
           <div class="flex flex-col flex-grow justify-start pl-1">${rows}</div>
         </div>`;
-    }
-    function bind() {
-      const all = Array.from(document.querySelectorAll('.spelling-input'));
-      all.forEach((input, index) => {
-        input.addEventListener('input', () => setState(input, input.value ? 'student' : null));
-        input.addEventListener('keydown', e => {
-          if (e.key === 'Enter' && index < all.length - 1) all[index + 1].focus();
-        });
-      });
     }
     return {
       title: '單字拼寫卷',
@@ -474,26 +436,13 @@
         qNo = 1; groupShown = {};
         return `<div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups">${db[key].map((g, i) => groupHtml(g, i)).join('')}</div><div class="h-1 shrink-0"></div>`;
       },
-      after() { bind(); },
+      after() {},
       actions: {
         'write-preview': el => { previewLoop(db[lessonKey][+el.dataset.g].words.map(w => w.eng), 0, 1400); },
-        'write-check': el => {
-          const g = +el.dataset.g;
-          let right = 0;
-          inputs(g).forEach(i => {
-            const mine = norm(i.value);
-            if (mine === '') { i.value = ''; setState(i, null); return; }
-            if (mine === i.dataset.ans) { right++; i.value = mine; setState(i, 'right'); }
-            else { i.value = ''; setState(i, null); }
-          });
-          groupShown[g] = false;
-          showScore(g, right, +el.dataset.total);
-        },
         'write-ans': el => {
           const g = +el.dataset.g;
           groupShown[g] = !groupShown[g];
           inputs(g).forEach(i => { i.value = groupShown[g] ? i.dataset.ans : ''; setState(i, groupShown[g] ? 'answer' : null); });
-          hideScore(g);
         }
       }
     };
