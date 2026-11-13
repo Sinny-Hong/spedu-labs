@@ -1,0 +1,6 @@
+共用字型（皆為 SIL Open Font License 1.1，授權全文見同資料夾 LICENSE-*.txt）
+
+- 源泉圓體 TW（GenSenRounded2 TW）R=400、B=700：作者 But Ko。已子集化（Big5 常用字、注音、常用符號）並轉為 woff2。
+- Andika 400/700：SIL International。取自 @fontsource/andika（Latin 子集）。
+- Comic Neue 400/700：Craig Rozynski。取自 @fontsource/comic-neue（Latin 子集）。
+- 注音字型「ㄅ源泉注音圓體」目前仍由外部網址載入（見 css/fonts.css），尚未自架。

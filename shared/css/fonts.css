@@ -1,0 +1,31 @@
+/* 異想教室｜共用字型（講義用）
+   使用方式：在頁面 <head> 加入
+     eng-115/*.html            →  <link rel="stylesheet" href="../shared/css/fonts.css">
+     eng-115/text/*.html       →  <link rel="stylesheet" href="../../shared/css/fonts.css">
+     test-lab/*.html           →  <link rel="stylesheet" href="../shared/css/fonts.css">
+   之後換字型只需修改這個檔案。字重只提供 400 與 700（500 會自動對到 400，600 對到 700）。 */
+
+/* 中文：源泉圓體 TW */
+@font-face { font-family: "Spedu Rounded"; font-weight: 400; font-style: normal; src: url("../fonts/GenSenRoundedTW-R.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Spedu Rounded"; font-weight: 700; font-style: normal; src: url("../fonts/GenSenRoundedTW-B.woff2") format("woff2"); font-display: swap; }
+
+/* 英文：Andika（一般）、Comic Neue（描寫） */
+@font-face { font-family: "Spedu Andika"; font-weight: 400; font-style: normal; src: url("../fonts/andika-latin-400-normal.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Spedu Andika"; font-weight: 700; font-style: normal; src: url("../fonts/andika-latin-700-normal.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Spedu Comic Neue"; font-weight: 400; font-style: normal; src: url("../fonts/comic-neue-latin-400-normal.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Spedu Comic Neue"; font-weight: 700; font-style: normal; src: url("../fonts/comic-neue-latin-700-normal.woff2") format("woff2"); font-display: swap; }
+
+/* 注音：ㄅ源泉注音圓體（暫時由外部網址載入） */
+@font-face {
+  font-family: "Bpmf GenSen Rounded";
+  src: local("Bpmf GenSen Rounded R"), local("ㄅ源泉注音圓體 R"), local("Bpmf GenSen Rounded"), local("ㄅ源泉注音圓體"),
+       url("https://cdn.jsdelivr.net/gh/tadlearn/webfonts/BpmfGenSenRounded-R.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root {
+  --font-zh: "Spedu Rounded", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --font-en: "Spedu Andika", "Andika", Arial, sans-serif;
+  --font-en-trace: "Spedu Comic Neue", "Comic Neue", "Spedu Andika", Arial, sans-serif;
+  --font-bpmf: "Bpmf GenSen Rounded", "Spedu Rounded", "Noto Sans TC", sans-serif;
+}
