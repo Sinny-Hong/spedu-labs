@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="../shared/css/fonts.css">
   <style>
+    :root { --line: #cbd5e1; --ink: #334155; --blue: #2563eb; --blue-bg: #dbeafe; --blue-ink: #1d4ed8; --green: #16a34a; --green-bg: #dcfce7; --green-ink: #15803d; --pink-bg: #fce7f3; --pink-ink: #dc2626; --hdr-title-h: 40px; --hdr-bar-h: 32px; --grp-bar-h: 36px; }
     body { font-family: var(--font-zh); background-color: #f1f5f9; margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: flex-start; }
     body[data-mode="hear"] { font-family: var(--font-en); }
     .font-chinese { font-family: var(--font-zh); }
@@ -22,19 +23,45 @@
     #bookSelect { width: 230px; max-width: 60vw; }
     #lessonSelect { width: 90px; }
     .tabs { display: flex; gap: 6px; }
-    .tab, .tool { height: 38px; padding: 0 14px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; font-size: 14px; font-weight: 700; font-family: var(--font-zh); color: #334155; cursor: pointer; white-space: nowrap; }
-    .tab[aria-pressed="true"] { background: #dc2626; border-color: #dc2626; color: #fff; }
-    .tool { padding: 0 11px; font-size: 13px; font-weight: 400; }
-    .tool[aria-pressed="true"] { background: #dbeafe; border-color: #2563eb; color: #1e40af; }
+    .tab, .tool { height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font-size: 14px; font-weight: 700; font-family: var(--font-zh); color: var(--ink); cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+    .tab:hover, .tool:hover { background: #f1f5f9; }
+    .tab[aria-pressed="true"], .tool[aria-pressed="true"] { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-ink); }
+    .ico { width: 16px; height: 16px; flex: none; }
     .tools { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
     .tab-menu { position: relative; }
     .menu { position: absolute; top: 42px; left: 0; z-index: 40; min-width: 100%; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 6px 18px #0002; padding: 4px; display: flex; flex-direction: column; gap: 2px; }
     .menu[hidden] { display: none; }
     .menu button { height: 40px; padding: 0 16px; border: 0; border-radius: 6px; background: #fff; text-align: left; font-size: 14px; font-family: var(--font-zh); color: #334155; cursor: pointer; white-space: nowrap; }
     .menu button:hover { background: #f1f5f9; }
-    .menu button[aria-checked="true"] { background: #fee2e2; color: #b91c1c; font-weight: 700; }
+    .menu button[aria-checked="true"] { background: var(--blue-bg); color: var(--blue-ink); font-weight: 700; }
 
     @media (max-width: 600px) { .toolbar { position: static; } #bookSelect { max-width: calc(100vw - 130px); } }
+
+
+    /* ---- 三種題型共用的標題列、說明列、組別標題列（固定同一尺寸） ---- */
+    .hdr-title { display: flex; justify-content: space-between; align-items: flex-end; height: var(--hdr-title-h); }
+    .hdr-bar { display: flex; align-items: center; gap: 24px; height: var(--hdr-bar-h); margin-top: 8px; padding: 0 12px; box-sizing: border-box; background: #f1f5f9; border-left: 4px solid #64748b; border-radius: 4px; font-size: 14px; font-weight: 700; color: #334155; font-family: var(--font-zh); white-space: nowrap; flex: none; }
+    .hdr-bar .blank { display: inline-block; width: 64px; height: 18px; margin: 0 4px; border-bottom: 2px solid #334155; vertical-align: bottom; }
+    .grp-bar { display: flex; justify-content: space-between; align-items: center; height: var(--grp-bar-h); margin-bottom: 6px; padding: 0 10px; box-sizing: border-box; background: #f1f5f9; border: 1px solid var(--line); border-radius: 8px; flex: none; }
+    .grp-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .grp-title h3 { margin: 0; font-size: 16px; font-weight: 700; color: #1e293b; font-family: var(--font-zh); letter-spacing: .02em; white-space: nowrap; }
+    .grp-btns { display: flex; gap: 4px; }
+    .gbtn { height: 26px; padding: 0 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink); font-size: 12px; font-weight: 700; font-family: var(--font-zh); display: inline-flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
+    .gbtn .ico { width: 14px; height: 14px; }
+    .gbtn:hover { background: #f1f5f9; }
+    .gbtn { color: var(--blue-ink); border-color: #93c5fd; background: var(--blue-bg); }
+    .gbtn:hover { background: #bfdbfe; }
+    .gbtn.tone-ok { color: var(--green-ink); border-color: #86efac; background: var(--green-bg); }
+    .gbtn.tone-ok:hover { background: #bbf7d0; }
+    .gbtn.tone-ans { color: var(--pink-ink); border-color: #f9a8d4; background: var(--pink-bg); }
+    .gbtn.tone-ans:hover { background: #fbcfe8; }
+    .score { padding: 1px 7px; border-radius: 6px; font-size: 11px; font-weight: 700; font-family: var(--font-zh); background: var(--green-bg); color: var(--green-ink); border: 1px solid #86efac; white-space: nowrap; }
+
+    /* ---- 作答配色（全站規則）：作答＝藍底藍字；批改對＝綠底綠字；批改錯＝消失；解答＝粉底紅字 ---- */
+    input.v-student { background: var(--blue-bg); color: var(--blue-ink); border-radius: 4px; }
+    input.v-right { background: var(--green-bg); color: var(--green-ink); border-radius: 4px; }
+    input.v-answer { background: var(--pink-bg); color: var(--pink-ink); border-radius: 4px; }
+    @media screen { .write-cell.has-val .write-print-hint { visibility: hidden; } }
 
     /* ---- A4 頁面 ---- */
     #stage { width: 210mm; flex: none; margin-left: auto; margin-right: auto; }
@@ -84,10 +111,10 @@
     </div>
     <div class="tb-row">
       <nav class="tabs" aria-label="題型">
-        <button type="button" class="tab" data-mode="hear" aria-pressed="false">聽力</button>
-        <button type="button" class="tab" data-mode="match" aria-pressed="false">配對</button>
+        <button type="button" class="tab" data-mode="hear" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg><span>聽力</span></button>
+        <button type="button" class="tab" data-mode="match" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>配對</span></button>
         <div class="tab-menu">
-          <button type="button" class="tab" id="writeTab" aria-pressed="false" aria-haspopup="true" aria-expanded="false">拼寫 ▾</button>
+          <button type="button" class="tab" id="writeTab" aria-pressed="false" aria-haspopup="true" aria-expanded="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg><span id="writeLabel">拼寫 ▾</span></button>
           <div class="menu" id="hintMenu" role="menu" hidden>
             <button type="button" role="menuitemradio" data-hint="blank" aria-checked="false">空白</button>
             <button type="button" role="menuitemradio" data-hint="count" aria-checked="false">字數</button>
@@ -97,11 +124,9 @@
         </div>
       </nav>
       <div class="tools">
-        <button type="button" class="tool" id="ansBtn">答案</button>
-        <button type="button" class="tool" id="resetBtn">重設</button>
-        <button type="button" class="tool" id="zhuyinBtn" aria-pressed="false">注音</button>
-        <button type="button" class="tool" id="inkBtn" aria-pressed="false">手寫</button>
-        <button type="button" class="tool" id="printBtn" title="目前只列印畫面上這一頁；整冊與自選列印之後再做">列印本頁</button>
+        <button type="button" class="tool" id="zhuyinBtn" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 8h6M12 8v4.5a3 3 0 0 1-3 3"/></svg><span>注音</span></button>
+        <button type="button" class="tool" id="inkBtn" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>手寫</span></button>
+        <button type="button" class="tool" id="printBtn" title="目前只列印畫面上這一頁；整冊與自選列印之後再做"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg><span>列印本頁</span></button>
       </div>
     </div>
   </header>

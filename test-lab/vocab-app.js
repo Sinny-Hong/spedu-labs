@@ -85,7 +85,7 @@
   function headerHtml(title, barHtml) {
     return `
       <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
-        <div class="flex justify-between items-end">
+        <div class="hdr-title">
           <h1 class="title-large text-slate-800 tracking-wider font-chinese">${esc(title)}</h1>
           <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
             <div class="flex items-end">
@@ -101,14 +101,46 @@
         ${barHtml}
       </div>`;
   }
-  const simpleBar = text => `<div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0"><span class="text-[14px] font-bold text-slate-700 font-chinese">${text}</span></div>`;
+  const simpleBar = text => `<div class="hdr-bar"><span>${text}</span></div>`;
+
+  /* ---------- 作答配色（全站規則）
+     學生作答＝藍底藍字；批改正確＝綠底綠字；批改錯誤＝消失；解答＝粉底紅字 ---------- */
+  const STATES = ['v-student', 'v-right', 'v-answer'];
+  function setState(input, state) {
+    input.classList.remove(...STATES);
+    if (state) input.classList.add('v-' + state);
+    const cell = input.closest('.write-cell');
+    if (cell) cell.classList.toggle('has-val', input.value !== '');
+  }
+  const ico = d => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const ICON = {
+    play: ico('<polygon points="6 3 20 12 6 21 6 3"/>'),
+    mic: ico('<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>'),
+    check: ico('<path d="M20 6 9 17l-5-5"/>'),
+    eraser: ico('<path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>'),
+    eye: ico('<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>')
+  };
+  /* 每組標題列：按鈕順序固定為 [聽音] [批改] [清空] [解答]，三種題型共用 */
+  const gbtn = (action, label, icon, data = '', tone = '') => `<button type="button" data-action="${action}" ${data} class="gbtn ${tone} no-print">${ICON[icon]}<span>${label}</span></button>`;
+  const badgeHtml = gi => `<span id="score-${gi}" class="score no-print hidden"></span>`;
+  const grpBar = (title, buttons, gi) => `<div class="grp-bar"><div class="grp-title"><h3>${esc(title)}</h3>${gi === undefined ? '' : badgeHtml(gi)}</div><div class="grp-btns">${buttons}</div></div>`;
+  function showScore(gi, right, total) {
+    const b = $(`score-${gi}`);
+    if (b) { b.textContent = `答對 ${right} / ${total}`; b.classList.remove('hidden'); }
+  }
+  function hideScore(gi) {
+    const b = $(`score-${gi}`);
+    if (b) { b.textContent = ''; b.classList.add('hidden'); }
+  }
+  const checkBtn = (action, gi, total) => gbtn(action, '批改', 'check', `data-g="${gi}" data-total="${total}"`, 'tone-ok');
+  const ansBtn = (action, gi) => gbtn(action, '解答', 'eye', `data-g="${gi}"`, 'tone-ans');
 
   /* =====================================================================
      聽力
      ===================================================================== */
   const hear = (() => {
     const titles = ['第一題', '第二題', '第三題', '第四題', '第五題', '第六題', '第七題', '第八題', '第九題', '第十題', '第十一題', '第十二題'];
-    let orders = {}, showAll = false, groupShown = {};
+    let orders = {}, groupShown = {};
 
     function seedShuffle(array, seed) {
       let h = 0;
@@ -124,17 +156,11 @@
     function initOrders(key) {
       db[key].forEach((g, idx) => { orders[`${key}-${idx}`] = seedShuffle(g.words.map(w => w.eng), `${key}-${idx}`); });
     }
-    function inputs(g) { return document.querySelectorAll(g === undefined ? '.answer-input' : `input[data-gidx="${g}"]`); }
+    const inputs = g => document.querySelectorAll(`input[data-gidx="${g}"]`);
+    const answerOf = input => orders[`${lessonKey}-${input.dataset.gidx}`].indexOf(input.dataset.eng) + 1;
     function paint(input, on) {
-      const cls = ['bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold'];
-      if (on) {
-        const order = orders[`${lessonKey}-${input.dataset.gidx}`];
-        input.value = order ? order.indexOf(input.dataset.eng) + 1 : '-';
-        input.classList.add(...cls);
-      } else {
-        input.value = '';
-        input.classList.remove(...cls);
-      }
+      input.value = on ? String(answerOf(input)) : '';
+      setState(input, on ? 'answer' : null);
     }
     function groupHtml(group, gi, forPrint) {
       let rows = '';
@@ -156,18 +182,14 @@
             </div>`;
         }
       }
-      const buttons = forPrint ? '' : `
-        <div class="flex gap-1.5">
-          <button data-action="hear-preview" data-g="${gi}" class="no-print bg-sky-500/90 hover:bg-sky-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">預習</button>
-          <button data-action="hear-quiz" data-g="${gi}" class="no-print bg-orange-400/90 hover:bg-orange-500 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">📢 小考</button>
-          <button data-action="hear-ans" data-g="${gi}" class="no-print bg-emerald-500/90 hover:bg-emerald-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow font-english">√Ans</button>
-        </div>`;
+      const buttons = forPrint ? '' :
+        gbtn('hear-preview', '預習', 'play', `data-g="${gi}"`) +
+        gbtn('hear-quiz', '小考', 'mic', `data-g="${gi}"`) +
+        checkBtn('hear-check', gi, group.words.length) +
+        ansBtn('hear-ans', gi);
       return `
         <div class="bg-white flex flex-col justify-start flex-grow">
-          <div class="flex justify-between items-center bg-slate-100/90 border border-slate-300 rounded-lg px-3 py-1.5 mb-2 shrink-0">
-            <h3 class="text-[16px] font-bold text-slate-800 font-chinese tracking-wide">${esc(group.gTitle)}</h3>
-            ${buttons}
-          </div>
+          ${grpBar(group.gTitle, buttons, forPrint ? undefined : gi)}
           <div class="flex flex-col flex-grow justify-start pl-1">${rows}</div>
         </div>`;
     }
@@ -187,6 +209,7 @@
           input.value = input.value.replace(/[^0-9]/g, '');
           const v = parseInt(input.value, 10);
           if (v < 1 || v > 12) input.value = '';
+          setState(input, input.value ? 'student' : null);
           if (input.value !== '' && index < all.length - 1) all[index + 1].focus();
         });
         input.addEventListener('keydown', e => {
@@ -208,23 +231,35 @@
       title: '聽力選擇卷',
       bar: simpleBar('◎錯字用紅筆訂正，中文、英文各 1 次。'),
       render(key) {
-        showAll = false; groupShown = {};
+        groupShown = {};
         initOrders(key);
         return `<div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups">${db[key].map((g, i) => groupHtml(g, i, false)).join('')}</div><div class="h-1 shrink-0"></div>`;
       },
       after() { bind(); scale(); },
-      toggle() { showAll = !showAll; inputs().forEach(i => paint(i, showAll)); },
-      clear() { groupShown = {}; showAll = false; inputs().forEach(i => paint(i, false)); },
       actions: {
         'hear-preview': el => { previewLoop(db[lessonKey][+el.dataset.g].words.map(w => w.eng), 0, 1500); },
         'hear-quiz': el => {
-          inputs(el.dataset.g).forEach(i => { i.value = ''; });
+          stopSpeech();
+          inputs(el.dataset.g).forEach(i => { i.value = ''; setState(i, null); });
+          hideScore(el.dataset.g);
           runQuiz(`${lessonKey}-${el.dataset.g}`, 0);
         },
+        'hear-check': el => {
+          const g = +el.dataset.g;
+          let right = 0;
+          inputs(g).forEach(i => {
+            if (i.value === '') return;
+            if (i.value === String(answerOf(i))) { right++; setState(i, 'right'); }
+            else { i.value = ''; setState(i, null); }
+          });
+          groupShown[`${lessonKey}-${g}`] = false;
+          showScore(g, right, +el.dataset.total);
+        },
         'hear-ans': el => {
-          const k = `${lessonKey}-${el.dataset.g}`;
+          const g = +el.dataset.g, k = `${lessonKey}-${g}`;
           groupShown[k] = !groupShown[k];
-          inputs(el.dataset.g).forEach(i => paint(i, groupShown[k] || showAll));
+          inputs(g).forEach(i => paint(i, groupShown[k]));
+          hideScore(g);
         }
       }
     };
@@ -235,10 +270,8 @@
      ===================================================================== */
   const match = (() => {
     const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-    const BASE = 'match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none';
-    const SHOWN = 'match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-red-50 text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none';
-    const RIGHT = 'match-input w-5 h-5 text-center font-black text-emerald-700 focus:outline-none bg-emerald-100 rounded text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none';
-    let showAll = false, activeInput = null, pendingLetter = null, pendingOption = null;
+    const BASE = 'match-input w-5 h-5 text-center font-black focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none';
+    let activeInput = null, pendingLetter = null, pendingOption = null;
 
     function shuffle(array, seed) {
       let hash = 0;
@@ -278,25 +311,16 @@
           const radius = last ? 'rounded-b' : (li === 0 ? 'rounded-t' : 'rounded-none');
           rightHtml = `
             <div data-action="match-opt" data-letter="${letters[li]}" class="match-option-card flex items-center bg-sky-100 border-x border-sky-300 ${radius} ${li === 0 ? 'border-t' : ''} ${last ? 'border-b' : ''} px-2 w-[115px] h-[30px] shrink-0 shadow-sm cursor-pointer hover:bg-sky-200 transition">
-              <span class="font-bold text-red-600 text-[13px] font-english mr-1 shrink-0">${letters[li]}.</span>
+              <span class="font-bold text-sky-800 text-[13px] font-english mr-1 shrink-0">${letters[li]}.</span>
               <span class="font-chinese text-slate-800 text-[13px] font-medium truncate flex-grow leading-none"><span class="vocab-meaning">${esc(right.ch)}</span></span>
             </div>`;
         } else rightHtml = '<div class="w-[115px] h-[30px] shrink-0 opacity-0 pointer-events-none"></div>';
         rows += `<div class="${rowClass}">${leftHtml}${rightHtml}</div>`;
       }
+      const buttons = checkBtn('match-check', gi, total) + gbtn('match-clear', '清空', 'eraser', `data-g="${gi}"`) + ansBtn('match-ans', gi);
       return `
         <div class="bg-white flex flex-col justify-start flex-grow">
-          <div class="flex justify-between items-center bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 mb-1 shrink-0">
-            <div class="flex items-center gap-2">
-              <h3 class="text-[15.5px] font-bold text-slate-800 font-chinese tracking-wide">${esc(group.gTitle)}</h3>
-              <span id="score-${gi}" class="no-print hidden px-1.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded text-[11px] font-bold font-chinese"></span>
-            </div>
-            <div class="no-print flex gap-1">
-              <button data-action="match-check" data-g="${gi}" data-total="${total}" title="檢查批改" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese">✅ 檢查</button>
-              <button data-action="match-clear" data-g="${gi}" title="清空本組" class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded text-[11px] transition border border-slate-300 font-chinese">🧼 清空</button>
-              <button data-action="match-ans" data-g="${gi}" title="本組解答" class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese">💡 解答</button>
-            </div>
-          </div>
+          ${grpBar(group.gTitle, buttons, gi)}
           <div class="flex flex-col flex-grow justify-start">${rows}</div>
         </div>`;
     }
@@ -319,31 +343,17 @@
     }
     function fill(input, letter) {
       input.value = letter;
-      input.className = BASE;
+      setState(input, 'student');
       input.closest('.quiz-row').classList.remove('active-row');
     }
     return {
       title: '中英文配對卷',
       bar: simpleBar('◎ 請將正確英文單字的代號填入括號中。錯字用紅筆訂正，中文、英文各 1 次。'),
       render(key) {
-        showAll = false; activeInput = null; clearPending();
+        activeInput = null; clearPending();
         return `<div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups">${db[key].map((g, i) => groupHtml(g, i)).join('')}</div><div class="h-1 shrink-0"></div>`;
       },
       after() { scale(); },
-      toggle() {
-        resetState();
-        showAll = !showAll;
-        document.querySelectorAll('.match-input').forEach(i => {
-          i.value = showAll ? i.dataset.ans : '';
-          i.className = showAll ? SHOWN : BASE;
-        });
-        document.querySelectorAll('[id^="score-"]').forEach(b => b.classList.add('hidden'));
-      },
-      clear() {
-        document.querySelectorAll('.match-input').forEach(i => { i.value = ''; i.className = BASE; });
-        document.querySelectorAll('[id^="score-"]').forEach(b => b.classList.add('hidden'));
-        showAll = false; resetState();
-      },
       actions: {
         'match-row'(el) {
           document.querySelectorAll('.quiz-row').forEach(r => r.classList.remove('active-row'));
@@ -371,24 +381,22 @@
           groupInputs(+el.dataset.g).forEach(input => {
             const mine = input.value.trim().toUpperCase();
             if (mine === '') return;
-            if (mine === input.dataset.ans) { right++; input.className = RIGHT; }
-            else { input.value = ''; input.className = BASE; }
+            if (mine === input.dataset.ans) { right++; setState(input, 'right'); }
+            else { input.value = ''; setState(input, null); }
           });
-          const badge = $(`score-${el.dataset.g}`);
-          if (badge) { badge.innerText = `答對 ${right} / ${el.dataset.total}`; badge.classList.remove('hidden'); }
+          showScore(el.dataset.g, right, el.dataset.total);
         },
         'match-clear'(el) {
-          groupInputs(+el.dataset.g).forEach(i => { i.value = ''; i.className = BASE; });
+          groupInputs(+el.dataset.g).forEach(i => { i.value = ''; setState(i, null); });
           resetState();
-          const badge = $(`score-${el.dataset.g}`);
-          if (badge) { badge.innerText = ''; badge.classList.add('hidden'); }
+          hideScore(el.dataset.g);
         },
         'match-ans'(el) {
           const list = groupInputs(+el.dataset.g);
-          const showing = list.length > 0 && list[0].value === list[0].dataset.ans && list[0].classList.contains('bg-red-50');
-          list.forEach(i => { i.value = showing ? '' : i.dataset.ans; i.className = showing ? BASE : SHOWN; });
-          const badge = $(`score-${el.dataset.g}`);
-          if (badge) badge.classList.add('hidden');
+          const showing = list.length > 0 && list[0].classList.contains('v-answer');
+          list.forEach(i => { i.value = showing ? '' : i.dataset.ans; setState(i, showing ? null : 'answer'); });
+          resetState();
+          hideScore(el.dataset.g);
         }
       }
     };
@@ -398,9 +406,11 @@
      拼寫（空白／字數／字首／描寫）
      ===================================================================== */
   const write = (() => {
-    let showAll = false, qNo = 1;
+    let qNo = 1, groupShown = {};
+    const norm = s => s.trim().replace(/\s+/g, ' ');
     const traceScale = a => { const n = Array.from(a).length; return n > 28 ? 0.44 : n > 22 ? 0.6 : n > 17 ? 0.76 : 1; };
     const hintScale = a => { const n = Array.from(a).length; return n > 28 ? 0.44 : n > 22 ? 0.6 : n > 17 ? 0.76 : n > 13 ? 0.88 : 1; };
+    const inputs = g => document.querySelectorAll(`.spelling-input[data-gidx="${g}"]`);
     function hintHtml(answer) {
       if (hint === 'blank') return '<span class="write-print-hint" aria-hidden="true"></span>';
       if (hint === 'trace') return `<span class="write-print-hint write-hint-trace" style="--write-trace-scale:${traceScale(answer)}" aria-hidden="true">${esc(answer)}</span>`;
@@ -428,9 +438,8 @@
                 <span class="write-prompt-number font-bold text-slate-400 font-english text-[13px]">${qNo}.</span>
                 <span class="write-meaning-window"><span class="vocab-meaning">${esc(w.ch)}</span></span>
               </div>
-              <div class="flex-grow relative font-english pl-2 h-5 flex items-center">
-                <input type="text" data-ans="${esc(clean)}" class="spelling-input no-print w-full bg-transparent focus:outline-none text-[15px] font-bold text-slate-800 tracking-wide">
-                <span class="ans-text-span hidden text-red-600 font-extrabold text-[15px] tracking-wide absolute left-2 leading-none">${esc(clean)}</span>
+              <div class="write-cell flex-grow relative font-english pl-2 h-5 flex items-center">
+                <input type="text" data-gidx="${gi}" data-ans="${esc(clean)}" autocomplete="off" autocapitalize="off" spellcheck="false" class="spelling-input no-print w-full bg-transparent focus:outline-none text-[15px] font-bold text-slate-800 tracking-wide">
                 ${hintHtml(clean)}
               </div>
             </div>`;
@@ -442,45 +451,50 @@
             </div>`;
         }
       }
+      const buttons = gbtn('write-preview', '預習', 'play', `data-g="${gi}"`) + checkBtn('write-check', gi, group.words.length) + ansBtn('write-ans', gi);
       return `
         <div class="bg-white flex flex-col justify-start flex-grow">
-          <div class="flex justify-between items-center bg-slate-100 border border-slate-300 rounded-lg px-3 py-1.5 mb-2 shrink-0">
-            <h3 class="text-[16px] font-bold text-slate-800 font-chinese tracking-wide">${esc(group.gTitle)}</h3>
-            <div class="flex gap-1.5"><button data-action="write-preview" data-g="${gi}" class="no-print bg-sky-500/90 hover:bg-sky-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">預習導讀</button></div>
-          </div>
+          ${grpBar(group.gTitle, buttons, gi)}
           <div class="flex flex-col flex-grow justify-start pl-1">${rows}</div>
         </div>`;
     }
     function bind() {
       const all = Array.from(document.querySelectorAll('.spelling-input'));
-      all.forEach((input, index) => input.addEventListener('keydown', e => {
-        if (e.key === 'Enter' && index < all.length - 1) all[index + 1].focus();
-      }));
-    }
-    function setShown(on) {
-      document.querySelectorAll('.spelling-input').forEach(input => {
-        const span = input.parentElement.querySelector('.ans-text-span');
-        input.value = on ? input.dataset.ans : '';
-        input.classList.toggle('opacity-0', on);
-        span.classList.toggle('hidden', !on);
+      all.forEach((input, index) => {
+        input.addEventListener('input', () => setState(input, input.value ? 'student' : null));
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter' && index < all.length - 1) all[index + 1].focus();
+        });
       });
     }
     return {
       title: '單字拼寫卷',
-      bar: `<div class="mt-2 flex flex-col gap-1 bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0 text-[14px] font-bold text-slate-700 font-chinese">
-        <div class="flex items-center flex-wrap gap-x-6">
-          <span>◎ 生字 (每個字 2 分，每次考 <span class="border-b-2 border-slate-700 w-16 inline-block text-center h-5"></span> 個單字)</span>
-          <span>◎ 錯字請用紅筆訂正：中文 1 次、英文 1 次。</span>
-        </div></div>`,
+      bar: `<div class="hdr-bar"><span>◎ 生字 (每個字 2 分，每次考 <span class="blank"></span> 個單字)</span><span>◎ 錯字請用紅筆訂正：中文 1 次、英文 1 次。</span></div>`,
       render(key) {
-        showAll = false; qNo = 1;
+        qNo = 1; groupShown = {};
         return `<div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups">${db[key].map((g, i) => groupHtml(g, i)).join('')}</div><div class="h-1 shrink-0"></div>`;
       },
       after() { bind(); },
-      toggle() { showAll = !showAll; setShown(showAll); },
-      clear() { showAll = false; setShown(false); },
       actions: {
-        'write-preview': el => { previewLoop(db[lessonKey][+el.dataset.g].words.map(w => w.eng), 0, 1400); }
+        'write-preview': el => { previewLoop(db[lessonKey][+el.dataset.g].words.map(w => w.eng), 0, 1400); },
+        'write-check': el => {
+          const g = +el.dataset.g;
+          let right = 0;
+          inputs(g).forEach(i => {
+            const mine = norm(i.value);
+            if (mine === '') { i.value = ''; setState(i, null); return; }
+            if (mine === i.dataset.ans) { right++; i.value = mine; setState(i, 'right'); }
+            else { i.value = ''; setState(i, null); }
+          });
+          groupShown[g] = false;
+          showScore(g, right, +el.dataset.total);
+        },
+        'write-ans': el => {
+          const g = +el.dataset.g;
+          groupShown[g] = !groupShown[g];
+          inputs(g).forEach(i => { i.value = groupShown[g] ? i.dataset.ans : ''; setState(i, groupShown[g] ? 'answer' : null); });
+          hideScore(g);
+        }
       }
     };
   })();
@@ -491,7 +505,7 @@
   function paintToolbar() {
     document.querySelectorAll('.tab[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
     writeTab.setAttribute('aria-pressed', String(mode === 'write'));
-    writeTab.textContent = mode === 'write' ? `拼寫・${HINTS[hint]} ▾` : '拼寫 ▾';
+    $('writeLabel').textContent = mode === 'write' ? `拼寫・${HINTS[hint]} ▾` : '拼寫 ▾';
     hintMenu.querySelectorAll('[data-hint]').forEach(b => b.setAttribute('aria-checked', String(mode === 'write' && b.dataset.hint === hint)));
   }
   let ink = { finish() {}, clear() {} };
@@ -542,8 +556,6 @@
   });
   document.addEventListener('click', e => { if (!e.target.closest('.tab-menu')) closeMenu(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
-  $('ansBtn').addEventListener('click', () => M[mode].toggle());
-  $('resetBtn').addEventListener('click', () => { stopSpeech(); M[mode].clear(); });
   $('printBtn').addEventListener('click', () => window.print());
   $('zhuyinBtn').addEventListener('click', e => {
     const on = document.body.classList.toggle('show-zhuyin');
@@ -611,5 +623,4 @@
   setBook(bookKey);
   ink = mountInk(stage, $('inkBtn'));
   render();
-  if (params.get('teacher') === '1') setTimeout(() => M[mode].toggle(), 0);
 })();
