@@ -15,7 +15,7 @@
   });
   // 還沒有專屬動畫的節慶，先用大表情符號頂著。
   const EMOJI_ONLY = Object.freeze({
-    christmas: "🎄", "new-year": "🎆", "lunar-new-year": "🧧", lantern: "🏮",
+    "new-year": "🎆", "lunar-new-year": "🧧", lantern: "🏮",
     valentine: "💝", easter: "🐣", "mothers-day": "💐", "fathers-day": "👔",
     "dragon-boat": "🐲", "mid-autumn": "🥮", "teachers-day": "📚", birthday: "🎂"
   });
@@ -252,6 +252,38 @@
         from { transform: rotate(-18deg); }
         to { transform: rotate(14deg); }
       }
+      #${LAYER_ID} .xmas-snow { position: absolute; left: 0; top: 0; display: block; user-select: none; will-change: transform, opacity; }
+      #${LAYER_ID} .xmas-flake { width: var(--s); height: var(--s); font-size: var(--s); line-height: 1; filter: drop-shadow(0 0 2px rgba(70, 130, 190, .55)); }
+      #${LAYER_ID} .xmas-dot { width: var(--s); height: var(--s); border-radius: 50%; background: #fff; box-shadow: 0 0 4px 1px rgba(100, 160, 215, .75); }
+      #${LAYER_ID} .xmas-ground {
+        position: absolute; z-index: 2; left: -10vw; right: -10vw; bottom: -10px; height: 42px;
+        border-radius: 50vw 50vw 0 0 / 42px 42px 0 0;
+        background: linear-gradient(#fff, #e3effa);
+        box-shadow: 0 -3px 8px rgba(110, 150, 195, .35);
+        will-change: transform;
+      }
+      #${LAYER_ID} .xmas-figure { position: absolute; z-index: 3; bottom: var(--ground); transform-origin: 50% 100%; will-change: transform; }
+      #${LAYER_ID} .xmas-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+      #${LAYER_ID} .xmas-orn { animation: xmas-twinkle 1.1s ease-in-out var(--d, 0s) infinite alternate; }
+      #${LAYER_ID} .xmas-lights { animation: xmas-twinkle .7s ease-in-out infinite alternate; }
+      #${LAYER_ID} .xmas-star { transform-box: fill-box; transform-origin: 50% 55%; animation: xmas-star-pulse 1.2s ease-in-out infinite alternate; }
+      #${LAYER_ID} .xmas-arm { transform-box: view-box; transform-origin: 32px 62px; animation: xmas-wave .5s ease-in-out infinite alternate; }
+      #${LAYER_ID} .xmas-bubble {
+        position: absolute; left: 58%; top: -8%; z-index: 2; white-space: nowrap;
+        padding: .28em .7em; border: 3px solid #d63031; border-radius: 16px; background: #fff; color: #d63031;
+        font: 900 var(--bubble-size)/1.1 "Fredoka", "Baloo 2", "Comic Sans MS", "Marker Felt", "Microsoft JhengHei", system-ui, sans-serif;
+        filter: drop-shadow(0 3px 3px rgba(70, 36, 12, .22));
+        transform-origin: 0 100%;
+      }
+      #${LAYER_ID} .xmas-bubble::after {
+        content: ""; position: absolute; left: 14%; bottom: -12px; width: 0; height: 0;
+        border: 7px solid transparent; border-top: 9px solid #d63031; border-bottom: 0;
+      }
+      #${LAYER_ID} .xmas-string { position: absolute; z-index: 4; top: 0; left: 0; overflow: visible; will-change: transform; }
+      #${LAYER_ID} .xmas-bulb { animation: xmas-twinkle .9s ease-in-out var(--d) infinite alternate; }
+      @keyframes xmas-twinkle { from { opacity: .4; } to { opacity: 1; } }
+      @keyframes xmas-star-pulse { from { transform: scale(.92) rotate(-5deg); } to { transform: scale(1.12) rotate(5deg); } }
+      @keyframes xmas-wave { from { transform: rotate(-14deg); } to { transform: rotate(16deg); } }
       @keyframes seasonal-banner-party {
         0% { transform: translate(-50%, -105%) rotate(-1deg); opacity: 0; }
         12% { transform: translate(-50%, 0) rotate(1deg); opacity: 1; }
@@ -616,13 +648,13 @@
     }
   }
 
-  function makeLayer() {
+  function makeLayer(lifetime = CLEANUP_DELAY) {
     stop();
     const layer = document.createElement("div");
     layer.id = LAYER_ID;
     layer.setAttribute("aria-hidden", "true");
     document.body.append(layer);
-    cleanupTimer = window.setTimeout(stop, CLEANUP_DELAY);
+    cleanupTimer = window.setTimeout(stop, lifetime);
     return layer;
   }
 
@@ -660,10 +692,191 @@
     return true;
   }
 
+  // ===== 聖誕節：雪人 + 聖誕樹 + 禮物 + 飄雪 + 頂端燈串 =====
+  function starPoints(cx, cy, outer, inner) {
+    const points = [];
+    for (let i = 0; i < 10; i++) {
+      const radius = i % 2 ? inner : outer;
+      const angle = -Math.PI / 2 + i * Math.PI / 5;
+      points.push(`${(cx + radius * Math.cos(angle)).toFixed(1)},${(cy + radius * Math.sin(angle)).toFixed(1)}`);
+    }
+    return points.join(" ");
+  }
+
+  const TREE_ORNAMENTS = [
+    [58, 50, "#e74c3c"], [82, 48, "#f1c40f"], [70, 36, "#3498db"],
+    [52, 86, "#3498db"], [90, 84, "#e74c3c"], [70, 78, "#f1c40f"],
+    [36, 122, "#f1c40f"], [104, 120, "#e74c3c"], [70, 112, "#3498db"]
+  ];
+  const TREE_SVG = `
+    <svg class="xmas-svg" viewBox="0 0 140 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="62" y="128" width="16" height="20" rx="3" fill="#8b5a2b"/>
+      <g stroke-linejoin="round" stroke-width="8">
+        <polygon points="70,72 126,136 14,136" fill="#1f7a47" stroke="#1f7a47"/>
+        <polygon points="70,44 112,98 28,98" fill="#27894d" stroke="#27894d"/>
+        <polygon points="70,22 100,62 40,62" fill="#2f9e5b" stroke="#2f9e5b"/>
+      </g>
+      <g class="xmas-lights" fill="none" stroke="#fff3b0" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="0.1 8">
+        <path d="M52 54 Q70 66 88 54"/><path d="M40 90 Q70 104 100 90"/><path d="M26 126 Q70 144 114 126"/>
+      </g>
+      ${TREE_ORNAMENTS.map(([x, y, color], i) => `<circle class="xmas-orn" style="--d:${(i * -.23).toFixed(2)}s" cx="${x}" cy="${y}" r="3.8" fill="${color}"/><circle cx="${x - 1.2}" cy="${y - 1.3}" r="1" fill="#fff" opacity=".85"/>`).join("")}
+      <polygon class="xmas-star" points="${starPoints(70, 14, 12, 5.2)}" fill="#ffd23f" stroke="#f5a623" stroke-width="1.5" stroke-linejoin="round"/>
+      <g>
+        <rect x="14" y="134" width="26" height="22" rx="2" fill="#e74c3c"/><rect x="24" y="134" width="6" height="22" fill="#ffd54a"/><rect x="14" y="143" width="26" height="5" fill="#ffd54a"/><circle cx="27" cy="132" r="3.6" fill="#ffd54a"/>
+        <rect x="98" y="138" width="26" height="18" rx="2" fill="#3498db"/><rect x="108" y="138" width="6" height="18" fill="#fff"/><rect x="98" y="145" width="26" height="4" fill="#fff"/><circle cx="111" cy="136" r="3.2" fill="#fff"/>
+        <rect x="82" y="146" width="14" height="10" rx="1.5" fill="#9b59b6"/><rect x="87" y="146" width="4" height="10" fill="#ffd54a"/>
+        <rect x="44" y="148" width="14" height="8" rx="1.5" fill="#f39c12"/><rect x="49" y="148" width="4" height="8" fill="#fff"/>
+      </g>
+    </svg>`;
+
+  const SNOWMAN_SVG = `
+    <svg class="xmas-svg" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <ellipse cx="50" cy="126" rx="31" ry="4" fill="#bcd2e6" opacity=".7"/>
+      <g stroke="#7a4a22" stroke-width="3" stroke-linecap="round" fill="none">
+        <path d="M68 62 L90 50 M84 53 L89 43 M84 53 L95 54"/>
+        <g class="xmas-arm"><path d="M32 62 L10 46 M16 50 L9 39 M16 50 L5 50"/></g>
+      </g>
+      <g fill="#fff" stroke="#cddff0" stroke-width="2">
+        <circle cx="50" cy="98" r="28"/><circle cx="50" cy="62" r="21"/><circle cx="50" cy="31" r="17"/>
+      </g>
+      <g fill="#35424a"><circle cx="50" cy="58" r="2.4"/><circle cx="50" cy="67" r="2.4"/><circle cx="50" cy="90" r="2.6"/><circle cx="50" cy="101" r="2.6"/><circle cx="50" cy="112" r="2.6"/></g>
+      <rect x="56" y="48" width="9" height="24" rx="3" fill="#2ecc71"/><rect x="56" y="58" width="9" height="3" fill="#fff"/>
+      <rect x="33" y="44" width="34" height="9" rx="4.5" fill="#2ecc71"/>
+      <path d="M34 24 Q50 0 66 24 Z" fill="#d63031"/>
+      <rect x="32" y="22" width="36" height="7" rx="3.5" fill="#fff" stroke="#cddff0" stroke-width="1.5"/>
+      <circle cx="50" cy="4" r="5" fill="#fff" stroke="#cddff0" stroke-width="1.5"/>
+      <ellipse cx="38" cy="35" rx="4" ry="2.6" fill="#ff9aa8" opacity=".7"/><ellipse cx="62" cy="33" rx="4" ry="2.6" fill="#ff9aa8" opacity=".7"/>
+      <circle cx="43" cy="30" r="2.6" fill="#2b1a10"/><circle cx="57" cy="30" r="2.6" fill="#2b1a10"/>
+      <circle cx="43.8" cy="29.1" r=".9" fill="#fff"/><circle cx="57.8" cy="29.1" r=".9" fill="#fff"/>
+      <polygon points="50,33 67,36 50,39" fill="#ff8c1a"/>
+      <path d="M44 41 Q50 45 56 41" fill="none" stroke="#35424a" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>`;
+
+  function slideInOut(element, delay, total, hidden, bounce) {
+    const enter = bounce ? [
+      { transform: `translateY(${hidden})`, offset: 0 },
+      { transform: "translateY(-14px)", offset: .1 },
+      { transform: "translateY(0)", offset: .135 }
+    ] : [
+      { transform: `translateY(${hidden})`, offset: 0 },
+      { transform: "translateY(0)", offset: .1 }
+    ];
+    return element.animate([
+      ...enter,
+      { transform: "translateY(0)", offset: .9 },
+      { transform: `translateY(${hidden})`, offset: 1 }
+    ], { duration: total, delay, easing: "ease-out", fill: "both" });
+  }
+
+  function addChristmasSnow(layer) {
+    const compact = window.innerWidth <= 600;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const flakes = compact ? 16 : 28;
+    const dots = compact ? 14 : 26;
+    const make = (flake) => {
+      const size = flake ? (compact ? 15 : 18) + Math.random() * (compact ? 12 : 18) : 5 + Math.random() * 6;
+      const item = document.createElement("span");
+      item.className = `xmas-snow ${flake ? "xmas-flake" : "xmas-dot"}`;
+      if (flake) item.textContent = "❄️";
+      item.style.setProperty("--s", `${size}px`);
+      item.style.opacity = "0";
+      layer.append(item);
+      const x = Math.random() * Math.max(1, width - size);
+      const sway = (18 + Math.random() * 40) * (Math.random() < .5 ? -1 : 1);
+      const spin = flake ? (Math.random() < .5 ? -1 : 1) * (60 + Math.random() * 120) : 0;
+      item.animate([
+        { transform: `translate3d(${x}px, ${-size * 1.5}px, 0) rotate(0deg)`, opacity: 0, offset: 0 },
+        { transform: `translate3d(${x + sway}px, ${height * .2}px, 0) rotate(${spin * .25}deg)`, opacity: 1, offset: .08 },
+        { transform: `translate3d(${x - sway * .7}px, ${height * .5}px, 0) rotate(${spin * .55}deg)`, opacity: 1, offset: .45 },
+        { transform: `translate3d(${x + sway * .8}px, ${height * .8}px, 0) rotate(${spin * .85}deg)`, opacity: 1, offset: .8 },
+        { transform: `translate3d(${x}px, ${height + size}px, 0) rotate(${spin}deg)`, opacity: 0, offset: 1 }
+      ], { duration: 4300 + Math.random() * 1700, delay: Math.random() * 2300, easing: "linear", fill: "both" });
+    };
+    for (let i = 0; i < flakes; i++) make(true);
+    for (let i = 0; i < dots; i++) make(false);
+  }
+
+  function addLightString(layer, total) {
+    const width = window.innerWidth;
+    const segment = window.innerWidth <= 600 ? 90 : 130;
+    const sag = 20;
+    const colors = ["#e74c3c", "#f1c40f", "#2ecc71", "#3498db"];
+    const count = Math.ceil(width / segment);
+    let path = "M0 6";
+    let bulbs = "";
+    for (let i = 0; i < count; i++) {
+      const x0 = i * segment;
+      path += ` q${segment / 2} ${sag * 2} ${segment} 0`;
+      [.25, .5, .75].forEach((t, j) => {
+        const x = x0 + segment * t;
+        const y = 6 + 2 * (1 - t) * t * sag * 2;
+        const k = i * 3 + j;
+        bulbs += `<circle class="xmas-bulb" style="--d:${(k * -.31).toFixed(2)}s" cx="${x.toFixed(1)}" cy="${(y + 5).toFixed(1)}" r="5" fill="${colors[k % colors.length]}"/>`;
+      });
+    }
+    const string = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    string.setAttribute("class", "xmas-string");
+    string.setAttribute("width", width);
+    string.setAttribute("height", 44);
+    string.innerHTML = `<path d="${path}" fill="none" stroke="#3a5a40" stroke-width="2"/>${bulbs}`;
+    layer.append(string);
+    slideInOut(string, 200, total, "-120%", false);
+  }
+
+  function playChristmas() {
+    const total = 8400;
+    const layer = makeLayer(total + 300);
+    const compact = window.innerWidth <= 600;
+    const height = window.innerHeight;
+    const width = window.innerWidth;
+    const ground = compact ? 8 : 12;
+
+    addChristmasSnow(layer);
+
+    const mound = document.createElement("div");
+    mound.className = "xmas-ground";
+    layer.append(mound);
+    slideInOut(mound, 0, total, "110%", false);
+
+    const treeHeight = compact ? 150 : Math.min(300, height * .42);
+    const tree = document.createElement("div");
+    tree.className = "xmas-figure";
+    tree.style.cssText = `height:${treeHeight}px;width:${treeHeight * 140 / 160}px;right:${compact ? width * .03 : width * .07}px;--ground:${ground}px`;
+    tree.innerHTML = TREE_SVG;
+    layer.append(tree);
+    slideInOut(tree, 450, total - 450, "140%", true);
+
+    const manHeight = compact ? 118 : Math.min(230, height * .34);
+    const snowman = document.createElement("div");
+    snowman.className = "xmas-figure";
+    snowman.style.cssText = `height:${manHeight}px;width:${manHeight * 100 / 130}px;left:${compact ? width * .04 : width * .07}px;--ground:${ground}px`;
+    snowman.innerHTML = SNOWMAN_SVG;
+    const bubble = document.createElement("div");
+    bubble.className = "xmas-bubble";
+    bubble.style.setProperty("--bubble-size", `${compact ? 13 : Math.max(16, manHeight * .1)}px`);
+    bubble.textContent = "Merry Christmas!";
+    snowman.append(bubble);
+    layer.append(snowman);
+    slideInOut(snowman, 150, total - 150, "140%", true);
+    bubble.style.opacity = "0";
+    bubble.animate([
+      { opacity: 0, transform: "scale(.5)", offset: 0 },
+      { opacity: 1, transform: "scale(1.08)", offset: .12 },
+      { opacity: 1, transform: "scale(1)", offset: .2 },
+      { opacity: 1, transform: "scale(1)", offset: .85 },
+      { opacity: 0, transform: "scale(.9)", offset: 1 }
+    ], { duration: 5600, delay: 1600, easing: "ease-out", fill: "both" });
+
+    addLightString(layer, total - 200);
+    return true;
+  }
+
   function playTheme(code) {
     if (reducedMotion()) return false;
     if (code === "halloween") return playHalloween();
     if (code === "thanksgiving") return playThanksgiving();
+    if (code === "christmas") return playChristmas();
     if (EMOJI_ONLY[code]) return playEmoji(EMOJI_ONLY[code]);
     return false;
   }
