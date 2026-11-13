@@ -67,6 +67,8 @@
   const style = document.createElement('style');
   style.textContent = '.six-toolbar{flex-direction:row!important;justify-content:flex-start!important;align-items:center!important}.six-field{display:flex;flex-direction:column;gap:3px;flex:none}.six-field label{font-size:12px;font-weight:700;color:#475569}.six-field select{height:38px;padding:4px 10px;flex-grow:0}.six-book select{width:230px}.six-lesson select{width:90px}.six-controls{display:flex;gap:6px;margin-left:auto;flex:none}.six-controls select,.six-controls button{height:38px;border:1px solid #cbd5e1;border-radius:6px;padding:5px;background:white;font-size:13px}.six-controls button[aria-pressed=true]{background:#dbeafe;border-color:#2563eb;color:#1e40af}#lesson-selectors{display:none!important}#screen-pages .page-a4{scroll-margin-top:80px}@media print{#screen-pages .page-a4{display:none!important}body.printing-all #print-all-container{display:block!important}}';
   style.textContent += 'body.show-zhuyin .vocab-meaning{font-family:var(--font-bpmf)!important;font-weight:400}';
+  // 手機：頁面比螢幕寬時，置中會讓左半邊溢出到畫面外而拉不到。改成靠左對齊，寬度夠時再用 auto margin 置中。
+  style.textContent += 'body{align-items:flex-start!important}#screen-pages{margin-left:auto!important;margin-right:auto!important}.six-toolbar{left:0!important;max-width:100vw}';
   document.head.append(style);
 
   // Use the grammar worksheet's v1.4 ink tools with the vocabulary pages as paper.
