@@ -5,32 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>單字學習講義－聽力選擇卷</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../shared/css/fonts.css">
   <style>
-    @font-face {
-      font-family: "Hear GenSen Rounded";
-      src: local("GenSenRounded2 TW R"), local("GenSenRounded TW R"), local("GenSenRounded R"),
-           url("https://sonar-inc.github.io/gensen-font/GenSenRounded-R.woff2") format("woff2");
-      font-display: swap;
-    }
-    @font-face {
-      font-family: "Hear GenSen Rounded Bopomofo";
-      src: local("Bpmf GenSen Rounded R"), local("ㄅ源泉注音圓體 R"),
-           url("https://cdn.jsdelivr.net/gh/tadlearn/webfonts/BpmfGenSenRounded-R.woff2") format("woff2");
-      font-display: swap;
-    }
-    :root {
-      --hear-font-en: "Comic Sans MS", "Comic Sans", "Trebuchet MS";
-      --hear-font-zh: "Hear GenSen Rounded", "Microsoft JhengHei", sans-serif;
-    }
     html body.show-zhuyin .vocab-meaning {
-      font-family: "Hear GenSen Rounded Bopomofo", VocabBpmf, var(--hear-font-zh) !important;
+      font-family: var(--font-bpmf) !important;
     }
     body {
-      font-family: var(--hear-font-en), var(--hear-font-zh);
+      font-family: var(--font-en), var(--font-zh);
       background-color: #f1f5f9;
     }
-    .font-chinese { font-family: var(--hear-font-en), var(--hear-font-zh); }
-    .font-english { font-family: var(--hear-font-en), var(--hear-font-zh); }
+    .font-chinese { font-family: var(--font-en), var(--font-zh); }
+    .font-english { font-family: var(--font-en), var(--font-zh); }
     
     /* 嚴格 A4 滿版尺寸 */
     .page-a4 {
@@ -539,11 +524,9 @@
       });
 
       if (document.fonts) {
-        const fonts = [document.fonts.load('14px "Hear GenSen Rounded"')];
+        const fonts = [document.fonts.load('14px "Spedu Rounded"')];
         if (document.body.classList.contains('show-zhuyin')) {
-          fonts.push(document.fonts.load('14px "Hear GenSen Rounded Bopomofo"').catch(
-            () => document.fonts.load('14px VocabBpmf')
-          ));
+          fonts.push(document.fonts.load('14px "Bpmf GenSen Rounded"').catch(() => {}));
         }
         await Promise.allSettled(fonts);
       }

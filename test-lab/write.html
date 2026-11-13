@@ -6,16 +6,15 @@
   <title>單字學習講義－單字拼寫卷</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared/css/fonts.css">
   
   <style>
     body {
-      font-family: 'Noto Sans TC', sans-serif;
+      font-family: var(--font-zh);
       background-color: #f1f5f9;
     }
-    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
-    .font-english { font-family: 'Lexend', sans-serif; }
+    .font-chinese { font-family: var(--font-zh); }
+    .font-english { font-family: var(--font-en); }
     
     /* 嚴格 A4 滿版尺寸 (與聽力測驗、配對卷完全相同) */
     .page-a4 {
@@ -90,7 +89,7 @@
     .write-hint-content { display: flex; align-items: baseline; gap: 2px; min-width: 0; white-space: nowrap; transform: scaleX(var(--write-hint-scale, 1)); transform-origin: left center; }
     .write-hint-token { flex: 0 0 auto; }
     .write-hint-space { display: inline-block; width: 0.7em; flex: 0 0 0.7em; }
-    .write-hint-trace { color: #aeb7c3; font-family: "Comic Sans MS", "Comic Sans", cursive; font-size: 17pt; font-style: italic; font-weight: 400; line-height: 0.82; letter-spacing: 0.01em; overflow: visible; transform: scaleX(var(--write-trace-scale, 1)); transform-origin: left center; }
+    .write-hint-trace { color: #aeb7c3; font-family: var(--font-en-trace); font-size: 17pt; font-style: italic; font-weight: 400; line-height: 0.82; letter-spacing: 0.01em; overflow: visible; transform: scaleX(var(--write-trace-scale, 1)); transform-origin: left center; }
     
     @media print {
       @page { size: A4; margin: 0; }
