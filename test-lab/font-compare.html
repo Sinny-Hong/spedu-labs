@@ -8,11 +8,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&family=Comic+Relief:wght@400;700&family=Comic+Neue:wght@400;700&family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-  @font-face {
-    font-family: "FC GenSen Rounded";
-    src: url("https://sonar-inc.github.io/gensen-font/GenSenRounded-R.woff2") format("woff2");
-    font-display: swap;
-  }
+  /* 源泉圓體 TW（自架、真實字重 300/400/500/700） */
+  @font-face { font-family: "FC GenSen Rounded"; font-weight: 300; src: url("fonts/GenSenRoundedTW-L.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "FC GenSen Rounded"; font-weight: 400; src: url("fonts/GenSenRoundedTW-R.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "FC GenSen Rounded"; font-weight: 500; src: url("fonts/GenSenRoundedTW-M.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "FC GenSen Rounded"; font-weight: 700; src: url("fonts/GenSenRoundedTW-B.woff2") format("woff2"); font-display: swap; }
   @font-face {
     font-family: "FC Bpmf GenSen";
     src: url("https://cdn.jsdelivr.net/gh/tadlearn/webfonts/BpmfGenSenRounded-R.woff2") format("woff2");
@@ -23,7 +23,7 @@
     src: url("fonts/BpmfIansui-Regular.ttf") format("truetype");
     font-display: swap;
   }
-  :root { --size: 40px; --w: 700; }
+  :root { --size: 40px; --w: 700; --zw: 400; }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: "Noto Sans TC", sans-serif; background: #f1f5f9; color: #0f172a; }
   header { background: #0f1b3d; color: #fff; padding: 12px 16px; position: sticky; top: 0; z-index: 5; }
@@ -45,7 +45,8 @@
   .sample { font-size: var(--size); line-height: 1.25; font-weight: var(--w); word-break: break-word; }
   .letters { letter-spacing: .08em; }
   .small { font-size: calc(var(--size) * .55); }
-  .zh .sample { font-weight: var(--w); }
+  .zh .sample { font-weight: var(--zw); }
+  .ladder .sample { font-weight: inherit; }
   .f-comicneue { font-family: "Comic Neue", cursive; }
   .f-andika { font-family: "Andika", sans-serif; }
   .f-comicrelief { font-family: "Comic Relief", cursive; }
@@ -71,7 +72,15 @@
   <h1>字型對照測試頁（手機／筆電／大電視）</h1>
   <div class="ctrl">
     <label>字級 <input id="size" type="range" min="20" max="96" value="40"><span id="sizeV">40</span>px</label>
-    <label>粗細
+    <label>中文字重
+      <select id="zweight">
+        <option value="300">300 細</option>
+        <option value="400" selected>400 一般</option>
+        <option value="500">500 中等</option>
+        <option value="700">700 粗</option>
+      </select>
+    </label>
+    <label>英文粗細
       <select id="weight">
         <option value="400">400 一般</option>
         <option value="500">500</option>
@@ -134,9 +143,21 @@ document.getElementById("enGrid").innerHTML = enFonts.map(f => card(f,
   `<div class="sample letters ${f.cls}">${enText.letters}</div>
    <div class="sample ${f.cls}">${enText.word}</div>
    <div class="sample small ${f.cls}">${enText.words}</div>`)).join("");
-document.getElementById("zhGrid").innerHTML = zhFonts.map(f => card(f,
-  `<div class="sample ${f.cls}">${zhText}</div>
-   <div class="sample small ${f.cls}">${zhText}</div>`)).join("");
+const hard = "體育館 檸檬 籃球場 蠶 驕傲 鬱悶";
+const zhWeights = [
+  { w: 300, name: "源泉圓體 TW 300（Light）", note: "最細。電視和列印小字可能發虛。" },
+  { w: 400, name: "源泉圓體 TW 400（Regular）", note: "建議內文起點。筆畫多的字比較不會糊。" },
+  { w: 500, name: "源泉圓體 TW 500（Medium）", note: "電視遠看的備選。" },
+  { w: 700, name: "源泉圓體 TW 700（Bold）", note: "只建議用在標題和重點。" }
+];
+document.getElementById("zhGrid").innerHTML = zhWeights.map(z => `
+  <div class="card ladder" style="font-weight:${z.w}"><div class="name"><span>${z.name}</span><span class="badge wait" data-css='"FC GenSen Rounded"' data-local="0" data-w="${z.w}">檢查中…</span></div>
+    <div class="note">${z.note}</div>
+    <div class="sample f-gensen">${zhText}</div>
+    <div class="sample f-gensen">${hard}</div>
+    <div class="f-gensen" style="font-size:14px;line-height:1.5">列印小字 14px：${hard}　桃子 梨子 檸檬 番茄 蜂蜜 樣品 產品</div>
+    <div class="f-gensen" style="font-size:11px;line-height:1.5">列印小字 11px：${hard}　桃子 梨子 檸檬 番茄 蜂蜜 樣品 產品</div>
+  </div>`).join("") + card(zhFonts[0], `<div class="sample ${zhFonts[0].cls}" style="font-weight:500">${hard}</div><div class="f-noto" style="font-size:14px;line-height:1.5;font-weight:500">列印小字 14px：${hard}</div>`);
 document.getElementById("bpGrid").innerHTML = bpFonts.map(f => card(f,
   `<div class="sample ${f.cls}">${zhText}</div>
    <div class="sample small ${f.cls}">${zhText}</div>`)).join("");
@@ -148,9 +169,9 @@ const mixCombos = [
 ];
 document.getElementById("mixGrid").innerHTML = mixCombos.map(c => `
   <div class="card"><div class="name"><span>${c.name}</span></div>
-    <div class="sample small"><span class="${c.en}">1. peach</span>　<span class="${c.zh}">桃子</span></div>
-    <div class="sample small"><span class="${c.en}">2. lemon</span>　<span class="${c.zh}">檸檬</span></div>
-    <div class="sample small"><span class="${c.en}">3. Gym</span>　<span class="${c.bp}">體育館（開注音時）</span></div>
+    <div class="sample small"><span class="${c.en}">1. peach</span>　<span class="${c.zh}" style="font-weight:var(--zw)">桃子</span></div>
+    <div class="sample small"><span class="${c.en}">2. lemon</span>　<span class="${c.zh}" style="font-weight:var(--zw)">檸檬</span></div>
+    <div class="sample small"><span class="${c.en}">3. Gym</span>　<span class="${c.bp}" style="font-weight:400">體育館（開注音時）</span></div>
     <div class="sample small"><span class="${c.en}">( A ) Il1　( B ) Tt</span></div>
   </div>`).join("");
 
@@ -160,13 +181,13 @@ async function checkFonts() {
   const loads = [];
   badges.forEach(b => {
     const css = b.dataset.css;
-    loads.push(document.fonts.load(`700 24px ${css}`, "Ag").catch(() => {}));
+    loads.push(document.fonts.load(`${b.dataset.w || 700} 24px ${css}`, "Ag").catch(() => {}));
     loads.push(document.fonts.load(`400 24px ${css}`, "桃Ag").catch(() => {}));
   });
   await Promise.race([Promise.all(loads), new Promise(r => setTimeout(r, 8000))]);
   badges.forEach(b => {
     const css = b.dataset.css;
-    const ok = document.fonts.check(`24px ${css}`, "Ag");
+    const ok = document.fonts.check(`${b.dataset.w || 400} 24px ${css}`, "Ag");
     // 系統字型（Comic Sans MS 等）用寬度比對判斷是否真的存在
     if (b.dataset.local === "1") {
       const present = hasLocal(css.replace(/"/g, ""));
@@ -198,11 +219,14 @@ document.getElementById("size").addEventListener("input", e => {
   document.getElementById("sizeV").textContent = e.target.value;
 });
 document.getElementById("weight").addEventListener("change", e => root.style.setProperty("--w", e.target.value));
+document.getElementById("zweight").addEventListener("change", e => root.style.setProperty("--zw", e.target.value));
 document.getElementById("tv").addEventListener("click", () => {
   const s = document.getElementById("size");
   s.value = 72; s.dispatchEvent(new Event("input"));
   document.getElementById("weight").value = "700";
   root.style.setProperty("--w", "700");
+  document.getElementById("zweight").value = "500";
+  root.style.setProperty("--zw", "500");
 });
 </script>
 </body>

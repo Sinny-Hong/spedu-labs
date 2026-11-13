@@ -26,3 +26,5 @@ limitations under the License.
 
 衍生自此專案所製作之各字型檔，可訂定不同授權條款。
 但應依循 Apache 2.0 規範標示原始著作權聲明與修改內容。
+
+源泉圓體 TW（GenSenRounded2 TW）L/R/M/B 字重：作者 But Ko，SIL OFL 1.1（見 LICENSE-GenSenRounded-OFL.txt）。已依 OFL 規定子集化並轉為 woff2；僅保留 Big5 常用字、注音與常用符號。
