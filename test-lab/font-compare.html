@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字型對照測試頁｜英文・中文・注音</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&family=Comic+Relief:wght@400;700&family=Comic+Neue:wght@400;700&family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: "FC GenSen Rounded";
+    src: url("https://sonar-inc.github.io/gensen-font/GenSenRounded-R.woff2") format("woff2");
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "FC Bpmf GenSen";
+    src: url("https://cdn.jsdelivr.net/gh/tadlearn/webfonts/BpmfGenSenRounded-R.woff2") format("woff2");
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "FC Bpmf Iansui";
+    src: url("fonts/BpmfIansui-Regular.ttf") format("truetype");
+    font-display: swap;
+  }
+  :root { --size: 40px; --w: 700; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Noto Sans TC", sans-serif; background: #f1f5f9; color: #0f172a; }
+  header { background: #0f1b3d; color: #fff; padding: 12px 16px; position: sticky; top: 0; z-index: 5; }
+  header h1 { margin: 0 0 8px; font-size: 20px; }
+  .ctrl { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; font-size: 15px; }
+  .ctrl label { display: flex; align-items: center; gap: 6px; }
+  .ctrl input[type=range] { width: 140px; }
+  .ctrl button { font: inherit; padding: 6px 12px; border-radius: 8px; border: 0; background: #38bdf8; color: #0f172a; font-weight: 700; }
+  main { padding: 14px; max-width: 1400px; margin: 0 auto; }
+  h2 { font-size: 20px; margin: 22px 0 8px; padding-left: 10px; border-left: 6px solid #0f1b3d; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+  .card { background: #fff; border-radius: 12px; padding: 12px 14px; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+  .card .name { font: 700 15px "Noto Sans TC", sans-serif; display: flex; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+  .badge { font: 700 12px "Noto Sans TC", sans-serif; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+  .ok { background: #bbf7d0; color: #14532d; }
+  .bad { background: #fecaca; color: #7f1d1d; }
+  .wait { background: #e2e8f0; color: #334155; }
+  .note { font: 13px/1.4 "Noto Sans TC", sans-serif; color: #475569; margin-bottom: 6px; }
+  .sample { font-size: var(--size); line-height: 1.25; font-weight: var(--w); word-break: break-word; }
+  .letters { letter-spacing: .08em; }
+  .small { font-size: calc(var(--size) * .55); }
+  .zh .sample { font-weight: var(--w); }
+  .f-comicneue { font-family: "Comic Neue", cursive; }
+  .f-andika { font-family: "Andika", sans-serif; }
+  .f-comicrelief { font-family: "Comic Relief", cursive; }
+  .f-atkinson { font-family: "Atkinson Hyperlegible", sans-serif; }
+  .f-lexend { font-family: "Lexend", sans-serif; }
+  .f-comicsans { font-family: "Comic Sans MS", "Comic Sans", cursive; }
+  .f-trebuchet { font-family: "Trebuchet MS", sans-serif; }
+  .f-noto { font-family: "Noto Sans TC", sans-serif; }
+  .f-gensen { font-family: "FC GenSen Rounded", "Noto Sans TC", sans-serif; }
+  .f-bpmf-gensen { font-family: "FC Bpmf GenSen", "Noto Sans TC", sans-serif; font-weight: 400; }
+  .f-bpmf-iansui { font-family: "FC Bpmf Iansui", "Noto Sans TC", sans-serif; font-weight: 400; }
+  .checklist { background: #fff; border-radius: 12px; padding: 12px 16px; font-size: 15px; line-height: 1.7; }
+  @media print {
+    header { position: static; }
+    .ctrl button { display: none; }
+    body { background: #fff; }
+    .card { box-shadow: none; border: 1px solid #cbd5e1; break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>字型對照測試頁（手機／筆電／大電視）</h1>
+  <div class="ctrl">
+    <label>字級 <input id="size" type="range" min="20" max="96" value="40"><span id="sizeV">40</span>px</label>
+    <label>粗細
+      <select id="weight">
+        <option value="400">400 一般</option>
+        <option value="500">500</option>
+        <option value="700" selected>700 粗體</option>
+        <option value="900">900</option>
+      </select>
+    </label>
+    <button id="tv">電視模式（放大）</button>
+    <button onclick="window.print()">列印本頁</button>
+  </div>
+</header>
+
+<main>
+  <h2>一、英文字型：辨識 A、I、G、t、l</h2>
+  <div class="checklist">
+    檢查重點：<b>A</b> 頭上不能有一根毛｜<b>I</b>（大寫 i）上下要有橫槓，才能和 <b>l</b>（小寫 L）分開｜<b>G</b> 不能有兩個圈、頭上不長毛｜<b>t</b> 腳底要彎起來。<br>
+    下面每張卡片右上角的標籤會顯示這個字型有沒有真的載入；紅色代表這台裝置顯示的是備用字。
+  </div>
+  <div class="grid" id="enGrid"></div>
+
+  <h2>二、中文字型：圓潤、清楚、不要太細</h2>
+  <div class="grid zh" id="zhGrid"></div>
+
+  <h2>三、注音字型（列印用，平常可關）</h2>
+  <div class="grid zh" id="bpGrid"></div>
+
+  <h2>四、中英混排（模擬題目的實際樣子）</h2>
+  <div class="grid" id="mixGrid"></div>
+</main>
+
+<script>
+const enText = {
+  letters: "A I G T t l 1 O 0 a g y q",
+  word: "Il1 Gg Tt Aa",
+  words: "peach pear lemon tomato honey sample gym"
+};
+const enFonts = [
+  { cls: "f-comicneue", name: "Comic Neue（網頁字型）", css: '"Comic Neue"', note: "建議首選。保留 Comic 手寫感，電視可載入。" },
+  { cls: "f-andika",    name: "Andika（網頁字型）",     css: '"Andika"',     note: "建議備選。識字教學專用，筆形工整。" },
+  { cls: "f-comicrelief", name: "Comic Relief（網頁字型）", css: '"Comic Relief"', note: "Comic Sans 的開源替代版，形狀幾乎相同，有 400／700。" },
+  { cls: "f-atkinson",  name: "Atkinson Hyperlegible（網頁字型）", css: '"Atkinson Hyperlegible"', note: "為低視力設計，字母刻意做得好區分，但不是手寫風。" },
+  { cls: "f-lexend",    name: "Lexend（目前配對卷／拼寫卷）", css: '"Lexend"', note: "目前使用。留意大寫 I 與小寫 l 是否分得出來。" },
+  { cls: "f-comicsans", name: "Comic Sans MS（目前聽力卷）", css: '"Comic Sans MS"', note: "目前使用。電視沒有安裝，會退成備用字。", local: true },
+  { cls: "f-trebuchet", name: "Trebuchet MS（聽力卷備用）", css: '"Trebuchet MS"', note: "目前的備用字，電視多半也沒有。", local: true }
+];
+const zhText = "桃子 梨子 檸檬 番茄 蜂蜜 樣品 產品";
+const zhFonts = [
+  { cls: "f-noto",   name: "Noto Sans TC（目前拼寫卷／配對卷）", css: '"Noto Sans TC"', note: "黑體，不是圓體。可選 400～900。" },
+  { cls: "f-gensen", name: "源泉圓體 GenSen Rounded（目前聽力卷）", css: '"FC GenSen Rounded"', note: "圓體，只有 Regular 一種粗細，電視上偏細。" }
+];
+const bpFonts = [
+  { cls: "f-bpmf-gensen", name: "源泉注音圓體（聽力卷使用）", css: '"FC Bpmf GenSen"', note: "與源泉圓體同系列，粗細一致。" },
+  { cls: "f-bpmf-iansui", name: "Iansui 注音（拼寫卷／配對卷使用）", css: '"FC Bpmf Iansui"', note: "自架字檔 7MB，手機載入較慢。" }
+];
+
+function card(f, inner) {
+  return `<div class="card"><div class="name"><span>${f.name}</span><span class="badge wait" data-css='${f.css}' data-local="${f.local ? 1 : 0}">檢查中…</span></div><div class="note">${f.note}</div>${inner}</div>`;
+}
+document.getElementById("enGrid").innerHTML = enFonts.map(f => card(f,
+  `<div class="sample letters ${f.cls}">${enText.letters}</div>
+   <div class="sample ${f.cls}">${enText.word}</div>
+   <div class="sample small ${f.cls}">${enText.words}</div>`)).join("");
+document.getElementById("zhGrid").innerHTML = zhFonts.map(f => card(f,
+  `<div class="sample ${f.cls}">${zhText}</div>
+   <div class="sample small ${f.cls}">${zhText}</div>`)).join("");
+document.getElementById("bpGrid").innerHTML = bpFonts.map(f => card(f,
+  `<div class="sample ${f.cls}">${zhText}</div>
+   <div class="sample small ${f.cls}">${zhText}</div>`)).join("");
+
+const mixCombos = [
+  { name: "推薦組合：Comic Neue + 源泉圓體 + 源泉注音", en: "f-comicneue", zh: "f-gensen", bp: "f-bpmf-gensen" },
+  { name: "備選組合：Andika + 源泉圓體 + 源泉注音",     en: "f-andika",    zh: "f-gensen", bp: "f-bpmf-gensen" },
+  { name: "目前：Lexend + Noto Sans TC",                 en: "f-lexend",    zh: "f-noto",   bp: "f-noto" }
+];
+document.getElementById("mixGrid").innerHTML = mixCombos.map(c => `
+  <div class="card"><div class="name"><span>${c.name}</span></div>
+    <div class="sample small"><span class="${c.en}">1. peach</span>　<span class="${c.zh}">桃子</span></div>
+    <div class="sample small"><span class="${c.en}">2. lemon</span>　<span class="${c.zh}">檸檬</span></div>
+    <div class="sample small"><span class="${c.en}">3. Gym</span>　<span class="${c.bp}">體育館（開注音時）</span></div>
+    <div class="sample small"><span class="${c.en}">( A ) Il1　( B ) Tt</span></div>
+  </div>`).join("");
+
+// 載入狀態檢查
+async function checkFonts() {
+  const badges = document.querySelectorAll(".badge[data-css]");
+  const loads = [];
+  badges.forEach(b => {
+    const css = b.dataset.css;
+    loads.push(document.fonts.load(`700 24px ${css}`, "Ag").catch(() => {}));
+    loads.push(document.fonts.load(`400 24px ${css}`, "桃Ag").catch(() => {}));
+  });
+  await Promise.race([Promise.all(loads), new Promise(r => setTimeout(r, 8000))]);
+  badges.forEach(b => {
+    const css = b.dataset.css;
+    const ok = document.fonts.check(`24px ${css}`, "Ag");
+    // 系統字型（Comic Sans MS 等）用寬度比對判斷是否真的存在
+    if (b.dataset.local === "1") {
+      const present = hasLocal(css.replace(/"/g, ""));
+      b.className = "badge " + (present ? "ok" : "bad");
+      b.textContent = present ? "這台裝置有此字型" : "這台裝置沒有 → 退成備用字";
+    } else {
+      b.className = "badge " + (ok ? "ok" : "bad");
+      b.textContent = ok ? "已載入" : "載入失敗 → 備用字";
+    }
+  });
+}
+function hasLocal(name) {
+  const c = document.createElement("canvas").getContext("2d");
+  const t = "mmmmmmmmmmlli WGg";
+  let widths = [];
+  for (const base of ["monospace", "serif", "sans-serif"]) {
+    c.font = `72px ${base}`; const w0 = c.measureText(t).width;
+    c.font = `72px "${name}", ${base}`; const w1 = c.measureText(t).width;
+    widths.push(w0 !== w1);
+  }
+  return widths.some(Boolean);
+}
+checkFonts();
+
+// 控制項
+const root = document.documentElement;
+document.getElementById("size").addEventListener("input", e => {
+  root.style.setProperty("--size", e.target.value + "px");
+  document.getElementById("sizeV").textContent = e.target.value;
+});
+document.getElementById("weight").addEventListener("change", e => root.style.setProperty("--w", e.target.value));
+document.getElementById("tv").addEventListener("click", () => {
+  const s = document.getElementById("size");
+  s.value = 72; s.dispatchEvent(new Event("input"));
+  document.getElementById("weight").value = "700";
+  root.style.setProperty("--w", "700");
+});
+</script>
+</body>
+</html>
