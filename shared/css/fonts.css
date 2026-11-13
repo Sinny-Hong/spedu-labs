@@ -23,9 +23,13 @@
   font-display: swap;
 }
 
+/* 反白字（深色底白字）視覺上會變粗，小字容易糊成一團：統一降為 400 */
+.text-white { font-weight: 400 !important; }
+
 :root {
   --font-zh: "Spedu Rounded", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
   --font-en: "Spedu Andika", "Andika", Arial, sans-serif;
-  --font-en-trace: "Spedu Comic Neue", "Comic Neue", "Spedu Andika", Arial, sans-serif;
+  /* 描寫用：Andika 的小寫 t 腳底有彎勾；Comic Neue 的 t 是單純十字、沒有彎勾，所以不用它。想換回去改成 "Spedu Comic Neue" 即可 */
+  --font-en-trace: "Spedu Andika", "Andika", Arial, sans-serif;
   --font-bpmf: "Bpmf GenSen Rounded", "Spedu Rounded", "Noto Sans TC", sans-serif;
 }

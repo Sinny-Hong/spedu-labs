@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Test Lab｜測試區總入口</title>
+  <link rel="stylesheet" href="../shared/css/fonts.css">
   <style>
     :root {
       color-scheme: light;
@@ -23,7 +24,7 @@
       grid-template-rows: var(--bar-height) minmax(0, 1fr);
       background: var(--paper);
       color: #20374d;
-      font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+      font-family: var(--font-zh);
     }
 
     .lab-bar {
@@ -152,6 +153,11 @@
       .viewer { margin: 2px; }
       .lab-action { width: 36px; }
     }
+  
+    /* 深色工具列的反白字：用 400，避免筆畫糊在一起 */
+    .current-title, .current-title small { font-weight: 400; }
+    .lab-action { font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1; }
+    #test-picker { font-family: inherit; font-weight: 700; font-size: 15px; line-height: 1.2; }
   </style>
 </head>
 <body>
