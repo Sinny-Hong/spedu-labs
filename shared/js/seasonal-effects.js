@@ -1,8 +1,24 @@
 (() => {
   "use strict";
 
-  // 尚未確認其他節慶檔期；萬聖節沿用現有動畫至 2026-11-01（含）。
-  const THEME_SCHEDULE = Object.freeze({ halloween: { start: null, end: "2026-11-01" } });
+  // 節慶由 Google 試算表控制：M2 = TRUE/FALSE 開關，M3 = 節慶名稱（例如「感恩節」）。
+  // 開關為 FALSE、讀取失敗或節慶不認得時，一律改播 Sinny 隨機角色。
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRPfdr-4FdSCypU3KXOrp4ujj7zfY74wfY_Ya4-ZkauszV8TbnTqyOZgilPaMT1EDN3e4NkR8rL8-gg/pub?single=true&output=csv&gid=878488999";
+  const FETCH_TIMEOUT = 3500;
+  const CACHE_MS = 15000;
+  const FESTIVALS = Object.freeze({
+    "萬聖節": "halloween", "感恩節": "thanksgiving", "聖誕節": "christmas",
+    "元旦煙火": "new-year", "農曆新年": "lunar-new-year", "元宵節": "lantern",
+    "情人節": "valentine", "復活節": "easter", "母親節": "mothers-day",
+    "父親節": "fathers-day", "端午節": "dragon-boat", "中秋節": "mid-autumn",
+    "教師節": "teachers-day", "生日快樂": "birthday"
+  });
+  // 還沒有專屬動畫的節慶，先用大表情符號頂著。
+  const EMOJI_ONLY = Object.freeze({
+    christmas: "🎄", "new-year": "🎆", "lunar-new-year": "🧧", lantern: "🏮",
+    valentine: "💝", easter: "🐣", "mothers-day": "💐", "fathers-day": "👔",
+    "dragon-boat": "🐲", "mid-autumn": "🥮", "teachers-day": "📚", birthday: "🎂"
+  });
   const STYLE_ID = "seasonal-effect-style";
   const LAYER_ID = "seasonal-effect-layer";
   const SINNY_LAYER_ID = "seasonal-sinny-layer";
@@ -16,12 +32,56 @@
   let sinnyRequest = 0;
   let previousSinny = "";
   let sinnyManifest;
+  let sheetCache = null;
 
-  function activeTheme(now = new Date()) {
-    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-    return Object.entries(THEME_SCHEDULE).find(([, dates]) =>
-      (!dates.start || today >= dates.start) && (!dates.end || today <= dates.end)
-    )?.[0] || null;
+  function parseCsv(text) {
+    const rows = [];
+    let row = [], cell = "", quoted = false;
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i], next = text[i + 1];
+      if (char === '"' && quoted && next === '"') { cell += '"'; i++; }
+      else if (char === '"') quoted = !quoted;
+      else if (char === "," && !quoted) { row.push(cell); cell = ""; }
+      else if ((char === "\n" || char === "\r") && !quoted) {
+        if (char === "\r" && next === "\n") i++;
+        row.push(cell); rows.push(row); row = []; cell = "";
+      } else cell += char;
+    }
+    if (row.length > 0 || cell !== "" || !/[\r\n]$/.test(text)) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+
+  function sheetCell(rows, row, column) { return String(rows[row]?.[column] ?? "").trim(); }
+
+  // 回傳要播的代號：節慶代號或 "sinny"
+  function resolveSelected(rows) {
+    const enabled = sheetCell(rows, 1, 12).toUpperCase() === "TRUE";   // M2
+    const themeName = sheetCell(rows, 2, 12);                          // M3
+    if (!enabled) return "sinny";
+    let code = FESTIVALS[themeName] || "";
+    for (let i = 1; i <= 14 && !code; i++) {                           // P2:Q15 對照表
+      if (sheetCell(rows, i, 15) === themeName) code = sheetCell(rows, i, 16);
+    }
+    if (!code && Object.values(FESTIVALS).includes(themeName)) code = themeName;
+    if (!code) console.warn(`節慶彩蛋：M3「${themeName || "空白"}」沒有對應節慶，改播 Sinny。`);
+    return code || "sinny";
+  }
+
+  async function loadSelected() {
+    if (sheetCache && Date.now() - sheetCache.at < CACHE_MS) return sheetCache.code;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), FETCH_TIMEOUT);
+    try {
+      const response = await fetch(`${CSV_URL}&_=${Date.now()}`, { cache: "no-store", signal: controller.signal });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const rows = parseCsv((await response.text()).replace(/^\uFEFF/, ""));
+      sheetCache = { code: resolveSelected(rows), at: Date.now() };
+    } catch (error) {
+      console.warn("節慶彩蛋：試算表讀取失敗，沿用上次結果或改播 Sinny。", error);
+    } finally {
+      window.clearTimeout(timer);
+    }
+    return sheetCache?.code || "sinny";
   }
 
   function installStyles() {
@@ -131,6 +191,66 @@
         height: 31vh;
         background: rgba(80, 75, 91, .6);
         transform-origin: top;
+      }
+      #${LAYER_ID} .turkey-train {
+        position: absolute;
+        z-index: 3;
+        left: 0;
+        bottom: var(--turkey-floor);
+        display: flex;
+        align-items: flex-end;
+        will-change: transform;
+      }
+      #${LAYER_ID} .turkey-tow {
+        display: flex;
+        align-items: center;
+        margin-bottom: calc(var(--turkey-size) * .3);
+        transform-origin: right center;
+        filter: drop-shadow(0 3px 3px rgba(70, 36, 12, .28));
+        will-change: transform;
+      }
+      #${LAYER_ID} .turkey-banner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: calc(var(--turkey-size) * .44);
+        padding: 0 calc(var(--turkey-size) * .14) 0 calc(var(--turkey-size) * .24);
+        border-block: 3px solid #d9822b;
+        background: linear-gradient(#fff8e1, #ffe8b3);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 6% 50%);
+      }
+      #${LAYER_ID} .turkey-banner span {
+        font: 900 calc(var(--turkey-size) * .27)/1 "Fredoka", "Baloo 2", "Comic Sans MS", "Marker Felt", "Microsoft JhengHei", system-ui, sans-serif;
+        color: var(--letter-color);
+        animation: turkey-letter-bob .7s ease-in-out calc(var(--i) * -.08s) infinite alternate;
+      }
+      #${LAYER_ID} .turkey-rope {
+        width: calc(var(--turkey-size) * .26);
+        height: 3px;
+        border-radius: 3px;
+        background: #8d5524;
+      }
+      #${LAYER_ID} .turkey-bird {
+        width: var(--turkey-size);
+        height: calc(var(--turkey-size) * 1.03);
+        transform-origin: 50% 100%;
+        filter: drop-shadow(0 5px 4px rgba(70, 36, 12, .25));
+        will-change: transform;
+      }
+      #${LAYER_ID} .turkey-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+      #${LAYER_ID} .turkey-wing {
+        transform-box: fill-box;
+        transform-origin: 50% 10%;
+        animation: turkey-flap .26s ease-in-out infinite alternate;
+      }
+      #${LAYER_ID} .turkey-wing.right { animation-direction: alternate-reverse; }
+      @keyframes turkey-letter-bob {
+        from { transform: translateY(-3px) rotate(-3deg); }
+        to { transform: translateY(3px) rotate(3deg); }
+      }
+      @keyframes turkey-flap {
+        from { transform: rotate(-18deg); }
+        to { transform: rotate(14deg); }
       }
       @keyframes seasonal-banner-party {
         0% { transform: translate(-50%, -105%) rotate(-1deg); opacity: 0; }
@@ -400,21 +520,152 @@
     motion.addEventListener("finish", () => vampire.remove(), { once: true });
   }
 
-  function play() {
+  // ===== 感恩節：可愛火鸡拉著 Thanksgiving 布條蹦跳跑過 + 落葉 =====
+  const TURKEY_SVG = `
+    <svg class="turkey-svg" viewBox="0 0 120 124" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g>
+        <g transform="rotate(-80 60 84)"><ellipse cx="60" cy="50" rx="11" ry="26" fill="#8e5a2b"/><ellipse cx="60" cy="47" rx="5.5" ry="16" fill="#b98550"/></g>
+        <g transform="rotate(-53 60 84)"><ellipse cx="60" cy="50" rx="11" ry="26" fill="#c0392b"/><ellipse cx="60" cy="47" rx="5.5" ry="16" fill="#e8776b"/></g>
+        <g transform="rotate(-27 60 84)"><ellipse cx="60" cy="50" rx="11" ry="26" fill="#e67e22"/><ellipse cx="60" cy="47" rx="5.5" ry="16" fill="#f5a962"/></g>
+        <g transform="rotate(80 60 84)"><ellipse cx="60" cy="50" rx="11" ry="26" fill="#8e5a2b"/><ellipse cx="60" cy="47" rx="5.5" ry="16" fill="#b98550"/></g>
+        <g transform="rotate(53 60 84)"><ellipse cx="60" cy="50" rx="11" ry="26" fill="#c0392b"/><ellipse cx="60" cy="47" rx="5.5" ry="16" fill="#e8776b"/></g>
+        <g transform="rotate(27 60 84)"><ellipse cx="60" cy="50" rx="11" ry="26" fill="#e67e22"/><ellipse cx="60" cy="47" rx="5.5" ry="16" fill="#f5a962"/></g>
+        <g><ellipse cx="60" cy="50" rx="11" ry="26" fill="#f1c40f"/><ellipse cx="60" cy="47" rx="5.5" ry="16" fill="#f9e27a"/></g>
+      </g>
+      <g fill="#e8a22b"><rect x="46" y="108" width="5" height="10" rx="2.5"/><rect x="69" y="108" width="5" height="10" rx="2.5"/>
+        <ellipse cx="46" cy="119" rx="8" ry="3.4"/><ellipse cx="74" cy="119" rx="8" ry="3.4"/></g>
+      <ellipse cx="60" cy="86" rx="30" ry="26" fill="#9c5a2a"/>
+      <ellipse cx="60" cy="92" rx="20" ry="17" fill="#d39a5b"/>
+      <ellipse class="turkey-wing" cx="31" cy="88" rx="9" ry="16" fill="#7a4520"/>
+      <ellipse class="turkey-wing right" cx="89" cy="88" rx="9" ry="16" fill="#7a4520"/>
+      <circle cx="60" cy="61" r="21" fill="#a8662f"/>
+      <ellipse cx="53" cy="41" rx="3" ry="6" transform="rotate(-22 53 41)" fill="#6b3a1a"/>
+      <ellipse cx="60" cy="39" rx="3" ry="7" fill="#6b3a1a"/>
+      <ellipse cx="67" cy="41" rx="3" ry="6" transform="rotate(22 67 41)" fill="#6b3a1a"/>
+      <ellipse cx="45" cy="66" rx="5" ry="3.4" fill="#ff9aa8" opacity=".65"/>
+      <ellipse cx="75" cy="66" rx="5" ry="3.4" fill="#ff9aa8" opacity=".65"/>
+      <circle cx="51" cy="57" r="6.5" fill="#fff"/><circle cx="69" cy="57" r="6.5" fill="#fff"/>
+      <circle cx="52" cy="58" r="3.6" fill="#2b1a10"/><circle cx="68" cy="58" r="3.6" fill="#2b1a10"/>
+      <circle cx="53.2" cy="56.4" r="1.3" fill="#fff"/><circle cx="69.2" cy="56.4" r="1.3" fill="#fff"/>
+      <polygon points="54,64 66,64 60,73" fill="#f5a623"/>
+      <path d="M57 72 Q60 86 63 72 Z" fill="#d63031"/>
+    </svg>`;
+
+  function addTurkeyTrain(layer) {
+    const compact = window.innerWidth <= 600;
+    const size = compact ? 82 : 124;
+    const hopHeight = size * .42;
+    const hopsPerSecond = compact ? 2.3 : 2;
+    const duration = compact ? 5600 : 6600;
+    const letterColors = ["#c0392b", "#e67e22", "#8e5a2b", "#d4a017"];
+    const train = document.createElement("div");
+    train.className = "turkey-train";
+    train.style.setProperty("--turkey-size", `${size}px`);
+    train.style.setProperty("--turkey-floor", `${compact ? 6 : 10}px`);
+    const letters = [..."Thanksgiving"].map((letter, index) =>
+      `<span style="--i:${index};--letter-color:${letterColors[index % letterColors.length]}">${letter}</span>`
+    ).join("");
+    train.innerHTML = `<div class="turkey-tow"><div class="turkey-banner">${letters}</div><span class="turkey-rope"></span></div>` +
+      `<div class="turkey-bird">${TURKEY_SVG}</div>`;
+    train.setAttribute("aria-hidden", "true");
+    layer.append(train);
+
+    const bird = train.querySelector(".turkey-bird");
+    const tow = train.querySelector(".turkey-tow");
+    const trainWidth = train.getBoundingClientRect().width || size * 3.8;
+    const distance = window.innerWidth + trainWidth + 20;
+    let startTime = 0;
+
+    function frame(now) {
+      if (!startTime) startTime = now;
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const phase = (elapsed / 1000) * hopsPerSecond * Math.PI;
+      const lift = Math.abs(Math.sin(phase));
+      const ground = Math.pow(1 - lift, 6);
+      const lag = phase - 1.1;
+      train.style.transform = `translate3d(${-trainWidth - 10 + distance * progress}px, 0, 0)`;
+      bird.style.transform = `translateY(${-lift * hopHeight}px) rotate(${Math.cos(phase) * 5}deg) scale(${1 + .1 * ground}, ${1 - .13 * ground})`;
+      tow.style.transform = `translateY(${-Math.abs(Math.sin(lag)) * hopHeight * .5}px) rotate(${Math.sin(lag) * -2.5}deg)`;
+      if (progress < 1) animationFrames.push(window.requestAnimationFrame(frame));
+      else train.remove();
+    }
+    animationFrames.push(window.requestAnimationFrame(frame));
+  }
+
+  function addFallingLeaves(layer) {
+    const compact = window.innerWidth <= 600;
+    const pool = ["🍁", "🍂", "🍂", "🍁", "🍃", "🌰", "🥧", "🌽"];
+    const count = compact ? 12 : 18;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    for (let i = 0; i < count; i++) {
+      const size = (compact ? 24 : 30) + Math.random() * (compact ? 10 : 16);
+      const item = makeEmoji(layer, pool[Math.floor(Math.random() * pool.length)], size);
+      const x = Math.random() * Math.max(1, width - size);
+      const sway = (30 + Math.random() * 50) * (Math.random() < .5 ? -1 : 1);
+      const spin = (Math.random() < .5 ? -1 : 1) * (120 + Math.random() * 220);
+      item.style.opacity = "0";
+      item.animate([
+        { transform: `translate3d(${x}px, ${-size * 1.5}px, 0) rotate(0deg)`, opacity: 0 },
+        { transform: `translate3d(${x + sway}px, ${height * .25}px, 0) rotate(${spin * .3}deg)`, opacity: 1, offset: .12 },
+        { transform: `translate3d(${x - sway * .6}px, ${height * .55}px, 0) rotate(${spin * .6}deg)`, opacity: 1, offset: .5 },
+        { transform: `translate3d(${x + sway * .8}px, ${height * .85}px, 0) rotate(${spin * .85}deg)`, opacity: 1, offset: .82 },
+        { transform: `translate3d(${x}px, ${height - size}px, 0) rotate(${spin}deg)`, opacity: 0 }
+      ], { duration: 3600 + Math.random() * 1400, delay: Math.random() * 1800, easing: "ease-in-out", fill: "both" });
+    }
+  }
+
+  function makeLayer() {
     stop();
-    if (activeTheme() !== "halloween" || reducedMotion()) return false;
     const layer = document.createElement("div");
     layer.id = LAYER_ID;
     layer.setAttribute("aria-hidden", "true");
     document.body.append(layer);
+    cleanupTimer = window.setTimeout(stop, CLEANUP_DELAY);
+    return layer;
+  }
+
+  function playThanksgiving() {
+    const layer = makeLayer();
+    addFallingLeaves(layer);
+    addTurkeyTrain(layer);
+    return true;
+  }
+
+  // 還沒有專屬動畫的節慶：中央放一個大表情符號，浮現後淡出。
+  function playEmoji(emoji) {
+    const layer = makeLayer();
+    const size = Math.min(window.innerWidth * .42, 220);
+    const item = makeEmoji(layer, emoji, size);
+    const x = (window.innerWidth - size) / 2;
+    const y = (window.innerHeight - size) / 2;
+    item.animate([
+      { transform: `translate3d(${x}px, ${y + 24}px, 0) scale(.5)`, opacity: 0 },
+      { transform: `translate3d(${x}px, ${y}px, 0) scale(1.05)`, opacity: 1, offset: .3 },
+      { transform: `translate3d(${x}px, ${y}px, 0) scale(1)`, opacity: 1, offset: .7 },
+      { transform: `translate3d(${x}px, ${y - 16}px, 0) scale(.7)`, opacity: 0 }
+    ], { duration: 3200, easing: "ease-in-out", fill: "both" });
+    return true;
+  }
+
+  function playHalloween() {
+    const layer = makeLayer();
     addBanner(layer);
     addGiantPumpkin(layer);
     animatePumpkin(layer, -1, 0);
     animatePumpkin(layer, 1, 180 + Math.random() * 160);
     animateFlyer(layer);
     animateCameo(layer);
-    cleanupTimer = window.setTimeout(stop, CLEANUP_DELAY);
     return true;
+  }
+
+  function playTheme(code) {
+    if (reducedMotion()) return false;
+    if (code === "halloween") return playHalloween();
+    if (code === "thanksgiving") return playThanksgiving();
+    if (EMOJI_ONLY[code]) return playEmoji(EMOJI_ONLY[code]);
+    return false;
   }
 
   function clearSinny() {
@@ -469,20 +720,22 @@
     }
   }
 
-  function bindTrigger() {
-    installStyles();
-    document.getElementById(TRIGGER_ID)?.addEventListener("click", () => {
-      if (activeTheme() === "halloween") {
-        ++sinnyRequest;
-        clearSinny();
-        play();
-      } else {
-        showSinny();
-      }
-    });
+  async function onTrigger() {
+    const request = ++sinnyRequest;
+    clearSinny();
+    stop();
+    const code = await loadSelected();
+    if (request !== sinnyRequest) return;
+    if (code === "sinny" || !playTheme(code)) showSinny();
   }
 
-  window.SeasonalEffects = Object.freeze({ play, stop, get activeTheme() { return activeTheme(); } });
+  function bindTrigger() {
+    installStyles();
+    document.getElementById(TRIGGER_ID)?.addEventListener("click", onTrigger);
+    loadSelected();   // 先讀一次，讓第一次按的時候比較快
+  }
+
+  window.SeasonalEffects = Object.freeze({ play: playTheme, stop, reload: loadSelected });
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bindTrigger, { once: true });
   else bindTrigger();
 })();
