@@ -183,8 +183,8 @@
         }
       }
       const buttons = forPrint ? '' :
-        gbtn('hear-preview', '預習', 'play', `data-g="${gi}"`) +
-        gbtn('hear-quiz', '小考', 'mic', `data-g="${gi}"`) +
+        gbtn('hear-preview', '預習', 'play', `data-g="${gi}"`, 'tone-pre') +
+        gbtn('hear-quiz', '小考', 'mic', `data-g="${gi}"`, 'tone-quiz') +
         ansBtn('hear-ans', gi);
       return `
         <div class="bg-white flex flex-col justify-start flex-grow">
@@ -431,7 +431,7 @@
             </div>`;
         }
       }
-      const buttons = gbtn('write-preview', '預習', 'play', `data-g="${gi}"`) + ansBtn('write-ans', gi);
+      const buttons = gbtn('write-preview', '預習', 'play', `data-g="${gi}"`, 'tone-pre') + ansBtn('write-ans', gi);
       return `
         <div class="bg-white flex flex-col justify-start flex-grow">
           ${grpBar(group.gTitle, buttons)}

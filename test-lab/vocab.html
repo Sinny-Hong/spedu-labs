@@ -14,29 +14,43 @@
     .font-english { font-family: var(--font-en); }
     html body.show-zhuyin .vocab-meaning { font-family: var(--font-bpmf) !important; font-weight: 400; }
 
-    /* ---- 功能列 ---- */
-    .toolbar { position: sticky; top: 0; left: 0; z-index: 30; width: 100%; max-width: 100vw; box-sizing: border-box; background: #fff; border-bottom: 1px solid #cbd5e1; padding: 8px max(12px, calc((100vw - 210mm) / 2)); display: flex; flex-direction: column; gap: 8px; }
-    .tb-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 10px; }
-    .field { display: flex; flex-direction: column; gap: 3px; }
-    .field > span { font-size: 12px; font-weight: 700; color: #475569; }
-    .field select { height: 38px; padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; font-size: 14px; font-family: var(--font-zh); }
-    #bookSelect { width: 230px; max-width: 60vw; }
-    #lessonSelect { width: 90px; }
+    /* ---- 功能列：永遠固定置頂；寬螢幕單行，窄螢幕自動換行 ---- */
+    :root { --tb-h: 52px; }
+    .toolbar { position: sticky; top: 0; left: 0; z-index: 100; width: 100%; max-width: 100vw; box-sizing: border-box; background: #fff; border-bottom: 1px solid #cbd5e1; box-shadow: 0 2px 6px #0001; padding: 6px 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+    .tb-row { display: contents; }
+    .field { display: flex; flex-direction: row; align-items: center; gap: 4px; }
+    .field > span { font-size: 12px; font-weight: 700; color: #475569; white-space: nowrap; }
+    .field select { height: 36px; padding: 2px 6px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; font-size: 14px; font-family: var(--font-zh); }
+    #bookSelect { width: 150px; max-width: 46vw; }
+    #lessonSelect { width: 72px; }
     .tabs { display: flex; gap: 6px; }
-    .tab, .tool { height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font-size: 14px; font-weight: 700; font-family: var(--font-zh); color: var(--ink); cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+    .tab, .tool { position: relative; height: 36px; padding: 0 10px; border: 2px solid var(--line); border-radius: 8px; background: #fff; font-size: 14px; font-weight: 700; font-family: var(--font-zh); color: var(--ink); cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
     .tab:hover, .tool:hover { background: #f1f5f9; }
-    .tab[aria-pressed="true"], .tool[aria-pressed="true"] { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-ink); }
+    /* 啟用狀態：深色實心底＋白字＋✓ 記號＋底部粗條（不只靠顏色辨識） */
+    .tab[aria-pressed="true"], .tool[aria-pressed="true"] { background: #1d4ed8; border-color: #1e3a8a; color: #fff; box-shadow: inset 0 -4px 0 #93c5fd; padding-bottom: 3px; }
+    .tab[aria-pressed="true"]::before, .tool[aria-pressed="true"]::before { content: "✓"; font-weight: 900; font-size: 15px; line-height: 1; }
+    .tab[aria-pressed="true"]:hover, .tool[aria-pressed="true"]:hover { background: #1e40af; }
+    .tab:focus-visible, .tool:focus-visible, .field select:focus-visible { outline: 3px solid #f59e0b; outline-offset: 1px; }
     .ico { width: 16px; height: 16px; flex: none; }
     .tools { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
     .tab-menu { position: relative; }
-    .menu { position: absolute; top: 42px; left: 0; z-index: 40; min-width: 100%; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 6px 18px #0002; padding: 4px; display: flex; flex-direction: column; gap: 2px; }
+    .menu { position: absolute; top: 40px; left: 0; z-index: 110; min-width: 100%; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 6px 18px #0003; padding: 4px; display: flex; flex-direction: column; gap: 2px; }
     .menu.right { left: auto; right: 0; }
     .menu[hidden] { display: none; }
     .menu button { height: 40px; padding: 0 16px; border: 0; border-radius: 6px; background: #fff; text-align: left; font-size: 14px; font-family: var(--font-zh); color: #334155; cursor: pointer; white-space: nowrap; }
     .menu button:hover { background: #f1f5f9; }
-    .menu button[aria-checked="true"] { background: var(--blue-bg); color: var(--blue-ink); font-weight: 700; }
+    .menu button[aria-checked="true"] { background: var(--blue-bg); color: var(--blue-ink); font-weight: 700; box-shadow: inset 4px 0 0 var(--blue); }
+    .menu button[aria-checked="true"]::before { content: "✓ "; font-weight: 900; }
 
-    @media (max-width: 600px) { .toolbar { position: static; } #bookSelect { max-width: calc(100vw - 130px); } }
+    @media (max-width: 600px) {
+      .toolbar { padding: 4px 8px; gap: 4px 6px; }
+      .field select, .tab, .tool { height: 34px; }
+      .tab, .tool { padding: 0 8px; font-size: 13px; }
+      #bookSelect { width: auto; flex: 1 1 130px; max-width: none; }
+      .field:first-child { flex: 1 1 auto; min-width: 0; }
+      .tools { margin-left: 0; }
+      .menu { top: 38px; }
+    }
 
 
     /* ---- 三種題型共用的標題列、說明列、組別標題列（固定同一尺寸） ---- */
@@ -47,21 +61,31 @@
     .grp-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
     .grp-title h3 { margin: 0; font-size: 16px; font-weight: 700; color: #1e293b; font-family: var(--font-zh); letter-spacing: .02em; white-space: nowrap; }
     .grp-btns { display: flex; gap: 4px; }
-    .gbtn { height: 26px; padding: 0 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink); font-size: 12px; font-weight: 700; font-family: var(--font-zh); display: inline-flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
-    .gbtn .ico { width: 14px; height: 14px; }
-    .gbtn:hover { background: #f1f5f9; }
-    .gbtn { color: var(--blue-ink); border-color: #93c5fd; background: var(--blue-bg); }
-    .gbtn:hover { background: #bfdbfe; }
-    .gbtn.tone-ok { color: var(--green-ink); border-color: #86efac; background: var(--green-bg); }
-    .gbtn.tone-ok:hover { background: #bbf7d0; }
-    .gbtn.tone-ans { color: var(--pink-ink); border-color: #f9a8d4; background: var(--pink-bg); }
-    .gbtn.tone-ans:hover { background: #fbcfe8; }
+    .gbtn { height: 28px; padding: 0 9px; border: 1.5px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink); font-size: 13px; font-weight: 800; font-family: var(--font-zh); display: inline-flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
+    .gbtn .ico { width: 15px; height: 15px; stroke-width: 2.4; }
+    /* 預設與預習＝藍；小考＝琥珀；批改＝綠；解答＝粉紅。淺色底＋深色字＋實色邊框 */
+    .gbtn, .gbtn.tone-pre { color: #1e3a8a; border-color: #3b82f6; background: #bfdbfe; }
+    .gbtn:hover, .gbtn.tone-pre:hover { background: #93c5fd; }
+    .gbtn.tone-quiz { color: #78350f; border-color: #d97706; background: #fde68a; }
+    .gbtn.tone-quiz:hover { background: #fcd34d; }
+    .gbtn.tone-ok { color: #14532d; border-color: #16a34a; background: #bbf7d0; }
+    .gbtn.tone-ok:hover { background: #86efac; }
+    .gbtn.tone-ans { color: #9d174d; border-color: #db2777; background: #fbcfe8; }
+    .gbtn.tone-ans:hover { background: #f9a8d4; }
+    .gbtn:active { transform: translateY(1px); }
+    .gbtn:focus-visible { outline: 3px solid #f59e0b; outline-offset: 1px; }
     .score { padding: 1px 7px; border-radius: 6px; font-size: 11px; font-weight: 700; font-family: var(--font-zh); background: var(--green-bg); color: var(--green-ink); border: 1px solid #86efac; white-space: nowrap; }
 
     /* ---- 作答配色（全站規則）：作答＝藍底藍字；批改對＝綠底綠字；批改錯＝消失；解答＝粉底紅字 ---- */
     input.v-student { background: var(--blue-bg); color: var(--blue-ink); border-radius: 4px; }
     input.v-right { background: var(--green-bg); color: var(--green-ink); border-radius: 4px; }
     input.v-answer { background: var(--pink-bg); color: var(--pink-ink); border-radius: 4px; }
+    /* ---- 手寫：工具列永遠在畫布之上；手寫工具盒避開工具列；啟用鍵加強辨識 ---- */
+    #inkLayer { z-index: 20; pointer-events: none; }
+    body .ink-tools { z-index: 90; top: calc(var(--tb-h) + 8px); transform: none; max-height: calc(100vh - var(--tb-h) - 16px); overflow-y: auto; }
+    body .ink-tools button { position: relative; }
+    body .ink-tools button[aria-pressed="true"] { background: #fde68a; border: 3px solid #b45309; color: #78350f; }
+    body .ink-tools button[aria-pressed="true"]::after { content: "✓"; position: absolute; right: -4px; top: -6px; width: 15px; height: 15px; border-radius: 50%; background: #b45309; color: #fff; font-size: 11px; font-weight: 900; line-height: 15px; text-align: center; }
     @media screen { .write-cell.has-val .write-print-hint { visibility: hidden; } }
 
     /* ---- A4 頁面 ---- */
@@ -116,8 +140,8 @@
 <body data-mode="hear">
   <header class="toolbar no-print">
     <div class="tb-row">
-      <label class="field"><span>冊別／年級</span><select id="bookSelect"></select></label>
-      <label class="field"><span>課次</span><select id="lessonSelect"></select></label>
+      <label class="field"><span>冊別</span><select id="bookSelect" aria-label="冊別／年級" title="冊別／年級"></select></label>
+      <label class="field"><span>課次</span><select id="lessonSelect" aria-label="課次"></select></label>
     </div>
     <div class="tb-row">
       <nav class="tabs" aria-label="題型">
@@ -154,5 +178,16 @@
 
   <script src="../eng-115/vocab-data.js"></script>
   <script src="vocab-app.js"></script>
+  <script>
+    /* 量測固定工具列高度，讓手寫工具盒與選單永遠避開它 */
+    (function () {
+      var tb = document.querySelector('.toolbar');
+      if (!tb) return;
+      var set = function () { document.documentElement.style.setProperty('--tb-h', tb.offsetHeight + 'px'); };
+      set();
+      if (window.ResizeObserver) new ResizeObserver(set).observe(tb);
+      window.addEventListener('resize', set);
+    })();
+  </script>
 </body>
 </html>
