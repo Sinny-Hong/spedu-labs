@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>單字學習講義（新版）</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../shared/css/fonts.css">
+  <style>
+    :root { --line: #cbd5e1; --ink: #334155; --blue: #2563eb; --blue-bg: #dbeafe; --blue-ink: #1d4ed8; --green: #16a34a; --green-bg: #dcfce7; --green-ink: #15803d; --pink-bg: #fce7f3; --pink-ink: #dc2626; --hdr-title-h: 40px; --hdr-bar-h: 32px; --grp-bar-h: 36px; }
+    body { font-family: var(--font-zh); background-color: #f1f5f9; margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: flex-start; }
+    body[data-mode="hear"] { font-family: var(--font-en); }
+    .font-chinese { font-family: var(--font-zh); }
+    .font-english { font-family: var(--font-en); }
+    html body.show-zhuyin .vocab-meaning { font-family: var(--font-bpmf) !important; font-weight: 400; }
+
+    /* ---- 功能列：固定置頂（沿用 115 正式版簡潔樣式）；寬螢幕單行，窄螢幕換行 ---- */
+    :root { --tb-h: 64px; }
+    .toolbar { position: sticky; top: 0; left: 0; z-index: 100; width: 100%; max-width: 100vw; box-sizing: border-box; background: #fff; border-bottom: 1px solid #cbd5e1; box-shadow: 0 2px 8px #0f172a18; padding: 6px 12px; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px 10px; }
+    .tb-row { display: contents; }
+    .field { display: flex; flex-direction: column; gap: 2px; }
+    .field > span { font-size: 12px; font-weight: 700; color: #475569; line-height: 1.1; }
+    .field select { height: 36px; padding: 0 8px; border: 1px solid #94a3b8; border-radius: 6px; background: #fff; font-size: 14px; font-weight: 600; font-family: var(--font-zh); }
+    #bookSelect { width: 170px; max-width: 46vw; }
+    #lessonSelect { width: 76px; }
+    .tabs { display: flex; gap: 5px; }
+    .tab, .tool { height: 36px; padding: 0 12px; border: 1px solid #94a3b8; border-radius: 6px; background: #f8fafc; font-size: 14px; font-weight: 700; font-family: var(--font-zh); color: #334155; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; }
+    .tab:hover, .tool:hover { background: #eef2f7; }
+    .tab[aria-pressed="true"], .tool[aria-pressed="true"] { background: #2563eb; border-color: #2563eb; color: #fff; }
+    #printBtn { background: #0f766e; border-color: #0f766e; color: #fff; }
+    #printBtn:hover { background: #0d6962; }
+    .tab:focus-visible, .tool:focus-visible, .field select:focus-visible { outline: 2px solid #2563eb; outline-offset: 1px; }
+    .tools { display: flex; flex-wrap: wrap; gap: 5px; margin-left: auto; align-items: flex-end; }
+    .tab-menu { position: relative; }
+    .menu { position: absolute; top: 40px; left: 0; z-index: 110; min-width: 100%; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 8px 24px #0f172a2b; padding: 6px; display: flex; flex-direction: column; gap: 2px; }
+    .menu.right { left: auto; right: 0; }
+    .menu[hidden] { display: none; }
+    .menu button { height: 38px; padding: 0 14px; border: 0; border-radius: 6px; background: #fff; text-align: left; font-size: 14px; font-family: var(--font-zh); color: #334155; cursor: pointer; white-space: nowrap; }
+    .menu button:hover { background: #f1f5f9; }
+    .menu button[aria-checked="true"] { background: #2563eb; color: #fff; font-weight: 700; }
+
+    @media (max-width: 600px) {
+      .toolbar { padding: 4px 8px; gap: 4px 6px; }
+      .tab, .tool { padding: 0 9px; font-size: 13px; }
+      .field:first-child { flex: 1 1 auto; min-width: 0; }
+      #bookSelect { width: 100%; max-width: none; }
+      .tools { margin-left: 0; }
+    }
+
+
+    /* ---- 三種題型共用的標題列、說明列、組別標題列（固定同一尺寸） ---- */
+    .hdr-title { display: flex; justify-content: space-between; align-items: flex-end; height: var(--hdr-title-h); }
+    .hdr-bar { display: flex; align-items: center; gap: 24px; height: var(--hdr-bar-h); margin-top: 8px; padding: 0 12px; box-sizing: border-box; background: #f1f5f9; border-left: 4px solid #64748b; border-radius: 4px; font-size: 14px; font-weight: 700; color: #334155; font-family: var(--font-zh); white-space: nowrap; flex: none; }
+    .hdr-bar .blank { display: inline-block; width: 64px; height: 18px; margin: 0 4px; border-bottom: 2px solid #334155; vertical-align: bottom; }
+    .grp-bar { display: flex; justify-content: space-between; align-items: center; height: var(--grp-bar-h); margin-bottom: 6px; padding: 0 10px; box-sizing: border-box; background: #f1f5f9; border: 1px solid var(--line); border-radius: 8px; flex: none; }
+    .grp-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .grp-title h3 { margin: 0; font-size: 16px; font-weight: 700; color: #1e293b; font-family: var(--font-zh); letter-spacing: .02em; white-space: nowrap; }
+    .grp-btns { display: flex; gap: 4px; flex: none; }
+    .gbtn { height: 26px; padding: 0 8px; border: 0; border-radius: 6px; color: #fff; font-size: 12px; font-weight: 700; font-family: var(--font-zh); display: inline-flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; flex: none; }
+    .gbtn .ico { width: 14px; height: 14px; }
+    /* 預習藍、小考橘、批改綠、清空藍、解答紅：單純色塊＋白字 */
+    .gbtn, .gbtn.tone-pre { background: #2563eb; }
+    .gbtn:hover, .gbtn.tone-pre:hover { background: #1d4ed8; }
+    .gbtn.tone-quiz { background: #f59e0b; text-shadow: 0 1px 1px #0000004d; } /* 品牌亮橘（同 workspace.css --orange） */
+    .gbtn.tone-quiz:hover { background: #d97706; }
+    .gbtn.tone-ok { background: #15803d; }
+    .gbtn.tone-ok:hover { background: #166534; }
+    .gbtn.tone-ans { background: #dc2626; }
+    .gbtn.tone-ans:hover { background: #b91c1c; }
+    .score { padding: 1px 7px; border-radius: 6px; font-size: 11px; font-weight: 700; font-family: var(--font-zh); background: var(--green-bg); color: var(--green-ink); border: 1px solid #86efac; white-space: nowrap; flex: none; }
+
+    /* ---- 作答配色（全站規則）：作答＝藍底藍字；批改對＝綠底綠字；批改錯＝消失；解答＝粉底紅字 ---- */
+    input.v-student { background: var(--blue-bg); color: var(--blue-ink); border-radius: 4px; }
+    input.v-right { background: var(--green-bg); color: var(--green-ink); border-radius: 4px; }
+    input.v-answer { background: var(--pink-bg); color: var(--pink-ink); border-radius: 4px; }
+    /* ---- 手寫：工具列永遠在畫布之上；手寫工具盒避開工具列；啟用鍵加強辨識 ---- */
+    #inkLayer { z-index: 20; pointer-events: none; }
+    body .ink-tools { z-index: 90; top: calc(var(--tb-h) + 8px); transform: none; max-height: calc(100vh - var(--tb-h) - 16px); overflow-y: auto; }
+    @media screen { .write-cell.has-val .write-print-hint { visibility: hidden; } }
+
+    /* ---- A4 頁面 ---- */
+    #stage { width: 210mm; flex: none; margin-left: auto; margin-right: auto; }
+    .page-a4 { width: 210mm; height: 297mm; background: #fff; box-shadow: 0 10px 25px -5px rgba(0,0,0,.1); margin: 15px 0; padding: 6mm 8mm; box-sizing: border-box; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-start; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .title-large { font-size: 24px; font-weight: 700; }
+    .info-text { font-size: 16px; font-weight: 500; }
+
+    .answer-input:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.3); background-color: #fef2f2; }
+    .match-input:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.3); background-color: #fef2f2; }
+    .row-item { height: 34px; }
+    .active-row { background-color: #fef08a !important; }
+    .match-option-selected { background-color: #bae6fd !important; outline: 3px solid #0284c7; outline-offset: -2px; }
+
+    .spelling-input:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.3); background-color: #fef2f2; z-index: 3; }
+    .spelling-input { position: relative; z-index: 1; }
+    .row-border-style { border-bottom: 1px solid #e2e8f0; }
+    .write-word-row { flex: none; height: 33px; padding-block: 2px; }
+    .write-prompt { display: flex; align-items: center; flex: 0 0 105px; width: 105px; padding-right: 4px; }
+    .write-prompt-number { flex: 0 0 24px; }
+    .write-meaning-window { flex: 1 1 0; min-width: 0; max-height: 28px; overflow: hidden; letter-spacing: 0; }
+    .write-meaning-window .vocab-meaning { display: block; font-size: 14px; line-height: 14px; overflow-wrap: anywhere; }
+    body.show-zhuyin .write-meaning-window .vocab-meaning { width: 113.636%; transform: scaleX(.88); transform-origin: left top; }
+    .write-print-hint { display: flex; position: absolute; z-index: 2; left: .5rem; right: 0; align-items: center; height: 1.25rem; line-height: 1; white-space: nowrap; overflow: visible; pointer-events: none; color: #334155; font-weight: 500; }
+    .write-print-hint:not(.write-hint-trace) { transform: translateY(4px); }
+    .write-hint-content { display: flex; align-items: baseline; gap: 2px; min-width: 0; white-space: nowrap; transform: scaleX(var(--write-hint-scale, 1)); transform-origin: left center; }
+    .write-hint-token { flex: 0 0 auto; }
+    .write-hint-space { display: inline-block; width: .7em; flex: 0 0 .7em; }
+    .write-hint-trace { color: #aeb7c3; font-family: var(--font-en-trace); font-size: 17pt; font-style: normal; font-weight: 700; line-height: .82; letter-spacing: .01em; overflow: visible; transform: scaleX(var(--write-trace-scale, 1)); transform-origin: left center; }
+
+    /* ---- 本冊列印：頁面先排在畫面外（讓字型載入），列印時才顯示 ---- */
+    #printRoot { position: absolute; left: -10000px; top: 0; width: 210mm; }
+    .teacher-tag { margin-bottom: 4px; padding: 2px 14px; border: 2px solid var(--pink-ink); border-radius: 8px; color: var(--pink-ink); font-size: 16px; font-weight: 700; font-family: var(--font-zh); }
+
+    @media print {
+      @page { size: A4; margin: 0; }
+      body.batch #stage { display: none !important; }
+      body.batch #printRoot { position: static; width: 210mm; }
+      #printRoot .page-a4 { margin: 0; break-after: page; page-break-after: always; }
+      #printRoot .page-a4:last-child { break-after: auto; page-break-after: auto; }
+      input.v-answer { background: transparent; }
+      body { background: #fff; display: block; min-height: 0; }
+      .no-print, .toolbar, #inkLayer, .ink-tools, .module-notice { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #stage { margin: 0; }
+      .page-a4 { box-shadow: none; margin: 0; }
+      .write-print-hint { display: flex !important; }
+      .row-border-style { border-bottom: .65px solid #475569 !important; }
+    }
+  </style>
+</head>
+<body data-mode="hear">
+  <header class="toolbar no-print">
+    <div class="tb-row">
+      <label class="field"><span>冊別／年級</span><select id="bookSelect" aria-label="冊別／年級" title="冊別／年級"></select></label>
+      <label class="field"><span>課次</span><select id="lessonSelect" aria-label="課次"></select></label>
+    </div>
+    <div class="tb-row">
+      <nav class="tabs" aria-label="題型">
+        <button type="button" class="tab" data-mode="hear" aria-pressed="false"><span>聽力</span></button>
+        <button type="button" class="tab" data-mode="match" aria-pressed="false"><span>配對</span></button>
+        <div class="tab-menu">
+          <button type="button" class="tab" id="writeTab" aria-pressed="false" aria-haspopup="true" aria-expanded="false"><span id="writeLabel">拼寫 ▾</span></button>
+          <div class="menu" id="hintMenu" role="menu" hidden>
+            <button type="button" role="menuitemradio" data-hint="blank" aria-checked="false">空白</button>
+            <button type="button" role="menuitemradio" data-hint="count" aria-checked="false">字數</button>
+            <button type="button" role="menuitemradio" data-hint="initial" aria-checked="false">字首</button>
+            <button type="button" role="menuitemradio" data-hint="trace" aria-checked="false">描寫</button>
+          </div>
+        </div>
+      </nav>
+      <div class="tools">
+        <button type="button" class="tool" id="zhuyinBtn" aria-pressed="false"><span>注音</span></button>
+        <button type="button" class="tool" id="inkBtn" aria-pressed="false"><span>手寫</span></button>
+        <div class="tab-menu">
+          <button type="button" class="tool" id="printBtn" aria-haspopup="true" aria-expanded="false"><span>列印 ▾</span></button>
+          <div class="menu right" id="printMenu" role="menu" hidden>
+            <button type="button" role="menuitem" data-print="page">列印本頁</button>
+            <button type="button" role="menuitem" data-print="student">列印本冊(學生版36頁)</button>
+            <button type="button" role="menuitem" data-print="zhuyin">列印本冊(注音版36頁)</button>
+            <button type="button" role="menuitem" data-print="teacher">列印本冊(教師版12頁)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="stage" class="paper"><div id="page" class="page-a4"></div></main>
+  <div id="printRoot" aria-hidden="true"></div>
+
+  <script src="vocab-data.js"></script>
+  <script src="vocab-app.js"></script>
+  <script>
+    /* 量測固定工具列高度，讓手寫工具盒與選單永遠避開它 */
+    (function () {
+      var tb = document.querySelector('.toolbar');
+      if (!tb) return;
+      var set = function () { document.documentElement.style.setProperty('--tb-h', tb.offsetHeight + 'px'); };
+      set();
+      if (window.ResizeObserver) new ResizeObserver(set).observe(tb);
+      window.addEventListener('resize', set);
+    })();
+  </script>
+</body>
+</html>
