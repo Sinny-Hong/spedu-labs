@@ -28,8 +28,9 @@
 
 :root {
   --font-zh: "Spedu Rounded", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-  --font-en: "Spedu Andika", "Andika", Arial, sans-serif;
+  /* 英文字型後面接中文字型：混排時中文會用源泉圓體；泛用的 sans-serif 一定要放最後，否則中文會被系統字型接走 */
+  --font-en: "Spedu Andika", "Andika", "Spedu Rounded", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
   /* 描寫用：Andika 的小寫 t 腳底有彎勾；Comic Neue 的 t 是單純十字、沒有彎勾，所以不用它。想換回去改成 "Spedu Comic Neue" 即可 */
-  --font-en-trace: "Spedu Andika", "Andika", Arial, sans-serif;
+  --font-en-trace: "Spedu Andika", "Andika", "Spedu Rounded", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
   --font-bpmf: "Bpmf GenSen Rounded", "Spedu Rounded", "Noto Sans TC", sans-serif;
 }

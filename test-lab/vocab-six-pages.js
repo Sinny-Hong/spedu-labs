@@ -39,7 +39,7 @@
     hint.setAttribute('aria-label', '拼寫提示');
     [['blank','空白'],['count','字數'],['initial','字首'],['trace','描寫']].forEach(([value,label]) => hint.add(new Option('拼寫提示：' + label, value)));
     hint.value = window.writeHintMode || 'blank';
-    hint.onchange = () => { window.setWriteHintMode(hint.value); renderAll(); };
+    hint.onchange = () => { window.setWriteHintMode(hint.value); showLesson(lessonSelect.value); };
     controls.append(hint);
   }
   function makeToggle(label) {
@@ -121,48 +121,33 @@
     paper.addEventListener('pointerup',finish);paper.addEventListener('pointercancel',finish);paper.addEventListener('lostpointercapture',finish);
     new ResizeObserver(schedule).observe(paper);new MutationObserver(schedule).observe(paper,{subtree:true,childList:true,characterData:true,attributes:true});addEventListener('resize',()=>{if(strokes.length)inform('版面已改變；無法確認對位的筆跡暫時隱藏，恢復原版面即可顯示。');schedule()});addEventListener('scroll',schedule,{passive:true});document.fonts?.ready.then(schedule);
     addEventListener('beforeprint',()=>{printing=true;finish();if('speechSynthesis'in window)speechSynthesis.cancel()});addEventListener('afterprint',()=>{printing=false;schedule()});schedule();
-    return finish;
+    return { finish, clear: () => { strokes = []; history = []; schedule(); } };
   }
 
-  const finishInk = mountInk(pages, handwriting);
-  let rendering = false;
-  let observer;
-  function renderAll() {
-    if (rendering) return;
-    rendering = true;
-    observer?.disconnect();
-    const keys = Array.from(lessonButtons.querySelectorAll('[data-lesson]'), button => button.dataset.lesson);
-    lessonSelect.replaceChildren(...keys.map(key => new Option(key, key)));
-    const selected = lessonSelect.value || keys[0];
+  const ink = mountInk(pages, handwriting);
+  const finishInk = ink.finish, clearInk = ink.clear;
+  // 一次只顯示一頁：課次下拉選單直接切換內容（列印功能維持原狀）。
+  function lessonKeys() {
+    return Array.from(lessonButtons.querySelectorAll('[data-lesson]'), button => button.dataset.lesson);
+  }
+  function showLesson(key) {
+    const keys = lessonKeys();
+    if (!keys.includes(key)) key = keys[0];
     finishInk();
-    pages.replaceChildren(page);
-    keys.forEach((key, index) => {
-      originalLoad(key);
-      const target = index === keys.length - 1 ? page : page.cloneNode(true);
-      target.dataset.lesson = key;
-      if (target !== page) pages.append(target);
-    });
-    // 將原始頁面移到正確順序；其他頁面的內容由各課重新產生。
-    keys.forEach((key, index) => {
-      originalLoad(key);
-      const target = pages.children[index];
-      target.innerHTML = page.innerHTML;
-      target.dataset.lesson = key;
-
-    });
-    window.setSixLesson(selected);
-    lessonSelect.value = selected;
-    observer = new IntersectionObserver(entries => {
-      const visible = entries.filter(e => e.isIntersecting).sort((a,b) => b.intersectionRatio-a.intersectionRatio)[0];
-      if (visible) { lessonSelect.value = visible.target.dataset.lesson; window.setSixLesson(lessonSelect.value); }
-    }, { rootMargin:'-65px 0px -45% 0px', threshold:[0,0.25,0.5] });
-    pages.querySelectorAll('.page-a4').forEach(p => observer.observe(p));
-    rendering = false;
+    clearInk();
+    originalLoad(key);
+    window.setSixLesson(key);
+    lessonSelect.value = key;
+    page.dataset.lesson = key;
   }
-  window.loadLesson = key => { const target = Array.from(pages.children).find(p => p.dataset.lesson === key); if (target) target.scrollIntoView({behavior:'smooth'}); else originalLoad(key); };
-  pages.addEventListener('pointerdown', event => { const target = event.target.closest('.page-a4'); if (target) window.setSixLesson(target.dataset.lesson); }, true);
-  lessonSelect.onchange = () => window.loadLesson(lessonSelect.value);
-  bookSelect.addEventListener('change', () => setTimeout(renderAll, 0));
+  function refreshLessons(preferred) {
+    const keys = lessonKeys();
+    lessonSelect.replaceChildren(...keys.map(key => new Option(key, key)));
+    showLesson(keys.includes(preferred) ? preferred : keys[0]);
+  }
+  window.loadLesson = key => showLesson(key);
+  lessonSelect.onchange = () => showLesson(lessonSelect.value);
+  bookSelect.addEventListener('change', () => setTimeout(() => refreshLessons(lessonSelect.value), 0));
   printing.onchange = () => {
     const value = printing.value;
     printing.value = '';
@@ -170,5 +155,8 @@
     if (kind === 'write' && value !== 'teacher') window.setWriteHintMode(value);
     originalPrint(value === 'teacher');
   };
-  window.onload = () => { originalInit(); setTimeout(renderAll, 0); };
+  window.onload = () => {
+    originalInit();
+    setTimeout(() => refreshLessons(new URLSearchParams(location.search).get('lesson')), 0);
+  };
 })();
