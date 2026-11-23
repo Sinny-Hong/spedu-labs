@@ -211,7 +211,11 @@
       body { display: block; height: auto; overflow: visible; background: #fff; }
       .viewer { height: auto; margin: 0; overflow: visible; border: 0; }
       #midterm-frame { width: 100%; height: 100vh; }
+      /* 右鍵／Ctrl+P 列印：改印複製進來的整份講義 */
+      body.cloning > *:not(#print-clone) { display: none !important; }
+      body.cloning #print-clone { display: block !important; }
     }
+    #print-clone { display: none; }
   </style>
 </head>
 <body>
@@ -338,6 +342,35 @@
           const item = currentItem();
           if (item) window.open(BASE + item.file, "_blank", "noopener");
         }
+      });
+
+      // 列印整份：iframe 只會印出一個畫面高度，所以列印前把講義內容複製到外層頁面
+      let printHost = null;
+      window.addEventListener("beforeprint", () => {
+        try {
+          const doc = frame.contentDocument;
+          if (!doc || !doc.body || !doc.querySelector("section.section-card")) return; // 非考卷頁面維持原樣
+          const css = Array.from(doc.querySelectorAll("style")).map((s) => s.textContent).join("\n")
+            .replace(/:root/g, ":host")
+            .replace(/(^|[\s,{}>+~])body(?=[\s.,{:\[#>])/g, "$1.pbody");
+          const body = doc.body.cloneNode(true);
+          body.querySelectorAll("script, #sidebar, .top-bar").forEach((el) => el.remove());
+          printHost = document.createElement("div");
+          printHost.id = "print-clone";
+          const root = printHost.attachShadow({ mode: "open" });
+          const style = document.createElement("style");
+          style.textContent = css + "\n@media print { .pbody { display:block !important; } #main-content { margin:0 !important; max-width:none !important; padding:0 !important; } }";
+          const wrap = document.createElement("div");
+          wrap.className = "pbody " + body.className;
+          wrap.innerHTML = body.innerHTML;
+          root.append(style, wrap);
+          document.body.append(printHost);
+          document.body.classList.add("cloning");
+        } catch (_) { /* 失敗時維持原本列印行為 */ }
+      });
+      window.addEventListener("afterprint", () => {
+        document.body.classList.remove("cloning");
+        if (printHost) { printHost.remove(); printHost = null; }
       });
 
       loadItem(items[0] || null);
