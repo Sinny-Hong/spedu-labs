@@ -355,6 +355,7 @@
             .replace(/(^|[\s,{}>+~])body(?=[\s.,{:\[#>])/g, "$1.pbody");
           const body = doc.body.cloneNode(true);
           body.querySelectorAll("script, #sidebar, .top-bar").forEach((el) => el.remove());
+          body.querySelectorAll("img[src]").forEach((img) => img.setAttribute("src", img.src)); // 相對路徑改絕對路徑
           printHost = document.createElement("div");
           printHost.id = "print-clone";
           const root = printHost.attachShadow({ mode: "open" });
