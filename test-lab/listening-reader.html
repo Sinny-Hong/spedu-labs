@@ -65,6 +65,16 @@
     .role.W { background:#db2777; }
     .role.Q { background:#b45309; }
     .times { color:#64748b; font-size:.82rem; margin-left:6px; font-family:var(--font-zh); }
+    button:disabled { opacity:.45; cursor:default; }
+    details.vlist { margin-top:10px; background:#fff; border:1px solid var(--border); border-radius:8px; padding:6px 14px; }
+    details.vlist summary { cursor:pointer; font-weight:700; color:var(--primary); padding:4px 0; font-size:.95rem; }
+    table.vt { width:100%; font-family:var(--font-zh); font-size:.85rem; margin:8px 0; }
+    table.vt td { padding:3px 8px; }
+    table.vt td.nm { word-break:break-all; }
+    table.vt button { padding:3px 9px; font-size:.8rem; margin-right:4px; }
+    .tag { display:inline-block; font-size:.75rem; font-weight:700; border-radius:4px; padding:0 6px; margin-left:6px; color:#fff; }
+    .tag.f { background:#db2777; }
+    .tag.m { background:#0284c7; }
   </style>
 </head>
 <body>
@@ -80,9 +90,11 @@
 
   <div id="app" hidden>
     <div class="bar">
+      <button id="btn-back">← 回選年級</button>
       <h1 id="title">聽力報讀</h1>
       <span class="grow"></span>
       <button class="primary" id="btn-play">▶ 全卷播放</button>
+      <button id="btn-pause" disabled>⏸ 暫停</button>
       <button class="stop" id="btn-stop">⏹ 停止</button>
       <label class="field">英文語速 <input type="range" id="rate" min="0.4" max="0.8" step="0.05" value="0.5"><span id="rate-val">0.50x</span></label>
       <label class="field">女聲 <select id="voice-f"></select></label>
@@ -92,6 +104,10 @@
       <button class="toggle" id="btn-toggle" aria-expanded="false">顯示文本與解答</button>
       <div class="note" id="note" hidden></div>
     </div>
+    <details class="vlist" id="vlist">
+      <summary id="vsum">聲音清單</summary>
+      <table class="vt" id="vt"></table>
+    </details>
 
     <div class="progress">
       <div class="big" id="prog-big">待命</div>
@@ -224,31 +240,74 @@
     return list.find((x) => x !== exclude) || null;
   }
 
+  // 瀏覽器不提供聲音性別：只有名稱明確（Guy、Mark、David…）或你親自選過，才算「確認的男聲」
+  let maleState = "guess"; // saved（你選過）｜name（名稱判斷）｜guess（無法確認）
+  const deviceLabel = () => {
+    const ua = navigator.userAgent;
+    const b = /Edg\//.test(ua) ? "Edge" : /Chrome\//.test(ua) ? "Chrome" : "瀏覽器";
+    return b + (/Android|Mobile/.test(ua) ? "（手機）" : "（電腦）");
+  };
+
   function setupVoices() {
     const fill = () => {
       voices = synth.getVoices();
       const en = enVoices();
       if (!en.length) return;
-      const savedF = load("listen.voiceF"), savedM = load("listen.voiceM");
       const byName = (n) => en.find((v) => v.name === n);
-      voiceF = byName(savedF) || pick(en, FEMALE, null);
-      voiceM = byName(savedM) || pick(en, MALE, voiceF) || voiceF;
-      for (const [sel, cur] of [[$("voice-f"), voiceF], [$("voice-m"), voiceM]]) {
-        sel.textContent = "";
-        for (const v of en) { const o = el("option", "", `${v.name} (${v.lang})`); o.value = v.name; if (v === cur) o.selected = true; sel.appendChild(o); }
+      const savedF = byName(load("listen.voiceF")), savedM = byName(load("listen.voiceM"));
+      voiceF = savedF || pick(en, FEMALE, null);
+      if (savedM) { voiceM = savedM; maleState = "saved"; }
+      else {
+        const named = en.find((v) => v !== voiceF && MALE.some((re) => re.test(v.name)));
+        if (named) { voiceM = named; maleState = "name"; }
+        else { voiceM = en.find((v) => v !== voiceF) || voiceF; maleState = "guess"; }
       }
-      const note = $("note");
-      if (voiceF === voiceM) { note.textContent = "只找到一種英文聲音，男女對話會用同一個聲音（只靠音高區分，效果有限）。建議改用 Edge，通常有男女聲。"; note.hidden = false; }
-      else note.hidden = true;
+      renderVoiceUI();
     };
     fill();
     if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = fill;
-    $("voice-f").addEventListener("change", (e) => { voiceF = enVoices().find((v) => v.name === e.target.value) || voiceF; store("listen.voiceF", voiceF.name); checkSame(); });
-    $("voice-m").addEventListener("change", (e) => { voiceM = enVoices().find((v) => v.name === e.target.value) || voiceM; store("listen.voiceM", voiceM.name); checkSame(); });
+    $("voice-f").addEventListener("change", (e) => setVoice("F", enVoices().find((v) => v.name === e.target.value)));
+    $("voice-m").addEventListener("change", (e) => setVoice("M", enVoices().find((v) => v.name === e.target.value)));
   }
-  function checkSame() {
+
+  function setVoice(role, v) {
+    if (!v) return;
+    if (role === "F") { voiceF = v; store("listen.voiceF", v.name); }
+    else { voiceM = v; maleState = "saved"; store("listen.voiceM", v.name); }
+    renderVoiceUI();
+  }
+
+  function sample(v) {
+    stopAll("待命");
+    const u = new SpeechSynthesisUtterance("Hello. How are you today?");
+    u.voice = v; u.lang = v.lang; u.rate = rate(); u.pitch = 1.0;
+    synth.speak(u);
+  }
+
+  function renderVoiceUI() {
+    const en = enVoices();
+    for (const [sel, cur] of [[$("voice-f"), voiceF], [$("voice-m"), voiceM]]) {
+      sel.textContent = "";
+      for (const v of en) { const o = el("option", "", `${v.name} (${v.lang})`); o.value = v.name; if (v === cur) o.selected = true; sel.appendChild(o); }
+    }
+    $("vsum").textContent = `聲音清單（${deviceLabel()}，共 ${en.length} 個英文聲音）`;
+    const vt = $("vt"); vt.textContent = "";
+    for (const v of en) {
+      const tr = el("tr");
+      const nm = el("td", "nm", `${v.name} (${v.lang})`);
+      if (v === voiceF) nm.appendChild(el("span", "tag f", "目前女聲"));
+      if (v === voiceM) nm.appendChild(el("span", "tag m", "目前男聲"));
+      tr.appendChild(nm);
+      const bt = el("td");
+      const t = el("button", "", "試聽"); t.addEventListener("click", () => sample(v));
+      const f = el("button", "", "設為女聲"); f.addEventListener("click", () => setVoice("F", v));
+      const m = el("button", "", "設為男聲"); m.addEventListener("click", () => setVoice("M", v));
+      bt.append(t, f, m); tr.appendChild(bt);
+      vt.appendChild(tr);
+    }
     const note = $("note");
-    if (voiceF && voiceF === voiceM) { note.textContent = "男聲與女聲目前是同一個聲音，對話會不易分辨。"; note.hidden = false; }
+    if (voiceF === voiceM) { note.textContent = "目前男聲與女聲是同一個聲音，對話會分不出誰在說話。請展開「聲音清單」另選一個。"; note.hidden = false; }
+    else if (maleState === "guess") { note.textContent = "男聲尚未確認：這台裝置的聲音名稱看不出性別。請展開「聲音清單」逐一試聽，選好後會記住。"; note.hidden = false; }
     else note.hidden = true;
   }
   const zhVoice = () => voices.find((v) => /^zh[-_]TW/i.test(v.lang)) || voices.find((v) => /^zh/i.test(v.lang)) || null;
@@ -268,7 +327,7 @@
         u.lang = "en-US"; u.rate = rate();
         const v = kind === "M" ? voiceM : voiceF;
         if (v) { u.voice = v; u.lang = v.lang; }
-        u.pitch = voiceF && voiceF === voiceM ? (kind === "M" ? 0.8 : 1.15) : 1.0;
+        u.pitch = 1.0; // 不調音高：男女聲只靠真正不同的聲音區分
       }
       u.onend = () => resolve(id === runId);
       u.onerror = () => resolve(false);
@@ -311,44 +370,90 @@
     return sleep(1000, id);
   }
 
+  // mode：目前在播什麼（all 全卷｜single 單題）；curIdx：目前題目的位置；paused：是否暫停中
+  let mode = null, curIdx = 0, paused = false;
+  function updatePauseBtn() {
+    const b = $("btn-pause");
+    b.textContent = paused ? "▶ 繼續" : "⏸ 暫停";
+    b.disabled = !mode;
+  }
+
   function stopAll(text) {
     runId++;
     synth.cancel();
+    mode = null; paused = false;
     mark(null);
     progress(text || "已停止", `共 ${exam.qs.length} 題`);
+    updatePauseBtn();
+  }
+
+  async function runSingle(idx, id) {
+    mode = "single"; curIdx = idx; updatePauseBtn();
+    const ok = await runQuestion(exam.qs[idx], id);
+    if (ok) { mark(null); mode = null; updatePauseBtn(); progress("待命", `第 ${exam.qs[idx].n} 題播放完畢`); }
   }
 
   async function playSingle(n) {
     stopAll("待命");
     const id = runId;
     await sleep(150, id);
-    const q = exam.qs.find((x) => x.n === n);
-    if (!q || id !== runId) return;
-    const ok = await runQuestion(q, id);
-    if (ok) { mark(null); progress("待命", `第 ${n} 題播放完畢`); }
+    const idx = exam.qs.findIndex((x) => x.n === n);
+    if (idx < 0 || id !== runId) return;
+    await runSingle(idx, id);
   }
 
   let gname = "";
+  async function runFrom(startIdx, opening, id) {
+    mode = "all"; updatePauseBtn();
+    if (opening) {
+      progress("開始", `共 ${exam.qs.length} 題`);
+      if (!(await speak(`115學年度上學期第二次段考，${gname}英文科聽力測驗，開始。`, "zh", id))) return;
+      if (!(await sleep(800, id))) return;
+    }
+    for (let i = startIdx; i < exam.qs.length; i++) {
+      curIdx = i;
+      if (!(await runQuestion(exam.qs[i], id))) return;
+    }
+    if (!(await speak("聽力測驗結束，請繼續作答。", "zh", id))) return;
+    mark(null); mode = null; updatePauseBtn();
+    progress("結束", `共 ${exam.qs.length} 題`);
+  }
+
   async function playAll() {
     stopAll("待命");
     const id = runId;
     await sleep(150, id);
     if (id !== runId) return;
-    progress("開始", `共 ${exam.qs.length} 題`);
-    if (!(await speak(`115學年度上學期第二次段考，${gname}英文科聽力測驗，開始。`, "zh", id))) return;
-    if (!(await sleep(800, id))) return;
-    for (const q of exam.qs) {
-      if (!(await runQuestion(q, id))) return;
+    await runFrom(0, true, id);
+  }
+
+  // 暫停：立即停住；繼續：從目前這一題的開頭重新念（手機版 Chrome 的內建暫停不可靠，所以自己處理）
+  async function pauseResume() {
+    if (!mode) return;
+    if (!paused) {
+      paused = true;
+      runId++;
+      synth.cancel();
+      progress(`第 ${exam.qs[curIdx].n} 題（已暫停）`, "按「繼續」會從這一題開頭重念");
+      updatePauseBtn();
+      return;
     }
-    if (!(await speak("聽力測驗結束，請繼續作答。", "zh", id))) return;
-    mark(null);
-    progress("結束", `共 ${exam.qs.length} 題`);
+    paused = false;
+    updatePauseBtn();
+    const id = runId;
+    await sleep(150, id);
+    if (id !== runId || paused) return;
+    if (mode === "all") await runFrom(curIdx, false, id);
+    else await runSingle(curIdx, id);
   }
 
   function bind(name) {
     gname = name;
     $("btn-play").addEventListener("click", playAll);
+    $("btn-pause").addEventListener("click", pauseResume);
     $("btn-stop").addEventListener("click", () => stopAll("已停止"));
+    $("btn-back").addEventListener("click", () => { stopAll("待命"); location.href = location.pathname; });
+    updatePauseBtn();
     $("rate").value = load("listen.rate") || "0.5";
     $("rate-val").textContent = parseFloat($("rate").value).toFixed(2) + "x";
     $("rate").addEventListener("input", () => { $("rate-val").textContent = parseFloat($("rate").value).toFixed(2) + "x"; store("listen.rate", $("rate").value); });
