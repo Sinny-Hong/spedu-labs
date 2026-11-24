@@ -1,0 +1,111 @@
+# 115-1 第二次段考 英文科聽力文本｜一年級
+# 依據：一A卷（聽力 15 題，一年級最完整版本）。題目與答案與已印出的講義一致，請勿更動。
+# 格式：每題以 [題號] 開頭；類型為 單字／句子／對話；遍數為朗讀次數；「選項」以 | 分隔，圖片題寫（圖片）。
+
+年級: 一年級
+題數: 15
+
+[1]
+類型: 單字
+遍數: 2
+朗讀: ground
+選項: A. living room | B. do the dishes | C. ground
+答案: C
+
+[2]
+類型: 單字
+遍數: 2
+朗讀: bedroom
+選項: A. bedroom | B. feed | C. traffic lights
+答案: A
+
+[3]
+類型: 單字
+遍數: 2
+朗讀: bathroom
+選項: A. bathroom | B. sweep | C. listen
+答案: A
+
+[4]
+類型: 單字
+遍數: 2
+朗讀: stand up
+選項: A. dining room | B. mop | C. stand up
+答案: C
+
+[5]
+類型: 單字
+遍數: 2
+朗讀: kitchen
+選項: A. kitchen | B. wipe | C. sit down
+答案: A
+
+[6]
+類型: 單字
+遍數: 2
+朗讀: talk
+選項: A. house | B. smartphone | C. talk
+答案: C
+
+[7]
+類型: 單字
+遍數: 2
+朗讀: photo
+選項: A. drawer | B. photo | C. make
+答案: B
+
+[8]
+類型: 單字
+遍數: 2
+朗讀: cross
+選項: A. stairs | B. tool | C. cross
+答案: C
+
+[9]
+類型: 單字
+遍數: 2
+朗讀: voice
+選項: A. window | B. voice | C. noisy
+答案: B
+
+[10]
+類型: 單字
+遍數: 2
+朗讀: song
+選項: A. blanket | B. song | C. late
+答案: B
+
+[11]
+類型: 單字
+遍數: 2
+朗讀: behind
+選項: A. behind | B. noise | C. early
+答案: A
+
+[12]
+類型: 單字
+遍數: 2
+朗讀: sidewalk
+選項: A. in front of | B. sidewalk | C. real
+答案: B
+
+[13]
+類型: 單字
+遍數: 2
+朗讀: crosswalk
+選項: A. between | B. crosswalk | C. special
+答案: B
+
+[14]
+類型: 單字
+遍數: 2
+朗讀: design
+選項: A. next to | B. lane | C. design
+答案: C
+
+[15]
+類型: 單字
+遍數: 2
+朗讀: near
+選項: A. near | B. road | C. warn
+答案: A

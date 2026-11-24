@@ -1,0 +1,154 @@
+# 115-1 第二次段考 英文科聽力文本｜二年級
+# 依據：二As卷（聽力 20 題，二年級最完整版本）。題目與答案與已印出的講義一致，請勿更動。
+# 16–20 題與三年級共用同一份內容。
+# 格式：每題以 [題號] 開頭；類型為 單字／句子／對話；遍數為朗讀次數；「選項」以 | 分隔，圖片題寫（圖片）。
+# 對話以 M:（男）、W:（女）標示說話者；「提問」是對話後念的問題。
+
+年級: 二年級
+題數: 20
+
+[1]
+類型: 單字
+遍數: 2
+朗讀: hang
+選項: A. drawer | B. hang | C. farmer
+答案: B
+
+[2]
+類型: 單字
+遍數: 2
+朗讀: fix
+選項: A. stairs | B. fix | C. soldier
+答案: B
+
+[3]
+類型: 單字
+遍數: 2
+朗讀: window
+選項: A. window | B. break | C. truck driver
+答案: A
+
+[4]
+類型: 單字
+遍數: 2
+朗讀: leave
+選項: A. floor | B. leave | C. boss
+答案: B
+
+[5]
+類型: 單字
+遍數: 2
+朗讀: relative
+選項: A. clothes | B. move | C. relative
+答案: C
+
+[6]
+類型: 單字
+遍數: 2
+朗讀: job
+選項: A. pet | B. catch | C. job
+答案: C
+
+[7]
+類型: 單字
+遍數: 2
+朗讀: city
+選項: A. city | B. save | C. factory
+答案: A
+
+[8]
+類型: 單字
+遍數: 2
+朗讀: problem
+選項: A. problem | B. remember | C. country
+答案: A
+
+[9]
+類型: 單字
+遍數: 2
+朗讀: lawyer
+選項: A. tip | B. lawyer | C. plan
+答案: B
+
+[10]
+類型: 單字
+遍數: 2
+朗讀: grow
+選項: A. pumpkin | B. reporter | C. grow
+答案: C
+
+[11]
+類型: 單字
+遍數: 2
+朗讀: feed
+選項: A. feed | B. mail carrier | C. drive
+答案: A
+
+[12]
+類型: 單字
+遍數: 2
+朗讀: dentist
+選項: A. sweep | B. dentist | C. find
+答案: B
+
+[13]
+類型: 單字
+遍數: 2
+朗讀: fisherman
+選項: A. mop | B. fisherman | C. decide
+答案: B
+
+[14]
+類型: 單字
+遍數: 2
+朗讀: wipe
+選項: A. wipe | B. secretary | C. become
+答案: A
+
+[15]
+類型: 單字
+遍數: 2
+朗讀: hope
+選項: A. dry | B. salesman | C. hope
+答案: C
+
+[16]
+類型: 句子
+遍數: 2
+朗讀: The woman became a mail carrier at a young age.
+選項: （圖片）
+答案: A
+
+[17]
+類型: 對話
+遍數: 2
+M: What time is it?
+W: It is a quarter to four.
+選項: （圖片）
+答案: B
+
+[18]
+類型: 句子
+遍數: 2
+朗讀: Let's try to catch some fish there.
+選項: A. Good idea. | B. Try it again. | C. I believe you.
+答案: A
+
+[19]
+類型: 句子
+遍數: 2
+朗讀: What were you doing at ten o'clock?
+選項: A. I was wiping the windows. | B. Did you wipe the windows? | C. I'm wiping the windows now.
+答案: A
+
+[20]
+類型: 對話
+遍數: 2
+W: Ms. Ford's office. This is Alice Chang. How can I help you?
+M: Hello, this is Henry Johnson. Is Ms. Ford there?
+W: I am sorry. She's very busy now, so she can't take any calls.
+M: I see. Can she give me a call later when she is free? She has my number.
+W: Sure, Mr. Johnson.
+提問: Who might Alice Chang be?
+選項: A. Mr. Johnson's boss. | B. Ms. Ford's secretary. | C. Mr. Johnson's lawyer.
+答案: B
