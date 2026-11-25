@@ -1,0 +1,154 @@
+# 115-1 第二次段考 英文科聽力文本｜三年級
+# 依據：三Aa卷（聽力 20 題，三年級最完整版本）。題目與答案與已印出的講義一致，請勿更動。
+# 16–20 題與二年級共用同一份內容。
+# 格式：每題以 [題號] 開頭；類型為 單字／句子／對話；遍數為朗讀次數；「選項」以 | 分隔，圖片題寫（圖片）。
+# 對話以 M:（男）、W:（女）標示說話者；「提問」是對話後念的問題。
+
+年級: 三年級
+題數: 20
+
+[1]
+類型: 單字
+遍數: 2
+朗讀: lawyer
+選項: A. lawyer | B. born | C. dictionary
+答案: A
+
+[2]
+類型: 單字
+遍數: 2
+朗讀: engineer
+選項: A. engineer | B. childhood | C. notebook
+答案: A
+
+[3]
+類型: 單字
+遍數: 2
+朗讀: e-mail
+選項: A. president | B. form | C. e-mail
+答案: C
+
+[4]
+類型: 單字
+遍數: 2
+朗讀: expect
+選項: A. model | B. expect | C. glasses
+答案: B
+
+[5]
+類型: 單字
+遍數: 2
+朗讀: idiom
+選項: A. relative | B. picture | C. idiom
+答案: C
+
+[6]
+類型: 單字
+遍數: 2
+朗讀: present
+選項: A. company | B. present | C. define
+答案: B
+
+[7]
+類型: 單字
+遍數: 2
+朗讀: create
+選項: A. public | B. be filled with | C. create
+答案: C
+
+[8]
+類型: 單字
+遍數: 2
+朗讀: case
+選項: A. equal | B. hope | C. case
+答案: C
+
+[9]
+類型: 單字
+遍數: 2
+朗讀: hard-working
+選項: A. hard-working | B. butterfly | C. combine
+答案: A
+
+[10]
+類型: 單字
+遍數: 2
+朗讀: brave
+選項: A. brave | B. hen | C. pleasure
+答案: A
+
+[11]
+類型: 單字
+遍數: 2
+朗讀: blind
+選項: A. honest | B. blind | C. by accident
+答案: B
+
+[12]
+類型: 單字
+遍數: 2
+朗讀: bat
+選項: A. stupid | B. bat | C. whether
+答案: B
+
+[13]
+類型: 單字
+遍數: 2
+朗讀: mad
+選項: A. mad | B. bee | C. interview
+答案: A
+
+[14]
+類型: 單字
+遍數: 2
+朗讀: dead
+選項: A. lovely | B. dead | C. lip
+答案: B
+
+[15]
+類型: 單字
+遍數: 2
+朗讀: farm
+選項: A. pretty | B. farm | C. salesman
+答案: B
+
+[16]
+類型: 句子
+遍數: 2
+朗讀: The woman became a mail carrier at a young age.
+選項: （圖片）
+答案: A
+
+[17]
+類型: 對話
+遍數: 2
+M: What time is it?
+W: It is a quarter to four.
+選項: （圖片）
+答案: B
+
+[18]
+類型: 句子
+遍數: 2
+朗讀: Let's try to catch some fish there.
+選項: A. Good idea. | B. Try it again. | C. I believe you.
+答案: A
+
+[19]
+類型: 句子
+遍數: 2
+朗讀: What were you doing at ten o'clock?
+選項: A. I was wiping the windows. | B. Did you wipe the windows? | C. I'm wiping the windows now.
+答案: A
+
+[20]
+類型: 對話
+遍數: 2
+W: Ms. Ford's office. This is Alice Chang. How can I help you?
+M: Hello, this is Henry Johnson. Is Ms. Ford there?
+W: I am sorry. She's very busy now, so she can't take any calls.
+M: I see. Can she give me a call later when she is free? She has my number.
+W: Sure, Mr. Johnson.
+提問: Who might Alice Chang be?
+選項: A. Mr. Johnson's boss. | B. Ms. Ford's secretary. | C. Mr. Johnson's lawyer.
+答案: B
