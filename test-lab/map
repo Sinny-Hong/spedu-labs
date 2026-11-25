@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>TAIWAN - 3D Pop-up Paper Map (1080x1920)</title>
+  <style>
+    body {
+      margin: 0;
+      background: #1a1a1a;
+      color: #fff;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #controls {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.75);
+      padding: 14px 18px;
+      border-radius: 10px;
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    button {
+      background: #d97706;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: #b45309; }
+    button:disabled { background: #555; cursor: not-allowed; }
+    #canvas-container {
+      height: 92vh;
+      aspect-ratio: 9 / 16;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+    #status { font-size: 13px; color: #fbbf24; }
+  </style>
+  <!-- 引入 Three.js 與純前端免費 MP4 封裝器 mp4-muxer -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "mp4-muxer": "https://unpkg.com/mp4-muxer@5.1.3/build/mp4-muxer.mjs"
+      }
+    }
+  </script>
+</head>
+<body>
+
+<div id="controls">
+  <div style="font-weight:bold; font-size:15px;">TAIWAN 紙地圖動畫控制台 (55s)</div>
+  <div style="display:flex; gap:8px;">
+    <button id="btn-play">▶ 重新預覽 (55秒)</button>
+    <button id="btn-export">🎬 離線渲染輸出 1080×1920 MP4</button>
+  </div>
+  <div id="status">目前時間：0.0s / 55.0s（Shot 1：地圖展開）</div>
+</div>
+
+<div id="canvas-container"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { Muxer, ArrayBufferTarget } from 'mp4-muxer';
+
+// ==========================================
+// 1. 基本參數與 13 站精準地理座標定義
+// 地圖平面尺寸：寬 10 單位 (X: -5 ~ +5), 長 16 單位 (Z: -8 ~ +8)
+// ==========================================
+const WIDTH = 1080;
+const HEIGHT = 1920;
+const FPS = 30;
+const TOTAL_DURATION = 55.0;
+
+// 依照台灣真實經緯度對應紙面座標 (X: 西負東正, Z: 北負南正)
+// triggerTime: 地標開始沿摺腳站起來的時間點 (秒)
+const STATIONS = [
+  { id: '101', nameZh: '台北 101', nameEn: 'Taipei 101', x: 1.55, z: -5.35, trigger: 6.2, h: 1.65, color: '#3b82f6' },
+  { id: 'raohe', nameZh: '饒河夜市', nameEn: 'Raohe Night Market', x: 1.72, z: -5.45, trigger: 8.2, h: 0.95, color: '#ef4444' },
+  { id: 'jiufen', nameZh: '九份', nameEn: 'Jiufen', x: 2.25, z: -5.65, trigger: 10.4, h: 1.15, color: '#f59e0b' },
+  { id: 'daxi', nameZh: '大溪老街', nameEn: 'Daxi Old Street', x: 0.95, z: -4.75, trigger: 13.5, h: 1.00, color: '#b45309' },
+  { id: 'hsinchu', nameZh: '新竹東門城', nameEn: 'Hsinchu East Gate', x: 0.35, z: -4.25, trigger: 15.8, h: 1.05, color: '#dc2626' },
+  { id: 'longteng', nameZh: '龍騰斷橋', nameEn: 'Longteng Bridge', x: -0.15, z: -2.85, trigger: 18.0, h: 1.15, color: '#9a3412' },
+  { id: 'gaomei', nameZh: '高美濕地', nameEn: 'Gaomei Wetlands', x: -0.85, z: -2.15, trigger: 20.8, h: 1.10, color: '#0284c7' },
+  { id: 'shennong', nameZh: '台南神農街', nameEn: 'Shennong Street', x: -1.65, z: 2.35, trigger: 24.0, h: 1.05, color: '#d97706' },
+  { id: 'kaohsiung', nameZh: '高雄港', nameEn: 'Kaohsiung Harbor', x: -1.35, z: 3.85, trigger: 27.5, h: 1.25, color: '#0369a1' },
+  { id: 'eluanbi', nameZh: '鵝鑾鼻', nameEn: 'Eluanbi', x: -0.25, z: 6.35, trigger: 30.8, h: 1.20, color: '#475569' },
+  { id: 'duoliang', nameZh: '多良車站', nameEn: 'Duoliang Station', x: 0.25, z: 4.35, trigger: 34.5, h: 1.05, color: '#be123c' },
+  { id: 'qingshui', nameZh: '清水斷崖', nameEn: 'Qingshui Cliff', x: 1.85, z: -1.85, trigger: 37.8, h: 1.45, color: '#15803d' },
+  { id: 'guishan', nameZh: '宜蘭外澳 & 龜山島', nameEn: "Wai'ao & Guishan Island", x: 2.55, z: -4.55, trigger: 41.2, h: 1.15, color: '#0d9488' }
+];
+
+// ==========================================
+// 2. 初始化場景、攝影機與寫實陰影燈光
+// ==========================================
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#2b2118');
+
+const camera = new THREE.PerspectiveCamera(38, WIDTH / HEIGHT, 0.1, 100);
+camera.position.set(0, 18, 12);
+camera.lookAt(0, 0, 0);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(WIDTH, HEIGHT);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+container.appendChild(renderer.domElement);
+
+// 環境暖光 + 模擬桌面台燈/窗邊陽光的斜射主光源（產生立體紙片陰影）
+const hemiLight = new THREE.HemisphereLight('#fffbeb', '#78350f', 0.85);
+scene.add(hemiLight);
+
+const dirLight = new THREE.DirectionalLight('#fff7ed', 1.8);
+dirLight.position.set(-8, 14, 9);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.width = 2048;
+dirLight.shadow.mapSize.height = 2048;
+dirLight.shadow.camera.near = 2;
+dirLight.shadow.camera.far = 35;
+const d = 10;
+dirLight.shadow.camera.left = -d;
+dirLight.shadow.camera.right = d;
+dirLight.shadow.camera.top = d;
+dirLight.shadow.camera.bottom = -d;
+dirLight.shadow.bias = -0.0005;
+scene.add(dirLight);
+
+// ==========================================
+// 3. 程序化產生高質感木桌紋理與台灣折疊地圖紋理
+// ==========================================
+function createWoodTexture() {
+  const c = document.createElement('canvas');
+  c.width = 1024; c.height = 1024;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#4a321f';
+  ctx.fillRect(0, 0, 1024, 1024);
+  for (let i = 0; i < 600; i++) {
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(30, 18, 10, 0.14)' : 'rgba(110, 75, 45, 0.12)';
+    ctx.fillRect(0, Math.random() * 1024, 1024, 2 + Math.random() * 8);
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  return tex;
+}
+
+// 繪製包含台灣海岸線、中央山脈等高線、環島公路與片名「TAIWAN」的地圖紙面
+function createTaiwanMapTexture() {
+  const c = document.createElement('canvas');
+  c.width = 2048; c.height = 3276; // 10 : 16 比例
+  const ctx = c.getContext('2d');
+
+  // 1. 仿古美術紙底色與紙纖維顆粒
+  ctx.fillStyle = '#f4efe1';
+  ctx.fillRect(0, 0, c.width, c.height);
+  for (let i = 0; i < 18000; i++) {
+    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(180,165,140,0.12)' : 'rgba(255,255,255,0.25)';
+    ctx.fillRect(Math.random() * c.width, Math.random() * c.height, 2, 2);
+  }
+
+  // 2. 淡雅海域經緯網格
+  ctx.strokeStyle = 'rgba(140, 165, 180, 0.25)';
+  ctx.lineWidth = 2;
+  for (let x = 0; x < c.width; x += 160) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, c.height); ctx.stroke();
+  }
+  for (let y = 0; y < c.height; y += 160) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(c.width, y); ctx.stroke();
+  }
+
+  // 3. 台灣本島輪廓多邊形（對應 3D 座標系）
+  const toPxX = (x) => ((x + 5) / 10) * c.width;
+  const toPxY = (z) => ((z + 8) / 16) * c.height;
+
+  const islandPts = [
+    [1.6, -5.8], [2.3, -5.6], [2.1, -4.6], [1.9, -3.5], [1.9, -1.8],
+    [1.4, 0.5], [0.8, 2.8], [0.3, 4.5], [-0.1, 6.4], [-0.5, 6.3],
+    [-0.9, 4.6], [-1.5, 3.8], [-1.8, 2.2], [-1.7, 0.2], [-1.2, -1.6],
+    [-0.6, -2.8], [0.2, -4.2], [0.8, -5.1], [1.2, -5.7]
+  ];
+
+  ctx.save();
+  ctx.beginPath();
+  islandPts.forEach(([x, z], idx) => {
+    if (idx === 0) ctx.moveTo(toPxX(x), toPxY(z));
+    else ctx.lineTo(toPxX(x), toPxY(z));
+  });
+  ctx.closePath();
+
+  // 陸地暖綠與山脈漸層
+  const grad = ctx.createLinearGradient(toPxX(-1.5), 0, toPxX(2.0), 0);
+  grad.addColorStop(0, '#dce5c8');
+  grad.addColorStop(0.55, '#b8c99a');
+  grad.addColorStop(1, '#9ab37c');
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = '#6b8268';
+  ctx.stroke();
+
+  // 4. 中央山脈等高線與陰影筆觸
+  ctx.strokeStyle = 'rgba(95, 115, 75, 0.45)';
+  ctx.lineWidth = 4;
+  for (let k = 0; k < 5; k++) {
+    ctx.beginPath();
+    ctx.ellipse(toPxX(0.35), toPxY(0.1), 130 - k * 22, 720 - k * 110, 0.18, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // 5. 環島公路虛線（串連 13 個站點）
+  ctx.save();
+  ctx.beginPath();
+  STATIONS.forEach((st, i) => {
+    if (i === 0) ctx.moveTo(toPxX(st.x), toPxY(st.z));
+    else ctx.lineTo(toPxX(st.x), toPxY(st.z));
+  });
+  ctx.closePath();
+  ctx.strokeStyle = '#c2410c';
+  ctx.lineWidth = 6;
+  ctx.setLineDash([18, 12]);
+  ctx.stroke();
+  ctx.restore();
+
+  // 6. 摺紙摺痕陰影線（直向三折線）
+  const fold1 = c.width / 3;
+  const fold2 = (c.width / 3) * 2;
+  [fold1, fold2].forEach(fx => {
+    const fGrad = ctx.createLinearGradient(fx - 18, 0, fx + 18, 0);
+    fGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    fGrad.addColorStop(0.5, 'rgba(60,45,25,0.22)');
+    fGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = fGrad;
+    ctx.fillRect(fx - 18, 0, 36, c.height);
+  });
+
+  // 7. 左上角海域印製片名：「TAIWAN」
+  ctx.save();
+  ctx.fillStyle = '#3b2f23';
+  ctx.font = 'bold 148px Georgia, serif';
+  ctx.letterSpacing = '14px';
+  ctx.fillText('TAIWAN', 130, 340);
+  ctx.fillStyle = '#b45309';
+  ctx.fillRect(135, 375, 580, 8);
+  ctx.restore();
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.anisotropy = 8;
+  return tex;
+}
+
+// 木桌底面
+const tableGeo = new THREE.PlaneGeometry(45, 45);
+const tableMat = new THREE.MeshStandardMaterial({ map: createWoodTexture(), roughness: 0.85 });
+const tableMesh = new THREE.Mesh(tableGeo, tableMat);
+tableMesh.rotation.x = -Math.PI / 2;
+tableMesh.position.y = -0.02;
+tableMesh.receiveShadow = true;
+scene.add(tableMesh);
+
+// ==========================================
+// 4. 可折疊攤開的三折式台灣紙地圖結構
+// 中間面板固定 (X: -1.66 ~ +1.66)，左右兩翼沿摺線旋轉展開
+// ==========================================
+const mapTex = createTaiwanMapTexture();
+const mapWidth = 10;
+const mapHeight = 16;
+const panelW = mapWidth / 3;
+
+const mapRoot = new THREE.Group();
+scene.add(mapRoot);
+
+function createMapPanel(panelIndex) {
+  // panelIndex: 0 (左翼), 1 (中段), 2 (右翼)
+  const geo = new THREE.BoxGeometry(panelW, 0.025, mapHeight);
+  // 調整頂面 UV 使三片無縫拼成完整一張台灣地圖
+  const uvAttr = geo.attributes.uv;
+  for (let i = 0; i < uvAttr.count; i++) {
+    const u = uvAttr.getX(i);
+    // 僅針對頂面 (normal.y > 0.5) 映射對應區間
+    if (geo.attributes.normal.getY(i) > 0.5) {
+      uvAttr.setX(i, (panelIndex + u) / 3);
+    }
+  }
+  const topMat = new THREE.MeshStandardMaterial({ map: mapTex, roughness: 0.78 });
+  const sideMat = new THREE.MeshStandardMaterial({ color: '#ede6d3', roughness: 0.9 });
+  const mats = [sideMat, sideMat, topMat, sideMat, sideMat, sideMat];
+  const mesh = new THREE.Mesh(geo, mats);
+  mesh.receiveShadow = true;
+  mesh.castShadow = true;
+  return mesh;
+}
+
+// 中間面板
+const centerPanel = createMapPanel(1);
+mapRoot.add(centerPanel);
+
+// 左翼樞紐（位於 X = -panelW / 2）
+const leftHinge = new THREE.Group();
+leftHinge.position.set(-panelW / 2, 0.015, 0);
+const leftPanel = createMapPanel(0);
+leftPanel.position.set(-panelW / 2, 0, 0);
+leftHinge.add(leftPanel);
+mapRoot.add(leftHinge);
+
+// 右翼樞紐（位於 X = +panelW / 2）
+const rightHinge = new THREE.Group();
+rightHinge.position.set(panelW / 2, 0.035, 0);
+const rightPanel = createMapPanel(2);
+rightPanel.position.set(panelW / 2, 0, 0);
+rightHinge.add(rightPanel);
+mapRoot.add(rightHinge);
+
+// ==========================================
+// 5. 立體賀卡（Pop-up）多層紙片地標生成器
+// 包含：前/中/後三層剪影紙片 + 薄紙側邊厚度 + 背後摺腳 + 中英文銘牌
+// ==========================================
+function createLandmarkCardTexture(station, layerType) {
+  // 若你有準備真實去背圖檔，可在此改為 new THREE.TextureLoader().load(`assets/${station.id}_${layerType}.png`)
+  const c = document.createElement('canvas');
+  c.width = 512; c.height = 512;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, 512, 512);
+
+  // 模擬寫實光影照片感剪影紙片（帶白邊裁切輪廓）
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.35)';
+  ctx.shadowBlur = 10;
+
+  if (layerType === 'back') {
+    // 後景層：遠山或海岸剪影
+    ctx.fillStyle = '#64748b';
+    ctx.beginPath();
+    ctx.moveTo(40, 512); ctx.lineTo(140, 220); ctx.lineTo(260, 310); ctx.lineTo(390, 190); ctx.lineTo(480, 512);
+    ctx.closePath();
+    ctx.fill();
+    ctx.lineWidth = 10; ctx.strokeStyle = '#faf8f5'; ctx.stroke();
+  } else if (layerType === 'mid') {
+    // 中景層：主建築寫實漸層量體
+    const bGrad = ctx.createLinearGradient(140, 80, 370, 512);
+    bGrad.addColorStop(0, station.color);
+    bGrad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = bGrad;
+
+    if (station.id === '101') {
+      // 台北 101 節節高升輪廓
+      for (let tier = 0; tier < 6; tier++) {
+        const y = 130 + tier * 55;
+        const w = 85 + tier * 6;
+        ctx.fillRect(256 - w / 2, y, w, 50);
+      }
+      ctx.fillRect(250, 35, 12, 95); // 塔尖
+    } else {
+      // 經典地標建築輪廓
+      ctx.beginPath();
+      ctx.roundRect(140, 160, 232, 352, [24, 24, 0, 0]);
+      ctx.fill();
+      // 窗格光影細節
+      ctx.fillStyle = 'rgba(255, 248, 220, 0.65)';
+      for (let r = 0; r < 4; r++) {
+        for (let col = 0; col < 3; col++) {
+          ctx.fillRect(175 + col * 62, 200 + r * 65, 34, 42);
+        }
+      }
+    }
+    ctx.lineWidth = 10; ctx.strokeStyle = '#faf8f5'; ctx.stroke();
+  } else {
+    // 前景層：中英文地標立牌與前景樹叢
+    ctx.fillStyle = '#3f6212';
+    ctx.beginPath();
+    ctx.arc(110, 470, 65, 0, Math.PI * 2);
+    ctx.arc(405, 475, 55, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 底部中英文銘牌卡
+    ctx.fillStyle = '#fffdf7';
+    ctx.beginPath();
+    ctx.roundRect(46, 370, 420, 118, 16);
+    ctx.fill();
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = '#b45309';
+    ctx.stroke();
+
+    ctx.fillStyle = '#1c1917';
+    ctx.font = 'bold 42px "Noto Sans TC", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(station.nameZh, 256, 424);
+
+    ctx.fillStyle = '#78350f';
+    ctx.font = 'bold 24px Georgia, sans-serif';
+    ctx.fillText(station.nameEn, 256, 464);
+  }
+  ctx.restore();
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.anisotropy = 4;
+  return tex;
+}
+
+const popups = [];
+
+function buildPopupLandmark(station) {
+  const rootPivot = new THREE.Group();
+  rootPivot.position.set(station.x, 0.025, station.z);
+
+  // 判斷屬於哪一塊折疊面板，讓未展開前跟隨面板一起折疊
+  if (station.x < -panelW / 2) {
+    // 相對於 leftPanel 的座標
+    rootPivot.position.set(station.x + panelW, 0.02, station.z);
+    leftPanel.add(rootPivot);
+  } else if (station.x > panelW / 2) {
+    rootPivot.position.set(station.x - panelW, 0.02, station.z);
+    rightPanel.add(rootPivot);
+  } else {
+    centerPanel.add(rootPivot);
+  }
+
+  // 建立前、中、後三層有厚度的卡紙 (BoxGeometry 模擬薄紙側邊)
+  const layers = [
+    { type: 'back', zOffset: -0.14, scale: 0.92 },
+    { type: 'mid', zOffset: 0.0, scale: 1.0 },
+    { type: 'front', zOffset: 0.14, scale: 0.95 }
+  ];
+
+  const layerMeshes = [];
+  const edgeMat = new THREE.MeshStandardMaterial({ color: '#f5f0e6', roughness: 0.9 });
+
+  layers.forEach(ly => {
+    const h = station.h * ly.scale;
+    const w = h * 0.95;
+    const thickness = 0.018; // 薄紙側邊厚度，近拍清晰可見
+    const geo = new THREE.BoxGeometry(w, h, thickness);
+    geo.translate(0, h / 2, 0); // 軸心設在底部摺線處
+
+    const tex = createLandmarkCardTexture(station, ly.type);
+    const faceMat = new THREE.MeshStandardMaterial({
+      map: tex,
+      transparent: true,
+      alphaTest: 0.15,
+      roughness: 0.65
+    });
+
+    // 前後面用圖片，四個薄邊用米白紙邊材質
+    const mesh = new THREE.Mesh(geo, [edgeMat, edgeMat, edgeMat, edgeMat, faceMat, faceMat]);
+    mesh.position.z = ly.zOffset;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.rotation.x = -Math.PI / 2; // 初始平貼在地圖上
+    rootPivot.add(mesh);
+    layerMeshes.push(mesh);
+  });
+
+  // 背後紙摺腳（Pop-up 支撐結構）
+  const strutGeo = new THREE.BoxGeometry(0.14, station.h * 0.55, 0.012);
+  strutGeo.translate(0, (station.h * 0.55) / 2, 0);
+  const strutMesh = new THREE.Mesh(strutGeo, edgeMat);
+  strutMesh.position.set(0, 0, -0.28);
+  strutMesh.rotation.x = Math.PI / 2;
+  strutMesh.castShadow = true;
+  rootPivot.add(strutMesh);
+
+  popups.push({
+    station,
+    layerMeshes,
+    strutMesh
+  });
+}
+
+STATIONS.forEach(buildPopupLandmark);
+
+// ==========================================
+// 6. 台北 101 上空程式粒子煙火系統 (Shot 8)
+// ==========================================
+const fireworkGroup = new THREE.Group();
+fireworkGroup.position.set(1.55, 2.4, -5.35);
+scene.add(fireworkGroup);
+
+const fwCount = 180;
+const fwGeo = new THREE.BufferGeometry();
+const fwPositions = new Float32Array(fwCount * 3);
+const fwColors = new Float32Array(fwCount * 3);
+const fwVelocities = [];
+
+const palette = [new THREE.Color('#fbbf24'), new THREE.Color('#f87171'), new THREE.Color('#38bdf8'), new THREE.Color('#a78bfa')];
+
+for (let i = 0; i < fwCount; i++) {
+  const theta = Math.random() * Math.PI * 2;
+  const phi = Math.acos(2 * Math.random() - 1);
+  const speed = 0.6 + Math.random() * 1.4;
+  fwVelocities.push(new THREE.Vector3(
+    Math.sin(phi) * Math.cos(theta) * speed,
+    Math.cos(phi) * speed,
+    Math.sin(phi) * Math.sin(theta) * speed
+  ));
+  const col = palette[i % palette.length];
+  fwColors[i * 3] = col.r;
+  fwColors[i * 3 + 1] = col.g;
+  fwColors[i * 3 + 2] = col.b;
+}
+fwGeo.setAttribute('position', new THREE.BufferAttribute(fwPositions, 3));
+fwGeo.setAttribute('color', new THREE.BufferAttribute(fwColors, 3));
+
+const fwMat = new THREE.PointsMaterial({
+  size: 0.14,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0,
+  blending: THREE.AdditiveBlending
+});
+const fireworkPoints = new THREE.Points(fwGeo, fwMat);
+fireworkGroup.add(fireworkPoints);
+
+// ==========================================
+// 7. 運鏡路徑關鍵影格與動畫更新函式 (55秒精準控制)
+// ==========================================
+function smoothstep(edge0, edge1, x) {
+  const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
+  return t * t * (3 - 2 * t);
+}
+
+// 彈性立起曲線（模擬立體賀卡彈起時的微幅回彈）
+function popEase(t) {
+  if (t <= 0) return 0;
+  if (t >= 1) return 1;
+  const c4 = (2 * Math.PI) / 3;
+  return Math.pow(2, -8 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+}
+
+// 環島攝影機路徑控制點
+const camCurvePoints = [
+  new THREE.Vector3(0.0, 12.5, 4.5),   // 06s: 切入台北
+  new THREE.Vector3(1.6, 2.3, -3.2),   // 08s: 台北101 & 饒河夜市特寫（看清薄紙側邊與摺腳）
+  new THREE.Vector3(2.4, 2.5, -3.8),   // 11s: 九份
+  new THREE.Vector3(0.7, 2.6, -2.5),   // 14s: 大溪 & 新竹
+  new THREE.Vector3(-0.3, 2.7, -0.8),  // 18s: 龍騰斷橋
+  new THREE.Vector3(-1.3, 2.8, 0.2),   // 21s: 高美濕地
+  new THREE.Vector3(-1.8, 2.6, 4.4),   // 24s: 台南神農街
+  new THREE.Vector3(-1.4, 2.8, 6.0),   // 28s: 高雄港
+  new THREE.Vector3(-0.2, 2.9, 8.5),   // 31s: 鵝鑾鼻
+  new THREE.Vector3(1.4, 2.8, 5.8),    // 35s: 多良車站
+  new THREE.Vector3(2.9, 3.0, -0.2),   // 38s: 清水斷崖
+  new THREE.Vector3(3.2, 3.2, -2.8),   // 42s: 宜蘭外澳 & 龜山島
+  new THREE.Vector3(1.7, 3.4, -3.4)    // 46s: 環島回到台北
+];
+const camPath = new THREE.CatmullRomCurve3(camCurvePoints);
+
+const lookCurvePoints = [
+  new THREE.Vector3(0.0, 0.0, -1.0),
+  new THREE.Vector3(1.6, 0.7, -5.4),
+  new THREE.Vector3(2.2, 0.6, -5.6),
+  new THREE.Vector3(0.6, 0.6, -4.5),
+  new THREE.Vector3(-0.2, 0.6, -2.8),
+  new THREE.Vector3(-0.9, 0.6, -2.1),
+  new THREE.Vector3(-1.6, 0.6, 2.3),
+  new THREE.Vector3(-1.3, 0.6, 3.8),
+  new THREE.Vector3(-0.2, 0.6, 6.3),
+  new THREE.Vector3(0.3, 0.6, 4.3),
+  new THREE.Vector3(1.8, 0.7, -1.8),
+  new THREE.Vector3(2.5, 0.6, -4.5),
+  new THREE.Vector3(1.5, 0.8, -5.3)
+];
+const lookPath = new THREE.CatmullRomCurve3(lookCurvePoints);
+
+const statusEl = document.getElementById('status');
+
+function updateSceneAtTime(t) {
+  // 1. Shot 1 (0 ~ 5.5s)：折疊地圖沿摺線向兩側攤開
+  const foldProgress = smoothstep(0.5, 5.0, t);
+  // 折疊時左右兩翼向內折疊約 172 度，攤開後平貼為 0 度
+  leftHinge.rotation.z = -(1 - foldProgress) * (Math.PI * 0.96);
+  rightHinge.rotation.z = (1 - foldProgress) * (Math.PI * 0.96);
+
+  // 2. 更新 13 站立體賀卡站起角度（拉遠時已立起的地標保持 90 度站立，絕不消失）
+  popups.forEach(p => {
+    const localT = (t - p.station.trigger) / 1.35; // 每站花 1.35 秒站起
+    const standRatio = popEase(Math.max(0, Math.min(1, localT)));
+    p.layerMeshes.forEach((mesh, idx) => {
+      // 前中後三層依序微差 0.08 秒站起，增強紙藝層次感
+      const staggeredT = popEase(Math.max(0, Math.min(1, localT - idx * 0.06)));
+      mesh.rotation.x = -Math.PI / 2 * (1 - staggeredT);
+    });
+    // 背後支撐摺腳同步立起
+    p.strutMesh.rotation.x = (Math.PI / 2) * (1 - standRatio * 0.65);
+  });
+
+  // 3. 運鏡切換控制
+  let shotLabel = '';
+  if (t < 6.0) {
+    // Shot 1: 俯視攤開地圖
+    shotLabel = 'Shot 1：折疊紙地圖攤開';
+    const p = smoothstep(0, 6.0, t);
+    camera.position.set(0, 17.5 - p * 4.5, 7.5 - p * 2.5);
+    camera.lookAt(0, 0, -0.5 * p);
+  } else if (t < 47.0) {
+    // Shot 2 ~ Shot 7: 貼近紙面環島巡禮
+    const u = (t - 6.0) / (47.0 - 6.0);
+    const pos = camPath.getPointAt(u);
+    const target = lookPath.getPointAt(u);
+    camera.position.copy(pos);
+    camera.lookAt(target);
+
+    if (t < 13) shotLabel = 'Shot 2：台北 101 / 饒河夜市 / 九份';
+    else if (t < 20) shotLabel = 'Shot 3：大溪老街 / 新竹東門城 / 龍騰斷橋';
+    else if (t < 27) shotLabel = 'Shot 4：高美濕地 / 台南神農街';
+    else if (t < 34) shotLabel = 'Shot 5：高雄港 / 鵝鑾鼻';
+    else if (t < 41) shotLabel = 'Shot 6：多良車站 / 清水斷崖';
+    else shotLabel = 'Shot 7：宜蘭外澳 & 龜山島 → 回到台北';
+  } else {
+    // Shot 8 (47 ~ 55s): 緩慢拉遠升空展示全島 13 座立體地標與台北煙火
+    shotLabel = 'Shot 8：全島立體地標全景與煙火';
+    const u8 = smoothstep(47.0, 54.0, t);
+    const startPos = camPath.getPointAt(1.0);
+    const endPos = new THREE.Vector3(0.0, 16.5, 9.2);
+    camera.position.lerpVectors(startPos, endPos, u8);
+
+    const startLook = lookPath.getPointAt(1.0);
+    const endLook = new THREE.Vector3(0.0, 0.2, -0.2);
+    const curLook = new THREE.Vector3().lerpVectors(startLook, endLook, u8);
+    camera.lookAt(curLook);
+  }
+
+  // 4. 更新煙火粒子 (47.5s ~ 55s 每 2.2 秒施放一發)
+  if (t >= 47.5) {
+    const fwCycle = (t - 47.5) % 2.3;
+    const progress = fwCycle / 2.3;
+    fwMat.opacity = Math.sin(progress * Math.PI);
+    const posArr = fwGeo.attributes.position.array;
+    for (let i = 0; i < fwCount; i++) {
+      const v = fwVelocities[i];
+      posArr[i * 3] = v.x * progress * 1.6;
+      posArr[i * 3 + 1] = v.y * progress * 1.6 - 0.45 * progress * progress;
+      posArr[i * 3 + 2] = v.z * progress * 1.6;
+    }
+    fwGeo.attributes.position.needsUpdate = true;
+  } else {
+    fwMat.opacity = 0;
+  }
+
+  statusEl.textContent = `目前時間：${t.toFixed(1)}s / 55.0s（${shotLabel}）`;
+  renderer.render(scene, camera);
+}
+
+// ==========================================
+// 8. 即時預覽迴圈與離線逐幀輸出 1080×1920 MP4
+// ==========================================
+let isExporting = false;
+let previewStartTime = performance.now();
+
+function animateLoop(now) {
+  if (!isExporting) {
+    const elapsed = ((now - previewStartTime) / 1000) % TOTAL_DURATION;
+    updateSceneAtTime(elapsed);
+  }
+  requestAnimationFrame(animateLoop);
+}
+requestAnimationFrame(animateLoop);
+
+document.getElementById('btn-play').addEventListener('click', () => {
+  if (!isExporting) previewStartTime = performance.now();
+});
+
+// 離線逐幀渲染並封裝為標準 1080x1920 MP4
+document.getElementById('btn-export').addEventListener('click', async () => {
+  if (isExporting) return;
+  if (typeof VideoEncoder === 'undefined') {
+    alert('請使用最新版 Chrome 或 Edge 瀏覽器以支援內建 WebCodecs MP4 硬體編碼輸出。');
+    return;
+  }
+
+  isExporting = true;
+  const btnExport = document.getElementById('btn-export');
+  btnExport.disabled = true;
+
+  const totalFrames = Math.round(TOTAL_DURATION * FPS);
+  const muxer = new Muxer({
+    target: new ArrayBufferTarget(),
+    video: {
+      codec: 'avc',
+      width: WIDTH,
+      height: HEIGHT
+    },
+    fastStart: 'in-memory'
+  });
+
+  const videoEncoder = new VideoEncoder({
+    output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
+    error: (e) => console.error(e)
+  });
+
+  videoEncoder.configure({
+    codec: 'avc1.640028', // H.264 High Profile (支援 1080x1920)
+    width: WIDTH,
+    height: HEIGHT,
+    bitrate: 8_000_000,   // 8 Mbps 高畫質輸出
+    framerate: FPS
+  });
+
+  for (let frame = 0; frame < totalFrames; frame++) {
+    const t = frame / FPS;
+    updateSceneAtTime(t);
+    statusEl.textContent = `正在渲染 MP4：第 ${frame + 1} / ${totalFrames} 幀 (${Math.round(((frame + 1) / totalFrames) * 100)}%)`;
+
+    const videoFrame = new VideoFrame(renderer.domElement, {
+      timestamp: Math.round((frame * 1_000_000) / FPS),
+      duration: Math.round(1_000_000 / FPS)
+    });
+
+    videoEncoder.encode(videoFrame, { keyFrame: frame % 60 === 0 });
+    videoFrame.close();
+
+    // 讓出主執行緒避免瀏覽器假死
+    if (frame % 5 === 0) await new Promise(r => setTimeout(r, 0));
+  }
+
+  await videoEncoder.flush();
+  muxer.finalize();
+
+  const blob = new Blob([muxer.target.buffer], { type: 'video/mp4' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'TAIWAN_popup_map_1080x1920.mp4';
+  a.click();
+
+  statusEl.textContent = '✅ 1080×1920 MP4 輸出完成！';
+  btnExport.disabled = false;
+  isExporting = false;
+  previewStartTime = performance.now();
+});
+</script>
+</body>
+</html>
