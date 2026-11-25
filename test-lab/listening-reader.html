@@ -233,9 +233,10 @@
   /* ---------- 聲音 ---------- */
   const synth = window.speechSynthesis;
   let voices = [], voiceF = null, voiceM = null;
-  // 預設聲音（依優先順序）：女聲 Google US English → Emma（Edge）；男聲 Brian（Edge）→ Google UK English Male（Chrome）→ 其他名稱明確的男聲
+  // 預設聲音（依優先順序）：女聲 Google US English → Emma（Edge）；男聲 Andrew（Edge）→ Google UK English Male（Chrome）→ 其他名稱明確的男聲
   const FEMALE = [/^google us english/i, /emma/i, /jenny/i, /aria/i, /zira/i, /samantha/i];
-  const MALE = [/brian/i, /google uk english male/i, /\bguy\b/i, /\bandrew\b/i, /\bmark\b/i, /\bdavid\b/i, /daniel/i, /\bmale\b/i];
+  // Brian 發音有問題，不列入自動挑選（仍可在設定裡手動選）；Edge 的 Multilingual 版名稱是「AndrewMultilingual」，所以先找一般的 Andrew
+  const MALE = [/andrew(?!multilingual)/i, /andrewmultilingual/i, /google uk english male/i, /\bguy\b/i, /\bmark\b/i, /\bdavid\b/i, /daniel/i, /\bmale\b/i];
   const SK = { f: "listen.v2.voiceF", m: "listen.v2.voiceM" }; // v2：舊版曾存下的選擇不再沿用
 
   function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (_) {} }
