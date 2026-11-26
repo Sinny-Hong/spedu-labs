@@ -8,6 +8,10 @@ window.LIBRARY_MANIFEST = [
     "title": "E-City｜異想電影院"
   },
   {
+    "file": "ecity-clocktower.html",
+    "title": "E-City｜異想鐘樓"
+  },
+  {
     "file": "ecity-clothing.html",
     "title": "E-City｜異想服飾店"
   },
@@ -34,5 +38,9 @@ window.LIBRARY_MANIFEST = [
   {
     "file": "ecity-timetable.html",
     "title": "E-City｜異想課表"
+  },
+  {
+    "file": "ecity-tug-of-war.html",
+    "title": "E-City｜拔河錦標賽"
   }
 ];
