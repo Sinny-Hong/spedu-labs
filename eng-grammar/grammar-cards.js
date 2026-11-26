@@ -16,18 +16,18 @@ window.GRAMMAR_DATA = [
   { id: "g6", category: "互動遊戲", title: "🧩 配對板｜時間與日期", desc: "星期、月份、日期與時間的三排對照語音配對", filename: "match-time-date.html", themeColor: "#F43F5E" },
   { id: "g7", category: "互動遊戲", title: "🧩 配對板｜人稱代名詞", desc: "限時配對、亂序、干擾卡與課堂訂正挑戰", filename: "match-pronouns.html", themeColor: "#F43F5E" },
 
-  { id: "ecity-snake-maze", category: "E-City 異想城市", tag: "方向英文", title: "貪食蛇迷宮逃脫", desc: "依蛇頭朝向練習直走與左右轉，挑戰六關迷宮並記錄最少操作次數，支援雙語提示與方向海報", filename: "ecity-snake-maze.html", themeColor: "#40B56C" },
+  { id: "ecity-snake-maze", category: "E-City 異想城市", tag: "方向英文", title: "貪食蛇迷宮逃脫", desc: "依蛇頭朝向練習直走與左右轉，挑戰六關迷宮並記錄最少操作次數，支援雙語提示與方向海報", filename: "../ecity/ecity-snake-maze.html", themeColor: "#40B56C" },
 
   // ==== E-City 異想城市 ====
-  { id: "g2", category: "E-City 異想城市", tag: "異想小鎮", title: "異想家庭樹", desc: "觀察家庭樹、點讀親屬英文並完成五題選擇題，可切換三種難度", filename: "ecity-family-tree.html", themeColor: "#F59E0B" },
-  { id: "ecity-01", category: "E-City 異想城市", tag: "異想小鎮", title: "我的異想小鎮", desc: "隨機城市地圖與八種位置句型挑戰，附中英提示板、單字發音與答題音效", filename: "ecity-my-town.html", themeColor: "#F59E0B" },
-  { id: "ecity-fastfood", category: "E-City 異想城市", tag: "異想小鎮", title: "異想速食店", desc: "透過餐點單字與點餐對話，練習金錢、數量及閱讀理解", filename: "ecity-fastfood.html", themeColor: "#F59E0B" },
-  { id: "ecity-clothing", category: "E-City 異想城市", tag: "異想小鎮", title: "異想服飾店", desc: "透過服飾商品與購物對話，練習尺寸、顏色及價格理解", filename: "ecity-clothing.html", themeColor: "#F59E0B" },
-  { id: "ecity-cinema", category: "E-City 異想城市", tag: "異想小鎮", title: "異想電影院", desc: "閱讀電影時刻表，練習 AM／PM、場次時間與片長判讀", filename: "ecity-cinema.html", themeColor: "#F59E0B" },
-  { id: "ecity-schedule", category: "E-City 異想城市", tag: "異想小鎮", title: "異想行事曆", desc: "閱讀一週行程與活動安排，練習星期、時間及相對時間", filename: "ecity-schedule.html", themeColor: "#F59E0B" },
-  { id: "ecity-timetable", category: "E-City 異想城市", tag: "異想小鎮", title: "異想課表", desc: "閱讀學校課表，練習星期、節次與表格十字定位", filename: "ecity-timetable.html", themeColor: "#F59E0B" },
-  { id: "ecity-calendar", category: "E-City 異想城市", tag: "異想小鎮", title: "異想月曆", desc: "閱讀月份月曆，練習日期、節慶與跨週日期推算", filename: "ecity-calendar.html", themeColor: "#F59E0B" },
-  { id: "ecity-tug-of-war", category: "E-City 異想城市", tag: "異想小鎮", title: "拔河錦標賽", desc: "兩隊用英文數字、日期或數學題庫即時搶答，把繩索拉向己方", filename: "../math/ecity-tug-of-war.html", themeColor: "#7C3AED" },
+  { id: "g2", category: "E-City 異想城市", tag: "異想小鎮", title: "異想家庭樹", desc: "觀察家庭樹、點讀親屬英文並完成五題選擇題，可切換三種難度", filename: "../ecity/ecity-family-tree.html", themeColor: "#F59E0B" },
+  { id: "ecity-01", category: "E-City 異想城市", tag: "異想小鎮", title: "我的異想小鎮", desc: "隨機城市地圖與八種位置句型挑戰，附中英提示板、單字發音與答題音效", filename: "../ecity/ecity-my-town.html", themeColor: "#F59E0B" },
+  { id: "ecity-fastfood", category: "E-City 異想城市", tag: "異想小鎮", title: "異想速食店", desc: "透過餐點單字與點餐對話，練習金錢、數量及閱讀理解", filename: "../ecity/ecity-fastfood.html", themeColor: "#F59E0B" },
+  { id: "ecity-clothing", category: "E-City 異想城市", tag: "異想小鎮", title: "異想服飾店", desc: "透過服飾商品與購物對話，練習尺寸、顏色及價格理解", filename: "../ecity/ecity-clothing.html", themeColor: "#F59E0B" },
+  { id: "ecity-cinema", category: "E-City 異想城市", tag: "異想小鎮", title: "異想電影院", desc: "閱讀電影時刻表，練習 AM／PM、場次時間與片長判讀", filename: "../ecity/ecity-cinema.html", themeColor: "#F59E0B" },
+  { id: "ecity-schedule", category: "E-City 異想城市", tag: "異想小鎮", title: "異想行事曆", desc: "閱讀一週行程與活動安排，練習星期、時間及相對時間", filename: "../ecity/ecity-schedule.html", themeColor: "#F59E0B" },
+  { id: "ecity-timetable", category: "E-City 異想城市", tag: "異想小鎮", title: "異想課表", desc: "閱讀學校課表，練習星期、節次與表格十字定位", filename: "../ecity/ecity-timetable.html", themeColor: "#F59E0B" },
+  { id: "ecity-calendar", category: "E-City 異想城市", tag: "異想小鎮", title: "異想月曆", desc: "閱讀月份月曆，練習日期、節慶與跨週日期推算", filename: "../ecity/ecity-calendar.html", themeColor: "#F59E0B" },
+  { id: "ecity-tug-of-war", category: "E-City 異想城市", tag: "異想小鎮", title: "拔河錦標賽", desc: "兩隊用英文數字、日期或數學題庫即時搶答，把繩索拉向己方", filename: "../ecity/ecity-tug-of-war.html", themeColor: "#7C3AED" },
 
   // ==== 日常英文 ====
   { id: "card-builder", category: "日常英文", title: "英文賀卡製作｜English Card Builder", desc: "選擇收件人、節慶祝賀、想說的話與寄件人，組合英文賀卡並查看寫法提示", filename: "card-builder.html", themeColor: "#14B8A6" },

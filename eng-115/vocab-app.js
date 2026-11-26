@@ -1,5 +1,5 @@
 /* 單字講義統整框架（測試區）：聽力、配對、拼寫共用同一個頁面。
-   版面與題目邏輯取自 hear.html / match.html / write.html；資料取自同資料夾的 vocab-data.js。 */
+   資料取自同資料夾的 vocab-data.js。 */
 (() => {
   'use strict';
   const DATA = window.VOCAB_DATA && window.VOCAB_DATA.books;
